@@ -1,0 +1,258 @@
+rules:
+  # ===========================================================================
+  # Spoofing (S)
+  # ===========================================================================
+  - rule_id: "S-01"
+    stride_category: "Spoofing"
+    threat_subtype: "Identity spoofing across trust boundary"
+    description_template: >-
+      An attacker could spoof the identity of {source_name} ({source_type}) to
+      send forged {edge_label} to {target_name} across the {boundary_name} trust
+      boundary.
+    severity: "High"
+    condition_function: "condition_s01"
+    condition_type: "tuple"
+    requires_boundary_crossing: true
+
+  - rule_id: "S-02"
+    stride_category: "Spoofing"
+    threat_subtype: "Spoofed data flow across boundary"
+    description_template: >-
+      The {edge_label} data flow from {source_name} ({source_type}) to
+      {target_name} ({target_type}) crosses the {boundary_name} trust boundary
+      and could be spoofed by an attacker to inject fraudulent transactions.
+    severity: "Medium"
+    condition_function: "condition_s02"
+    condition_type: "tuple"
+    requires_boundary_crossing: true
+
+  - rule_id: "S-03"
+    stride_category: "Spoofing"
+    threat_subtype: "External entity identity spoofing"
+    description_template: >-
+      {node_name} ({node_type}) is an external entity whose identity cannot be
+      fully verified by the system. An attacker could impersonate this entity to
+      gain unauthorized access.
+    severity: "Medium"
+    condition_function: "condition_s03"
+    condition_type: "standalone"
+    requires_boundary_crossing: false
+
+  # ===========================================================================
+  # Tampering (T)
+  # ===========================================================================
+  - rule_id: "T-01"
+    stride_category: "Tampering"
+    threat_subtype: "Data tampering in transit across boundary"
+    description_template: >-
+      The {edge_label} data flow from {source_name} to {target_name} crosses the
+      {boundary_name} trust boundary and could be intercepted and modified in
+      transit, compromising data integrity.
+    severity: "High"
+    condition_function: "condition_t01"
+    condition_type: "tuple"
+    requires_boundary_crossing: true
+
+  - rule_id: "T-02"
+    stride_category: "Tampering"
+    threat_subtype: "Unauthorized data store modification by external entity"
+    description_template: >-
+      {source_name} ({source_type}) sends {edge_label} directly to {target_name}
+      data store. An external entity writing to a data store without proper
+      validation could corrupt financial records or account data.
+    severity: "High"
+    condition_function: "condition_t02"
+    condition_type: "tuple"
+    requires_boundary_crossing: false
+
+  - rule_id: "T-03"
+    stride_category: "Tampering"
+    threat_subtype: "Data store write integrity risk"
+    description_template: >-
+      {source_name} sends {edge_label} to {target_name} ({target_type}) data
+      store. Without proper integrity checks, this write operation could result
+      in unauthorized modifications to stored data.
+    severity: "Medium"
+    condition_function: "condition_t03"
+    condition_type: "tuple"
+    requires_boundary_crossing: false
+
+  - rule_id: "T-04"
+    stride_category: "Tampering"
+    threat_subtype: "Cross-boundary data store tampering"
+    description_template: >-
+      {target_name} data store could be tampered with by {source_name} sending
+      {edge_label} across the {boundary_name} trust boundary. This cross-boundary
+      write poses a critical risk to data integrity.
+    severity: "Critical"
+    condition_function: "condition_t04"
+    condition_type: "tuple"
+    requires_boundary_crossing: true
+
+  # ===========================================================================
+  # Repudiation (R)
+  # ===========================================================================
+  - rule_id: "R-01"
+    stride_category: "Repudiation"
+    threat_subtype: "Unaudited external entity interaction"
+    description_template: >-
+      The interaction between {source_name} and {target_name} via {edge_label}
+      involves an external entity. Without adequate logging, this party could
+      deny having performed a transaction or action.
+    severity: "Medium"
+    condition_function: "condition_r01"
+    condition_type: "tuple"
+    requires_boundary_crossing: false
+
+  - rule_id: "R-02"
+    stride_category: "Repudiation"
+    threat_subtype: "Unlogged process actions"
+    description_template: >-
+      The {edge_label} flow between {source_name} and {target_name} involves a
+      process whose actions may not be adequately logged. Without audit trails,
+      unauthorized actions could go undetected.
+    severity: "Low"
+    condition_function: "condition_r02"
+    condition_type: "tuple"
+    requires_boundary_crossing: false
+
+  - rule_id: "R-03"
+    stride_category: "Repudiation"
+    threat_subtype: "Unaudited data store modification"
+    description_template: >-
+      {source_name} modifies {target_name} via {edge_label} without guaranteed
+      audit logging. Changes to stored data could be denied or go unnoticed,
+      hindering forensic investigation.
+    severity: "Medium"
+    condition_function: "condition_r03"
+    condition_type: "tuple"
+    requires_boundary_crossing: false
+
+  # ===========================================================================
+  # Information Disclosure (I)
+  # ===========================================================================
+  - rule_id: "I-01"
+    stride_category: "Information Disclosure"
+    threat_subtype: "Data exposure in transit across boundary"
+    description_template: >-
+      The {edge_label} data flow from {source_name} to {target_name} crosses the
+      {boundary_name} trust boundary and could expose sensitive information if
+      not properly encrypted in transit.
+    severity: "High"
+    condition_function: "condition_i01"
+    condition_type: "tuple"
+    requires_boundary_crossing: true
+
+  - rule_id: "I-02"
+    stride_category: "Information Disclosure"
+    threat_subtype: "Sensitive data leaked to external entity"
+    description_template: >-
+      {source_name} ({source_type}) sends {edge_label} to {target_name}
+      ({target_type}), an external entity. Sensitive data from internal stores
+      could be leaked to unauthorized external parties.
+    severity: "High"
+    condition_function: "condition_i02"
+    condition_type: "tuple"
+    requires_boundary_crossing: false
+
+  - rule_id: "I-03"
+    stride_category: "Information Disclosure"
+    threat_subtype: "Data store exposure across boundary"
+    description_template: >-
+      {source_name} data store sends {edge_label} to {target_name} across the
+      {boundary_name} trust boundary. Stored data crossing a trust boundary
+      poses a critical information disclosure risk.
+    severity: "Critical"
+    condition_function: "condition_i03"
+    condition_type: "tuple"
+    requires_boundary_crossing: true
+
+  - rule_id: "I-04"
+    stride_category: "Information Disclosure"
+    threat_subtype: "Sensitive data in flow label"
+    description_template: >-
+      The {edge_label} data flow from {source_name} to {target_name} contains
+      sensitive keywords in its label, suggesting that credentials, tokens, or
+      personally identifiable information may be transmitted.
+    severity: "High"
+    condition_function: "condition_i04"
+    condition_type: "tuple"
+    requires_boundary_crossing: false
+
+  # ===========================================================================
+  # Denial of Service (D)
+  # ===========================================================================
+  - rule_id: "D-01"
+    stride_category: "Denial of Service"
+    threat_subtype: "External entity flood attack on process"
+    description_template: >-
+      {source_name} ({source_type}) sends {edge_label} to {target_name}
+      ({target_type}). An external entity could flood the target process with
+      excessive requests, causing service degradation or outage.
+    severity: "Medium"
+    condition_function: "condition_d01"
+    condition_type: "tuple"
+    requires_boundary_crossing: false
+
+  - rule_id: "D-02"
+    stride_category: "Denial of Service"
+    threat_subtype: "Process resource exhaustion"
+    description_template: >-
+      {node_name} ({node_type}) is a process that could be targeted for resource
+      exhaustion. Without proper rate limiting and resource management, this
+      process could become unavailable.
+    severity: "Low"
+    condition_function: "condition_d02"
+    condition_type: "standalone"
+    requires_boundary_crossing: false
+
+  - rule_id: "D-03"
+    stride_category: "Denial of Service"
+    threat_subtype: "Single point of failure"
+    description_template: >-
+      {node_name} ({node_type}) is a potential single point of failure with high
+      connectivity. Disruption could cascade through dependent components.
+    severity: "High"
+    condition_function: "condition_d03"
+    condition_type: "standalone"
+    requires_boundary_crossing: false
+
+  # ===========================================================================
+  # Elevation of Privilege (E)
+  # ===========================================================================
+  - rule_id: "E-01"
+    stride_category: "Elevation of Privilege"
+    threat_subtype: "Privilege escalation via external access across boundary"
+    description_template: >-
+      {source_name} ({source_type}) accesses {target_name} ({target_type}) via
+      {edge_label} across the {boundary_name} trust boundary. An external entity
+      crossing a trust boundary to reach a process could exploit it to gain
+      elevated privileges within the system.
+    severity: "Critical"
+    condition_function: "condition_e01"
+    condition_type: "tuple"
+    requires_boundary_crossing: true
+
+  - rule_id: "E-02"
+    stride_category: "Elevation of Privilege"
+    threat_subtype: "Unauthorized privilege escalation across boundary"
+    description_template: >-
+      The {edge_label} flow from {source_name} to {target_name} crosses the
+      {boundary_name} trust boundary. Any cross-boundary flow is a potential
+      vector for privilege escalation attacks.
+    severity: "High"
+    condition_function: "condition_e02"
+    condition_type: "tuple"
+    requires_boundary_crossing: true
+
+  - rule_id: "E-03"
+    stride_category: "Elevation of Privilege"
+    threat_subtype: "Multiple entry points to trust boundary"
+    description_template: >-
+      The {boundary_name} trust boundary has {entry_count} entry points. Multiple
+      entry points increase the attack surface and the likelihood that an
+      attacker can find a path to escalate privileges.
+    severity: "Medium"
+    condition_function: "condition_e03"
+    condition_type: "boundary"
+    requires_boundary_crossing: false
