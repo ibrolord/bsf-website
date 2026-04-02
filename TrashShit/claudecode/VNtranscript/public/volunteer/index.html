@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Volunteer — Big Sister Foundation</title>
+  <meta name="description" content="Join Big Sister Foundation as a volunteer. We're looking for people who show up consistently for vulnerable children in Lagos.">
+  <meta name="theme-color" content="#2D5E40">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cellipse cx='50' cy='35' rx='35' ry='30' fill='%232D5E40' opacity='0.85'/%3E%3Cellipse cx='30' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cellipse cx='70' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cpath d='M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z' fill='%233A2A1F' opacity='0.8'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #2D5E40;
+      --green-dark: #1E3F2B;
+      --brown: #3A2A1F;
+      --terra: #C2734C;
+      --gold: #D4A96A;
+      --sage: #8BAF8E;
+      --cream: #FFF8F0;
+      --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --section-pad: clamp(48px, 4vw + 20px, 100px);
+      --page-margin: clamp(20px, 4vw, 80px);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.2rem);
+      line-height: 1.7;
+      color: var(--brown);
+      background: var(--cream);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+    button { font: inherit; cursor: pointer; border: none; background: none; }
+
+    .eyebrow {
+      font-family: var(--font-sans);
+      font-size: clamp(0.7rem, 0.5vw + 0.5rem, 0.85rem);
+      font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; margin-bottom: 1rem;
+    }
+
+    h1, h2, h3 {
+      font-family: var(--font-serif);
+      font-weight: 500; line-height: 1.08; letter-spacing: -0.02em;
+    }
+    h1 { font-size: clamp(2.2rem, 4vw + 0.5rem, 4rem); }
+    h2 { font-size: clamp(1.8rem, 2.5vw + 0.5rem, 2.8rem); }
+    h3 { font-size: clamp(1.3rem, 1vw + 0.8rem, 1.7rem); line-height: 1.2; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding-left: var(--page-margin); padding-right: var(--page-margin); }
+    .section-pad { padding-top: var(--section-pad); padding-bottom: var(--section-pad); }
+
+    /* NAV */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem var(--page-margin); background: var(--green-dark);
+    }
+    .nav__logo { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; text-decoration: none; color: var(--cream); }
+    .nav__links { list-style: none; display: flex; gap: 2rem; }
+    .nav__links a { font-size: 0.85rem; font-weight: 500; text-decoration: none; color: rgba(255,248,240,0.7); transition: color 0.3s; }
+    .nav__links a:hover { color: var(--cream); }
+    .nav__links a.is-active { color: var(--gold); }
+    @media (max-width: 768px) { .nav__links { gap: 1rem; } .nav__links a { font-size: 0.75rem; } }
+
+    /* HERO */
+    .volunteer-hero {
+      padding-top: calc(60px + var(--section-pad));
+      padding-bottom: var(--section-pad);
+      background: var(--green-dark); color: var(--cream);
+    }
+    .volunteer-hero .eyebrow { color: var(--gold); }
+    .volunteer-hero__sub {
+      max-width: 640px; margin-top: 1.2rem;
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.15rem);
+      line-height: 1.7; color: rgba(255,248,240,0.75);
+    }
+
+    /* FORM SECTION */
+    .form-section {
+      background: var(--cream);
+    }
+    .form-wrapper {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--brown);
+      margin-bottom: 0.4rem;
+    }
+    .form-group label .optional {
+      font-weight: 400;
+      color: rgba(58,42,31,0.45);
+      font-size: 0.8rem;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="tel"],
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1.5px solid rgba(58,42,31,0.15);
+      border-radius: 10px;
+      background: #fff;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      color: var(--brown);
+      transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+      outline: none;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(45,94,64,0.1);
+    }
+    .form-group input.is-invalid,
+    .form-group textarea.is-invalid,
+    .form-group select.is-invalid {
+      border-color: #c0392b;
+      box-shadow: 0 0 0 3px rgba(192,57,43,0.08);
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+    .form-group select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%233A2A1F' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      padding-right: 2.5rem;
+    }
+    .char-counter {
+      text-align: right;
+      font-size: 0.75rem;
+      color: rgba(58,42,31,0.45);
+      margin-top: 0.3rem;
+    }
+    .char-counter.is-near { color: var(--terra); }
+    .char-counter.is-over { color: #c0392b; font-weight: 600; }
+
+    /* CHECKBOXES */
+    .checkbox-group {
+      display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.25rem;
+    }
+    .checkbox-item {
+      display: flex; align-items: center; gap: 0.5rem; cursor: pointer;
+    }
+    .checkbox-item input[type="checkbox"] {
+      width: 18px; height: 18px; accent-color: var(--green); cursor: pointer;
+    }
+    .checkbox-item span {
+      font-size: 0.9rem; color: var(--brown);
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.9rem 2rem; border-radius: 100px;
+      font-family: var(--font-sans); font-size: clamp(0.85rem, 0.3vw + 0.75rem, 1rem); font-weight: 600;
+      letter-spacing: 0.02em; text-decoration: none;
+      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), opacity 0.3s;
+      cursor: pointer; border: none;
+    }
+    .btn:hover { transform: scale(1.03); box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
+    .btn--terra { background: var(--terra); color: #fff; }
+    .btn--terra:disabled {
+      opacity: 0.6; cursor: not-allowed; transform: none;
+      box-shadow: none;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 200;
+      padding: 1rem 1.5rem; border-radius: 12px;
+      font-size: 0.9rem; font-weight: 500; color: #fff;
+      transform: translateY(120%); opacity: 0;
+      transition: transform 0.4s var(--ease), opacity 0.4s var(--ease);
+      max-width: 400px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    .toast.is-visible { transform: translateY(0); opacity: 1; }
+    .toast--success { background: var(--green); }
+    .toast--error { background: #c0392b; }
+    @media (max-width: 600px) {
+      .toast { left: 1rem; right: 1rem; bottom: 1rem; max-width: none; }
+    }
+
+    /* SUCCESS STATE */
+    .success-message {
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+    .success-message__icon {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: rgba(45,94,64,0.1); margin: 0 auto 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; color: var(--green);
+    }
+    .success-message h2 {
+      margin-bottom: 0.75rem; color: var(--green);
+    }
+    .success-message p {
+      max-width: 460px; margin: 0 auto;
+      color: rgba(58,42,31,0.7); font-size: 1rem; line-height: 1.7;
+    }
+    .success-message .btn {
+      margin-top: 2rem;
+    }
+
+    /* FOOTER */
+    .footer { background: var(--brown); color: rgba(255,248,240,0.6); padding: 3rem 0; }
+    .footer__layout { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 2rem; }
+    .footer__brand-name { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; color: var(--cream); margin-bottom: 0.25rem; }
+    .footer__tagline { font-size: 0.85rem; color: var(--gold); }
+    .footer__location { font-size: 0.8rem; margin-top: 0.25rem; }
+    .footer__links { list-style: none; display: flex; gap: 1.5rem; margin-bottom: 0.5rem; }
+    .footer__links a { font-size: 0.85rem; text-decoration: none; transition: color 0.3s; }
+    .footer__links a:hover { color: var(--cream); }
+    .footer__copy { font-size: 0.75rem; opacity: 0.5; }
+    .footer__right { text-align: right; }
+    @media (max-width: 600px) { .footer__layout { flex-direction: column; } .footer__right { text-align: left; } }
+
+    /* ANIMATIONS */
+    [data-animate] {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+    }
+    [data-animate].is-visible { opacity: 1; transform: translateY(0); }
+    [data-animate-delay="1"] { transition-delay: 0.1s; }
+    [data-animate-delay="2"] { transition-delay: 0.2s; }
+    [data-animate-delay="3"] { transition-delay: 0.3s; }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="/" class="nav__logo">Big Sister Foundation</a>
+    <ul class="nav__links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/ledger/">Ledger</a></li>
+      <li><a href="/ideas/">Ideas</a></li>
+      <li><a href="/scholars/">Scholars</a></li>
+      <li><a href="/volunteer/" class="is-active">Volunteer</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="volunteer-hero">
+    <div class="container">
+      <p class="eyebrow" data-animate>JOIN US</p>
+      <h1 data-animate data-animate-delay="1">Become a Volunteer</h1>
+      <p class="volunteer-hero__sub" data-animate data-animate-delay="2">We're looking for people who show up consistently. If that's you, tell us about yourself.</p>
+    </div>
+  </section>
+
+  <!-- FORM -->
+  <section class="form-section section-pad">
+    <div class="container">
+      <div class="form-wrapper" id="form-wrapper">
+        <form id="volunteer-form" novalidate>
+
+          <div class="form-group">
+            <label for="field-name">Full Name</label>
+            <input type="text" id="field-name" name="name" required autocomplete="name" placeholder="Your full name">
+          </div>
+
+          <div class="form-group">
+            <label for="field-email">Email</label>
+            <input type="email" id="field-email" name="email" required autocomplete="email" placeholder="you@example.com">
+          </div>
+
+          <div class="form-group">
+            <label for="field-phone">Phone <span class="optional">(optional)</span></label>
+            <input type="tel" id="field-phone" name="phone" autocomplete="tel" placeholder="+234 800 000 0000">
+          </div>
+
+          <div class="form-group">
+            <label for="field-location">Location</label>
+            <input type="text" id="field-location" name="location" placeholder="Lagos, Nigeria" autocomplete="address-level2">
+          </div>
+
+          <div class="form-group">
+            <label for="field-reason">Why do you want to volunteer?</label>
+            <textarea id="field-reason" name="reason" required maxlength="500" placeholder="Tell us what draws you to this work..."></textarea>
+            <div class="char-counter" id="char-counter">0 / 500</div>
+          </div>
+
+          <div class="form-group">
+            <label for="field-heard">How did you hear about us?</label>
+            <select id="field-heard" name="heardFrom">
+              <option value="">Select one...</option>
+              <option value="WhatsApp">WhatsApp</option>
+              <option value="Instagram">Instagram</option>
+              <option value="Friend/Family">Friend/Family</option>
+              <option value="Event">Event</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Availability</label>
+            <div class="checkbox-group">
+              <label class="checkbox-item">
+                <input type="checkbox" name="availability" value="Weekdays">
+                <span>Weekdays</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" name="availability" value="Weekends">
+                <span>Weekends</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" name="availability" value="Evenings">
+                <span>Evenings</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" name="availability" value="Flexible">
+                <span>Flexible</span>
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn--terra" id="submit-btn">Submit Request</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__layout">
+        <div class="footer__left">
+          <p class="footer__brand-name">Big Sister Foundation</p>
+          <p class="footer__tagline">Rooted. Present. Protective.</p>
+          <p class="footer__location">Lagos, Nigeria</p>
+        </div>
+        <div class="footer__right">
+          <ul class="footer__links">
+            <li><a href="/ledger/">Ledger</a></li>
+            <li><a href="/ideas/">Ideas</a></li>
+            <li><a href="https://wa.me/2348000000000">WhatsApp</a></li>
+            <li><a href="mailto:princebolajibreeze@gmail.com">Email</a></li>
+            <li><a href="#">Instagram</a></li>
+          </ul>
+          <p class="footer__copy">&copy; 2026 Big Sister Foundation. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- FIREBASE -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script>
+    (function() {
+      'use strict';
+
+      /* ── Firebase init ── */
+      firebase.initializeApp({
+        apiKey: "AIzaSyCwos6XR9-uqAf_Esmh2K_hJoLxq4gnEuU",
+        authDomain: "big-sister-foundation.firebaseapp.com",
+        projectId: "big-sister-foundation",
+        storageBucket: "big-sister-foundation.firebasestorage.app",
+        messagingSenderId: "778723584560",
+        appId: "1:778723584560:web:7499944c30001e7fcf5bf5"
+      });
+      var db = firebase.firestore();
+
+      /* ── DOM refs ── */
+      var form = document.getElementById('volunteer-form');
+      var formWrapper = document.getElementById('form-wrapper');
+      var submitBtn = document.getElementById('submit-btn');
+      var reasonField = document.getElementById('field-reason');
+      var charCounter = document.getElementById('char-counter');
+      var toastEl = document.getElementById('toast');
+
+      /* ── Scroll animations ── */
+      var animEls = document.querySelectorAll('[data-animate]');
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      animEls.forEach(function(el) { observer.observe(el); });
+
+      /* ── Character counter ── */
+      reasonField.addEventListener('input', function() {
+        var len = reasonField.value.length;
+        charCounter.textContent = len + ' / 500';
+        charCounter.classList.remove('is-near', 'is-over');
+        if (len >= 500) {
+          charCounter.classList.add('is-over');
+        } else if (len >= 400) {
+          charCounter.classList.add('is-near');
+        }
+      });
+
+      /* ── Toast ── */
+      var toastTimer = null;
+      function showToast(message, type) {
+        clearTimeout(toastTimer);
+        toastEl.textContent = '';
+        toastEl.className = 'toast toast--' + type;
+        toastEl.textContent = message;
+        requestAnimationFrame(function() {
+          toastEl.classList.add('is-visible');
+        });
+        toastTimer = setTimeout(function() {
+          toastEl.classList.remove('is-visible');
+        }, 4000);
+      }
+
+      /* ── Validation ── */
+      function validateField(input) {
+        if (input.hasAttribute('required') && !input.value.trim()) {
+          input.classList.add('is-invalid');
+          return false;
+        }
+        if (input.type === 'email' && input.value.trim()) {
+          var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRe.test(input.value.trim())) {
+            input.classList.add('is-invalid');
+            return false;
+          }
+        }
+        input.classList.remove('is-invalid');
+        return true;
+      }
+
+      /* Clear invalid state on input */
+      var inputs = form.querySelectorAll('input, textarea, select');
+      inputs.forEach(function(input) {
+        input.addEventListener('input', function() {
+          input.classList.remove('is-invalid');
+        });
+      });
+
+      /* ── Show success ── */
+      function showSuccess() {
+        while (formWrapper.firstChild) {
+          formWrapper.removeChild(formWrapper.firstChild);
+        }
+
+        var container = document.createElement('div');
+        container.className = 'success-message';
+
+        var iconWrap = document.createElement('div');
+        iconWrap.className = 'success-message__icon';
+        iconWrap.textContent = '\u2713';
+        container.appendChild(iconWrap);
+
+        var heading = document.createElement('h2');
+        heading.textContent = 'Thank you!';
+        container.appendChild(heading);
+
+        var p1 = document.createElement('p');
+        p1.textContent = 'Your volunteer request has been submitted. We review every application personally and will reach out if there\u2019s a fit.';
+        container.appendChild(p1);
+
+        var p2 = document.createElement('p');
+        p2.style.marginTop = '0.5rem';
+        p2.textContent = 'In the meantime, follow us on Instagram or join our WhatsApp group to stay connected.';
+        container.appendChild(p2);
+
+        var backBtn = document.createElement('a');
+        backBtn.href = '/';
+        backBtn.className = 'btn btn--terra';
+        backBtn.textContent = 'Back to Home';
+        container.appendChild(backBtn);
+
+        formWrapper.appendChild(container);
+      }
+
+      /* ── Form submit ── */
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        /* Validate */
+        var nameField = document.getElementById('field-name');
+        var emailField = document.getElementById('field-email');
+
+        var valid = true;
+        if (!validateField(nameField)) valid = false;
+        if (!validateField(emailField)) valid = false;
+        if (!validateField(reasonField)) valid = false;
+
+        if (!valid) {
+          showToast('Please fill in all required fields.', 'error');
+          return;
+        }
+
+        /* Disable button */
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+
+        /* Gather availability checkboxes */
+        var availChecks = form.querySelectorAll('input[name="availability"]:checked');
+        var availability = [];
+        availChecks.forEach(function(cb) {
+          availability.push(cb.value);
+        });
+
+        /* Write to Firestore */
+        var data = {
+          name: nameField.value.trim(),
+          email: emailField.value.trim(),
+          phone: document.getElementById('field-phone').value.trim(),
+          location: document.getElementById('field-location').value.trim(),
+          reason: reasonField.value.trim(),
+          heardFrom: document.getElementById('field-heard').value,
+          availability: availability,
+          status: 'pending',
+          submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        db.collection('volunteer_requests').add(data)
+          .then(function() {
+            showToast('Request submitted successfully!', 'success');
+            showSuccess();
+          })
+          .catch(function(err) {
+            console.error('Firestore error:', err);
+            showToast('Something went wrong. Please try again.', 'error');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Request';
+          });
+      });
+
+    })();
+  </script>
+</body>
+</html>

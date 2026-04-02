@@ -1,0 +1,3614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scholars Tracker — Big Sister Foundation</title>
+  <meta name="description" content="Tracking progress and celebrating every sponsored child. Big Sister Foundation's Scholars Tracker.">
+  <meta name="theme-color" content="#2D5E40">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cellipse cx='50' cy='35' rx='35' ry='30' fill='%232D5E40' opacity='0.85'/%3E%3Cellipse cx='30' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cellipse cx='70' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cpath d='M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z' fill='%233A2A1F' opacity='0.8'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #2D5E40;
+      --green-dark: #1E3F2B;
+      --brown: #3A2A1F;
+      --terra: #C2734C;
+      --gold: #D4A96A;
+      --sage: #8BAF8E;
+      --cream: #FFF8F0;
+      --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --section-pad: clamp(48px, 4vw + 20px, 100px);
+      --page-margin: clamp(20px, 4vw, 80px);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.2rem);
+      line-height: 1.7;
+      color: var(--brown);
+      background: var(--cream);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+    button { font: inherit; cursor: pointer; border: none; background: none; }
+
+    .eyebrow {
+      font-family: var(--font-sans);
+      font-size: clamp(0.7rem, 0.5vw + 0.5rem, 0.85rem);
+      font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; margin-bottom: 1rem; color: var(--terra);
+    }
+
+    h1, h2, h3 {
+      font-family: var(--font-serif);
+      font-weight: 500; line-height: 1.08; letter-spacing: -0.02em;
+    }
+    h1 { font-size: clamp(2.2rem, 4vw + 0.5rem, 4rem); }
+    h2 { font-size: clamp(1.8rem, 2.5vw + 0.5rem, 2.8rem); }
+    h3 { font-size: clamp(1.3rem, 1vw + 0.8rem, 1.7rem); line-height: 1.2; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding-left: var(--page-margin); padding-right: var(--page-margin); }
+    .section-pad { padding-top: var(--section-pad); padding-bottom: var(--section-pad); }
+
+    /* NAV */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem var(--page-margin); background: var(--green-dark);
+    }
+    .nav__logo { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; text-decoration: none; color: var(--cream); }
+    .nav__links { list-style: none; display: flex; gap: 2rem; }
+    .nav__links a { font-size: 0.85rem; font-weight: 500; text-decoration: none; color: rgba(255,248,240,0.7); transition: color 0.3s; }
+    .nav__links a:hover { color: var(--cream); }
+    .nav__links a.is-active { color: var(--gold); }
+    @media (max-width: 768px) { .nav__links { gap: 1rem; } .nav__links a { font-size: 0.75rem; } }
+
+    /* HERO */
+    .scholars-hero {
+      padding-top: calc(60px + var(--section-pad));
+      padding-bottom: var(--section-pad);
+      background: var(--green-dark); color: var(--cream);
+    }
+    .scholars-hero .eyebrow { color: var(--gold); }
+    .scholars-hero__sub {
+      max-width: 640px; margin-top: 1.2rem;
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.15rem);
+      line-height: 1.7; color: rgba(255,248,240,0.75);
+    }
+
+    /* DASHBOARD STRIP */
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-top: -40px;
+      position: relative;
+      z-index: 10;
+    }
+    .dash-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+    .dash-card__label {
+      font-size: 0.75rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: rgba(58,42,31,0.5); margin-bottom: 0.3rem;
+    }
+    .dash-card__value {
+      font-family: var(--font-serif);
+      font-size: clamp(1.6rem, 2vw + 0.3rem, 2.2rem);
+      font-weight: 500; line-height: 1.1;
+    }
+    .dash-card__value--green { color: var(--green); }
+    .dash-card__value--terra { color: var(--terra); }
+    .dash-card__value--gold { color: #8a6d2f; }
+    .dash-card__value--sage { color: var(--sage); }
+    .dash-card__sub { font-size: 0.78rem; color: rgba(58,42,31,0.5); margin-top: 0.2rem; }
+
+    /* TOOLBAR */
+    .toolbar {
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;
+    }
+    .filter-group {
+      display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+    }
+    .filter-group label {
+      font-size: 0.78rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.06em; color: rgba(58,42,31,0.5); margin-right: 0.25rem;
+    }
+    .filter-select {
+      padding: 0.4rem 0.8rem; border-radius: 100px;
+      font-family: var(--font-sans); font-size: 0.8rem; font-weight: 500;
+      border: 1.5px solid rgba(58,42,31,0.15); background: #fff; color: var(--brown);
+      cursor: pointer; transition: border-color 0.3s;
+    }
+    .filter-select:focus { outline: none; border-color: var(--green); }
+    .search-input {
+      padding: 0.5rem 1rem; border-radius: 100px;
+      font-family: var(--font-sans); font-size: 0.85rem;
+      border: 1.5px solid rgba(58,42,31,0.15); background: #fff; color: var(--brown);
+      min-width: 200px; transition: border-color 0.3s;
+    }
+    .search-input:focus { outline: none; border-color: var(--green); }
+    .search-input::placeholder { color: rgba(58,42,31,0.35); }
+
+    /* SORT BUTTONS */
+    .sort-bar {
+      display: flex; gap: 0; border-radius: 100px;
+      background: rgba(58,42,31,0.05); padding: 3px;
+    }
+    .sort-btn {
+      padding: 0.4rem 0.9rem; border-radius: 100px;
+      font-size: 0.78rem; font-weight: 600;
+      color: rgba(58,42,31,0.5); transition: all 0.3s var(--ease);
+    }
+    .sort-btn.is-active { background: var(--green); color: var(--cream); }
+    .sort-btn:hover:not(.is-active) { color: var(--brown); }
+
+    /* VOLUNTEER BAR */
+    .volunteer-bar {
+      display: none; align-items: center; justify-content: space-between;
+      padding: 1rem 1.5rem; background: rgba(45,94,64,0.06);
+      border-radius: 12px; margin-bottom: 1.5rem;
+      border: 1.5px solid rgba(45,94,64,0.12); flex-wrap: wrap; gap: 0.5rem;
+    }
+    .volunteer-bar.is-visible { display: flex; }
+    .volunteer-bar__text { font-size: 0.9rem; color: var(--green-dark); font-weight: 500; }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.7rem 1.5rem; border-radius: 100px;
+      font-family: var(--font-sans); font-size: 0.85rem; font-weight: 600;
+      letter-spacing: 0.02em; text-decoration: none;
+      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+      cursor: pointer;
+    }
+    .btn:hover { transform: scale(1.03); box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
+    .btn--green { background: var(--green); color: var(--cream); border: none; }
+    .btn--terra { background: var(--terra); color: #fff; border: none; }
+    .btn--ghost-dark { background: transparent; color: var(--brown); border: 1.5px solid rgba(58,42,31,0.2); }
+    .btn--ghost-dark:hover { border-color: var(--brown); background: rgba(58,42,31,0.04); }
+    .btn--sm { padding: 0.5rem 1rem; font-size: 0.8rem; }
+
+    /* AUTH */
+    .auth-section { text-align: center; padding: 2rem; }
+    .auth-section p { font-size: 0.9rem; color: rgba(58,42,31,0.6); margin-bottom: 1rem; }
+
+    /* SCHOLARS TABLE (desktop) */
+    .scholars-table-wrap {
+      overflow-x: auto; background: #fff; border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+    }
+    .scholars-table {
+      width: 100%; border-collapse: collapse; min-width: 1050px;
+    }
+    .scholars-table th {
+      text-align: left; padding: 0.9rem 1rem;
+      font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: rgba(58,42,31,0.45);
+      border-bottom: 2px solid rgba(58,42,31,0.08);
+      cursor: pointer; user-select: none;
+      white-space: nowrap;
+      transition: color 0.2s;
+    }
+    .scholars-table th:hover { color: var(--brown); }
+    .scholars-table th.sort-asc::after { content: ' \u2191'; }
+    .scholars-table th.sort-desc::after { content: ' \u2193'; }
+    .scholars-table td {
+      padding: 0.85rem 1rem; font-size: 0.9rem;
+      border-bottom: 1px solid rgba(58,42,31,0.06);
+      vertical-align: middle;
+    }
+    .scholars-table tr:last-child td { border-bottom: none; }
+    .scholars-table tr:hover td { background: rgba(45,94,64,0.02); }
+
+    /* Performance badges */
+    .perf-badge {
+      display: inline-block; padding: 0.2rem 0.65rem; border-radius: 100px;
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .perf-badge--outstanding { background: rgba(212,169,106,0.15); color: #8a6d2f; }
+    .perf-badge--excellent { background: rgba(45,94,64,0.12); color: var(--green); }
+    .perf-badge--good { background: rgba(139,175,142,0.2); color: #4a7a4d; }
+    .perf-badge--satisfactory { background: rgba(58,42,31,0.08); color: var(--brown); }
+    .perf-badge--needs-support { background: rgba(194,115,76,0.15); color: var(--terra); }
+
+    /* Status badges */
+    .status-badge {
+      display: inline-block; padding: 0.2rem 0.65rem; border-radius: 100px;
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .status-badge--active { background: rgba(45,94,64,0.12); color: var(--green); }
+    .status-badge--graduated { background: rgba(212,169,106,0.15); color: #8a6d2f; }
+    .status-badge--on-hold { background: rgba(58,42,31,0.08); color: var(--brown); }
+    .status-badge--withdrawn { background: rgba(194,115,76,0.15); color: var(--terra); }
+
+    /* Extracurricular chips */
+    .chip-list { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .chip {
+      display: inline-block; padding: 0.15rem 0.55rem; border-radius: 100px;
+      font-size: 0.68rem; font-weight: 600;
+      background: rgba(45,94,64,0.08); color: var(--green-dark);
+    }
+
+    /* Action buttons in table */
+    .row-actions {
+      display: none; gap: 0.2rem; align-items: center; position: relative;
+    }
+    .is-admin .row-actions { display: flex; }
+    .row-actions button {
+      width: 28px; height: 28px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      background: transparent; font-size: 0.85rem;
+      transition: background 0.2s; cursor: pointer;
+    }
+    .row-actions button:hover { background: rgba(58,42,31,0.06); }
+
+    /* MOBILE CARDS */
+    .scholars-cards { display: none; }
+    .scholar-card {
+      background: #fff; border-radius: 16px;
+      padding: 1.25rem 1.5rem; margin-bottom: 1rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+    }
+    .scholar-card__header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 0.75rem;
+    }
+    .scholar-card__name {
+      font-family: var(--font-serif); font-size: 1.15rem; font-weight: 500;
+    }
+    .scholar-card__meta {
+      font-size: 0.82rem; color: rgba(58,42,31,0.6); margin-bottom: 0.5rem;
+    }
+    .scholar-card__row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 0.4rem;
+    }
+    .scholar-card__label {
+      font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.04em; color: rgba(58,42,31,0.45);
+    }
+    .scholar-card__support {
+      font-size: 0.82rem; color: rgba(58,42,31,0.6); font-style: italic;
+      margin-top: 0.5rem; padding-top: 0.5rem;
+      border-top: 1px solid rgba(58,42,31,0.06);
+    }
+    .scholar-card__actions {
+      display: none; gap: 0.3rem; margin-top: 0.75rem;
+      padding-top: 0.75rem; border-top: 1px solid rgba(58,42,31,0.06);
+      position: relative;
+    }
+    .is-admin .scholar-card__actions { display: flex; }
+
+    @media (max-width: 900px) {
+      .scholars-table-wrap { display: none; }
+      .scholars-cards { display: block; }
+    }
+
+    /* MODALS */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(30,63,43,0.5); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center; padding: 1rem;
+    }
+    .modal-overlay.is-open { display: flex; }
+    .modal {
+      background: #fff; border-radius: 16px; padding: 2rem;
+      width: 100%; max-width: 600px; max-height: 90vh;
+      overflow-y: auto; box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+    }
+    .modal__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    .modal__title { font-family: var(--font-serif); font-size: 1.5rem; font-weight: 500; }
+    .modal__close {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(58,42,31,0.06); font-size: 1.2rem; transition: background 0.2s;
+    }
+    .modal__close:hover { background: rgba(58,42,31,0.12); }
+
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label {
+      display: block; font-size: 0.82rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: rgba(58,42,31,0.6); margin-bottom: 0.4rem;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 0.7rem 1rem;
+      border: 1.5px solid rgba(58,42,31,0.15); border-radius: 8px;
+      font-family: var(--font-sans); font-size: 0.95rem;
+      color: var(--brown); background: var(--cream); transition: border-color 0.3s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--green); }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
+    .form-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
+
+    /* Tags input */
+    .tags-input-wrap {
+      display: flex; flex-wrap: wrap; gap: 0.3rem; padding: 0.5rem 0.75rem;
+      border: 1.5px solid rgba(58,42,31,0.15); border-radius: 8px;
+      background: var(--cream); min-height: 42px; align-items: center;
+      cursor: text; transition: border-color 0.3s;
+    }
+    .tags-input-wrap:focus-within { border-color: var(--green); }
+    .tags-input-wrap .chip { padding: 0.2rem 0.5rem; cursor: default; display: flex; align-items: center; gap: 0.25rem; }
+    .tags-input-wrap .chip-remove {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 14px; height: 14px; border-radius: 50%;
+      font-size: 0.65rem; cursor: pointer;
+      background: rgba(58,42,31,0.15); color: var(--brown);
+      transition: background 0.2s;
+    }
+    .tags-input-wrap .chip-remove:hover { background: rgba(194,115,76,0.3); }
+    .tags-input-wrap input {
+      border: none; background: transparent; padding: 0.2rem 0.25rem;
+      font-family: var(--font-sans); font-size: 0.85rem; color: var(--brown);
+      flex: 1; min-width: 80px; outline: none;
+    }
+
+    /* Custom pathway input */
+    .custom-pathway-group { display: none; margin-top: 0.5rem; }
+    .custom-pathway-group.is-visible { display: block; }
+
+    .login-form { max-width: 360px; margin: 0 auto; }
+    .login-divider {
+      text-align: center; font-size: 0.8rem; color: rgba(58,42,31,0.4);
+      margin: 1.5rem 0; position: relative;
+    }
+    .login-divider::before, .login-divider::after {
+      content: ''; position: absolute; top: 50%; width: 40%; height: 1px; background: rgba(58,42,31,0.1);
+    }
+    .login-divider::before { left: 0; }
+    .login-divider::after { right: 0; }
+
+    /* FOOTER */
+    .footer { background: var(--brown); color: rgba(255,248,240,0.6); padding: 3rem 0; }
+    .footer__layout { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 2rem; }
+    .footer__brand-name { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; color: var(--cream); margin-bottom: 0.25rem; }
+    .footer__tagline { font-size: 0.85rem; color: var(--gold); }
+    .footer__location { font-size: 0.8rem; margin-top: 0.25rem; }
+    .footer__links { list-style: none; display: flex; gap: 1.5rem; margin-bottom: 0.5rem; }
+    .footer__links a { font-size: 0.85rem; text-decoration: none; transition: color 0.3s; }
+    .footer__links a:hover { color: var(--cream); }
+    .footer__copy { font-size: 0.75rem; opacity: 0.5; }
+    .footer__right { text-align: right; }
+    @media (max-width: 600px) { .footer__layout { flex-direction: column; } .footer__right { text-align: left; } }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      padding: 1rem 1.5rem; border-radius: 12px;
+      font-size: 0.9rem; font-weight: 500; color: #fff;
+      z-index: 300; transform: translateY(120%);
+      transition: transform 0.4s var(--ease);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+    .toast.is-visible { transform: translateY(0); }
+    .toast--success { background: var(--green); }
+    .toast--error { background: var(--terra); }
+
+    /* AUDIT POPOVER */
+    .audit-popover {
+      position: absolute;
+      right: 0; top: 100%;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+      max-width: 360px;
+      min-width: 260px;
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 100;
+      padding: 0.75rem 0;
+    }
+    .audit-popover__title {
+      font-family: var(--font-serif);
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 0 1rem 0.5rem;
+      border-bottom: 1px solid rgba(58,42,31,0.08);
+    }
+    .audit-popover__empty {
+      font-size: 0.8rem;
+      color: rgba(58,42,31,0.4);
+      padding: 1rem;
+      text-align: center;
+    }
+    .audit-entry {
+      font-size: 0.8rem;
+      border-bottom: 1px solid rgba(58,42,31,0.06);
+      padding: 0.5rem 1rem;
+      line-height: 1.5;
+    }
+    .audit-entry:last-child { border-bottom: none; }
+    .audit-action--create { color: var(--green); font-weight: 600; }
+    .audit-action--edit { color: var(--gold); font-weight: 600; }
+    .audit-action--delete { color: var(--terra); font-weight: 600; }
+    .audit-entry__user { font-weight: 500; }
+    .audit-entry__details {
+      font-size: 0.75rem;
+      color: rgba(58,42,31,0.5);
+      margin-top: 0.15rem;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center; padding: 3rem 1rem;
+      color: rgba(58,42,31,0.4);
+    }
+    .empty-state__icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .empty-state__text { font-size: 1rem; }
+
+    /* EXPENSE BUTTON in table */
+    .expense-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 30px; height: 30px; border-radius: 8px;
+      font-size: 0.82rem; font-weight: 700;
+      color: var(--green); background: rgba(45,94,64,0.08);
+      cursor: pointer; transition: all 0.2s; border: none;
+      font-family: var(--font-sans);
+    }
+    .expense-btn:hover { background: rgba(45,94,64,0.18); transform: scale(1.05); }
+
+    /* TOTAL SPEND in table */
+    .total-spend { font-weight: 600; color: var(--green-dark); white-space: nowrap; font-size: 0.88rem; }
+
+    /* SCHOOL OVERVIEW SECTION */
+    .school-overview { margin-top: 2rem; margin-bottom: 1.5rem; }
+    .school-overview__title {
+      font-family: var(--font-serif); font-size: clamp(1.3rem, 1vw + 0.8rem, 1.7rem);
+      font-weight: 500; margin-bottom: 1rem; color: var(--brown);
+    }
+    .school-overview__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+    .school-card {
+      background: #fff; border-radius: 12px; padding: 1.25rem 1.5rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+      border: 1.5px solid rgba(58,42,31,0.06);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .school-card:hover { border-color: rgba(45,94,64,0.2); box-shadow: 0 6px 28px rgba(0,0,0,0.07); }
+    .school-card__name {
+      font-family: var(--font-serif); font-size: 1.05rem; font-weight: 500;
+      color: var(--green-dark); margin-bottom: 0.75rem;
+      line-height: 1.25;
+    }
+    .school-card__stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    .school-card__stat {}
+    .school-card__stat-label {
+      font-size: 0.68rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.06em; color: rgba(58,42,31,0.45);
+    }
+    .school-card__stat-value {
+      font-family: var(--font-serif); font-size: 1.15rem; font-weight: 500;
+      color: var(--brown); line-height: 1.2;
+    }
+    .school-card__stat-value--green { color: var(--green); }
+    .school-card__stat-value--terra { color: var(--terra); }
+
+    /* EXPENSE DRAWER (slide from right) */
+    .expense-overlay {
+      display: none; position: fixed; inset: 0; z-index: 250;
+      background: rgba(30,63,43,0.4); backdrop-filter: blur(3px);
+    }
+    .expense-overlay.is-open { display: block; }
+    .expense-drawer {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: min(480px, 92vw); background: #fff;
+      box-shadow: -8px 0 40px rgba(0,0,0,0.15);
+      z-index: 251; transform: translateX(100%);
+      transition: transform 0.35s var(--ease);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .expense-overlay.is-open .expense-drawer { transform: translateX(0); }
+    .expense-drawer__header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 1.5rem; border-bottom: 1.5px solid rgba(58,42,31,0.08);
+      flex-shrink: 0;
+    }
+    .expense-drawer__title { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 500; }
+    .expense-drawer__close {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(58,42,31,0.06); font-size: 1.2rem;
+      cursor: pointer; border: none; transition: background 0.2s;
+    }
+    .expense-drawer__close:hover { background: rgba(58,42,31,0.12); }
+    .expense-drawer__body {
+      flex: 1; overflow-y: auto; padding: 1.25rem 1.5rem;
+    }
+    .expense-drawer__footer {
+      padding: 1rem 1.5rem; border-top: 1.5px solid rgba(58,42,31,0.08);
+      background: rgba(45,94,64,0.03); flex-shrink: 0;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .expense-drawer__total-label {
+      font-size: 0.78rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.06em; color: rgba(58,42,31,0.5);
+    }
+    .expense-drawer__total-value {
+      font-family: var(--font-serif); font-size: 1.4rem; font-weight: 600;
+      color: var(--green-dark);
+    }
+
+    /* Expense list items */
+    .expense-item {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 0.75rem 0; border-bottom: 1px solid rgba(58,42,31,0.06);
+      gap: 0.75rem;
+    }
+    .expense-item:last-child { border-bottom: none; }
+    .expense-item__left { flex: 1; min-width: 0; }
+    .expense-item__desc { font-size: 0.88rem; color: var(--brown); font-weight: 500; }
+    .expense-item__meta {
+      font-size: 0.75rem; color: rgba(58,42,31,0.5); margin-top: 0.15rem;
+      display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+    }
+    .expense-item__amount {
+      font-family: var(--font-serif); font-size: 1rem; font-weight: 600;
+      color: var(--green-dark); white-space: nowrap; flex-shrink: 0;
+    }
+
+    /* Expense category chips */
+    .expense-cat {
+      display: inline-block; padding: 0.12rem 0.5rem; border-radius: 100px;
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .expense-cat--tuition { background: rgba(45,94,64,0.12); color: var(--green); }
+    .expense-cat--books { background: rgba(212,169,106,0.2); color: #8a6d2f; }
+    .expense-cat--uniform { background: rgba(139,175,142,0.25); color: #3d6b40; }
+    .expense-cat--transport { background: rgba(58,42,31,0.1); color: var(--brown); }
+    .expense-cat--feeding { background: rgba(194,115,76,0.15); color: var(--terra); }
+    .expense-cat--medical { background: rgba(180,60,60,0.12); color: #9b3a3a; }
+    .expense-cat--other { background: rgba(58,42,31,0.08); color: rgba(58,42,31,0.7); }
+
+    /* Add expense form inside drawer */
+    .add-expense-toggle {
+      display: none; width: 100%; padding: 0.7rem 1rem; border-radius: 10px;
+      font-family: var(--font-sans); font-size: 0.85rem; font-weight: 600;
+      color: var(--green); background: rgba(45,94,64,0.06);
+      border: 1.5px dashed rgba(45,94,64,0.25); cursor: pointer;
+      transition: all 0.2s; margin-bottom: 1rem; text-align: center;
+    }
+    .is-admin .add-expense-toggle { display: block; }
+    .add-expense-toggle:hover { background: rgba(45,94,64,0.12); border-color: var(--green); }
+    .add-expense-form { display: none; margin-bottom: 1rem; }
+    .add-expense-form.is-open {
+      display: block; padding: 1rem; background: rgba(45,94,64,0.03);
+      border-radius: 10px; border: 1px solid rgba(45,94,64,0.1);
+    }
+    .add-expense-form .form-group { margin-bottom: 0.75rem; }
+    .add-expense-form .form-group label { font-size: 0.75rem; margin-bottom: 0.25rem; }
+    .add-expense-form .form-row { gap: 0.75rem; }
+
+    /* Empty expense state */
+    .expense-empty {
+      text-align: center; padding: 2rem 1rem; color: rgba(58,42,31,0.35);
+      font-size: 0.9rem;
+    }
+
+    /* SCHOOL MANAGEMENT */
+    .school-overview__header {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;
+    }
+    .school-card { cursor: pointer; }
+    .school-card.is-expanded {
+      border-color: var(--green);
+      box-shadow: 0 6px 28px rgba(45,94,64,0.12);
+    }
+    .school-card__location {
+      font-size: 0.78rem; color: rgba(58,42,31,0.55);
+      margin-bottom: 0.5rem;
+    }
+    .school-card__contact {
+      font-size: 0.75rem; color: rgba(58,42,31,0.5);
+      margin-top: 0.5rem; padding-top: 0.5rem;
+      border-top: 1px solid rgba(58,42,31,0.06);
+    }
+
+    /* School detail panel */
+    .school-detail-panel {
+      background: #fff; border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      border: 1.5px solid rgba(45,94,64,0.15);
+      margin-top: 1rem; padding: 0;
+      overflow: hidden;
+      animation: schoolPanelSlide 0.3s var(--ease);
+    }
+    @keyframes schoolPanelSlide {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .school-detail__header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 1.5rem; border-bottom: 1px solid rgba(58,42,31,0.06);
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .school-detail__info { flex: 1; min-width: 200px; }
+    .school-detail__name {
+      font-family: var(--font-serif); font-size: 1.4rem;
+      font-weight: 500; color: var(--green-dark); margin-bottom: 0.25rem;
+    }
+    .school-detail__location {
+      font-size: 0.88rem; color: rgba(58,42,31,0.6); margin-bottom: 0.5rem;
+    }
+    .school-detail__contact-info {
+      font-size: 0.85rem; color: rgba(58,42,31,0.6); line-height: 1.6;
+    }
+    .school-detail__contact-info strong {
+      color: var(--brown); font-weight: 600;
+    }
+    .school-detail__actions {
+      display: flex; gap: 0.5rem; flex-shrink: 0;
+    }
+
+    /* School tabs */
+    .school-tabs {
+      display: flex; border-bottom: 2px solid rgba(58,42,31,0.06);
+      padding: 0 1.5rem; overflow-x: auto;
+    }
+    .school-tab {
+      padding: 0.75rem 1.25rem; font-size: 0.82rem; font-weight: 600;
+      color: rgba(58,42,31,0.45); cursor: pointer;
+      border-bottom: 2.5px solid transparent;
+      transition: all 0.2s; white-space: nowrap;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      background: none; border-top: none; border-left: none; border-right: none;
+    }
+    .school-tab:hover { color: var(--brown); }
+    .school-tab.is-active {
+      color: var(--green-dark); border-bottom-color: var(--gold);
+    }
+    .school-tab-content {
+      padding: 1.25rem 1.5rem; min-height: 120px;
+    }
+
+    /* School note/event/issue cards */
+    .school-entry {
+      background: var(--cream); border-radius: 10px;
+      padding: 1rem 1.25rem; margin-bottom: 0.75rem;
+      border: 1px solid rgba(58,42,31,0.06);
+    }
+    .school-entry__header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 0.5rem; margin-bottom: 0.4rem;
+    }
+    .school-entry__title {
+      font-family: var(--font-serif); font-size: 1rem;
+      font-weight: 500; color: var(--brown);
+    }
+    .school-entry__date {
+      font-size: 0.75rem; color: rgba(58,42,31,0.45);
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .school-entry__content {
+      font-size: 0.88rem; color: rgba(58,42,31,0.7);
+      line-height: 1.6;
+    }
+    .school-entry__meta {
+      display: flex; gap: 0.5rem; align-items: center;
+      margin-top: 0.5rem; flex-wrap: wrap;
+    }
+    .school-entry__author {
+      font-size: 0.72rem; color: rgba(58,42,31,0.4);
+    }
+
+    /* Status badges for issues */
+    .issue-status {
+      display: inline-block; padding: 0.15rem 0.55rem; border-radius: 100px;
+      font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .issue-status--open { background: rgba(194,115,76,0.15); color: var(--terra); }
+    .issue-status--resolved { background: rgba(45,94,64,0.12); color: var(--green); }
+    .issue-status--monitoring { background: rgba(212,169,106,0.2); color: #8a6d2f; }
+
+    /* Priority badges */
+    .issue-priority {
+      display: inline-block; padding: 0.15rem 0.55rem; border-radius: 100px;
+      font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .issue-priority--low { background: rgba(139,175,142,0.2); color: #4a7a4d; }
+    .issue-priority--normal { background: rgba(58,42,31,0.08); color: var(--brown); }
+    .issue-priority--high { background: rgba(194,115,76,0.15); color: var(--terra); }
+    .issue-priority--urgent { background: rgba(200,40,40,0.12); color: #b92828; }
+
+    /* Teacher contact cards */
+    .teacher-card {
+      background: var(--cream); border-radius: 10px;
+      padding: 1rem 1.25rem; margin-bottom: 0.75rem;
+      border: 1px solid rgba(58,42,31,0.06);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;
+    }
+    @media (max-width: 500px) { .teacher-card { grid-template-columns: 1fr; } }
+    .teacher-card__name {
+      font-family: var(--font-serif); font-size: 1rem;
+      font-weight: 500; color: var(--brown); grid-column: 1 / -1;
+    }
+    .teacher-card__role {
+      font-size: 0.8rem; color: var(--terra); font-weight: 600;
+      grid-column: 1 / -1; margin-top: -0.25rem;
+    }
+    .teacher-card__detail {
+      font-size: 0.82rem; color: rgba(58,42,31,0.6);
+    }
+    .teacher-card__detail a {
+      color: var(--green); text-decoration: none;
+    }
+    .teacher-card__detail a:hover { text-decoration: underline; }
+
+    /* Add entry button */
+    .add-entry-btn {
+      display: none; width: 100%; padding: 0.6rem 1rem; border-radius: 10px;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 600;
+      color: var(--green); background: rgba(45,94,64,0.04);
+      border: 1.5px dashed rgba(45,94,64,0.2); cursor: pointer;
+      transition: all 0.2s; margin-bottom: 1rem; text-align: center;
+    }
+    .is-admin .add-entry-btn { display: block; }
+    .add-entry-btn:hover { background: rgba(45,94,64,0.1); border-color: var(--green); }
+
+    /* School empty state */
+    .school-empty {
+      text-align: center; padding: 2rem 1rem; color: rgba(58,42,31,0.35);
+      font-size: 0.88rem;
+    }
+
+    /* School form select with other option */
+    .school-select-group { position: relative; }
+    .school-other-input { display: none; margin-top: 0.5rem; }
+    .school-other-input.is-visible { display: block; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="/" class="nav__logo">Big Sister Foundation</a>
+    <ul class="nav__links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/ledger/">Ledger</a></li>
+      <li><a href="/ideas/">Ideas</a></li>
+      <li><a href="/scholars/" class="is-active">Scholars</a></li>
+      <li><a href="/volunteer/">Volunteer</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="scholars-hero">
+    <div class="container">
+      <p class="eyebrow">Our Scholars</p>
+      <h1>Every Child Has a Name.<br>Here, They Have a Future.</h1>
+      <p class="scholars-hero__sub">Tracking the progress, growth, and achievements of every child sponsored through the Big Sister Foundation. Anonymized for their protection, celebrated for their courage.</p>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT -->
+  <section class="section-pad">
+    <div class="container">
+
+      <!-- DASHBOARD -->
+      <div class="dashboard">
+        <div class="dash-card">
+          <p class="dash-card__label">Total Scholars</p>
+          <p class="dash-card__value dash-card__value--green" id="dash-total">--</p>
+          <p class="dash-card__sub">across all pathways</p>
+        </div>
+        <div class="dash-card">
+          <p class="dash-card__label">Active Schools</p>
+          <p class="dash-card__value dash-card__value--terra" id="dash-schools">--</p>
+          <p class="dash-card__sub">partner institutions</p>
+        </div>
+        <div class="dash-card">
+          <p class="dash-card__label">Avg. Performance</p>
+          <p class="dash-card__value dash-card__value--gold" id="dash-performance">--</p>
+          <p class="dash-card__sub" id="dash-perf-sub">computed from all scholars</p>
+        </div>
+        <div class="dash-card">
+          <p class="dash-card__label">Pathways Covered</p>
+          <p class="dash-card__value dash-card__value--sage" id="dash-pathways">--</p>
+          <p class="dash-card__sub">unique program tracks</p>
+        </div>
+        <div class="dash-card">
+          <p class="dash-card__label">Total Investment</p>
+          <p class="dash-card__value dash-card__value--green" id="dash-investment">--</p>
+          <p class="dash-card__sub" id="dash-investment-sub">across all scholars</p>
+        </div>
+      </div>
+
+      <!-- SCHOOL OVERVIEW -->
+      <div class="school-overview" id="school-overview">
+        <div class="school-overview__header">
+          <h3 class="school-overview__title" style="margin-bottom:0;">School Overview</h3>
+          <button class="btn btn--green btn--sm" id="btn-add-school" style="display:none;">+ Add School</button>
+        </div>
+        <div class="school-overview__grid" id="school-overview-grid"></div>
+        <div id="school-detail-container"></div>
+      </div>
+
+      <!-- SCHOLARS SECTION -->
+      <div style="margin-top: 2.5rem;">
+
+        <!-- VOLUNTEER BAR -->
+        <div class="volunteer-bar" id="volunteer-bar">
+          <span class="volunteer-bar__text">Signed in as <strong id="volunteer-name">Volunteer</strong></span>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <button class="btn btn--green btn--sm" id="btn-add-scholar">+ Add Scholar</button>
+            <button class="btn btn--ghost-dark btn--sm" id="btn-logout">Sign Out</button>
+          </div>
+        </div>
+
+        <!-- TOOLBAR -->
+        <div class="toolbar">
+          <div class="filter-group">
+            <label>Filters:</label>
+            <select class="filter-select" id="filter-pathway">
+              <option value="">All Pathways</option>
+              <option value="difficult-backgrounds">Difficult Backgrounds</option>
+              <option value="special-needs">Special Needs &amp; Disabilities</option>
+              <option value="gifted-talented">Gifted &amp; Talented</option>
+              <option value="__other">Other / Custom</option>
+            </select>
+            <select class="filter-select" id="filter-status">
+              <option value="">All Statuses</option>
+              <option value="active">Active</option>
+              <option value="graduated">Graduated</option>
+              <option value="on-hold">On Hold</option>
+              <option value="withdrawn">Withdrawn</option>
+            </select>
+            <select class="filter-select" id="filter-performance">
+              <option value="">All Performance</option>
+              <option value="outstanding">Outstanding</option>
+              <option value="excellent">Excellent</option>
+              <option value="good">Good</option>
+              <option value="satisfactory">Satisfactory</option>
+              <option value="needs-support">Needs Support</option>
+            </select>
+          </div>
+          <input type="text" class="search-input" id="search-input" placeholder="Search by name, school...">
+        </div>
+
+        <!-- TABLE (desktop) -->
+        <div class="scholars-table-wrap">
+          <table class="scholars-table">
+            <thead>
+              <tr>
+                <th data-sort="name">Name</th>
+                <th data-sort="school">School</th>
+                <th data-sort="classGrade">Class</th>
+                <th data-sort="pathway">Pathway</th>
+                <th data-sort="tenure">Tenure</th>
+                <th data-sort="performance">Performance</th>
+                <th>Extracurriculars</th>
+                <th data-sort="status">Status</th>
+                <th data-sort="totalSpend">Total Spend</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="scholars-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- CARDS (mobile) -->
+        <div class="scholars-cards" id="scholars-cards"></div>
+
+        <!-- EMPTY STATE -->
+        <div class="empty-state" id="empty-state" style="display:none;">
+          <div class="empty-state__icon">&#128218;</div>
+          <p class="empty-state__text">No scholars match your current filters.</p>
+        </div>
+
+        <!-- LOGIN PROMPT -->
+        <div class="auth-section" id="auth-section">
+          <p>Are you a registered volunteer?</p>
+          <button class="btn btn--ghost-dark" id="btn-login">Volunteer Sign In</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__layout">
+        <div class="footer__left">
+          <p class="footer__brand-name">Big Sister Foundation</p>
+          <p class="footer__tagline">Rooted. Present. Protective.</p>
+          <p class="footer__location">Lagos, Nigeria</p>
+        </div>
+        <div class="footer__right">
+          <ul class="footer__links">
+            <li><a href="https://wa.me/2348000000000">WhatsApp</a></li>
+            <li><a href="mailto:princebolajibreeze@gmail.com">Email</a></li>
+            <li><a href="#">Instagram</a></li>
+          </ul>
+          <p class="footer__copy">&copy; 2026 Big Sister Foundation. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ADD/EDIT SCHOLAR MODAL -->
+  <div class="modal-overlay" id="modal-scholar">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title" id="modal-scholar-title">Add Scholar</h3>
+        <button class="modal__close" id="modal-scholar-close">&times;</button>
+      </div>
+      <form id="scholar-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="scholar-firstName">First Name</label>
+            <input type="text" id="scholar-firstName" placeholder="e.g. Adaeze" required>
+          </div>
+          <div class="form-group">
+            <label for="scholar-lastInitial">Last Initial</label>
+            <input type="text" id="scholar-lastInitial" placeholder="e.g. O" maxlength="1" required>
+          </div>
+        </div>
+
+        <div class="form-group school-select-group">
+          <label for="scholar-school">School</label>
+          <select id="scholar-school" required>
+            <option value="">Select school...</option>
+            <option value="__other">Other (add new school)</option>
+          </select>
+          <input type="text" class="school-other-input" id="scholar-school-other" placeholder="e.g. Corona Secondary School, Agbara">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="scholar-classGrade">Class / Grade</label>
+            <input type="text" id="scholar-classGrade" placeholder="e.g. SS 1, JSS 2, Primary 5" required>
+          </div>
+          <div class="form-group">
+            <label for="scholar-enrolledDate">Enrolled Date</label>
+            <input type="date" id="scholar-enrolledDate" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="scholar-pathway">Pathway</label>
+            <select id="scholar-pathway" required>
+              <option value="">Select pathway...</option>
+              <option value="difficult-backgrounds">Difficult Backgrounds</option>
+              <option value="special-needs">Special Needs &amp; Disabilities</option>
+              <option value="gifted-talented">Gifted &amp; Talented</option>
+              <option value="__other">Other (custom)</option>
+            </select>
+            <div class="custom-pathway-group" id="custom-pathway-group">
+              <input type="text" id="scholar-customPathway" placeholder="Enter custom pathway name">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="scholar-performance">Performance</label>
+            <select id="scholar-performance" required>
+              <option value="">Select rating...</option>
+              <option value="outstanding">Outstanding</option>
+              <option value="excellent">Excellent</option>
+              <option value="good">Good</option>
+              <option value="satisfactory">Satisfactory</option>
+              <option value="needs-support">Needs Support</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Extracurriculars</label>
+          <div class="tags-input-wrap" id="tags-input-wrap">
+            <input type="text" id="tags-input" placeholder="Type and press Enter...">
+          </div>
+          <p style="font-size:0.72rem;color:rgba(58,42,31,0.4);margin-top:0.3rem;">Press Enter or comma to add a tag</p>
+        </div>
+
+        <div class="form-group">
+          <label for="scholar-support">Additional Support</label>
+          <textarea id="scholar-support" placeholder="e.g. Receives weekly tutoring in Mathematics"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="scholar-status">Status</label>
+          <select id="scholar-status" required>
+            <option value="active">Active</option>
+            <option value="graduated">Graduated</option>
+            <option value="on-hold">On Hold</option>
+            <option value="withdrawn">Withdrawn</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn--ghost-dark" id="modal-scholar-cancel">Cancel</button>
+          <button type="submit" class="btn btn--green" id="btn-submit-scholar">Add Scholar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- LOGIN MODAL -->
+  <div class="modal-overlay" id="modal-login">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title">Volunteer Sign In</h3>
+        <button class="modal__close" id="modal-login-close">&times;</button>
+      </div>
+      <div class="login-form">
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" placeholder="your@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="Your password" required>
+        </div>
+        <button class="btn btn--green" id="btn-do-login" style="width:100%;justify-content:center;">Sign In</button>
+        <p class="login-divider">or</p>
+        <p style="font-size:0.85rem;color:rgba(58,42,31,0.5);text-align:center;">Want to volunteer? <a href="https://wa.me/2348000000000" style="color:var(--terra);font-weight:600;">Contact us on WhatsApp</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPENSE DRAWER -->
+  <div class="expense-overlay" id="expense-overlay">
+    <div class="expense-drawer" id="expense-drawer">
+      <div class="expense-drawer__header">
+        <h3 class="expense-drawer__title" id="expense-drawer-title">Expenses</h3>
+        <button class="expense-drawer__close" id="expense-drawer-close">&times;</button>
+      </div>
+      <div class="expense-drawer__body" id="expense-drawer-body"></div>
+      <div class="expense-drawer__footer">
+        <span class="expense-drawer__total-label">Total Spent</span>
+        <span class="expense-drawer__total-value" id="expense-drawer-total">&#8358;0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD/EDIT SCHOOL MODAL -->
+  <div class="modal-overlay" id="modal-school">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title" id="modal-school-title">Add School</h3>
+        <button class="modal__close" id="modal-school-close">&times;</button>
+      </div>
+      <form id="school-form">
+        <div class="form-group">
+          <label for="school-name">School Name</label>
+          <input type="text" id="school-name" placeholder="e.g. Corona Secondary School, Agbara" required>
+        </div>
+        <div class="form-group">
+          <label for="school-location">Location</label>
+          <input type="text" id="school-location" placeholder="e.g. Agbara, Ogun State" required>
+        </div>
+        <div class="form-group">
+          <label for="school-contactPerson">Contact Person</label>
+          <input type="text" id="school-contactPerson" placeholder="e.g. Mrs. Adeyemi">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="school-contactPhone">Contact Phone</label>
+            <input type="tel" id="school-contactPhone" placeholder="+234 801 234 5678">
+          </div>
+          <div class="form-group">
+            <label for="school-contactEmail">Contact Email</label>
+            <input type="email" id="school-contactEmail" placeholder="admin@school.com">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn--ghost-dark" id="modal-school-cancel">Cancel</button>
+          <button type="submit" class="btn btn--green" id="btn-submit-school">Add School</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADD SCHOOL NOTE/ISSUE/EVENT/TEACHER MODAL -->
+  <div class="modal-overlay" id="modal-school-note">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title" id="modal-school-note-title">Add Note</h3>
+        <button class="modal__close" id="modal-school-note-close">&times;</button>
+      </div>
+      <form id="school-note-form">
+        <input type="hidden" id="school-note-schoolId">
+        <input type="hidden" id="school-note-schoolName">
+        <input type="hidden" id="school-note-type" value="note">
+
+        <div class="form-group" id="school-note-title-group">
+          <label for="school-note-title-input">Title</label>
+          <input type="text" id="school-note-title-input" placeholder="e.g. PTA Meeting" required>
+        </div>
+
+        <div class="form-group" id="school-note-content-group">
+          <label for="school-note-content">Details</label>
+          <textarea id="school-note-content" placeholder="Write details here..."></textarea>
+        </div>
+
+        <div class="form-group" id="school-note-date-group">
+          <label for="school-note-date">Date</label>
+          <input type="date" id="school-note-date">
+        </div>
+
+        <div class="form-row" id="school-note-issue-fields" style="display:none;">
+          <div class="form-group">
+            <label for="school-note-status">Status</label>
+            <select id="school-note-status">
+              <option value="open">Open</option>
+              <option value="resolved">Resolved</option>
+              <option value="monitoring">Monitoring</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="school-note-priority">Priority</label>
+            <select id="school-note-priority">
+              <option value="low">Low</option>
+              <option value="normal" selected>Normal</option>
+              <option value="high">High</option>
+              <option value="urgent">Urgent</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="school-note-teacher-fields" style="display:none;">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="school-note-teacherName">Teacher Name</label>
+              <input type="text" id="school-note-teacherName" placeholder="e.g. Mr. Okonkwo">
+            </div>
+            <div class="form-group">
+              <label for="school-note-teacherRole">Role</label>
+              <input type="text" id="school-note-teacherRole" placeholder="e.g. Class Teacher">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="school-note-teacherPhone">Phone</label>
+              <input type="tel" id="school-note-teacherPhone" placeholder="+234 ...">
+            </div>
+            <div class="form-group">
+              <label for="school-note-teacherEmail">Email</label>
+              <input type="email" id="school-note-teacherEmail" placeholder="teacher@school.com">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn--ghost-dark" id="modal-school-note-cancel">Cancel</button>
+          <button type="submit" class="btn btn--green" id="btn-submit-school-note">Add Note</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // --- FIREBASE INIT ---
+      var firebaseConfig = {
+        apiKey: "AIzaSyCwos6XR9-uqAf_Esmh2K_hJoLxq4gnEuU",
+        authDomain: "big-sister-foundation.firebaseapp.com",
+        projectId: "big-sister-foundation",
+        storageBucket: "big-sister-foundation.firebasestorage.app",
+        messagingSenderId: "778723584560",
+        appId: "1:778723584560:web:7499944c30001e7fcf5bf5",
+        measurementId: "G-Q4EYY24EDZ"
+      };
+      firebase.initializeApp(firebaseConfig);
+      var auth = firebase.auth();
+      var db = firebase.firestore();
+
+      // --- STATE ---
+      var allScholars = [];
+      var allExpenses = [];
+      var expensesByScholar = {};
+      var currentUser = null;
+      var editingScholarId = null;
+      var currentSort = { field: 'name', dir: 'asc' };
+      var formTags = [];
+      var activeDrawerScholarId = null;
+      var allSchools = [];
+      var schoolNotesCache = {};
+      var activeSchoolId = null;
+      var editingSchoolId = null;
+      var activeSchoolTab = 'notes';
+
+      var expenseCategories = ['tuition', 'books', 'uniform', 'transport', 'feeding', 'medical', 'other'];
+      var expenseCategoryLabels = {
+        tuition: 'Tuition', books: 'Books', uniform: 'Uniform',
+        transport: 'Transport', feeding: 'Feeding', medical: 'Medical', other: 'Other'
+      };
+
+      // --- PATHWAY / PERFORMANCE LABELS ---
+      var pathwayLabels = {
+        'difficult-backgrounds': 'Difficult Backgrounds',
+        'special-needs': 'Special Needs & Disabilities',
+        'gifted-talented': 'Gifted & Talented'
+      };
+
+      var performanceLabels = {
+        'outstanding': 'Outstanding',
+        'excellent': 'Excellent',
+        'good': 'Good',
+        'satisfactory': 'Satisfactory',
+        'needs-support': 'Needs Support'
+      };
+
+      var performanceRank = {
+        'outstanding': 5, 'excellent': 4, 'good': 3, 'satisfactory': 2, 'needs-support': 1
+      };
+
+      var statusLabels = {
+        'active': 'Active',
+        'graduated': 'Graduated',
+        'on-hold': 'On Hold',
+        'withdrawn': 'Withdrawn'
+      };
+
+      // --- DOM REFS ---
+      var scholarsBody = document.getElementById('scholars-tbody');
+      var scholarsCards = document.getElementById('scholars-cards');
+      var volunteerBar = document.getElementById('volunteer-bar');
+      var volunteerName = document.getElementById('volunteer-name');
+      var authSection = document.getElementById('auth-section');
+      var emptyState = document.getElementById('empty-state');
+      var modalScholar = document.getElementById('modal-scholar');
+      var modalLogin = document.getElementById('modal-login');
+      var scholarForm = document.getElementById('scholar-form');
+      var toastEl = document.getElementById('toast');
+      var modalTitle = document.getElementById('modal-scholar-title');
+      var btnSubmit = document.getElementById('btn-submit-scholar');
+      var filterPathway = document.getElementById('filter-pathway');
+      var filterStatus = document.getElementById('filter-status');
+      var filterPerformance = document.getElementById('filter-performance');
+      var searchInput = document.getElementById('search-input');
+      var pathwaySelect = document.getElementById('scholar-pathway');
+      var customPathwayGroup = document.getElementById('custom-pathway-group');
+      var tagsInputWrap = document.getElementById('tags-input-wrap');
+      var tagsInput = document.getElementById('tags-input');
+      var schoolDetailContainer = document.getElementById('school-detail-container');
+      var modalSchool = document.getElementById('modal-school');
+      var schoolFormEl = document.getElementById('school-form');
+      var modalSchoolNote = document.getElementById('modal-school-note');
+      var schoolNoteFormEl = document.getElementById('school-note-form');
+      var btnAddSchool = document.getElementById('btn-add-school');
+      var scholarSchoolSelect = document.getElementById('scholar-school');
+      var scholarSchoolOther = document.getElementById('scholar-school-other');
+
+      // --- UTILITY FUNCTIONS ---
+
+      function showToast(msg, type) {
+        toastEl.textContent = msg;
+        toastEl.className = 'toast toast--' + (type || 'success') + ' is-visible';
+        setTimeout(function () { toastEl.classList.remove('is-visible'); }, 3000);
+      }
+
+      function computeTenure(enrolledDate) {
+        if (!enrolledDate) return '--';
+        var enrolled;
+        if (enrolledDate.toDate) {
+          enrolled = enrolledDate.toDate();
+        } else if (typeof enrolledDate === 'string') {
+          enrolled = new Date(enrolledDate);
+        } else {
+          enrolled = new Date(enrolledDate);
+        }
+        if (isNaN(enrolled.getTime())) return '--';
+        var now = new Date();
+        var totalMonths = (now.getFullYear() - enrolled.getFullYear()) * 12 + (now.getMonth() - enrolled.getMonth());
+        if (now.getDate() < enrolled.getDate()) totalMonths--;
+        if (totalMonths < 0) totalMonths = 0;
+        var years = Math.floor(totalMonths / 12);
+        var months = totalMonths % 12;
+        if (years === 0 && months === 0) return 'Just started';
+        var parts = [];
+        if (years > 0) parts.push(years + (years === 1 ? ' year' : ' years'));
+        if (months > 0) parts.push(months + (months === 1 ? ' month' : ' months'));
+        return parts.join(', ');
+      }
+
+      function tenureMonths(enrolledDate) {
+        if (!enrolledDate) return 0;
+        var enrolled;
+        if (enrolledDate.toDate) enrolled = enrolledDate.toDate();
+        else enrolled = new Date(enrolledDate);
+        if (isNaN(enrolled.getTime())) return 0;
+        var now = new Date();
+        return (now.getFullYear() - enrolled.getFullYear()) * 12 + (now.getMonth() - enrolled.getMonth());
+      }
+
+      function getPathwayLabel(pathway) {
+        return pathwayLabels[pathway] || pathway;
+      }
+
+      function getPerformanceLabel(perf) {
+        return performanceLabels[perf] || perf;
+      }
+
+      function getStatusLabel(status) {
+        return statusLabels[status] || status;
+      }
+
+      function isStandardPathway(p) {
+        return p === 'difficult-backgrounds' || p === 'special-needs' || p === 'gifted-talented';
+      }
+
+      function formatNaira(amount) {
+        if (amount >= 1000000) {
+          var millions = (amount / 1000000).toFixed(1);
+          if (millions.endsWith('.0')) millions = millions.slice(0, -2);
+          return '\u20A6' + millions + 'M';
+        }
+        return '\u20A6' + amount.toLocaleString('en-NG');
+      }
+
+      function formatNairaFull(amount) {
+        return '\u20A6' + amount.toLocaleString('en-NG');
+      }
+
+      function getScholarTotalSpend(scholarId) {
+        var expenses = expensesByScholar[scholarId] || [];
+        var total = 0;
+        for (var i = 0; i < expenses.length; i++) {
+          total += (expenses[i].amount || 0);
+        }
+        return total;
+      }
+
+      function buildExpenseIndex() {
+        expensesByScholar = {};
+        for (var i = 0; i < allExpenses.length; i++) {
+          var e = allExpenses[i];
+          if (!expensesByScholar[e.scholarId]) {
+            expensesByScholar[e.scholarId] = [];
+          }
+          expensesByScholar[e.scholarId].push(e);
+        }
+      }
+
+      // --- SCHOOL DROPDOWN HELPERS ---
+
+      function populateSchoolDropdown() {
+        // Remove all options except first two (placeholder + Other)
+        while (scholarSchoolSelect.options.length > 2) {
+          scholarSchoolSelect.remove(1);
+        }
+        // Insert school options before "Other"
+        var otherOpt = scholarSchoolSelect.options[1];
+        allSchools.forEach(function (sch) {
+          var opt = document.createElement('option');
+          opt.value = sch.name;
+          opt.textContent = sch.name;
+          scholarSchoolSelect.insertBefore(opt, otherOpt);
+        });
+      }
+
+      scholarSchoolSelect.addEventListener('change', function () {
+        if (scholarSchoolSelect.value === '__other') {
+          scholarSchoolOther.classList.add('is-visible');
+          scholarSchoolOther.required = true;
+        } else {
+          scholarSchoolOther.classList.remove('is-visible');
+          scholarSchoolOther.required = false;
+        }
+      });
+
+      // --- DASHBOARD ---
+
+      function updateDashboard() {
+        var total = allScholars.length;
+        document.getElementById('dash-total').textContent = total;
+
+        var schoolSet = {};
+        var pathwaySet = {};
+        var perfSum = 0;
+        var perfCount = 0;
+        allScholars.forEach(function (s) {
+          if (s.school) schoolSet[s.school] = true;
+          if (s.pathway) pathwaySet[s.pathway] = true;
+          var rank = performanceRank[s.performance];
+          if (rank) { perfSum += rank; perfCount++; }
+        });
+
+        document.getElementById('dash-schools').textContent = Object.keys(schoolSet).length;
+        document.getElementById('dash-pathways').textContent = Object.keys(pathwaySet).length;
+
+        if (perfCount > 0) {
+          var avg = perfSum / perfCount;
+          // Map average back to label
+          var avgLabel = 'Good';
+          if (avg >= 4.5) avgLabel = 'Outstanding';
+          else if (avg >= 3.5) avgLabel = 'Excellent';
+          else if (avg >= 2.5) avgLabel = 'Good';
+          else if (avg >= 1.5) avgLabel = 'Satisfactory';
+          else avgLabel = 'Needs Support';
+          document.getElementById('dash-performance').textContent = avgLabel;
+          document.getElementById('dash-perf-sub').textContent = 'avg. score: ' + avg.toFixed(1) + ' / 5';
+        } else {
+          document.getElementById('dash-performance').textContent = '--';
+          document.getElementById('dash-perf-sub').textContent = 'computed from all scholars';
+        }
+
+        // Total investment
+        var totalInvestment = 0;
+        for (var i = 0; i < allExpenses.length; i++) {
+          totalInvestment += (allExpenses[i].amount || 0);
+        }
+        document.getElementById('dash-investment').textContent = totalInvestment > 0 ? formatNaira(totalInvestment) : '--';
+        document.getElementById('dash-investment-sub').textContent = totalInvestment > 0 ? (allExpenses.length + ' transactions') : 'across all scholars';
+
+        // School overview
+        renderSchoolOverview();
+      }
+
+      // --- SCHOOL OVERVIEW ---
+
+      function renderSchoolOverview() {
+        var grid = document.getElementById('school-overview-grid');
+        clearChildren(grid);
+
+        // Merge: show managed schools + any unmanaged school names from scholars
+        var managedNames = {};
+        allSchools.forEach(function (sch) { managedNames[sch.name] = sch; });
+
+        var schoolNames = Object.keys(managedNames);
+        // Also gather school names from scholars that are not yet managed
+        allScholars.forEach(function (s) {
+          if (s.school && !managedNames[s.school]) {
+            managedNames[s.school] = null; // unmanaged
+            schoolNames.push(s.school);
+          }
+        });
+
+        if (schoolNames.length === 0 && !currentUser) {
+          document.getElementById('school-overview').style.display = 'none';
+          return;
+        }
+        document.getElementById('school-overview').style.display = '';
+
+        var schoolData = [];
+        schoolNames.forEach(function (schoolName) {
+          var managed = managedNames[schoolName];
+          var scholarCount = 0;
+          var totalSpend = 0;
+          allScholars.forEach(function (s) {
+            if (s.school === schoolName) {
+              scholarCount++;
+              totalSpend += getScholarTotalSpend(s.id);
+            }
+          });
+          var avgSpend = scholarCount > 0 ? Math.round(totalSpend / scholarCount) : 0;
+          schoolData.push({
+            name: schoolName,
+            count: scholarCount,
+            total: totalSpend,
+            avg: avgSpend,
+            managed: managed
+          });
+        });
+
+        schoolData.sort(function (a, b) { return b.total - a.total; });
+
+        schoolData.forEach(function (sd) {
+          var card = document.createElement('div');
+          card.className = 'school-card';
+          if (activeSchoolId && sd.managed && sd.managed.id === activeSchoolId) {
+            card.classList.add('is-expanded');
+          }
+
+          var nameEl = document.createElement('div');
+          nameEl.className = 'school-card__name';
+          nameEl.textContent = sd.name;
+          card.appendChild(nameEl);
+
+          if (sd.managed && sd.managed.location) {
+            var locEl = document.createElement('div');
+            locEl.className = 'school-card__location';
+            locEl.textContent = sd.managed.location;
+            card.appendChild(locEl);
+          }
+
+          var stats = document.createElement('div');
+          stats.className = 'school-card__stats';
+
+          var statScholars = document.createElement('div');
+          statScholars.className = 'school-card__stat';
+          var slabel = document.createElement('div');
+          slabel.className = 'school-card__stat-label';
+          slabel.textContent = 'Scholars';
+          statScholars.appendChild(slabel);
+          var sval = document.createElement('div');
+          sval.className = 'school-card__stat-value';
+          sval.textContent = sd.count;
+          statScholars.appendChild(sval);
+          stats.appendChild(statScholars);
+
+          var statTotal = document.createElement('div');
+          statTotal.className = 'school-card__stat';
+          var tlabel = document.createElement('div');
+          tlabel.className = 'school-card__stat-label';
+          tlabel.textContent = 'Total Spend';
+          statTotal.appendChild(tlabel);
+          var tval = document.createElement('div');
+          tval.className = 'school-card__stat-value school-card__stat-value--green';
+          tval.textContent = sd.total > 0 ? formatNaira(sd.total) : '\u20A60';
+          statTotal.appendChild(tval);
+          stats.appendChild(statTotal);
+
+          var statAvg = document.createElement('div');
+          statAvg.className = 'school-card__stat';
+          var alabel = document.createElement('div');
+          alabel.className = 'school-card__stat-label';
+          alabel.textContent = 'Avg / Student';
+          statAvg.appendChild(alabel);
+          var aval = document.createElement('div');
+          aval.className = 'school-card__stat-value school-card__stat-value--terra';
+          aval.textContent = sd.avg > 0 ? formatNaira(sd.avg) : '\u20A60';
+          statAvg.appendChild(aval);
+          stats.appendChild(statAvg);
+
+          card.appendChild(stats);
+
+          if (sd.managed && sd.managed.contactPerson) {
+            var contactEl = document.createElement('div');
+            contactEl.className = 'school-card__contact';
+            contactEl.textContent = sd.managed.contactPerson;
+            card.appendChild(contactEl);
+          }
+
+          // Click handler
+          (function (schoolDataItem) {
+            card.addEventListener('click', function () {
+              if (schoolDataItem.managed) {
+                toggleSchoolDetail(schoolDataItem.managed, schoolDataItem);
+              } else {
+                showToast('This school is not yet managed. Add it as a managed school first.', 'error');
+              }
+            });
+          })(sd);
+
+          grid.appendChild(card);
+        });
+      }
+
+      // --- SCHOOL DETAIL PANEL ---
+
+      function toggleSchoolDetail(school, statsData) {
+        if (activeSchoolId === school.id) {
+          activeSchoolId = null;
+          clearChildren(schoolDetailContainer);
+          renderSchoolOverview();
+          return;
+        }
+        activeSchoolId = school.id;
+        activeSchoolTab = 'notes';
+        renderSchoolOverview();
+        renderSchoolDetailPanel(school, statsData);
+      }
+
+      function renderSchoolDetailPanel(school, statsData) {
+        clearChildren(schoolDetailContainer);
+
+        var panel = document.createElement('div');
+        panel.className = 'school-detail-panel';
+
+        // Header
+        var header = document.createElement('div');
+        header.className = 'school-detail__header';
+
+        var infoDiv = document.createElement('div');
+        infoDiv.className = 'school-detail__info';
+
+        var nameEl = document.createElement('h3');
+        nameEl.className = 'school-detail__name';
+        nameEl.textContent = school.name;
+        infoDiv.appendChild(nameEl);
+
+        if (school.location) {
+          var locEl = document.createElement('div');
+          locEl.className = 'school-detail__location';
+          locEl.textContent = school.location;
+          infoDiv.appendChild(locEl);
+        }
+
+        var contactInfo = document.createElement('div');
+        contactInfo.className = 'school-detail__contact-info';
+        if (school.contactPerson) {
+          var cpLine = document.createElement('div');
+          var cpStrong = document.createElement('strong');
+          cpStrong.textContent = 'Contact: ';
+          cpLine.appendChild(cpStrong);
+          cpLine.appendChild(document.createTextNode(school.contactPerson));
+          contactInfo.appendChild(cpLine);
+        }
+        if (school.contactPhone) {
+          var phLine = document.createElement('div');
+          var phStrong = document.createElement('strong');
+          phStrong.textContent = 'Phone: ';
+          phLine.appendChild(phStrong);
+          phLine.appendChild(document.createTextNode(school.contactPhone));
+          contactInfo.appendChild(phLine);
+        }
+        if (school.contactEmail) {
+          var emLine = document.createElement('div');
+          var emStrong = document.createElement('strong');
+          emStrong.textContent = 'Email: ';
+          emLine.appendChild(emStrong);
+          emLine.appendChild(document.createTextNode(school.contactEmail));
+          contactInfo.appendChild(emLine);
+        }
+        infoDiv.appendChild(contactInfo);
+        header.appendChild(infoDiv);
+
+        // Actions
+        var actionsDiv = document.createElement('div');
+        actionsDiv.className = 'school-detail__actions';
+
+        if (currentUser) {
+          var editBtn = document.createElement('button');
+          editBtn.className = 'btn btn--ghost-dark btn--sm';
+          editBtn.textContent = 'Edit School';
+          editBtn.addEventListener('click', function () {
+            openEditSchoolModal(school);
+          });
+          actionsDiv.appendChild(editBtn);
+        }
+
+        var closeBtn = document.createElement('button');
+        closeBtn.className = 'btn btn--ghost-dark btn--sm';
+        closeBtn.textContent = 'Close';
+        closeBtn.addEventListener('click', function () {
+          activeSchoolId = null;
+          clearChildren(schoolDetailContainer);
+          renderSchoolOverview();
+        });
+        actionsDiv.appendChild(closeBtn);
+        header.appendChild(actionsDiv);
+        panel.appendChild(header);
+
+        // Tabs
+        var tabs = document.createElement('div');
+        tabs.className = 'school-tabs';
+        var tabDefs = [
+          { key: 'notes', label: 'Notes' },
+          { key: 'teachers', label: 'Teachers' },
+          { key: 'issues', label: 'Issues' },
+          { key: 'events', label: 'Events' }
+        ];
+        var contentArea = document.createElement('div');
+        contentArea.className = 'school-tab-content';
+
+        tabDefs.forEach(function (td) {
+          var tabBtn = document.createElement('button');
+          tabBtn.className = 'school-tab';
+          if (td.key === activeSchoolTab) tabBtn.classList.add('is-active');
+          tabBtn.textContent = td.label;
+          tabBtn.addEventListener('click', function () {
+            activeSchoolTab = td.key;
+            // Update tab active states
+            var allTabs = tabs.querySelectorAll('.school-tab');
+            allTabs.forEach(function (t) { t.classList.remove('is-active'); });
+            tabBtn.classList.add('is-active');
+            renderSchoolTabContent(contentArea, school, td.key);
+          });
+          tabs.appendChild(tabBtn);
+        });
+        panel.appendChild(tabs);
+
+        panel.appendChild(contentArea);
+        schoolDetailContainer.appendChild(panel);
+
+        // Load notes for this school
+        loadSchoolNotes(school.id).then(function () {
+          renderSchoolTabContent(contentArea, school, activeSchoolTab);
+        });
+      }
+
+      function renderSchoolTabContent(container, school, tabKey) {
+        clearChildren(container);
+        var notes = schoolNotesCache[school.id] || [];
+        var filtered = notes.filter(function (n) { return n.type === (tabKey === 'teachers' ? 'teacher' : tabKey === 'issues' ? 'issue' : tabKey === 'events' ? 'event' : 'note'); });
+
+        // Add button
+        var addBtn = document.createElement('button');
+        addBtn.className = 'add-entry-btn';
+        var labels = { notes: 'Note', teachers: 'Teacher', issues: 'Issue', events: 'Event' };
+        addBtn.textContent = '+ Add ' + labels[tabKey];
+        addBtn.addEventListener('click', function () {
+          openSchoolNoteModal(school, tabKey === 'teachers' ? 'teacher' : tabKey === 'issues' ? 'issue' : tabKey === 'events' ? 'event' : 'note');
+        });
+        container.appendChild(addBtn);
+
+        if (filtered.length === 0) {
+          var empty = document.createElement('div');
+          empty.className = 'school-empty';
+          empty.textContent = 'No ' + tabKey + ' recorded yet.';
+          container.appendChild(empty);
+          return;
+        }
+
+        // Sort by date descending
+        filtered.sort(function (a, b) {
+          var da = a.date ? (a.date.toDate ? a.date.toDate().getTime() : new Date(a.date).getTime()) : 0;
+          var db2 = b.date ? (b.date.toDate ? b.date.toDate().getTime() : new Date(b.date).getTime()) : 0;
+          return db2 - da;
+        });
+
+        if (tabKey === 'teachers') {
+          filtered.forEach(function (entry) {
+            container.appendChild(createTeacherCard(entry));
+          });
+        } else if (tabKey === 'issues') {
+          filtered.forEach(function (entry) {
+            container.appendChild(createIssueCard(entry));
+          });
+        } else {
+          filtered.forEach(function (entry) {
+            container.appendChild(createNoteCard(entry));
+          });
+        }
+      }
+
+      function createNoteCard(entry) {
+        var card = document.createElement('div');
+        card.className = 'school-entry';
+
+        var hdr = document.createElement('div');
+        hdr.className = 'school-entry__header';
+        var title = document.createElement('div');
+        title.className = 'school-entry__title';
+        title.textContent = entry.title || 'Untitled';
+        hdr.appendChild(title);
+        var dateEl = document.createElement('div');
+        dateEl.className = 'school-entry__date';
+        if (entry.date) {
+          var d = entry.date.toDate ? entry.date.toDate() : new Date(entry.date);
+          if (!isNaN(d.getTime())) {
+            dateEl.textContent = d.toLocaleDateString('en-NG', { year: 'numeric', month: 'short', day: 'numeric' });
+          }
+        }
+        hdr.appendChild(dateEl);
+        card.appendChild(hdr);
+
+        if (entry.content) {
+          var content = document.createElement('div');
+          content.className = 'school-entry__content';
+          content.textContent = entry.content;
+          card.appendChild(content);
+        }
+
+        var meta = document.createElement('div');
+        meta.className = 'school-entry__meta';
+        var author = document.createElement('span');
+        author.className = 'school-entry__author';
+        author.textContent = 'by ' + (entry.createdByName || 'Unknown');
+        meta.appendChild(author);
+        card.appendChild(meta);
+
+        return card;
+      }
+
+      function createIssueCard(entry) {
+        var card = createNoteCard(entry);
+        // Prepend badges into the header
+        var hdr = card.querySelector('.school-entry__header');
+        if (hdr) {
+          var meta = document.createElement('div');
+          meta.className = 'school-entry__meta';
+          meta.style.marginBottom = '0.25rem';
+          meta.style.marginTop = '0';
+
+          if (entry.status) {
+            var statusBadge = document.createElement('span');
+            statusBadge.className = 'issue-status issue-status--' + entry.status;
+            statusBadge.textContent = entry.status;
+            meta.appendChild(statusBadge);
+          }
+          if (entry.priority) {
+            var priorityBadge = document.createElement('span');
+            priorityBadge.className = 'issue-priority issue-priority--' + entry.priority;
+            priorityBadge.textContent = entry.priority;
+            meta.appendChild(priorityBadge);
+          }
+          // Insert after header
+          hdr.parentNode.insertBefore(meta, hdr.nextSibling);
+        }
+        return card;
+      }
+
+      function createTeacherCard(entry) {
+        var card = document.createElement('div');
+        card.className = 'teacher-card';
+
+        var nameEl = document.createElement('div');
+        nameEl.className = 'teacher-card__name';
+        nameEl.textContent = entry.teacherName || entry.title || 'Unknown';
+        card.appendChild(nameEl);
+
+        if (entry.teacherRole) {
+          var roleEl = document.createElement('div');
+          roleEl.className = 'teacher-card__role';
+          roleEl.textContent = entry.teacherRole;
+          card.appendChild(roleEl);
+        }
+
+        if (entry.teacherPhone) {
+          var phoneEl = document.createElement('div');
+          phoneEl.className = 'teacher-card__detail';
+          var phoneLabel = document.createTextNode('Phone: ');
+          phoneEl.appendChild(phoneLabel);
+          var phoneLink = document.createElement('a');
+          phoneLink.href = 'tel:' + entry.teacherPhone;
+          phoneLink.textContent = entry.teacherPhone;
+          phoneEl.appendChild(phoneLink);
+          card.appendChild(phoneEl);
+        }
+
+        if (entry.teacherEmail) {
+          var emailEl = document.createElement('div');
+          emailEl.className = 'teacher-card__detail';
+          var emailLabel = document.createTextNode('Email: ');
+          emailEl.appendChild(emailLabel);
+          var emailLink = document.createElement('a');
+          emailLink.href = 'mailto:' + entry.teacherEmail;
+          emailLink.textContent = entry.teacherEmail;
+          emailEl.appendChild(emailLink);
+          card.appendChild(emailEl);
+        }
+
+        var meta = document.createElement('div');
+        meta.className = 'school-entry__author';
+        meta.style.gridColumn = '1 / -1';
+        meta.style.marginTop = '0.25rem';
+        meta.textContent = 'Added by ' + (entry.createdByName || 'Unknown');
+        card.appendChild(meta);
+
+        return card;
+      }
+
+      // --- LOAD SCHOOL NOTES (lazy) ---
+
+      function loadSchoolNotes(schoolId) {
+        return db.collection('school_notes')
+          .where('schoolId', '==', schoolId)
+          .orderBy('createdAt', 'desc')
+          .get()
+          .then(function (snapshot) {
+            var notes = [];
+            snapshot.forEach(function (doc) {
+              var data = doc.data();
+              data.id = doc.id;
+              notes.push(data);
+            });
+            schoolNotesCache[schoolId] = notes;
+            return notes;
+          })
+          .catch(function (err) {
+            console.warn('Error loading school notes:', err);
+            schoolNotesCache[schoolId] = [];
+            return [];
+          });
+      }
+
+      // --- SCHOOL CRUD ---
+
+      function fetchSchools() {
+        return db.collection('schools').orderBy('name', 'asc').get()
+          .then(function (snapshot) {
+            allSchools = [];
+            snapshot.forEach(function (doc) {
+              var data = doc.data();
+              data.id = doc.id;
+              allSchools.push(data);
+            });
+            populateSchoolDropdown();
+            return allSchools;
+          })
+          .catch(function (err) {
+            console.warn('Error fetching schools:', err);
+            allSchools = [];
+            populateSchoolDropdown();
+            return [];
+          });
+      }
+
+      function openAddSchoolModal() {
+        if (!currentUser) { showToast('Please sign in first', 'error'); return; }
+        editingSchoolId = null;
+        document.getElementById('modal-school-title').textContent = 'Add School';
+        document.getElementById('btn-submit-school').textContent = 'Add School';
+        schoolFormEl.reset();
+        modalSchool.classList.add('is-open');
+      }
+
+      function openEditSchoolModal(school) {
+        if (!currentUser) { showToast('Please sign in first', 'error'); return; }
+        editingSchoolId = school.id;
+        document.getElementById('modal-school-title').textContent = 'Edit School';
+        document.getElementById('btn-submit-school').textContent = 'Save Changes';
+        document.getElementById('school-name').value = school.name || '';
+        document.getElementById('school-location').value = school.location || '';
+        document.getElementById('school-contactPerson').value = school.contactPerson || '';
+        document.getElementById('school-contactPhone').value = school.contactPhone || '';
+        document.getElementById('school-contactEmail').value = school.contactEmail || '';
+        modalSchool.classList.add('is-open');
+      }
+
+      // School form submit
+      schoolFormEl.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (!currentUser) { showToast('Please sign in first', 'error'); return; }
+
+        var name = document.getElementById('school-name').value.trim();
+        var location = document.getElementById('school-location').value.trim();
+        var contactPerson = document.getElementById('school-contactPerson').value.trim();
+        var contactPhone = document.getElementById('school-contactPhone').value.trim();
+        var contactEmail = document.getElementById('school-contactEmail').value.trim();
+
+        if (!name || !location) {
+          showToast('Please enter school name and location', 'error');
+          return;
+        }
+
+        var userName = currentUser.displayName || currentUser.email.split('@')[0];
+
+        // Count scholars at this school
+        var scholarCount = 0;
+        allScholars.forEach(function (s) { if (s.school === name) scholarCount++; });
+
+        var schoolData = {
+          name: name,
+          location: location,
+          contactPerson: contactPerson,
+          contactPhone: contactPhone,
+          contactEmail: contactEmail,
+          scholarCount: scholarCount
+        };
+
+        if (editingSchoolId) {
+          db.collection('schools').doc(editingSchoolId).update(schoolData)
+            .then(function () {
+              modalSchool.classList.remove('is-open');
+              showToast('School updated');
+              return fetchSchools().then(function () {
+                renderSchoolOverview();
+                if (activeSchoolId === editingSchoolId) {
+                  var sch = null;
+                  allSchools.forEach(function (s) { if (s.id === editingSchoolId) sch = s; });
+                  if (sch) renderSchoolDetailPanel(sch, null);
+                }
+              });
+            })
+            .catch(function (err) { showToast('Error: ' + err.message, 'error'); });
+        } else {
+          schoolData.createdBy = currentUser.uid;
+          schoolData.createdByName = userName;
+          schoolData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+
+          db.collection('schools').add(schoolData)
+            .then(function () {
+              modalSchool.classList.remove('is-open');
+              showToast('School added');
+              return fetchSchools().then(function () { renderSchoolOverview(); });
+            })
+            .catch(function (err) { showToast('Error: ' + err.message, 'error'); });
+        }
+      });
+
+      document.getElementById('modal-school-close').addEventListener('click', function () { modalSchool.classList.remove('is-open'); });
+      document.getElementById('modal-school-cancel').addEventListener('click', function () { modalSchool.classList.remove('is-open'); });
+      btnAddSchool.addEventListener('click', openAddSchoolModal);
+
+      // --- SCHOOL NOTE MODAL ---
+
+      function openSchoolNoteModal(school, type) {
+        if (!currentUser) { showToast('Please sign in first', 'error'); return; }
+        schoolNoteFormEl.reset();
+        document.getElementById('school-note-schoolId').value = school.id;
+        document.getElementById('school-note-schoolName').value = school.name;
+        document.getElementById('school-note-type').value = type;
+
+        var typeLabels = { note: 'Note', teacher: 'Teacher', issue: 'Issue', event: 'Event' };
+        document.getElementById('modal-school-note-title').textContent = 'Add ' + typeLabels[type];
+        document.getElementById('btn-submit-school-note').textContent = 'Add ' + typeLabels[type];
+
+        // Toggle field visibility
+        var issueFields = document.getElementById('school-note-issue-fields');
+        var teacherFields = document.getElementById('school-note-teacher-fields');
+        var titleGroup = document.getElementById('school-note-title-group');
+        var contentGroup = document.getElementById('school-note-content-group');
+
+        issueFields.style.display = type === 'issue' ? '' : 'none';
+        teacherFields.style.display = type === 'teacher' ? '' : 'none';
+
+        if (type === 'teacher') {
+          titleGroup.style.display = 'none';
+          contentGroup.style.display = 'none';
+          document.getElementById('school-note-title-input').required = false;
+        } else {
+          titleGroup.style.display = '';
+          contentGroup.style.display = '';
+          document.getElementById('school-note-title-input').required = true;
+        }
+
+        // Default date to today
+        var today = new Date();
+        var todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+        document.getElementById('school-note-date').value = todayStr;
+
+        modalSchoolNote.classList.add('is-open');
+      }
+
+      schoolNoteFormEl.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (!currentUser) { showToast('Please sign in first', 'error'); return; }
+
+        var schoolId = document.getElementById('school-note-schoolId').value;
+        var schoolName = document.getElementById('school-note-schoolName').value;
+        var type = document.getElementById('school-note-type').value;
+        var title = document.getElementById('school-note-title-input').value.trim();
+        var content = document.getElementById('school-note-content').value.trim();
+        var dateStr = document.getElementById('school-note-date').value;
+        var userName = currentUser.displayName || currentUser.email.split('@')[0];
+
+        var noteData = {
+          schoolId: schoolId,
+          schoolName: schoolName,
+          type: type,
+          title: title,
+          content: content,
+          date: dateStr ? firebase.firestore.Timestamp.fromDate(new Date(dateStr)) : null,
+          status: null,
+          priority: null,
+          teacherName: '',
+          teacherRole: '',
+          teacherPhone: '',
+          teacherEmail: '',
+          createdBy: currentUser.uid,
+          createdByName: userName,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        if (type === 'issue') {
+          noteData.status = document.getElementById('school-note-status').value;
+          noteData.priority = document.getElementById('school-note-priority').value;
+        }
+
+        if (type === 'teacher') {
+          noteData.teacherName = document.getElementById('school-note-teacherName').value.trim();
+          noteData.teacherRole = document.getElementById('school-note-teacherRole').value.trim();
+          noteData.teacherPhone = document.getElementById('school-note-teacherPhone').value.trim();
+          noteData.teacherEmail = document.getElementById('school-note-teacherEmail').value.trim();
+          noteData.title = noteData.teacherName;
+          if (!noteData.teacherName) {
+            showToast('Please enter the teacher name', 'error');
+            return;
+          }
+        } else {
+          if (!title) {
+            showToast('Please enter a title', 'error');
+            return;
+          }
+        }
+
+        db.collection('school_notes').add(noteData)
+          .then(function () {
+            modalSchoolNote.classList.remove('is-open');
+            showToast((type.charAt(0).toUpperCase() + type.slice(1)) + ' added');
+            // Reload notes
+            return loadSchoolNotes(schoolId);
+          })
+          .then(function () {
+            var school = null;
+            allSchools.forEach(function (s) { if (s.id === schoolId) school = s; });
+            if (school && activeSchoolId === schoolId) {
+              renderSchoolDetailPanel(school, null);
+            }
+          })
+          .catch(function (err) { showToast('Error: ' + err.message, 'error'); });
+      });
+
+      document.getElementById('modal-school-note-close').addEventListener('click', function () { modalSchoolNote.classList.remove('is-open'); });
+      document.getElementById('modal-school-note-cancel').addEventListener('click', function () { modalSchoolNote.classList.remove('is-open'); });
+
+      // --- FILTERING & SORTING ---
+
+      function getFilteredScholars() {
+        var pw = filterPathway.value;
+        var st = filterStatus.value;
+        var pf = filterPerformance.value;
+        var q = searchInput.value.toLowerCase().trim();
+
+        return allScholars.filter(function (s) {
+          if (pw) {
+            if (pw === '__other') {
+              if (isStandardPathway(s.pathway)) return false;
+            } else {
+              if (s.pathway !== pw) return false;
+            }
+          }
+          if (st && s.status !== st) return false;
+          if (pf && s.performance !== pf) return false;
+          if (q) {
+            var displayName = (s.firstName + ' ' + s.lastInitial + '.').toLowerCase();
+            var school = (s.school || '').toLowerCase();
+            var classGrade = (s.classGrade || '').toLowerCase();
+            if (displayName.indexOf(q) === -1 && school.indexOf(q) === -1 && classGrade.indexOf(q) === -1) return false;
+          }
+          return true;
+        });
+      }
+
+      function sortScholars(list) {
+        var field = currentSort.field;
+        var dir = currentSort.dir === 'asc' ? 1 : -1;
+
+        return list.slice().sort(function (a, b) {
+          var va, vb;
+          if (field === 'name') {
+            va = (a.firstName + ' ' + a.lastInitial).toLowerCase();
+            vb = (b.firstName + ' ' + b.lastInitial).toLowerCase();
+          } else if (field === 'performance') {
+            va = performanceRank[a.performance] || 0;
+            vb = performanceRank[b.performance] || 0;
+            return (va - vb) * dir;
+          } else if (field === 'tenure') {
+            va = tenureMonths(a.enrolledDate);
+            vb = tenureMonths(b.enrolledDate);
+            return (va - vb) * dir;
+          } else if (field === 'totalSpend') {
+            va = getScholarTotalSpend(a.id);
+            vb = getScholarTotalSpend(b.id);
+            return (va - vb) * dir;
+          } else {
+            va = (a[field] || '').toLowerCase();
+            vb = (b[field] || '').toLowerCase();
+          }
+          if (va < vb) return -1 * dir;
+          if (va > vb) return 1 * dir;
+          return 0;
+        });
+      }
+
+      // --- RENDER ---
+
+      function clearChildren(el) {
+        while (el.firstChild) el.removeChild(el.firstChild);
+      }
+
+      function createPerfBadge(perf) {
+        var span = document.createElement('span');
+        span.className = 'perf-badge perf-badge--' + perf;
+        span.textContent = getPerformanceLabel(perf);
+        return span;
+      }
+
+      function createStatusBadge(status) {
+        var span = document.createElement('span');
+        span.className = 'status-badge status-badge--' + status;
+        span.textContent = getStatusLabel(status);
+        return span;
+      }
+
+      function createChips(tags) {
+        var wrap = document.createElement('div');
+        wrap.className = 'chip-list';
+        (tags || []).forEach(function (tag) {
+          var chip = document.createElement('span');
+          chip.className = 'chip';
+          chip.textContent = tag;
+          wrap.appendChild(chip);
+        });
+        return wrap;
+      }
+
+      function createRowActions(scholar) {
+        var wrap = document.createElement('div');
+        wrap.className = 'row-actions';
+
+        var editBtn = document.createElement('button');
+        editBtn.setAttribute('title', 'Edit');
+        editBtn.textContent = '\u270F\uFE0F';
+        editBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          openEditModal(scholar);
+        });
+
+        var deleteBtn = document.createElement('button');
+        deleteBtn.setAttribute('title', 'Delete');
+        deleteBtn.textContent = '\uD83D\uDDD1\uFE0F';
+        deleteBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          deleteScholar(scholar.id, scholar.firstName + ' ' + scholar.lastInitial + '.');
+        });
+
+        var auditBtn = document.createElement('button');
+        auditBtn.setAttribute('title', 'Audit Trail');
+        auditBtn.textContent = '\uD83D\uDD50';
+        auditBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          toggleAuditPopover(scholar.id, auditBtn);
+        });
+
+        wrap.appendChild(editBtn);
+        wrap.appendChild(deleteBtn);
+        wrap.appendChild(auditBtn);
+        return wrap;
+      }
+
+      function renderScholars() {
+        var filtered = getFilteredScholars();
+        var sorted = sortScholars(filtered);
+
+        // Update sort header indicators
+        var ths = document.querySelectorAll('.scholars-table th[data-sort]');
+        ths.forEach(function (th) {
+          th.classList.remove('sort-asc', 'sort-desc');
+          if (th.getAttribute('data-sort') === currentSort.field) {
+            th.classList.add('sort-' + currentSort.dir);
+          }
+        });
+
+        // Desktop table
+        clearChildren(scholarsBody);
+        sorted.forEach(function (s) {
+          var tr = document.createElement('tr');
+
+          var tdName = document.createElement('td');
+          tdName.style.fontWeight = '600';
+          tdName.textContent = s.firstName + ' ' + s.lastInitial + '.';
+          tr.appendChild(tdName);
+
+          var tdSchool = document.createElement('td');
+          tdSchool.textContent = s.school || '';
+          tr.appendChild(tdSchool);
+
+          var tdClass = document.createElement('td');
+          tdClass.textContent = s.classGrade || '';
+          tr.appendChild(tdClass);
+
+          var tdPathway = document.createElement('td');
+          tdPathway.textContent = getPathwayLabel(s.pathway);
+          tr.appendChild(tdPathway);
+
+          var tdTenure = document.createElement('td');
+          tdTenure.textContent = computeTenure(s.enrolledDate);
+          tdTenure.style.whiteSpace = 'nowrap';
+          tr.appendChild(tdTenure);
+
+          var tdPerf = document.createElement('td');
+          tdPerf.appendChild(createPerfBadge(s.performance));
+          tr.appendChild(tdPerf);
+
+          var tdExtra = document.createElement('td');
+          tdExtra.appendChild(createChips(s.extracurriculars));
+          tr.appendChild(tdExtra);
+
+          var tdStatus = document.createElement('td');
+          tdStatus.appendChild(createStatusBadge(s.status));
+          tr.appendChild(tdStatus);
+
+          var tdSpend = document.createElement('td');
+          var spendTotal = getScholarTotalSpend(s.id);
+          var spendWrap = document.createElement('div');
+          spendWrap.style.cssText = 'display:flex;align-items:center;gap:0.4rem;';
+          var spendText = document.createElement('span');
+          spendText.className = 'total-spend';
+          spendText.textContent = spendTotal > 0 ? formatNairaFull(spendTotal) : '\u20A60';
+          spendWrap.appendChild(spendText);
+          var expBtn = document.createElement('button');
+          expBtn.className = 'expense-btn';
+          expBtn.textContent = '\u20A6';
+          expBtn.setAttribute('title', 'View expenses');
+          (function (scholar) {
+            expBtn.addEventListener('click', function (e) {
+              e.stopPropagation();
+              openExpenseDrawer(scholar);
+            });
+          })(s);
+          spendWrap.appendChild(expBtn);
+          tdSpend.appendChild(spendWrap);
+          tr.appendChild(tdSpend);
+
+          var tdActions = document.createElement('td');
+          tdActions.appendChild(createRowActions(s));
+          tr.appendChild(tdActions);
+
+          scholarsBody.appendChild(tr);
+        });
+
+        // Mobile cards
+        clearChildren(scholarsCards);
+        sorted.forEach(function (s) {
+          var card = document.createElement('div');
+          card.className = 'scholar-card';
+
+          var header = document.createElement('div');
+          header.className = 'scholar-card__header';
+          var nameEl = document.createElement('div');
+          nameEl.className = 'scholar-card__name';
+          nameEl.textContent = s.firstName + ' ' + s.lastInitial + '.';
+          header.appendChild(nameEl);
+          header.appendChild(createStatusBadge(s.status));
+          card.appendChild(header);
+
+          var meta = document.createElement('div');
+          meta.className = 'scholar-card__meta';
+          meta.textContent = s.school + ' \u2022 ' + (s.classGrade || '');
+          card.appendChild(meta);
+
+          var rowPathway = document.createElement('div');
+          rowPathway.className = 'scholar-card__row';
+          var labelPw = document.createElement('span');
+          labelPw.className = 'scholar-card__label';
+          labelPw.textContent = 'Pathway';
+          rowPathway.appendChild(labelPw);
+          var valPw = document.createElement('span');
+          valPw.textContent = getPathwayLabel(s.pathway);
+          rowPathway.appendChild(valPw);
+          card.appendChild(rowPathway);
+
+          var rowTenure = document.createElement('div');
+          rowTenure.className = 'scholar-card__row';
+          var labelT = document.createElement('span');
+          labelT.className = 'scholar-card__label';
+          labelT.textContent = 'Tenure';
+          rowTenure.appendChild(labelT);
+          var valT = document.createElement('span');
+          valT.textContent = computeTenure(s.enrolledDate);
+          rowTenure.appendChild(valT);
+          card.appendChild(rowTenure);
+
+          var rowPerf = document.createElement('div');
+          rowPerf.className = 'scholar-card__row';
+          var labelP = document.createElement('span');
+          labelP.className = 'scholar-card__label';
+          labelP.textContent = 'Performance';
+          rowPerf.appendChild(labelP);
+          rowPerf.appendChild(createPerfBadge(s.performance));
+          card.appendChild(rowPerf);
+
+          var rowSpend = document.createElement('div');
+          rowSpend.className = 'scholar-card__row';
+          var labelSp = document.createElement('span');
+          labelSp.className = 'scholar-card__label';
+          labelSp.textContent = 'Total Spend';
+          rowSpend.appendChild(labelSp);
+          var spendValWrap = document.createElement('div');
+          spendValWrap.style.cssText = 'display:flex;align-items:center;gap:0.4rem;';
+          var cardSpendTotal = getScholarTotalSpend(s.id);
+          var cardSpendText = document.createElement('span');
+          cardSpendText.className = 'total-spend';
+          cardSpendText.textContent = cardSpendTotal > 0 ? formatNairaFull(cardSpendTotal) : '\u20A60';
+          spendValWrap.appendChild(cardSpendText);
+          var cardExpBtn = document.createElement('button');
+          cardExpBtn.className = 'expense-btn';
+          cardExpBtn.textContent = '\u20A6';
+          cardExpBtn.setAttribute('title', 'View expenses');
+          (function (scholar) {
+            cardExpBtn.addEventListener('click', function (e) {
+              e.stopPropagation();
+              openExpenseDrawer(scholar);
+            });
+          })(s);
+          spendValWrap.appendChild(cardExpBtn);
+          rowSpend.appendChild(spendValWrap);
+          card.appendChild(rowSpend);
+
+          if (s.extracurriculars && s.extracurriculars.length > 0) {
+            var rowExtra = document.createElement('div');
+            rowExtra.className = 'scholar-card__row';
+            rowExtra.style.marginTop = '0.5rem';
+            rowExtra.appendChild(createChips(s.extracurriculars));
+            card.appendChild(rowExtra);
+          }
+
+          if (s.additionalSupport) {
+            var support = document.createElement('div');
+            support.className = 'scholar-card__support';
+            support.textContent = s.additionalSupport;
+            card.appendChild(support);
+          }
+
+          var actions = document.createElement('div');
+          actions.className = 'scholar-card__actions';
+          var editBtn = document.createElement('button');
+          editBtn.className = 'btn btn--ghost-dark btn--sm';
+          editBtn.textContent = 'Edit';
+          editBtn.addEventListener('click', function () { openEditModal(s); });
+          var deleteBtn = document.createElement('button');
+          deleteBtn.className = 'btn btn--terra btn--sm';
+          deleteBtn.textContent = 'Delete';
+          deleteBtn.addEventListener('click', function () { deleteScholar(s.id, s.firstName + ' ' + s.lastInitial + '.'); });
+          var auditBtn = document.createElement('button');
+          auditBtn.className = 'btn btn--ghost-dark btn--sm';
+          auditBtn.textContent = 'Audit';
+          auditBtn.addEventListener('click', function () { toggleAuditPopover(s.id, auditBtn); });
+          actions.appendChild(editBtn);
+          actions.appendChild(deleteBtn);
+          actions.appendChild(auditBtn);
+          card.appendChild(actions);
+
+          scholarsCards.appendChild(card);
+        });
+
+        // Empty state
+        if (sorted.length === 0) {
+          emptyState.style.display = 'block';
+        } else {
+          emptyState.style.display = 'none';
+        }
+      }
+
+      // --- AUTH UI ---
+
+      function updateAuthUI() {
+        if (currentUser) {
+          volunteerBar.classList.add('is-visible');
+          volunteerName.textContent = currentUser.displayName || currentUser.email.split('@')[0];
+          authSection.style.display = 'none';
+          document.body.classList.add('is-admin');
+          btnAddSchool.style.display = '';
+        } else {
+          volunteerBar.classList.remove('is-visible');
+          authSection.style.display = 'block';
+          document.body.classList.remove('is-admin');
+          btnAddSchool.style.display = 'none';
+        }
+      }
+
+      // --- MODAL LOGIC ---
+
+      function resetScholarForm() {
+        scholarForm.reset();
+        editingScholarId = null;
+        formTags = [];
+        renderFormTags();
+        modalTitle.textContent = 'Add Scholar';
+        btnSubmit.textContent = 'Add Scholar';
+        customPathwayGroup.classList.remove('is-visible');
+        scholarSchoolOther.classList.remove('is-visible');
+        scholarSchoolOther.required = false;
+        scholarSchoolOther.value = '';
+      }
+
+      function openAddModal() {
+        if (!currentUser) { showToast('Please sign in first', 'error'); return; }
+        resetScholarForm();
+        modalScholar.classList.add('is-open');
+      }
+
+      function openEditModal(scholar) {
+        if (!currentUser) { showToast('Please sign in first', 'error'); return; }
+        resetScholarForm();
+        editingScholarId = scholar.id;
+        modalTitle.textContent = 'Edit Scholar';
+        btnSubmit.textContent = 'Save Changes';
+
+        document.getElementById('scholar-firstName').value = scholar.firstName || '';
+        document.getElementById('scholar-lastInitial').value = scholar.lastInitial || '';
+
+        // Set school dropdown
+        var schoolFound = false;
+        for (var si = 0; si < scholarSchoolSelect.options.length; si++) {
+          if (scholarSchoolSelect.options[si].value === scholar.school) {
+            scholarSchoolSelect.value = scholar.school;
+            schoolFound = true;
+            break;
+          }
+        }
+        if (!schoolFound && scholar.school) {
+          scholarSchoolSelect.value = '__other';
+          scholarSchoolOther.classList.add('is-visible');
+          scholarSchoolOther.value = scholar.school;
+          scholarSchoolOther.required = true;
+        } else {
+          scholarSchoolOther.classList.remove('is-visible');
+          scholarSchoolOther.required = false;
+        }
+
+        document.getElementById('scholar-classGrade').value = scholar.classGrade || '';
+
+        // Enrolled date
+        var enrolled = scholar.enrolledDate;
+        if (enrolled) {
+          var d;
+          if (enrolled.toDate) d = enrolled.toDate();
+          else d = new Date(enrolled);
+          if (!isNaN(d.getTime())) {
+            var yyyy = d.getFullYear();
+            var mm = String(d.getMonth() + 1).padStart(2, '0');
+            var dd = String(d.getDate()).padStart(2, '0');
+            document.getElementById('scholar-enrolledDate').value = yyyy + '-' + mm + '-' + dd;
+          }
+        }
+
+        // Pathway
+        if (isStandardPathway(scholar.pathway)) {
+          pathwaySelect.value = scholar.pathway;
+          customPathwayGroup.classList.remove('is-visible');
+        } else {
+          pathwaySelect.value = '__other';
+          customPathwayGroup.classList.add('is-visible');
+          document.getElementById('scholar-customPathway').value = scholar.pathway || '';
+        }
+
+        document.getElementById('scholar-performance').value = scholar.performance || '';
+        document.getElementById('scholar-status').value = scholar.status || 'active';
+        document.getElementById('scholar-support').value = scholar.additionalSupport || '';
+
+        formTags = (scholar.extracurriculars || []).slice();
+        renderFormTags();
+
+        modalScholar.classList.add('is-open');
+      }
+
+      // --- TAGS INPUT ---
+
+      function renderFormTags() {
+        // Remove existing chip elements
+        var existingChips = tagsInputWrap.querySelectorAll('.chip');
+        existingChips.forEach(function (chip) {
+          tagsInputWrap.removeChild(chip);
+        });
+
+        formTags.forEach(function (tag, idx) {
+          var chip = document.createElement('span');
+          chip.className = 'chip';
+
+          var textNode = document.createTextNode(tag);
+          chip.appendChild(textNode);
+
+          var removeBtn = document.createElement('span');
+          removeBtn.className = 'chip-remove';
+          removeBtn.textContent = '\u00D7';
+          removeBtn.addEventListener('click', function () {
+            formTags.splice(idx, 1);
+            renderFormTags();
+          });
+          chip.appendChild(removeBtn);
+
+          tagsInputWrap.insertBefore(chip, tagsInput);
+        });
+      }
+
+      tagsInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ',') {
+          e.preventDefault();
+          var val = tagsInput.value.replace(/,/g, '').trim();
+          if (val && formTags.indexOf(val) === -1) {
+            formTags.push(val);
+            renderFormTags();
+          }
+          tagsInput.value = '';
+        }
+        if (e.key === 'Backspace' && tagsInput.value === '' && formTags.length > 0) {
+          formTags.pop();
+          renderFormTags();
+        }
+      });
+
+      tagsInputWrap.addEventListener('click', function () {
+        tagsInput.focus();
+      });
+
+      // --- CUSTOM PATHWAY TOGGLE ---
+
+      pathwaySelect.addEventListener('change', function () {
+        if (pathwaySelect.value === '__other') {
+          customPathwayGroup.classList.add('is-visible');
+        } else {
+          customPathwayGroup.classList.remove('is-visible');
+        }
+      });
+
+      // --- FILTER & SEARCH EVENTS ---
+
+      filterPathway.addEventListener('change', renderScholars);
+      filterStatus.addEventListener('change', renderScholars);
+      filterPerformance.addEventListener('change', renderScholars);
+      searchInput.addEventListener('input', renderScholars);
+
+      // --- SORT (table header click) ---
+
+      document.querySelectorAll('.scholars-table th[data-sort]').forEach(function (th) {
+        th.addEventListener('click', function () {
+          var field = th.getAttribute('data-sort');
+          if (currentSort.field === field) {
+            currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
+          } else {
+            currentSort.field = field;
+            currentSort.dir = 'asc';
+          }
+          renderScholars();
+        });
+      });
+
+      // --- MODAL EVENTS ---
+
+      document.getElementById('btn-add-scholar').addEventListener('click', openAddModal);
+      document.getElementById('modal-scholar-close').addEventListener('click', function () { modalScholar.classList.remove('is-open'); });
+      document.getElementById('modal-scholar-cancel').addEventListener('click', function () { modalScholar.classList.remove('is-open'); });
+      document.getElementById('btn-login').addEventListener('click', function () { modalLogin.classList.add('is-open'); });
+      document.getElementById('modal-login-close').addEventListener('click', function () { modalLogin.classList.remove('is-open'); });
+
+      // --- FORM SUBMIT ---
+
+      scholarForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (!currentUser) { showToast('Please sign in first', 'error'); return; }
+
+        var firstName = document.getElementById('scholar-firstName').value.trim();
+        var lastInitial = document.getElementById('scholar-lastInitial').value.trim().toUpperCase();
+        var schoolVal = scholarSchoolSelect.value;
+        var school = schoolVal;
+        if (schoolVal === '__other') {
+          school = scholarSchoolOther.value.trim();
+          if (!school) { showToast('Please enter a school name', 'error'); return; }
+        }
+        var classGrade = document.getElementById('scholar-classGrade').value.trim();
+        var enrolledDateStr = document.getElementById('scholar-enrolledDate').value;
+        var pathway = pathwaySelect.value;
+        var performance = document.getElementById('scholar-performance').value;
+        var status = document.getElementById('scholar-status').value;
+        var additionalSupport = document.getElementById('scholar-support').value.trim();
+
+        if (pathway === '__other') {
+          pathway = document.getElementById('scholar-customPathway').value.trim();
+          if (!pathway) { showToast('Please enter a custom pathway name', 'error'); return; }
+        }
+
+        if (!firstName || !lastInitial || !school || !classGrade || !enrolledDateStr || !pathway || !performance) {
+          showToast('Please fill all required fields', 'error');
+          return;
+        }
+
+        var enrolledDate = firebase.firestore.Timestamp.fromDate(new Date(enrolledDateStr));
+
+        var scholarData = {
+          firstName: firstName,
+          lastInitial: lastInitial,
+          school: school,
+          classGrade: classGrade,
+          pathway: pathway,
+          enrolledDate: enrolledDate,
+          performance: performance,
+          extracurriculars: formTags.slice(),
+          additionalSupport: additionalSupport,
+          status: status
+        };
+
+        var userName = currentUser.displayName || currentUser.email.split('@')[0];
+        var wasEditing = editingScholarId;
+
+        if (editingScholarId) {
+          // Find old data for audit diff
+          var oldScholar = null;
+          allScholars.forEach(function (s) {
+            if (s.id === editingScholarId) oldScholar = s;
+          });
+
+          scholarData.lastEditedBy = currentUser.uid;
+          scholarData.lastEditedByName = userName;
+          scholarData.lastEditedAt = firebase.firestore.FieldValue.serverTimestamp();
+
+          var changes = {};
+          if (oldScholar) {
+            var checkFields = ['firstName', 'lastInitial', 'school', 'classGrade', 'pathway', 'performance', 'additionalSupport', 'status'];
+            checkFields.forEach(function (f) {
+              var oldVal = oldScholar[f] || '';
+              var newVal = scholarData[f] || '';
+              if (String(oldVal) !== String(newVal)) {
+                changes[f] = { old: String(oldVal), 'new': String(newVal) };
+              }
+            });
+            var oldExtras = (oldScholar.extracurriculars || []).join(', ');
+            var newExtras = (scholarData.extracurriculars || []).join(', ');
+            if (oldExtras !== newExtras) {
+              changes.extracurriculars = { old: oldExtras, 'new': newExtras };
+            }
+          }
+
+          db.collection('scholars').doc(editingScholarId).update(scholarData)
+            .then(function () {
+              // Audit log
+              var auditData = {
+                collection: 'scholars',
+                docId: editingScholarId,
+                action: 'edit',
+                userId: currentUser.uid,
+                userEmail: currentUser.email,
+                userName: userName,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                changes: changes
+              };
+              db.collection('audit_log').add(auditData).catch(function (err) {
+                console.warn('Audit log write failed:', err);
+              });
+              modalScholar.classList.remove('is-open');
+              showToast('Scholar updated');
+              return fetchScholars();
+            })
+            .catch(function (err) {
+              showToast('Error updating scholar: ' + err.message, 'error');
+            });
+        } else {
+          scholarData.createdBy = currentUser.uid;
+          scholarData.createdByName = userName;
+          scholarData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+          scholarData.lastEditedBy = currentUser.uid;
+          scholarData.lastEditedByName = userName;
+          scholarData.lastEditedAt = firebase.firestore.FieldValue.serverTimestamp();
+
+          // Auto-create school if "Other" was selected and school doesn't exist
+          var autoCreateSchoolPromise;
+          if (schoolVal === '__other') {
+            var schoolExists = false;
+            allSchools.forEach(function (s) { if (s.name === school) schoolExists = true; });
+            if (!schoolExists) {
+              autoCreateSchoolPromise = db.collection('schools').add({
+                name: school,
+                location: '',
+                contactPerson: '',
+                contactPhone: '',
+                contactEmail: '',
+                scholarCount: 1,
+                createdBy: currentUser.uid,
+                createdByName: userName,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+              }).then(function () { return fetchSchools(); });
+            }
+          }
+
+          db.collection('scholars').add(scholarData)
+            .then(function (docRef) {
+              var auditData = {
+                collection: 'scholars',
+                docId: docRef.id,
+                action: 'create',
+                userId: currentUser.uid,
+                userEmail: currentUser.email,
+                userName: userName,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                changes: scholarData
+              };
+              db.collection('audit_log').add(auditData).catch(function (err) {
+                console.warn('Audit log write failed:', err);
+              });
+              modalScholar.classList.remove('is-open');
+              showToast('Scholar added');
+              return fetchScholars();
+            })
+            .catch(function (err) {
+              showToast('Error adding scholar: ' + err.message, 'error');
+            });
+        }
+      });
+
+      // --- DELETE ---
+
+      function deleteScholar(id, displayName) {
+        if (!currentUser) { showToast('Please sign in first', 'error'); return; }
+        var confirmed = confirm('Delete scholar "' + displayName + '"? This cannot be undone.');
+        if (!confirmed) return;
+
+        var userName = currentUser.displayName || currentUser.email.split('@')[0];
+
+        db.collection('scholars').doc(id).delete()
+          .then(function () {
+            var auditData = {
+              collection: 'scholars',
+              docId: id,
+              action: 'delete',
+              userId: currentUser.uid,
+              userEmail: currentUser.email,
+              userName: userName,
+              timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+              changes: { deleted: displayName }
+            };
+            db.collection('audit_log').add(auditData).catch(function (err) {
+              console.warn('Audit log write failed:', err);
+            });
+            showToast('Scholar deleted');
+            return fetchScholars();
+          })
+          .catch(function (err) {
+            showToast('Error deleting scholar: ' + err.message, 'error');
+          });
+      }
+
+      // --- AUDIT POPOVER ---
+
+      var activeAuditPopover = null;
+
+      function closeAuditPopover() {
+        if (activeAuditPopover && activeAuditPopover.parentNode) {
+          activeAuditPopover.parentNode.removeChild(activeAuditPopover);
+        }
+        activeAuditPopover = null;
+      }
+
+      document.addEventListener('click', function (e) {
+        if (activeAuditPopover && !activeAuditPopover.contains(e.target)) {
+          closeAuditPopover();
+        }
+      });
+
+      function toggleAuditPopover(scholarId, anchorBtn) {
+        if (activeAuditPopover && activeAuditPopover.getAttribute('data-audit-scholar') === scholarId) {
+          closeAuditPopover();
+          return;
+        }
+        closeAuditPopover();
+
+        var popover = document.createElement('div');
+        popover.className = 'audit-popover';
+        popover.setAttribute('data-audit-scholar', scholarId);
+
+        var titleEl = document.createElement('div');
+        titleEl.className = 'audit-popover__title';
+        titleEl.textContent = 'Audit Trail';
+        popover.appendChild(titleEl);
+
+        var loadingEl = document.createElement('div');
+        loadingEl.className = 'audit-popover__empty';
+        loadingEl.textContent = 'Loading...';
+        popover.appendChild(loadingEl);
+
+        var actionsDiv = anchorBtn.parentNode;
+        actionsDiv.style.position = 'relative';
+        actionsDiv.appendChild(popover);
+        activeAuditPopover = popover;
+
+        db.collection('audit_log')
+          .where('docId', '==', scholarId)
+          .orderBy('timestamp', 'desc')
+          .limit(20)
+          .get()
+          .then(function (snapshot) {
+            if (loadingEl.parentNode) loadingEl.parentNode.removeChild(loadingEl);
+
+            if (snapshot.empty) {
+              var emptyEl = document.createElement('div');
+              emptyEl.className = 'audit-popover__empty';
+              emptyEl.textContent = 'No audit records found.';
+              popover.appendChild(emptyEl);
+              return;
+            }
+
+            snapshot.forEach(function (doc) {
+              var data = doc.data();
+              var entry = document.createElement('div');
+              entry.className = 'audit-entry';
+
+              var actionSpan = document.createElement('span');
+              actionSpan.className = 'audit-action audit-action--' + data.action;
+              actionSpan.textContent = data.action;
+              entry.appendChild(actionSpan);
+
+              var spaceText = document.createTextNode(' ');
+              entry.appendChild(spaceText);
+
+              var userSpan = document.createElement('span');
+              userSpan.className = 'audit-entry__user';
+              userSpan.textContent = data.userName || data.userEmail || 'unknown';
+              entry.appendChild(userSpan);
+
+              if (data.timestamp && data.timestamp.toDate) {
+                var timeDiv = document.createElement('div');
+                timeDiv.className = 'audit-entry__details';
+                timeDiv.textContent = data.timestamp.toDate().toLocaleString();
+                entry.appendChild(timeDiv);
+              }
+
+              if (data.changes && data.action === 'edit') {
+                var changesDiv = document.createElement('div');
+                changesDiv.className = 'audit-entry__details';
+                var changeKeys = Object.keys(data.changes);
+                changeKeys.forEach(function (key) {
+                  var c = data.changes[key];
+                  var line = document.createElement('div');
+                  line.textContent = key + ': "' + (c.old || '') + '" \u2192 "' + (c['new'] || '') + '"';
+                  changesDiv.appendChild(line);
+                });
+                entry.appendChild(changesDiv);
+              }
+
+              popover.appendChild(entry);
+            });
+          })
+          .catch(function (err) {
+            console.warn('Audit log fetch failed:', err);
+            if (loadingEl.parentNode) loadingEl.parentNode.removeChild(loadingEl);
+            var errEl = document.createElement('div');
+            errEl.className = 'audit-popover__empty';
+            errEl.textContent = 'Could not load audit trail.';
+            popover.appendChild(errEl);
+          });
+      }
+
+      // --- AUTH ---
+
+      auth.onAuthStateChanged(function (firebaseUser) {
+        currentUser = firebaseUser;
+        updateAuthUI();
+      });
+
+      document.getElementById('btn-do-login').addEventListener('click', function () {
+        var email = document.getElementById('login-email').value;
+        var password = document.getElementById('login-password').value;
+        if (!email || !password) { showToast('Please enter email and password', 'error'); return; }
+
+        auth.signInWithEmailAndPassword(email, password)
+          .then(function () {
+            modalLogin.classList.remove('is-open');
+            showToast('Signed in successfully');
+          })
+          .catch(function (err) {
+            if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+              auth.createUserWithEmailAndPassword(email, password)
+                .then(function (cred) {
+                  var name = email.split('@')[0];
+                  return cred.user.updateProfile({ displayName: name });
+                })
+                .then(function () {
+                  modalLogin.classList.remove('is-open');
+                  showToast('Account created and signed in');
+                  updateAuthUI();
+                })
+                .catch(function (createErr) {
+                  showToast(createErr.message, 'error');
+                });
+            } else {
+              showToast(err.message, 'error');
+            }
+          });
+      });
+
+      document.getElementById('btn-logout').addEventListener('click', function () {
+        auth.signOut().then(function () {
+          showToast('Signed out');
+        }).catch(function (err) {
+          showToast(err.message, 'error');
+        });
+      });
+
+      // --- EXPENSE DRAWER ---
+
+      var expenseOverlay = document.getElementById('expense-overlay');
+      var expenseDrawerBody = document.getElementById('expense-drawer-body');
+      var expenseDrawerTitle = document.getElementById('expense-drawer-title');
+      var expenseDrawerTotal = document.getElementById('expense-drawer-total');
+
+      document.getElementById('expense-drawer-close').addEventListener('click', closeExpenseDrawer);
+      expenseOverlay.addEventListener('click', function (e) {
+        if (e.target === expenseOverlay) closeExpenseDrawer();
+      });
+
+      function closeExpenseDrawer() {
+        expenseOverlay.classList.remove('is-open');
+        activeDrawerScholarId = null;
+      }
+
+      function openExpenseDrawer(scholar) {
+        activeDrawerScholarId = scholar.id;
+        var displayName = scholar.firstName + ' ' + scholar.lastInitial + '.';
+        expenseDrawerTitle.textContent = 'Expenses \u2014 ' + displayName;
+
+        clearChildren(expenseDrawerBody);
+
+        // Add expense button (only visible to admin)
+        var addBtn = document.createElement('button');
+        addBtn.className = 'add-expense-toggle';
+        addBtn.textContent = '+ Add Expense';
+
+        var addForm = document.createElement('div');
+        addForm.className = 'add-expense-form';
+
+        addBtn.addEventListener('click', function () {
+          if (addForm.classList.contains('is-open')) {
+            addForm.classList.remove('is-open');
+            addBtn.textContent = '+ Add Expense';
+          } else {
+            addForm.classList.add('is-open');
+            addBtn.textContent = 'Cancel';
+          }
+        });
+
+        // Build add expense form
+        buildAddExpenseForm(addForm, scholar, addBtn);
+
+        expenseDrawerBody.appendChild(addBtn);
+        expenseDrawerBody.appendChild(addForm);
+
+        // Render expense list
+        var expenses = (expensesByScholar[scholar.id] || []).slice();
+        expenses.sort(function (a, b) {
+          var da = a.date && a.date.toDate ? a.date.toDate().getTime() : new Date(a.date).getTime();
+          var db = b.date && b.date.toDate ? b.date.toDate().getTime() : new Date(b.date).getTime();
+          return db - da;
+        });
+
+        if (expenses.length === 0) {
+          var emptyEl = document.createElement('div');
+          emptyEl.className = 'expense-empty';
+          emptyEl.textContent = 'No expenses recorded yet.';
+          expenseDrawerBody.appendChild(emptyEl);
+        } else {
+          expenses.forEach(function (exp) {
+            expenseDrawerBody.appendChild(createExpenseItem(exp));
+          });
+        }
+
+        // Total
+        var total = getScholarTotalSpend(scholar.id);
+        expenseDrawerTotal.textContent = formatNairaFull(total);
+
+        expenseOverlay.classList.add('is-open');
+      }
+
+      function createExpenseItem(exp) {
+        var item = document.createElement('div');
+        item.className = 'expense-item';
+
+        var left = document.createElement('div');
+        left.className = 'expense-item__left';
+
+        var desc = document.createElement('div');
+        desc.className = 'expense-item__desc';
+        desc.textContent = exp.description || 'Expense';
+        left.appendChild(desc);
+
+        var meta = document.createElement('div');
+        meta.className = 'expense-item__meta';
+
+        var catChip = document.createElement('span');
+        catChip.className = 'expense-cat expense-cat--' + (exp.category || 'other');
+        catChip.textContent = expenseCategoryLabels[exp.category] || exp.category || 'Other';
+        meta.appendChild(catChip);
+
+        var dateText = document.createElement('span');
+        var expDate;
+        if (exp.date && exp.date.toDate) {
+          expDate = exp.date.toDate();
+        } else if (exp.date) {
+          expDate = new Date(exp.date);
+        }
+        if (expDate && !isNaN(expDate.getTime())) {
+          dateText.textContent = expDate.toLocaleDateString('en-NG', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+        meta.appendChild(dateText);
+        left.appendChild(meta);
+
+        item.appendChild(left);
+
+        var amountEl = document.createElement('div');
+        amountEl.className = 'expense-item__amount';
+        amountEl.textContent = formatNairaFull(exp.amount || 0);
+        item.appendChild(amountEl);
+
+        return item;
+      }
+
+      function buildAddExpenseForm(formContainer, scholar, toggleBtn) {
+        var form = document.createElement('form');
+
+        var row1 = document.createElement('div');
+        row1.className = 'form-row';
+
+        var grpDate = document.createElement('div');
+        grpDate.className = 'form-group';
+        var lblDate = document.createElement('label');
+        lblDate.textContent = 'Date';
+        grpDate.appendChild(lblDate);
+        var inpDate = document.createElement('input');
+        inpDate.type = 'date';
+        inpDate.required = true;
+        var today = new Date();
+        inpDate.value = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+        grpDate.appendChild(inpDate);
+        row1.appendChild(grpDate);
+
+        var grpAmt = document.createElement('div');
+        grpAmt.className = 'form-group';
+        var lblAmt = document.createElement('label');
+        lblAmt.textContent = 'Amount (\u20A6)';
+        grpAmt.appendChild(lblAmt);
+        var inpAmt = document.createElement('input');
+        inpAmt.type = 'number';
+        inpAmt.required = true;
+        inpAmt.min = '1';
+        inpAmt.placeholder = 'e.g. 150000';
+        grpAmt.appendChild(inpAmt);
+        row1.appendChild(grpAmt);
+
+        form.appendChild(row1);
+
+        var grpCat = document.createElement('div');
+        grpCat.className = 'form-group';
+        var lblCat = document.createElement('label');
+        lblCat.textContent = 'Category';
+        grpCat.appendChild(lblCat);
+        var selCat = document.createElement('select');
+        selCat.required = true;
+        expenseCategories.forEach(function (cat) {
+          var opt = document.createElement('option');
+          opt.value = cat;
+          opt.textContent = expenseCategoryLabels[cat];
+          selCat.appendChild(opt);
+        });
+        grpCat.appendChild(selCat);
+        form.appendChild(grpCat);
+
+        var grpDesc = document.createElement('div');
+        grpDesc.className = 'form-group';
+        var lblDesc = document.createElement('label');
+        lblDesc.textContent = 'Description';
+        grpDesc.appendChild(lblDesc);
+        var inpDesc = document.createElement('input');
+        inpDesc.type = 'text';
+        inpDesc.placeholder = 'e.g. Term 2 school fees';
+        inpDesc.required = true;
+        grpDesc.appendChild(inpDesc);
+        form.appendChild(grpDesc);
+
+        var actions = document.createElement('div');
+        actions.className = 'form-actions';
+        var submitBtn = document.createElement('button');
+        submitBtn.type = 'submit';
+        submitBtn.className = 'btn btn--green btn--sm';
+        submitBtn.textContent = 'Save Expense';
+        actions.appendChild(submitBtn);
+        form.appendChild(actions);
+
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          if (!currentUser) { showToast('Please sign in first', 'error'); return; }
+
+          var dateVal = inpDate.value;
+          var amountVal = parseInt(inpAmt.value, 10);
+          var catVal = selCat.value;
+          var descVal = inpDesc.value.trim();
+
+          if (!dateVal || !amountVal || !descVal) {
+            showToast('Please fill all fields', 'error');
+            return;
+          }
+
+          var userName = currentUser.displayName || currentUser.email.split('@')[0];
+          var expenseData = {
+            scholarId: scholar.id,
+            scholarName: scholar.firstName + ' ' + scholar.lastInitial + '.',
+            school: scholar.school,
+            date: firebase.firestore.Timestamp.fromDate(new Date(dateVal)),
+            amount: amountVal,
+            category: catVal,
+            description: descVal,
+            createdBy: currentUser.uid,
+            createdByName: userName,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          };
+
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Saving...';
+
+          db.collection('scholar_expenses').add(expenseData)
+            .then(function () {
+              showToast('Expense added');
+              formContainer.classList.remove('is-open');
+              toggleBtn.textContent = '+ Add Expense';
+              return fetchExpenses().then(function () {
+                updateDashboard();
+                renderScholars();
+                if (activeDrawerScholarId === scholar.id) {
+                  openExpenseDrawer(scholar);
+                }
+              });
+            })
+            .catch(function (err) {
+              showToast('Error adding expense: ' + err.message, 'error');
+              submitBtn.disabled = false;
+              submitBtn.textContent = 'Save Expense';
+            });
+        });
+
+        formContainer.appendChild(form);
+      }
+
+      // --- FETCH EXPENSES ---
+
+      function fetchExpenses() {
+        return db.collection('scholar_expenses').get()
+          .then(function (snapshot) {
+            allExpenses = [];
+            snapshot.forEach(function (doc) {
+              var data = doc.data();
+              allExpenses.push({
+                id: doc.id,
+                scholarId: data.scholarId || '',
+                scholarName: data.scholarName || '',
+                school: data.school || '',
+                date: data.date || null,
+                amount: data.amount || 0,
+                category: data.category || 'other',
+                description: data.description || '',
+                createdBy: data.createdBy || '',
+                createdByName: data.createdByName || '',
+                createdAt: data.createdAt || null
+              });
+            });
+            buildExpenseIndex();
+            return allExpenses;
+          })
+          .catch(function (err) {
+            console.warn('Error fetching expenses:', err);
+            allExpenses = [];
+            buildExpenseIndex();
+            return allExpenses;
+          });
+      }
+
+      // --- SEED EXPENSE DATA ---
+
+      function generateSeedExpenses(scholarDocs) {
+        var batch = db.batch();
+        var categories = [
+          { cat: 'tuition', min: 100000, max: 500000 },
+          { cat: 'books', min: 15000, max: 50000 },
+          { cat: 'uniform', min: 10000, max: 30000 },
+          { cat: 'transport', min: 20000, max: 60000 },
+          { cat: 'feeding', min: 30000, max: 80000 },
+          { cat: 'medical', min: 5000, max: 25000 }
+        ];
+        var descriptions = {
+          tuition: ['Term 1 school fees', 'Term 2 school fees', 'Term 3 school fees', 'Exam registration fee'],
+          books: ['Textbooks for new term', 'Exercise books and stationery', 'Science lab manual', 'Recommended reading set'],
+          uniform: ['School uniform set', 'Sports kit', 'Replacement uniform pieces'],
+          transport: ['Term 1 transport', 'Term 2 transport', 'Term 3 transport', 'Field trip transport'],
+          feeding: ['Term 1 meal plan', 'Term 2 meal plan', 'Lunch provisions for term'],
+          medical: ['Annual health checkup', 'Dental visit', 'Vision screening and glasses', 'First aid supplies']
+        };
+        var termDates = ['2024-01-15', '2024-04-22', '2024-09-09', '2025-01-13', '2025-04-28', '2025-09-08'];
+
+        scholarDocs.forEach(function (doc) {
+          var data = doc.data();
+          var scholarName = (data.firstName || '') + ' ' + (data.lastInitial || '') + '.';
+          var school = data.school || '';
+
+          // 3-6 expenses per scholar
+          var numExpenses = 3 + Math.floor(Math.random() * 4);
+          var usedCats = [];
+
+          for (var i = 0; i < numExpenses; i++) {
+            var catObj;
+            if (i < categories.length && usedCats.indexOf(i) === -1) {
+              catObj = categories[i];
+              usedCats.push(i);
+            } else {
+              var ri = Math.floor(Math.random() * categories.length);
+              catObj = categories[ri];
+            }
+            var amount = Math.round((catObj.min + Math.random() * (catObj.max - catObj.min)) / 1000) * 1000;
+            var descs = descriptions[catObj.cat];
+            var desc = descs[Math.floor(Math.random() * descs.length)];
+            var dateStr = termDates[Math.floor(Math.random() * termDates.length)];
+
+            var ref = db.collection('scholar_expenses').doc();
+            batch.set(ref, {
+              scholarId: doc.id,
+              scholarName: scholarName,
+              school: school,
+              date: firebase.firestore.Timestamp.fromDate(new Date(dateStr)),
+              amount: amount,
+              category: catObj.cat,
+              description: desc,
+              createdBy: 'seed',
+              createdByName: 'System',
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+          }
+        });
+        return batch.commit();
+      }
+
+      // --- SEED DATA ---
+
+      var seedScholars = [
+        { firstName: 'Adaeze', lastInitial: 'O', school: 'Corona Secondary School, Agbara', classGrade: 'SS 1', pathway: 'gifted-talented', enrolledDate: '2024-01-15', performance: 'outstanding', extracurriculars: ['Debate', 'Science Club'], additionalSupport: 'Receives weekly tutoring in Mathematics', status: 'active' },
+        { firstName: 'Tunde', lastInitial: 'M', school: 'Greensprings School, Lekki', classGrade: 'JSS 2', pathway: 'difficult-backgrounds', enrolledDate: '2023-09-05', performance: 'excellent', extracurriculars: ['Football', 'Art'], additionalSupport: 'Monthly counselling sessions', status: 'active' },
+        { firstName: 'Ngozi', lastInitial: 'E', school: 'Atlantic Hall, Epe', classGrade: 'SS 2', pathway: 'special-needs', enrolledDate: '2022-06-10', performance: 'good', extracurriculars: ['Music', 'Swimming'], additionalSupport: 'Assistive technology provided, hearing aid maintenance', status: 'active' },
+        { firstName: 'Emeka', lastInitial: 'A', school: 'Chrisland College, Ikeja', classGrade: 'JSS 3', pathway: 'gifted-talented', enrolledDate: '2023-01-20', performance: 'outstanding', extracurriculars: ['Mathematics Olympiad', 'Chess', 'Coding Club'], additionalSupport: '', status: 'active' },
+        { firstName: 'Fatima', lastInitial: 'B', school: 'Day Waterman College, Abeokuta', classGrade: 'SS 1', pathway: 'difficult-backgrounds', enrolledDate: '2024-04-12', performance: 'good', extracurriculars: ['Volleyball'], additionalSupport: 'After-school meal program, transport assistance', status: 'active' },
+        { firstName: 'Oluwaseun', lastInitial: 'K', school: 'Lagoon School, Victoria Island', classGrade: 'Primary 5', pathway: 'special-needs', enrolledDate: '2023-03-18', performance: 'satisfactory', extracurriculars: ['Art', 'Drama'], additionalSupport: 'Speech therapy twice weekly, dedicated learning aide', status: 'active' },
+        { firstName: 'Chidinma', lastInitial: 'U', school: 'Corona Secondary School, Agbara', classGrade: 'SS 3', pathway: 'gifted-talented', enrolledDate: '2021-09-01', performance: 'excellent', extracurriculars: ['Debate', 'Model UN', 'Creative Writing'], additionalSupport: 'University preparation mentoring', status: 'graduated' },
+        { firstName: 'Ibrahim', lastInitial: 'D', school: 'Greensprings School, Lekki', classGrade: 'JSS 1', pathway: 'difficult-backgrounds', enrolledDate: '2025-01-10', performance: 'satisfactory', extracurriculars: ['Football'], additionalSupport: 'Receives school supplies and uniforms, weekly check-ins', status: 'active' },
+        { firstName: 'Blessing', lastInitial: 'N', school: 'Vivian Fowler Memorial College, Ikorodu', classGrade: 'SS 2', pathway: 'difficult-backgrounds', enrolledDate: '2023-06-22', performance: 'excellent', extracurriculars: ['Track and Field', 'Science Club', 'Choir'], additionalSupport: '', status: 'active' },
+        { firstName: 'Yusuf', lastInitial: 'S', school: 'Atlantic Hall, Epe', classGrade: 'JSS 2', pathway: 'special-needs', enrolledDate: '2024-09-03', performance: 'needs-support', extracurriculars: [], additionalSupport: 'Occupational therapy, braille learning materials, one-on-one tutoring', status: 'active' },
+        { firstName: 'Aisha', lastInitial: 'L', school: 'Chrisland College, Ikeja', classGrade: 'SS 1', pathway: 'gifted-talented', enrolledDate: '2024-02-14', performance: 'good', extracurriculars: ['Robotics', 'Basketball', 'French Club'], additionalSupport: '', status: 'on-hold' },
+        { firstName: 'Obinna', lastInitial: 'W', school: 'Lagoon School, Victoria Island', classGrade: 'Primary 6', pathway: 'difficult-backgrounds', enrolledDate: '2022-01-25', performance: 'excellent', extracurriculars: ['Music', 'Football', 'Coding Club'], additionalSupport: 'Nutritional supplement program', status: 'active' }
+      ];
+
+      var seedSchoolsData = [
+        { name: 'Corona Secondary School, Agbara', location: 'Agbara, Ogun State', contactPerson: 'Mrs. Adeyemi', contactPhone: '+234 801 234 5678', contactEmail: 'admin@coronaschools.com', scholarCount: 2 },
+        { name: 'Greensprings School, Lekki', location: 'Lekki, Lagos State', contactPerson: 'Mr. Olawale', contactPhone: '+234 802 345 6789', contactEmail: 'info@greensprings.ng', scholarCount: 2 },
+        { name: 'Atlantic Hall, Epe', location: 'Epe, Lagos State', contactPerson: 'Mrs. Nnamdi', contactPhone: '+234 803 456 7890', contactEmail: 'admin@atlantichall.edu.ng', scholarCount: 2 },
+        { name: 'Chrisland College, Ikeja', location: 'Ikeja, Lagos State', contactPerson: 'Dr. Okafor', contactPhone: '+234 804 567 8901', contactEmail: 'office@chrislandcollege.com', scholarCount: 2 },
+        { name: 'Day Waterman College, Abeokuta', location: 'Abeokuta, Ogun State', contactPerson: 'Mrs. Balogun', contactPhone: '+234 805 678 9012', contactEmail: 'admissions@dwc.edu.ng', scholarCount: 1 },
+        { name: 'Lagoon School, Victoria Island', location: 'Victoria Island, Lagos State', contactPerson: 'Mr. Adekunle', contactPhone: '+234 806 789 0123', contactEmail: 'admin@lagoonschool.ng', scholarCount: 2 },
+        { name: 'Vivian Fowler Memorial College, Ikorodu', location: 'Ikorodu, Lagos State', contactPerson: 'Mrs. Fashola', contactPhone: '+234 807 890 1234', contactEmail: 'info@vfmc.edu.ng', scholarCount: 1 }
+      ];
+
+      var seedSchoolNotes = [
+        // Corona Secondary School, Agbara
+        { schoolName: 'Corona Secondary School, Agbara', type: 'note', title: 'PTA Meeting Attendance', content: 'Attended PTA meeting. Principal expressed satisfaction with scholars progress. Discussed scholarship renewal terms for next academic year.', date: '2025-11-15', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Corona Secondary School, Agbara', type: 'note', title: 'Facilities Inspection', content: 'Visited school to inspect laboratory and library facilities. Both are well-maintained and suitable for our scholars needs.', date: '2025-09-20', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Corona Secondary School, Agbara', type: 'teacher', title: 'Mr. Chukwuma Eze', content: '', date: '2025-08-01', status: null, priority: null, teacherName: 'Mr. Chukwuma Eze', teacherRole: 'Class Teacher (SS 1)', teacherPhone: '+234 812 345 6789', teacherEmail: 'c.eze@coronaschools.com' },
+        { schoolName: 'Corona Secondary School, Agbara', type: 'teacher', title: 'Mrs. Funke Alade', content: '', date: '2025-08-01', status: null, priority: null, teacherName: 'Mrs. Funke Alade', teacherRole: 'Guidance Counselor', teacherPhone: '+234 813 456 7890', teacherEmail: 'f.alade@coronaschools.com' },
+        { schoolName: 'Corona Secondary School, Agbara', type: 'issue', title: 'Delayed Report Cards', content: 'Report cards for Term 2 were delayed by three weeks. School cited administrative challenges.', date: '2025-08-10', status: 'resolved', priority: 'normal', teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Corona Secondary School, Agbara', type: 'event', title: 'Annual Speech and Prize Day', content: 'Both BSF scholars nominated for awards. Adaeze O. won Best in Science.', date: '2025-12-14', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Corona Secondary School, Agbara', type: 'event', title: 'Inter-House Sports Competition', content: 'Scholars participated actively. Good opportunity to assess extracurricular engagement.', date: '2025-10-22', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+
+        // Greensprings School, Lekki
+        { schoolName: 'Greensprings School, Lekki', type: 'note', title: 'Admission Process Review', content: 'Met with admissions team to discuss streamlined enrollment for sponsored scholars. They agreed to waive application fees for BSF referrals.', date: '2025-10-05', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Greensprings School, Lekki', type: 'note', title: 'Term 1 Progress Check', content: 'Both scholars settling in well. Tunde showing improvement in reading comprehension.', date: '2025-06-15', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Greensprings School, Lekki', type: 'teacher', title: 'Mrs. Abiola Johnson', content: '', date: '2025-08-01', status: null, priority: null, teacherName: 'Mrs. Abiola Johnson', teacherRole: 'Class Teacher (JSS 2)', teacherPhone: '+234 814 567 8901', teacherEmail: 'a.johnson@greensprings.ng' },
+        { schoolName: 'Greensprings School, Lekki', type: 'issue', title: 'Tuition Increase Notice', content: 'School announced 15% tuition increase for next session. Need to review budget allocation.', date: '2025-11-01', status: 'monitoring', priority: 'high', teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Greensprings School, Lekki', type: 'event', title: 'Cultural Day Celebration', content: 'Annual cultural day. Ibrahim participated in Yoruba cultural dance performance.', date: '2025-11-28', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+
+        // Atlantic Hall, Epe
+        { schoolName: 'Atlantic Hall, Epe', type: 'note', title: 'Boarding Facilities Assessment', content: 'Visited dormitories and dining hall. Conditions are good. Students receive balanced meals three times daily.', date: '2025-07-20', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Atlantic Hall, Epe', type: 'note', title: 'Special Needs Accommodations', content: 'Discussed with school administration about enhanced accommodations for Yusuf. School agreed to provide additional support resources.', date: '2025-09-12', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Atlantic Hall, Epe', type: 'teacher', title: 'Mr. Babatunde Ojo', content: '', date: '2025-08-01', status: null, priority: null, teacherName: 'Mr. Babatunde Ojo', teacherRole: 'Special Education Coordinator', teacherPhone: '+234 815 678 9012', teacherEmail: 'b.ojo@atlantichall.edu.ng' },
+        { schoolName: 'Atlantic Hall, Epe', type: 'teacher', title: 'Miss Amaka Obi', content: '', date: '2025-08-01', status: null, priority: null, teacherName: 'Miss Amaka Obi', teacherRole: 'Music Teacher', teacherPhone: '+234 816 789 0123', teacherEmail: 'a.obi@atlantichall.edu.ng' },
+        { schoolName: 'Atlantic Hall, Epe', type: 'issue', title: 'Transport Route Change', content: 'School bus route changed, affecting pickup for Ngozi. Temporary arrangement with private transport needed.', date: '2025-10-15', status: 'resolved', priority: 'normal', teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Atlantic Hall, Epe', type: 'event', title: 'Founders Day Ceremony', content: 'Annual celebration with parent visitation. Good opportunity to engage with school leadership.', date: '2026-02-10', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+
+        // Chrisland College, Ikeja
+        { schoolName: 'Chrisland College, Ikeja', type: 'note', title: 'Academic Review Meeting', content: 'Met with VP Academics. Emeka consistently ranked in top 5 of his class. School recommends him for national science competition.', date: '2025-11-20', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Chrisland College, Ikeja', type: 'teacher', title: 'Mr. Kenneth Adebayo', content: '', date: '2025-08-01', status: null, priority: null, teacherName: 'Mr. Kenneth Adebayo', teacherRole: 'Principal', teacherPhone: '+234 817 890 1234', teacherEmail: 'k.adebayo@chrislandcollege.com' },
+        { schoolName: 'Chrisland College, Ikeja', type: 'issue', title: 'Aisha Scholarship Hold', content: 'Aisha placed on hold due to family relocation uncertainty. Need follow-up with guardian.', date: '2025-10-01', status: 'open', priority: 'high', teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Chrisland College, Ikeja', type: 'event', title: 'STEM Fair', content: 'Emeka presented robotics project at annual STEM fair. Won second place overall.', date: '2025-11-08', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+
+        // Day Waterman College, Abeokuta
+        { schoolName: 'Day Waterman College, Abeokuta', type: 'note', title: 'Initial School Visit', content: 'First visit to assess suitability for Fatima. Excellent pastoral care system and strong emphasis on character development.', date: '2025-04-08', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Day Waterman College, Abeokuta', type: 'note', title: 'Meal Program Setup', content: 'Coordinated with school kitchen to ensure Fatima receives proper nutrition. School very accommodating.', date: '2025-05-15', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Day Waterman College, Abeokuta', type: 'teacher', title: 'Mrs. Oluwakemi Dada', content: '', date: '2025-08-01', status: null, priority: null, teacherName: 'Mrs. Oluwakemi Dada', teacherRole: 'House Mistress', teacherPhone: '+234 818 901 2345', teacherEmail: 'o.dada@dwc.edu.ng' },
+        { schoolName: 'Day Waterman College, Abeokuta', type: 'issue', title: 'Uniform Sizing Issue', content: 'Initial uniform order was wrong size. Replacement ordered and delivered.', date: '2025-04-20', status: 'resolved', priority: 'low', teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Day Waterman College, Abeokuta', type: 'event', title: 'Open Day and Parent Visit', content: 'School open day for prospective and current parents. Good progress reports for Fatima.', date: '2025-09-14', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+
+        // Lagoon School, Victoria Island
+        { schoolName: 'Lagoon School, Victoria Island', type: 'note', title: 'Progress Report Review', content: 'Reviewed end-of-term reports for both scholars. Obinna showing remarkable improvement across all subjects. Oluwaseun progressing steadily with therapy support.', date: '2025-12-01', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Lagoon School, Victoria Island', type: 'teacher', title: 'Mrs. Ngozi Mbah', content: '', date: '2025-08-01', status: null, priority: null, teacherName: 'Mrs. Ngozi Mbah', teacherRole: 'Class Teacher (Primary 5)', teacherPhone: '+234 819 012 3456', teacherEmail: 'n.mbah@lagoonschool.ng' },
+        { schoolName: 'Lagoon School, Victoria Island', type: 'teacher', title: 'Mr. Segun Alabi', content: '', date: '2025-08-01', status: null, priority: null, teacherName: 'Mr. Segun Alabi', teacherRole: 'Speech Therapist', teacherPhone: '+234 820 123 4567', teacherEmail: 's.alabi@lagoonschool.ng' },
+        { schoolName: 'Lagoon School, Victoria Island', type: 'issue', title: 'Speech Therapy Schedule Conflict', content: 'Speech therapy sessions clash with music class. Working with school to find alternative time slot.', date: '2025-09-25', status: 'monitoring', priority: 'normal', teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Lagoon School, Victoria Island', type: 'event', title: 'End of Year Concert', content: 'Both scholars performed in the annual end-of-year concert. Oluwaseun had a drama role.', date: '2025-12-18', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Lagoon School, Victoria Island', type: 'event', title: 'Sports Day', content: 'Annual sports day event. Obinna competed in relay race and football.', date: '2025-10-30', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+
+        // Vivian Fowler Memorial College, Ikorodu
+        { schoolName: 'Vivian Fowler Memorial College, Ikorodu', type: 'note', title: 'Scholarship Renewal Discussion', content: 'Met with bursar to discuss scholarship terms for next year. School willing to offer 10% fee discount for continued partnership.', date: '2025-11-10', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Vivian Fowler Memorial College, Ikorodu', type: 'note', title: 'Blessing Performance Update', content: 'Blessing excelling in athletics. Qualified for state-level inter-school track competition.', date: '2025-10-15', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Vivian Fowler Memorial College, Ikorodu', type: 'teacher', title: 'Coach Emeka Nwosu', content: '', date: '2025-08-01', status: null, priority: null, teacherName: 'Coach Emeka Nwosu', teacherRole: 'Physical Education / Athletics Coach', teacherPhone: '+234 821 234 5678', teacherEmail: 'e.nwosu@vfmc.edu.ng' },
+        { schoolName: 'Vivian Fowler Memorial College, Ikorodu', type: 'issue', title: 'Lab Equipment Shortage', content: 'Science lab missing some equipment needed for SS2 practicals. School says replacement coming next term.', date: '2025-10-05', status: 'monitoring', priority: 'normal', teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Vivian Fowler Memorial College, Ikorodu', type: 'event', title: 'Inter-School Athletics Championship', content: 'Blessing qualified and will represent school at state level. Competition at Teslim Balogun Stadium.', date: '2026-01-20', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' }
+      ];
+
+      function seedSchoolsFirestore() {
+        var batch = db.batch();
+
+        // Create a map of school name to doc ref for notes seeding
+        var schoolRefs = {};
+        seedSchoolsData.forEach(function (s) {
+          var ref = db.collection('schools').doc();
+          schoolRefs[s.name] = ref.id;
+          batch.set(ref, {
+            name: s.name,
+            location: s.location,
+            contactPerson: s.contactPerson,
+            contactPhone: s.contactPhone,
+            contactEmail: s.contactEmail,
+            scholarCount: s.scholarCount,
+            createdBy: 'seed',
+            createdByName: 'System',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        });
+
+        // Seed school notes
+        seedSchoolNotes.forEach(function (n) {
+          var schoolId = schoolRefs[n.schoolName];
+          if (!schoolId) return;
+          var ref = db.collection('school_notes').doc();
+          batch.set(ref, {
+            schoolId: schoolId,
+            schoolName: n.schoolName,
+            type: n.type,
+            title: n.title,
+            content: n.content,
+            date: n.date ? firebase.firestore.Timestamp.fromDate(new Date(n.date)) : null,
+            status: n.status,
+            priority: n.priority,
+            teacherName: n.teacherName,
+            teacherRole: n.teacherRole,
+            teacherPhone: n.teacherPhone,
+            teacherEmail: n.teacherEmail,
+            createdBy: 'seed',
+            createdByName: 'System',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        });
+
+        return batch.commit();
+      }
+
+      function seedFirestore() {
+        var batch = db.batch();
+        seedScholars.forEach(function (s) {
+          var ref = db.collection('scholars').doc();
+          var data = {
+            firstName: s.firstName,
+            lastInitial: s.lastInitial,
+            school: s.school,
+            classGrade: s.classGrade,
+            pathway: s.pathway,
+            enrolledDate: firebase.firestore.Timestamp.fromDate(new Date(s.enrolledDate)),
+            performance: s.performance,
+            extracurriculars: s.extracurriculars,
+            additionalSupport: s.additionalSupport,
+            status: s.status,
+            createdBy: 'seed',
+            createdByName: 'System',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            lastEditedBy: 'seed',
+            lastEditedByName: 'System',
+            lastEditedAt: firebase.firestore.FieldValue.serverTimestamp()
+          };
+          batch.set(ref, data);
+        });
+        return batch.commit();
+      }
+
+      // --- FETCH SCHOLARS ---
+
+      function fetchScholars() {
+        var scholarsSnapshot;
+        return db.collection('scholars').orderBy('firstName', 'asc').get()
+          .then(function (snapshot) {
+            if (snapshot.empty) {
+              return seedFirestore().then(function () {
+                return db.collection('scholars').orderBy('firstName', 'asc').get();
+              });
+            }
+            return snapshot;
+          })
+          .then(function (snapshot) {
+            scholarsSnapshot = snapshot;
+            allScholars = [];
+            snapshot.forEach(function (doc) {
+              var data = doc.data();
+              allScholars.push({
+                id: doc.id,
+                firstName: data.firstName || '',
+                lastInitial: data.lastInitial || '',
+                school: data.school || '',
+                classGrade: data.classGrade || '',
+                pathway: data.pathway || '',
+                enrolledDate: data.enrolledDate || null,
+                performance: data.performance || 'good',
+                extracurriculars: data.extracurriculars || [],
+                additionalSupport: data.additionalSupport || '',
+                status: data.status || 'active',
+                createdBy: data.createdBy || '',
+                createdByName: data.createdByName || '',
+                createdAt: data.createdAt || null,
+                lastEditedBy: data.lastEditedBy || '',
+                lastEditedByName: data.lastEditedByName || '',
+                lastEditedAt: data.lastEditedAt || null
+              });
+            });
+            // Fetch expenses
+            return fetchExpenses();
+          })
+          .then(function () {
+            // Seed expenses if none exist and scholars exist
+            if (allExpenses.length === 0 && allScholars.length > 0 && scholarsSnapshot) {
+              return generateSeedExpenses(scholarsSnapshot).then(function () {
+                return fetchExpenses();
+              });
+            }
+          })
+          .then(function () {
+            // Fetch schools (and seed if empty)
+            return fetchSchools().then(function () {
+              if (allSchools.length === 0 && allScholars.length > 0) {
+                return seedSchoolsFirestore().then(function () {
+                  return fetchSchools();
+                });
+              }
+            });
+          })
+          .then(function () {
+            updateDashboard();
+            renderScholars();
+          })
+          .catch(function (err) {
+            console.error('Error fetching scholars:', err);
+            // Fallback: load seed data locally
+            allScholars = seedScholars.map(function (s, i) {
+              return {
+                id: 'local-' + i,
+                firstName: s.firstName,
+                lastInitial: s.lastInitial,
+                school: s.school,
+                classGrade: s.classGrade,
+                pathway: s.pathway,
+                enrolledDate: s.enrolledDate,
+                performance: s.performance,
+                extracurriculars: s.extracurriculars,
+                additionalSupport: s.additionalSupport,
+                status: s.status,
+                createdBy: 'seed',
+                createdByName: 'System',
+                createdAt: null,
+                lastEditedBy: 'seed',
+                lastEditedByName: 'System',
+                lastEditedAt: null
+              };
+            });
+            allExpenses = [];
+            buildExpenseIndex();
+            allSchools = seedSchoolsData.map(function (s, i) {
+              return { id: 'local-school-' + i, name: s.name, location: s.location, contactPerson: s.contactPerson, contactPhone: s.contactPhone, contactEmail: s.contactEmail, scholarCount: s.scholarCount };
+            });
+            populateSchoolDropdown();
+            updateDashboard();
+            renderScholars();
+            showToast('Loaded offline data (Firestore unavailable)', 'error');
+          });
+      }
+
+      // --- INIT ---
+      fetchScholars();
+      updateAuthUI();
+
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Ledger — Big Sister Foundation</title>
+  <meta name="description" content="Every naira, accounted for. Big Sister Foundation's public financial transparency ledger.">
+  <meta name="theme-color" content="#2D5E40">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cellipse cx='50' cy='35' rx='35' ry='30' fill='%232D5E40' opacity='0.85'/%3E%3Cellipse cx='30' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cellipse cx='70' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cpath d='M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z' fill='%233A2A1F' opacity='0.8'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #2D5E40;
+      --green-dark: #1E3F2B;
+      --brown: #3A2A1F;
+      --terra: #C2734C;
+      --gold: #D4A96A;
+      --sage: #8BAF8E;
+      --cream: #FFF8F0;
+      --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --section-pad: clamp(48px, 4vw + 20px, 100px);
+      --page-margin: clamp(20px, 4vw, 80px);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.2rem);
+      line-height: 1.7;
+      color: var(--brown);
+      background: var(--cream);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+    button { font: inherit; cursor: pointer; border: none; background: none; }
+
+    .eyebrow {
+      font-family: var(--font-sans);
+      font-size: clamp(0.7rem, 0.5vw + 0.5rem, 0.85rem);
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      color: var(--terra);
+    }
+
+    h1, h2, h3 {
+      font-family: var(--font-serif);
+      font-weight: 500;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+    }
+
+    h1 { font-size: clamp(2.2rem, 4vw + 0.5rem, 4rem); }
+    h2 { font-size: clamp(1.8rem, 2.5vw + 0.5rem, 2.8rem); }
+    h3 { font-size: clamp(1.3rem, 1vw + 0.8rem, 1.7rem); line-height: 1.2; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding-left: var(--page-margin); padding-right: var(--page-margin); }
+    .section-pad { padding-top: var(--section-pad); padding-bottom: var(--section-pad); }
+
+    /* NAV */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem var(--page-margin);
+      background: var(--green-dark);
+    }
+    .nav__logo { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; text-decoration: none; color: var(--cream); }
+    .nav__links { list-style: none; display: flex; gap: 2rem; }
+    .nav__links a { font-size: 0.85rem; font-weight: 500; text-decoration: none; color: rgba(255,248,240,0.7); transition: color 0.3s; }
+    .nav__links a:hover { color: var(--cream); }
+    .nav__links a.is-active { color: var(--gold); }
+    @media (max-width: 768px) { .nav__links { gap: 1rem; } .nav__links a { font-size: 0.75rem; } }
+
+    /* HERO */
+    .ledger-hero {
+      padding-top: calc(60px + var(--section-pad));
+      padding-bottom: var(--section-pad);
+      background: var(--green-dark);
+      color: var(--cream);
+    }
+    .ledger-hero .eyebrow { color: var(--gold); }
+    .ledger-hero__sub {
+      max-width: 640px; margin-top: 1.2rem;
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.15rem);
+      line-height: 1.7; color: rgba(255,248,240,0.75);
+    }
+
+    /* DASHBOARD STRIP */
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-top: -40px;
+      position: relative;
+      z-index: 10;
+    }
+    .dash-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+    .dash-card__label {
+      font-size: 0.75rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: rgba(58,42,31,0.5); margin-bottom: 0.3rem;
+    }
+    .dash-card__value {
+      font-family: var(--font-serif);
+      font-size: clamp(1.6rem, 2vw + 0.3rem, 2.2rem);
+      font-weight: 500; line-height: 1.1;
+    }
+    .dash-card__value--green { color: var(--green); }
+    .dash-card__value--terra { color: var(--terra); }
+    .dash-card__value--gold { color: #8a6d2f; }
+    .dash-card__sub { font-size: 0.78rem; color: rgba(58,42,31,0.5); margin-top: 0.2rem; }
+
+    /* RATIO BAR */
+    .ratio-bar {
+      display: flex; height: 8px; border-radius: 100px; overflow: hidden;
+      background: rgba(58,42,31,0.06); margin-top: 0.6rem;
+    }
+    .ratio-bar__fill { height: 100%; transition: width 0.6s var(--ease); }
+    .ratio-bar__fill--programs { background: var(--green); border-radius: 100px 0 0 100px; }
+    .ratio-bar__fill--ops { background: var(--gold); }
+    .ratio-bar__fill--reserve { background: var(--sage); border-radius: 0 100px 100px 0; }
+
+    /* SANKEY FLOW DIAGRAM */
+    .flow-section {
+      background: #fff;
+      border-radius: 16px;
+      padding: clamp(1.5rem, 3vw, 2.5rem);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+      margin-top: 2.5rem;
+    }
+    .flow-section__header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.5rem;
+    }
+    .flow-section__title {
+      font-family: var(--font-serif);
+      font-size: clamp(1.2rem, 1.5vw + 0.3rem, 1.6rem);
+      font-weight: 500;
+    }
+    .flow-section__period {
+      font-size: 0.8rem; color: rgba(58,42,31,0.5);
+      padding: 0.35rem 0.8rem; background: rgba(58,42,31,0.04);
+      border-radius: 100px;
+    }
+
+    .sankey-container {
+      width: 100%; overflow-x: auto;
+    }
+    .sankey-container svg { width: 100%; min-width: 600px; }
+
+    .sankey-label {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      fill: var(--brown);
+    }
+    .sankey-amount {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      fill: rgba(58,42,31,0.5);
+    }
+    .sankey-node { rx: 4; ry: 4; }
+    .sankey-link { fill-opacity: 0.18; stroke: none; transition: fill-opacity 0.3s; }
+    .sankey-link:hover { fill-opacity: 0.35; }
+
+    /* LEGEND */
+    .flow-legend {
+      display: flex; flex-wrap: wrap; gap: 1.5rem;
+      margin-top: 1.5rem; padding-top: 1rem;
+      border-top: 1px solid rgba(58,42,31,0.06);
+    }
+    .flow-legend__item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; color: rgba(58,42,31,0.6); }
+    .flow-legend__dot { width: 10px; height: 10px; border-radius: 3px; }
+
+    /* TAB SWITCH */
+    .tab-bar {
+      display: flex; gap: 0; border-radius: 100px;
+      background: rgba(58,42,31,0.05);
+      padding: 3px; width: fit-content; margin-bottom: 1.5rem;
+    }
+    .tab-btn {
+      padding: 0.5rem 1.3rem; border-radius: 100px;
+      font-size: 0.82rem; font-weight: 600;
+      color: rgba(58,42,31,0.6); transition: all 0.3s var(--ease);
+    }
+    .tab-btn.is-active { background: var(--green); color: var(--cream); }
+    .tab-btn:hover:not(.is-active) { color: var(--brown); }
+
+    .tab-panel { display: none; }
+    .tab-panel.is-active { display: block; }
+
+    /* LEDGER ENTRIES */
+    .ledger-list { display: flex; flex-direction: column; }
+
+    .entry-row {
+      display: grid;
+      grid-template-columns: 0px 90px 28px 1fr 130px 110px 0px;
+      gap: 0.75rem; align-items: center;
+      padding: 0.9rem 0;
+      border-bottom: 1px solid rgba(58,42,31,0.06);
+    }
+    .entry-row:last-child { border-bottom: none; }
+
+    .entry-date { font-size: 0.78rem; color: rgba(58,42,31,0.45); font-variant-numeric: tabular-nums; }
+
+    .entry-direction {
+      width: 24px; height: 24px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700;
+    }
+    .entry-direction--in { background: rgba(45,94,64,0.1); color: var(--green); }
+    .entry-direction--out { background: rgba(194,115,76,0.1); color: var(--terra); }
+
+    .entry-desc { font-size: 0.9rem; }
+    .entry-desc strong { font-weight: 600; }
+
+    .entry-category {
+      font-size: 0.7rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      padding: 0.25rem 0.6rem; border-radius: 100px;
+      text-align: center; white-space: nowrap;
+    }
+    .cat--grant { background: rgba(45,94,64,0.08); color: var(--green); }
+    .cat--partnership { background: rgba(212,169,106,0.12); color: #8a6d2f; }
+    .cat--event { background: rgba(139,175,142,0.15); color: var(--green-dark); }
+    .cat--donation { background: rgba(45,94,64,0.06); color: var(--green); }
+    .cat--food { background: rgba(194,115,76,0.1); color: var(--terra); }
+    .cat--education { background: rgba(45,94,64,0.08); color: var(--green); }
+    .cat--healthcare { background: rgba(212,169,106,0.12); color: #8a6d2f; }
+    .cat--counselling { background: rgba(139,175,142,0.15); color: var(--green-dark); }
+    .cat--supplies { background: rgba(58,42,31,0.06); color: var(--brown); }
+    .cat--operations { background: rgba(58,42,31,0.05); color: rgba(58,42,31,0.7); }
+
+    .entry-amount {
+      font-family: var(--font-serif);
+      font-size: 0.95rem; font-weight: 500;
+      text-align: right; font-variant-numeric: tabular-nums;
+    }
+    .entry-amount--in { color: var(--green); }
+    .entry-amount--out { color: var(--terra); }
+
+    @media (max-width: 768px) {
+      .entry-row {
+        grid-template-columns: 0px 24px 1fr auto 0px;
+        grid-template-rows: auto auto;
+        gap: 0.25rem 0.6rem;
+      }
+      .entry-checkbox { grid-column: 1; grid-row: 1 / 3; }
+      .entry-date { grid-column: 3; grid-row: 2; font-size: 0.72rem; }
+      .entry-direction { grid-column: 2; grid-row: 1 / 3; align-self: start; margin-top: 2px; }
+      .entry-desc { grid-column: 3; grid-row: 1; }
+      .entry-category { display: none; }
+      .entry-amount { grid-column: 4; grid-row: 1; }
+      .entry-actions { grid-column: 5; grid-row: 1 / 3; }
+    }
+
+    /* MONTHLY GROUP */
+    .month-group { margin-bottom: 1rem; }
+    .month-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.75rem 0; cursor: pointer;
+      border-bottom: 2px solid rgba(58,42,31,0.08);
+    }
+    .month-header:hover { opacity: 0.8; }
+    .month-header__title { font-family: var(--font-serif); font-size: 1.1rem; font-weight: 500; }
+    .month-header__summary { font-size: 0.8rem; color: rgba(58,42,31,0.5); display: flex; gap: 1rem; }
+    .month-header__arrow {
+      transition: transform 0.3s var(--ease);
+      color: rgba(58,42,31,0.3);
+    }
+    .month-group.is-open .month-header__arrow { transform: rotate(180deg); }
+    .month-body { display: none; padding-top: 0.5rem; }
+    .month-group.is-open .month-body { display: block; }
+
+    /* VOLUNTEER BAR */
+    .volunteer-bar {
+      display: none; align-items: center; justify-content: space-between;
+      padding: 1rem 1.5rem;
+      background: rgba(45,94,64,0.06);
+      border-radius: 12px; margin-bottom: 1.5rem;
+      border: 1.5px solid rgba(45,94,64,0.12);
+    }
+    .volunteer-bar.is-visible { display: flex; }
+    .volunteer-bar__text { font-size: 0.9rem; color: var(--green-dark); font-weight: 500; }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.7rem 1.5rem; border-radius: 100px;
+      font-family: var(--font-sans); font-size: 0.85rem; font-weight: 600;
+      letter-spacing: 0.02em; text-decoration: none;
+      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+      cursor: pointer;
+    }
+    .btn:hover { transform: scale(1.03); box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
+    .btn--green { background: var(--green); color: var(--cream); border: none; }
+    .btn--terra { background: var(--terra); color: #fff; border: none; }
+    .btn--ghost-dark { background: transparent; color: var(--brown); border: 1.5px solid rgba(58,42,31,0.2); }
+    .btn--ghost-dark:hover { border-color: var(--brown); background: rgba(58,42,31,0.04); }
+    .btn--sm { padding: 0.5rem 1rem; font-size: 0.8rem; }
+
+    /* AUTH */
+    .auth-section { text-align: center; padding: 2rem; }
+    .auth-section p { font-size: 0.9rem; color: rgba(58,42,31,0.6); margin-bottom: 1rem; }
+
+    /* MODALS */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(30,63,43,0.5); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center; padding: 1rem;
+    }
+    .modal-overlay.is-open { display: flex; }
+    .modal {
+      background: #fff; border-radius: 16px; padding: 2rem;
+      width: 100%; max-width: 560px; max-height: 90vh;
+      overflow-y: auto; box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+    }
+    .modal__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    .modal__title { font-family: var(--font-serif); font-size: 1.5rem; font-weight: 500; }
+    .modal__close {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(58,42,31,0.06); font-size: 1.2rem; transition: background 0.2s;
+    }
+    .modal__close:hover { background: rgba(58,42,31,0.12); }
+
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label {
+      display: block; font-size: 0.82rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: rgba(58,42,31,0.6); margin-bottom: 0.4rem;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 0.7rem 1rem;
+      border: 1.5px solid rgba(58,42,31,0.15); border-radius: 8px;
+      font-family: var(--font-sans); font-size: 0.95rem;
+      color: var(--brown); background: var(--cream); transition: border-color 0.3s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--green); }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
+    .form-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
+
+    /* Type toggle in form */
+    .type-toggle {
+      display: flex; gap: 0; border-radius: 100px; background: rgba(58,42,31,0.05);
+      padding: 3px; margin-bottom: 1.25rem;
+    }
+    .type-toggle__btn {
+      flex: 1; padding: 0.5rem; border-radius: 100px;
+      font-size: 0.82rem; font-weight: 600; text-align: center;
+      color: rgba(58,42,31,0.6); transition: all 0.3s var(--ease);
+    }
+    .type-toggle__btn.is-active--in { background: var(--green); color: var(--cream); }
+    .type-toggle__btn.is-active--out { background: var(--terra); color: #fff; }
+
+    .login-form { max-width: 360px; margin: 0 auto; }
+    .login-divider {
+      text-align: center; font-size: 0.8rem; color: rgba(58,42,31,0.4);
+      margin: 1.5rem 0; position: relative;
+    }
+    .login-divider::before, .login-divider::after {
+      content: ''; position: absolute; top: 50%; width: 40%; height: 1px; background: rgba(58,42,31,0.1);
+    }
+    .login-divider::before { left: 0; }
+    .login-divider::after { right: 0; }
+
+    /* FOOTER */
+    .footer { background: var(--brown); color: rgba(255,248,240,0.6); padding: 3rem 0; }
+    .footer__layout { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 2rem; }
+    .footer__brand-name { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; color: var(--cream); margin-bottom: 0.25rem; }
+    .footer__tagline { font-size: 0.85rem; color: var(--gold); }
+    .footer__location { font-size: 0.8rem; margin-top: 0.25rem; }
+    .footer__links { list-style: none; display: flex; gap: 1.5rem; margin-bottom: 0.5rem; }
+    .footer__links a { font-size: 0.85rem; text-decoration: none; transition: color 0.3s; }
+    .footer__links a:hover { color: var(--cream); }
+    .footer__copy { font-size: 0.75rem; opacity: 0.5; }
+    .footer__right { text-align: right; }
+    @media (max-width: 600px) { .footer__layout { flex-direction: column; } .footer__right { text-align: left; } }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      padding: 1rem 1.5rem; border-radius: 12px;
+      font-size: 0.9rem; font-weight: 500; color: #fff;
+      z-index: 300; transform: translateY(120%);
+      transition: transform 0.4s var(--ease);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+    .toast.is-visible { transform: translateY(0); }
+    .toast--success { background: var(--green); }
+    .toast--error { background: var(--terra); }
+
+    /* ENTRY ACTIONS (edit/delete) */
+    .entry-actions {
+      display: none;
+      gap: 0.25rem;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .is-admin .entry-actions { display: flex; }
+    .entry-actions button {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      background: transparent;
+      border: 1.5px solid rgba(58,42,31,0.12);
+      font-size: 0.82rem;
+      color: rgba(58,42,31,0.5);
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .entry-actions button:hover {
+      background: rgba(58,42,31,0.06);
+      border-color: rgba(58,42,31,0.25);
+      color: var(--brown);
+    }
+    .entry-actions .btn-delete:hover {
+      background: rgba(194,115,76,0.1);
+      border-color: var(--terra);
+      color: var(--terra);
+    }
+
+    /* ENTRY CHECKBOX (bulk select) */
+    .entry-checkbox {
+      display: none;
+      width: 18px; height: 18px;
+      accent-color: var(--green);
+      cursor: pointer;
+      margin: 0;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .is-admin .entry-checkbox { display: block; }
+
+    /* Adjust entry-row grid when admin */
+    .is-admin .entry-row {
+      grid-template-columns: 24px 90px 28px 1fr 130px 110px 98px;
+    }
+    @media (max-width: 768px) {
+      .is-admin .entry-row {
+        grid-template-columns: 24px 24px 1fr auto 98px;
+        grid-template-rows: auto auto;
+      }
+      .is-admin .entry-row .entry-checkbox { grid-column: 1; grid-row: 1 / 3; align-self: center; }
+      .is-admin .entry-row .entry-direction { grid-column: 2; grid-row: 1 / 3; }
+      .is-admin .entry-row .entry-date { grid-column: 3; grid-row: 2; }
+      .is-admin .entry-row .entry-desc { grid-column: 3; grid-row: 1; }
+      .is-admin .entry-row .entry-category { display: none; }
+      .is-admin .entry-row .entry-amount { grid-column: 4; grid-row: 1; }
+      .is-admin .entry-row .entry-actions { grid-column: 5; grid-row: 1 / 3; }
+    }
+
+    /* SELECT ALL area */
+    .select-all-bar {
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.82rem;
+      color: rgba(58,42,31,0.6);
+      font-weight: 500;
+    }
+    .select-all-bar.is-visible { display: flex; }
+
+    /* BULK BAR */
+    .bulk-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 150;
+      background: var(--green-dark);
+      color: var(--cream);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      padding: 0.9rem 1.5rem;
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
+    }
+    .bulk-bar.is-visible { display: flex; }
+    .bulk-bar__text {
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    .bulk-bar__btn {
+      padding: 0.5rem 1.2rem;
+      border-radius: 100px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .bulk-bar__btn:hover { transform: scale(1.03); box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+    .bulk-bar__btn--delete { background: var(--terra); color: #fff; }
+    .bulk-bar__btn--cancel { background: transparent; color: var(--cream); border: 1.5px solid rgba(255,248,240,0.3); }
+
+    /* AUDIT POPOVER */
+    .audit-popover {
+      position: absolute;
+      right: 0; top: 100%;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+      max-width: 360px;
+      min-width: 260px;
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 100;
+      padding: 0.75rem 0;
+    }
+    .audit-popover__title {
+      font-family: var(--font-serif);
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 0 1rem 0.5rem;
+      border-bottom: 1px solid rgba(58,42,31,0.08);
+    }
+    .audit-popover__empty {
+      font-size: 0.8rem;
+      color: rgba(58,42,31,0.4);
+      padding: 1rem;
+      text-align: center;
+    }
+    .audit-entry {
+      font-size: 0.8rem;
+      border-bottom: 1px solid rgba(58,42,31,0.06);
+      padding: 0.5rem 1rem;
+      line-height: 1.5;
+    }
+    .audit-entry:last-child { border-bottom: none; }
+    .audit-action--create { color: var(--green); font-weight: 600; }
+    .audit-action--edit { color: var(--gold); font-weight: 600; }
+    .audit-action--delete { color: var(--terra); font-weight: 600; }
+    .audit-entry__user { font-weight: 500; }
+    .audit-entry__details {
+      font-size: 0.75rem;
+      color: rgba(58,42,31,0.5);
+      margin-top: 0.15rem;
+    }
+    .btn-audit {
+      position: relative;
+    }
+
+    /* ANIMATIONS */
+    [data-animate] { opacity: 1; transform: none; }
+    .js-ready [data-animate] { opacity: 0; transform: translateY(24px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
+    .js-ready [data-animate].is-visible { opacity: 1; transform: translateY(0); }
+    .js-ready [data-animate-delay="1"] { transition-delay: 0.1s; }
+    .js-ready [data-animate-delay="2"] { transition-delay: 0.2s; }
+    @media (prefers-reduced-motion: reduce) {
+      .js-ready [data-animate] { opacity: 1 !important; transform: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="/" class="nav__logo">Big Sister Foundation</a>
+    <ul class="nav__links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/ledger/" class="is-active">Ledger</a></li>
+      <li><a href="/ideas/">Ideas</a></li>
+      <li><a href="/scholars/">Scholars</a></li>
+      <li><a href="/volunteer/">Volunteer</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="ledger-hero">
+    <div class="container">
+      <p class="eyebrow" data-animate>Radical Transparency</p>
+      <h1 data-animate data-animate-delay="1">The Ledger</h1>
+      <p class="ledger-hero__sub" data-animate data-animate-delay="2">Every naira that comes in. Every naira that goes out. No hidden costs, no vague reports. This is how we build trust.</p>
+    </div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section class="section-pad">
+    <div class="container">
+      <div class="dashboard" data-animate>
+        <div class="dash-card">
+          <p class="dash-card__label">Total Received</p>
+          <p class="dash-card__value dash-card__value--green" id="dash-in">--</p>
+        </div>
+        <div class="dash-card">
+          <p class="dash-card__label">Total Spent</p>
+          <p class="dash-card__value dash-card__value--terra" id="dash-out">--</p>
+        </div>
+        <div class="dash-card">
+          <p class="dash-card__label">Balance</p>
+          <p class="dash-card__value dash-card__value--gold" id="dash-balance">--</p>
+        </div>
+        <div class="dash-card">
+          <p class="dash-card__label">Direct to Children</p>
+          <p class="dash-card__value dash-card__value--green" id="dash-ratio">--%</p>
+          <div class="ratio-bar">
+            <div class="ratio-bar__fill ratio-bar__fill--programs" id="ratio-programs" style="width:0%"></div>
+            <div class="ratio-bar__fill ratio-bar__fill--ops" id="ratio-ops" style="width:0%"></div>
+            <div class="ratio-bar__fill ratio-bar__fill--reserve" id="ratio-reserve" style="width:0%"></div>
+          </div>
+          <p class="dash-card__sub" id="ratio-sub"></p>
+        </div>
+      </div>
+
+      <!-- SANKEY FLOW DIAGRAM -->
+      <div class="flow-section" data-animate data-animate-delay="1">
+        <div class="flow-section__header">
+          <h3 class="flow-section__title">Where the Money Flows</h3>
+          <span class="flow-section__period" id="flow-period">All Time</span>
+        </div>
+        <div class="sankey-container">
+          <svg id="sankey-svg" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+        <div class="flow-legend" id="flow-legend"></div>
+      </div>
+
+      <!-- ENTRIES -->
+      <div style="margin-top: 2.5rem;">
+        <!-- VOLUNTEER BAR -->
+        <div class="volunteer-bar" id="volunteer-bar">
+          <span class="volunteer-bar__text">Signed in as <strong id="volunteer-name">Volunteer</strong></span>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <button class="btn btn--green btn--sm" id="btn-add-entry">+ Add Entry</button>
+            <button class="btn btn--ghost-dark btn--sm" id="btn-logout">Sign Out</button>
+          </div>
+        </div>
+
+        <!-- TAB BAR -->
+        <div class="tab-bar" data-animate data-animate-delay="2">
+          <button class="tab-btn is-active" data-tab="all">All Transactions</button>
+          <button class="tab-btn" data-tab="income">Money In</button>
+          <button class="tab-btn" data-tab="expenses">Money Out</button>
+        </div>
+
+        <!-- SELECT ALL BAR -->
+        <div class="select-all-bar" id="select-all-bar">
+          <input type="checkbox" class="entry-checkbox" style="display:block" id="select-all-cb">
+          <label for="select-all-cb" style="cursor:pointer;">Select All</label>
+        </div>
+
+        <!-- ENTRIES LIST (grouped by month) -->
+        <div id="entries-container"></div>
+
+        <!-- LOGIN PROMPT -->
+        <div class="auth-section" id="auth-section">
+          <p>Are you a registered volunteer?</p>
+          <button class="btn btn--ghost-dark" id="btn-login">Volunteer Sign In</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__layout">
+        <div class="footer__left">
+          <p class="footer__brand-name">Big Sister Foundation</p>
+          <p class="footer__tagline">Rooted. Present. Protective.</p>
+          <p class="footer__location">Lagos, Nigeria</p>
+        </div>
+        <div class="footer__right">
+          <ul class="footer__links">
+            <li><a href="https://wa.me/2348000000000">WhatsApp</a></li>
+            <li><a href="mailto:princebolajibreeze@gmail.com">Email</a></li>
+            <li><a href="#">Instagram</a></li>
+          </ul>
+          <p class="footer__copy">&copy; 2026 Big Sister Foundation. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ADD ENTRY MODAL -->
+  <div class="modal-overlay" id="modal-add">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title">Add Entry</h3>
+        <button class="modal__close" id="modal-add-close">&times;</button>
+      </div>
+      <form id="entry-form">
+        <div class="type-toggle">
+          <button type="button" class="type-toggle__btn is-active--in" data-type="income" id="toggle-in">Money In</button>
+          <button type="button" class="type-toggle__btn" data-type="expense" id="toggle-out">Money Out</button>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="entry-amount">Amount (NGN)</label>
+            <input type="number" id="entry-amount" placeholder="e.g. 500000" min="1" required>
+          </div>
+          <div class="form-group">
+            <label for="entry-category">Category</label>
+            <select id="entry-category" required>
+              <option value="">Select...</option>
+              <optgroup label="Income" id="cat-income-opts">
+                <option value="grant">Grant</option>
+                <option value="partnership">Partnership</option>
+                <option value="event">Event Proceeds</option>
+                <option value="donation">Donation</option>
+              </optgroup>
+              <optgroup label="Expenses" id="cat-expense-opts" disabled>
+                <option value="food">Food</option>
+                <option value="education">Education</option>
+                <option value="healthcare">Healthcare</option>
+                <option value="counselling">Counselling</option>
+                <option value="supplies">Supplies</option>
+                <option value="operations">Operations</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="entry-description">Description</label>
+          <input type="text" id="entry-description" placeholder="e.g. Partnership support from XYZ Foundation" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="entry-program">Program / Pathway</label>
+            <select id="entry-program">
+              <option value="general">General</option>
+              <option value="difficult-backgrounds">Difficult Backgrounds</option>
+              <option value="special-needs">Special Needs &amp; Disabilities</option>
+              <option value="gifted-talented">Gifted &amp; Talented</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="entry-date">Date</label>
+            <input type="date" id="entry-date" required>
+          </div>
+        </div>
+
+        <div class="form-group" id="source-group">
+          <label for="entry-source">Source Name <span style="font-weight:400;text-transform:none;letter-spacing:0">(admin only, not shown publicly)</span></label>
+          <input type="text" id="entry-source" placeholder="e.g. UNICEF, Anonymous">
+        </div>
+
+        <div class="form-group">
+          <label for="entry-notes">Notes (optional, admin only)</label>
+          <textarea id="entry-notes" placeholder="Internal notes..."></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn--ghost-dark" id="modal-add-cancel">Cancel</button>
+          <button type="submit" class="btn btn--green" id="btn-submit-entry">Add to Ledger</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- LOGIN MODAL -->
+  <div class="modal-overlay" id="modal-login">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title">Volunteer Sign In</h3>
+        <button class="modal__close" id="modal-login-close">&times;</button>
+      </div>
+      <div class="login-form">
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" placeholder="your@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="Your password" required>
+        </div>
+        <button class="btn btn--green" id="btn-do-login" style="width:100%;justify-content:center;">Sign In</button>
+        <p class="login-divider">or</p>
+        <p style="font-size:0.85rem;color:rgba(58,42,31,0.5);text-align:center;">Want to volunteer? <a href="https://wa.me/2348000000000" style="color:var(--terra);font-weight:600;">Contact us on WhatsApp</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- BULK BAR -->
+  <div class="bulk-bar" id="bulk-bar">
+    <span class="bulk-bar__text" id="bulk-bar-text">0 selected</span>
+    <button class="bulk-bar__btn bulk-bar__btn--delete" id="btn-bulk-delete">Delete Selected</button>
+    <button class="bulk-bar__btn bulk-bar__btn--cancel" id="btn-bulk-cancel">Cancel</button>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // --- FIREBASE INIT ---
+      var firebaseConfig = {
+        apiKey: "AIzaSyCwos6XR9-uqAf_Esmh2K_hJoLxq4gnEuU",
+        authDomain: "big-sister-foundation.firebaseapp.com",
+        projectId: "big-sister-foundation",
+        storageBucket: "big-sister-foundation.firebasestorage.app",
+        messagingSenderId: "778723584560",
+        appId: "1:778723584560:web:7499944c30001e7fcf5bf5",
+        measurementId: "G-Q4EYY24EDZ"
+      };
+      firebase.initializeApp(firebaseConfig);
+      var auth = firebase.auth();
+      var db = firebase.firestore();
+
+      document.body.classList.add('js-ready');
+
+      // Animations
+      var animEls = document.querySelectorAll('[data-animate]');
+      if ('IntersectionObserver' in window) {
+        var obs = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) { e.target.classList.add('is-visible'); obs.unobserve(e.target); }
+          });
+        }, { threshold: 0.1 });
+        animEls.forEach(function (el) { obs.observe(el); });
+      } else {
+        animEls.forEach(function (el) { el.classList.add('is-visible'); });
+      }
+
+      // --- STATE ---
+      var allEntries = [];
+      var currentTab = 'all';
+      var currentUser = null;
+      var entryType = 'income';
+      var editingEntryId = null;
+      var selectedEntries = {};
+
+      var incomeCategories = ['grant', 'partnership', 'event', 'donation'];
+
+      // --- DOM ---
+      var entriesContainer = document.getElementById('entries-container');
+      var volunteerBar = document.getElementById('volunteer-bar');
+      var volunteerName = document.getElementById('volunteer-name');
+      var authSection = document.getElementById('auth-section');
+      var modalAdd = document.getElementById('modal-add');
+      var modalLogin = document.getElementById('modal-login');
+      var entryForm = document.getElementById('entry-form');
+      var toastEl = document.getElementById('toast');
+      var bulkBar = document.getElementById('bulk-bar');
+      var bulkBarText = document.getElementById('bulk-bar-text');
+      var selectAllCb = document.getElementById('select-all-cb');
+      var modalTitle = document.querySelector('#modal-add .modal__title');
+      var btnSubmitEntry = document.getElementById('btn-submit-entry');
+
+      var programLabels = {
+        'difficult-backgrounds': 'Difficult Backgrounds',
+        'special-needs': 'Special Needs',
+        'gifted-talented': 'Gifted & Talented',
+        'general': 'General'
+      };
+
+      var categoryColors = {
+        grant: '#2D5E40', partnership: '#D4A96A', event: '#8BAF8E', donation: '#5a8a6a',
+        food: '#C2734C', education: '#2D5E40', healthcare: '#D4A96A',
+        counselling: '#8BAF8E', supplies: '#3A2A1F', operations: '#7a6a5a'
+      };
+
+      // --- AUDIT TRAIL ---
+      function writeAuditLog(action, docId, changes) {
+        if (!currentUser) return;
+        var record = {
+          collection: 'ledger',
+          docId: docId,
+          action: action,
+          userId: currentUser.uid,
+          userEmail: currentUser.email,
+          userName: currentUser.displayName || currentUser.email,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          changes: changes || {}
+        };
+        db.collection('audit_log').add(record).catch(function (err) {
+          console.error('Audit log write failed:', err);
+        });
+      }
+
+      function computeDiff(oldData, newData) {
+        var diff = {};
+        var fields = ['date', 'direction', 'description', 'category', 'amount', 'program', 'source', 'notes'];
+        fields.forEach(function (f) {
+          if (oldData[f] !== newData[f]) {
+            diff[f] = { old: oldData[f], new: newData[f] };
+          }
+        });
+        return diff;
+      }
+
+      function formatTimestamp(ts) {
+        if (!ts) return '';
+        var d = ts.toDate ? ts.toDate() : new Date(ts);
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() + ' ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0');
+      }
+
+      function showAuditPopover(entryId, anchorBtn) {
+        // Remove any existing popover
+        var existing = document.querySelector('.audit-popover');
+        if (existing) existing.remove();
+
+        var popover = document.createElement('div');
+        popover.className = 'audit-popover';
+
+        var titleEl = document.createElement('div');
+        titleEl.className = 'audit-popover__title';
+        titleEl.textContent = 'Audit Trail';
+        popover.appendChild(titleEl);
+
+        var loadingEl = document.createElement('div');
+        loadingEl.className = 'audit-popover__empty';
+        loadingEl.textContent = 'Loading...';
+        popover.appendChild(loadingEl);
+
+        anchorBtn.style.position = 'relative';
+        anchorBtn.appendChild(popover);
+
+        db.collection('audit_log')
+          .where('docId', '==', entryId)
+          .orderBy('timestamp', 'desc')
+          .get()
+          .then(function (snapshot) {
+            popover.removeChild(loadingEl);
+            if (snapshot.empty) {
+              var emptyEl = document.createElement('div');
+              emptyEl.className = 'audit-popover__empty';
+              emptyEl.textContent = 'No audit records found.';
+              popover.appendChild(emptyEl);
+              return;
+            }
+            snapshot.forEach(function (doc) {
+              var data = doc.data();
+              var entry = document.createElement('div');
+              entry.className = 'audit-entry';
+
+              var actionSpan = document.createElement('span');
+              actionSpan.className = 'audit-action--' + data.action;
+              var actionLabels = { create: 'Created', edit: 'Edited', delete: 'Deleted' };
+              actionSpan.textContent = actionLabels[data.action] || data.action;
+              entry.appendChild(actionSpan);
+
+              var byText = document.createTextNode(' by ');
+              entry.appendChild(byText);
+
+              var userSpan = document.createElement('span');
+              userSpan.className = 'audit-entry__user';
+              userSpan.textContent = data.userName || data.userEmail || 'Unknown';
+              entry.appendChild(userSpan);
+
+              var dateText = document.createTextNode(' on ' + formatTimestamp(data.timestamp));
+              entry.appendChild(dateText);
+
+              // Show change details for edits
+              if (data.action === 'edit' && data.changes) {
+                var keys = Object.keys(data.changes);
+                if (keys.length > 0) {
+                  var detailsEl = document.createElement('div');
+                  detailsEl.className = 'audit-entry__details';
+                  keys.forEach(function (field) {
+                    var line = document.createElement('div');
+                    line.textContent = field + ': ' + String(data.changes[field].old) + ' \u2192 ' + String(data.changes[field].new);
+                    detailsEl.appendChild(line);
+                  });
+                  entry.appendChild(detailsEl);
+                }
+              }
+
+              popover.appendChild(entry);
+            });
+          })
+          .catch(function (err) {
+            popover.removeChild(loadingEl);
+            var errEl = document.createElement('div');
+            errEl.className = 'audit-popover__empty';
+            errEl.textContent = 'Error loading audit trail.';
+            popover.appendChild(errEl);
+            console.error('Audit fetch error:', err);
+          });
+
+        // Close popover when clicking outside
+        function closePopover(ev) {
+          if (!popover.contains(ev.target) && ev.target !== anchorBtn) {
+            popover.remove();
+            document.removeEventListener('click', closePopover, true);
+          }
+        }
+        setTimeout(function () {
+          document.addEventListener('click', closePopover, true);
+        }, 0);
+      }
+
+      // --- HELPERS ---
+      function formatNaira(n) {
+        if (n >= 1000000) return '\u20A6' + (n / 1000000).toFixed(1) + 'M';
+        if (n >= 1000) return '\u20A6' + (n / 1000).toFixed(0) + 'K';
+        return '\u20A6' + n.toLocaleString();
+      }
+
+      function formatNairaFull(n) {
+        return '\u20A6' + Number(n).toLocaleString();
+      }
+
+      function formatDate(dateStr) {
+        var d = new Date(dateStr + 'T00:00:00');
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        return months[d.getMonth()] + ' ' + d.getDate();
+      }
+
+      function getMonthKey(dateStr) {
+        return dateStr.substring(0, 7);
+      }
+
+      function formatMonth(key) {
+        var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        var parts = key.split('-');
+        return months[parseInt(parts[1]) - 1] + ' ' + parts[0];
+      }
+
+      function isIncome(entry) {
+        return incomeCategories.indexOf(entry.category) !== -1;
+      }
+
+      function showToast(msg, type) {
+        toastEl.textContent = msg;
+        toastEl.className = 'toast toast--' + (type || 'success') + ' is-visible';
+        setTimeout(function () { toastEl.classList.remove('is-visible'); }, 3000);
+      }
+
+      // --- DASHBOARD ---
+      function updateDashboard() {
+        var totalIn = 0, totalOut = 0, programSpend = 0, opsSpend = 0;
+        allEntries.forEach(function (e) {
+          var amt = parseInt(e.amount) || 0;
+          if (isIncome(e)) { totalIn += amt; }
+          else {
+            totalOut += amt;
+            if (e.category === 'operations') opsSpend += amt;
+            else programSpend += amt;
+          }
+        });
+
+        document.getElementById('dash-in').textContent = formatNaira(totalIn);
+        document.getElementById('dash-out').textContent = formatNaira(totalOut);
+        document.getElementById('dash-balance').textContent = formatNaira(totalIn - totalOut);
+
+        var ratio = totalOut > 0 ? Math.round((programSpend / totalOut) * 100) : 0;
+        var opsRatio = totalOut > 0 ? Math.round((opsSpend / totalOut) * 100) : 0;
+        document.getElementById('dash-ratio').textContent = ratio + '%';
+        document.getElementById('ratio-programs').style.width = ratio + '%';
+        document.getElementById('ratio-ops').style.width = opsRatio + '%';
+        document.getElementById('ratio-reserve').style.width = Math.max(0, 100 - ratio - opsRatio) + '%';
+        document.getElementById('ratio-sub').textContent = ratio + '% programs \u00B7 ' + opsRatio + '% operations';
+      }
+
+      // --- SANKEY DIAGRAM ---
+      function drawSankey() {
+        var svg = document.getElementById('sankey-svg');
+        while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+        // Aggregate income by category
+        var incomeAgg = {};
+        var expenseAgg = {};
+
+        allEntries.forEach(function (e) {
+          var amt = parseInt(e.amount) || 0;
+          if (isIncome(e)) {
+            incomeAgg[e.category] = (incomeAgg[e.category] || 0) + amt;
+          } else {
+            expenseAgg[e.category] = (expenseAgg[e.category] || 0) + amt;
+          }
+        });
+
+        var incomeKeys = Object.keys(incomeAgg).sort(function (a, b) { return incomeAgg[b] - incomeAgg[a]; });
+        var expenseKeys = Object.keys(expenseAgg).sort(function (a, b) { return expenseAgg[b] - expenseAgg[a]; });
+
+        if (incomeKeys.length === 0 && expenseKeys.length === 0) return;
+
+        var totalIn = 0, totalOut = 0;
+        incomeKeys.forEach(function (k) { totalIn += incomeAgg[k]; });
+        expenseKeys.forEach(function (k) { totalOut += expenseAgg[k]; });
+
+        var W = 800, H = 400;
+        var nodeW = 18;
+        var leftX = 60, rightX = W - 60 - nodeW;
+        var centerX = W / 2;
+        var padY = 20, gapY = 12;
+
+        // Compute available height for nodes
+        var leftAvail = H - padY * 2 - (incomeKeys.length - 1) * gapY;
+        var rightAvail = H - padY * 2 - (expenseKeys.length - 1) * gapY;
+
+        // Build left nodes (income sources)
+        var leftNodes = [];
+        var ly = padY;
+        incomeKeys.forEach(function (k) {
+          var h = Math.max(16, (incomeAgg[k] / Math.max(totalIn, totalOut)) * Math.min(leftAvail, rightAvail));
+          leftNodes.push({ key: k, x: leftX, y: ly, w: nodeW, h: h, val: incomeAgg[k] });
+          ly += h + gapY;
+        });
+
+        // Build right nodes (expense categories)
+        var rightNodes = [];
+        var ry = padY;
+        expenseKeys.forEach(function (k) {
+          var h = Math.max(16, (expenseAgg[k] / Math.max(totalIn, totalOut)) * Math.min(leftAvail, rightAvail));
+          rightNodes.push({ key: k, x: rightX, y: ry, w: nodeW, h: h, val: expenseAgg[k] });
+          ry += h + gapY;
+        });
+
+        // Draw links: each income connects proportionally to each expense
+        // Simplified: draw one link from each income to each expense proportional to relative share
+        var linkGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+        leftNodes.forEach(function (ln) {
+          var sourceOffset = 0;
+          rightNodes.forEach(function (rn) {
+            // Proportional allocation
+            var share = (rn.val / totalOut) * ln.val;
+            var linkH = Math.max(2, (share / Math.max(totalIn, totalOut)) * Math.min(leftAvail, rightAvail));
+            var sy = ln.y + sourceOffset;
+            var ty = rn.y + (rn._used || 0);
+
+            var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            var sx = ln.x + nodeW;
+            var ex = rn.x;
+            var cpx = sx + (ex - sx) * 0.5;
+
+            var d = 'M' + sx + ',' + sy +
+                    ' C' + cpx + ',' + sy + ' ' + cpx + ',' + ty + ' ' + ex + ',' + ty +
+                    ' L' + ex + ',' + (ty + linkH) +
+                    ' C' + cpx + ',' + (ty + linkH) + ' ' + cpx + ',' + (sy + linkH) + ' ' + sx + ',' + (sy + linkH) +
+                    ' Z';
+            path.setAttribute('d', d);
+            path.setAttribute('fill', categoryColors[ln.key] || '#8BAF8E');
+            path.setAttribute('class', 'sankey-link');
+            linkGroup.appendChild(path);
+
+            sourceOffset += linkH;
+            rn._used = (rn._used || 0) + linkH;
+          });
+        });
+
+        svg.appendChild(linkGroup);
+
+        // Draw nodes
+        leftNodes.forEach(function (n) {
+          var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          rect.setAttribute('x', n.x); rect.setAttribute('y', n.y);
+          rect.setAttribute('width', n.w); rect.setAttribute('height', n.h);
+          rect.setAttribute('fill', categoryColors[n.key] || '#8BAF8E');
+          rect.setAttribute('class', 'sankey-node');
+          svg.appendChild(rect);
+
+          var label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          label.setAttribute('x', n.x - 8); label.setAttribute('y', n.y + n.h / 2 + 1);
+          label.setAttribute('text-anchor', 'end'); label.setAttribute('dominant-baseline', 'middle');
+          label.setAttribute('class', 'sankey-label');
+          label.textContent = n.key.charAt(0).toUpperCase() + n.key.slice(1);
+          svg.appendChild(label);
+
+          var amt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          amt.setAttribute('x', n.x - 8); amt.setAttribute('y', n.y + n.h / 2 + 13);
+          amt.setAttribute('text-anchor', 'end'); amt.setAttribute('dominant-baseline', 'middle');
+          amt.setAttribute('class', 'sankey-amount');
+          amt.textContent = formatNaira(n.val);
+          svg.appendChild(amt);
+        });
+
+        rightNodes.forEach(function (n) {
+          var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          rect.setAttribute('x', n.x); rect.setAttribute('y', n.y);
+          rect.setAttribute('width', n.w); rect.setAttribute('height', n.h);
+          rect.setAttribute('fill', categoryColors[n.key] || '#C2734C');
+          rect.setAttribute('class', 'sankey-node');
+          svg.appendChild(rect);
+
+          var label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          label.setAttribute('x', n.x + n.w + 8); label.setAttribute('y', n.y + n.h / 2 + 1);
+          label.setAttribute('text-anchor', 'start'); label.setAttribute('dominant-baseline', 'middle');
+          label.setAttribute('class', 'sankey-label');
+          label.textContent = n.key.charAt(0).toUpperCase() + n.key.slice(1);
+          svg.appendChild(label);
+
+          var amt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          amt.setAttribute('x', n.x + n.w + 8); amt.setAttribute('y', n.y + n.h / 2 + 13);
+          amt.setAttribute('text-anchor', 'start'); amt.setAttribute('dominant-baseline', 'middle');
+          amt.setAttribute('class', 'sankey-amount');
+          amt.textContent = formatNaira(n.val);
+          svg.appendChild(amt);
+        });
+
+        // Center labels
+        var inLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        inLabel.setAttribute('x', leftX + nodeW / 2); inLabel.setAttribute('y', H - 5);
+        inLabel.setAttribute('text-anchor', 'middle');
+        inLabel.setAttribute('class', 'sankey-amount');
+        inLabel.setAttribute('font-size', '10');
+        inLabel.textContent = 'MONEY IN';
+        svg.appendChild(inLabel);
+
+        var outLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        outLabel.setAttribute('x', rightX + nodeW / 2); outLabel.setAttribute('y', H - 5);
+        outLabel.setAttribute('text-anchor', 'middle');
+        outLabel.setAttribute('class', 'sankey-amount');
+        outLabel.setAttribute('font-size', '10');
+        outLabel.textContent = 'MONEY OUT';
+        svg.appendChild(outLabel);
+
+        // Legend
+        var legend = document.getElementById('flow-legend');
+        while (legend.firstChild) legend.removeChild(legend.firstChild);
+
+        incomeKeys.concat(expenseKeys).forEach(function (k) {
+          var item = document.createElement('div');
+          item.className = 'flow-legend__item';
+          var dot = document.createElement('span');
+          dot.className = 'flow-legend__dot';
+          dot.style.background = categoryColors[k] || '#8BAF8E';
+          item.appendChild(dot);
+          var text = document.createTextNode(k.charAt(0).toUpperCase() + k.slice(1));
+          item.appendChild(text);
+          legend.appendChild(item);
+        });
+      }
+
+      // --- RENDER ENTRIES ---
+      function renderEntries() {
+        while (entriesContainer.firstChild) entriesContainer.removeChild(entriesContainer.firstChild);
+
+        var filtered = allEntries;
+        if (currentTab === 'income') filtered = allEntries.filter(isIncome);
+        else if (currentTab === 'expenses') filtered = allEntries.filter(function (e) { return !isIncome(e); });
+
+        // Group by month
+        var months = {};
+        var monthOrder = [];
+        filtered.forEach(function (e) {
+          var mk = getMonthKey(e.date);
+          if (!months[mk]) { months[mk] = []; monthOrder.push(mk); }
+          months[mk].push(e);
+        });
+
+        monthOrder.sort(function (a, b) { return b.localeCompare(a); });
+
+        if (monthOrder.length === 0) {
+          var empty = document.createElement('div');
+          empty.style.cssText = 'text-align:center;padding:3rem 1rem;color:rgba(58,42,31,0.4);';
+          empty.textContent = 'No entries yet.';
+          entriesContainer.appendChild(empty);
+          return;
+        }
+
+        monthOrder.forEach(function (mk, idx) {
+          var group = document.createElement('div');
+          group.className = 'month-group' + (idx === 0 ? ' is-open' : '');
+
+          // Compute month totals
+          var mIn = 0, mOut = 0;
+          months[mk].forEach(function (e) {
+            var amt = parseInt(e.amount) || 0;
+            if (isIncome(e)) mIn += amt; else mOut += amt;
+          });
+
+          var header = document.createElement('div');
+          header.className = 'month-header';
+
+          var title = document.createElement('span');
+          title.className = 'month-header__title';
+          title.textContent = formatMonth(mk);
+
+          var summary = document.createElement('span');
+          summary.className = 'month-header__summary';
+
+          var inSpan = document.createElement('span');
+          inSpan.style.color = 'var(--green)';
+          inSpan.textContent = '+' + formatNaira(mIn);
+          summary.appendChild(inSpan);
+
+          var outSpan = document.createElement('span');
+          outSpan.style.color = 'var(--terra)';
+          outSpan.textContent = '-' + formatNaira(mOut);
+          summary.appendChild(outSpan);
+
+          var arrow = document.createElement('span');
+          arrow.className = 'month-header__arrow';
+          arrow.textContent = '\u25BC';
+
+          header.appendChild(title);
+          header.appendChild(summary);
+          header.appendChild(arrow);
+
+          header.addEventListener('click', function () {
+            group.classList.toggle('is-open');
+          });
+
+          var body = document.createElement('div');
+          body.className = 'month-body';
+
+          months[mk].forEach(function (entry) {
+            var row = document.createElement('div');
+            row.className = 'entry-row';
+
+            // Checkbox for bulk select
+            var cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.className = 'entry-checkbox';
+            cb.setAttribute('data-entry-id', entry.id || '');
+            if (entry.id && selectedEntries[entry.id]) cb.checked = true;
+            cb.addEventListener('change', function () {
+              if (cb.checked) {
+                selectedEntries[entry.id] = true;
+              } else {
+                delete selectedEntries[entry.id];
+              }
+              updateBulkBar();
+            });
+
+            var dateEl = document.createElement('span');
+            dateEl.className = 'entry-date';
+            dateEl.textContent = formatDate(entry.date);
+
+            var dirEl = document.createElement('span');
+            var inc = isIncome(entry);
+            dirEl.className = 'entry-direction entry-direction--' + (inc ? 'in' : 'out');
+            dirEl.textContent = inc ? '\u2193' : '\u2191';
+
+            var descEl = document.createElement('span');
+            descEl.className = 'entry-desc';
+            var descText = document.createTextNode(entry.description);
+            descEl.appendChild(descText);
+
+            var catEl = document.createElement('span');
+            catEl.className = 'entry-category cat--' + entry.category;
+            catEl.textContent = entry.category;
+
+            var amtEl = document.createElement('span');
+            amtEl.className = 'entry-amount entry-amount--' + (inc ? 'in' : 'out');
+            amtEl.textContent = (inc ? '+' : '-') + formatNairaFull(entry.amount);
+
+            // Action buttons
+            var actions = document.createElement('span');
+            actions.className = 'entry-actions';
+
+            var editBtn = document.createElement('button');
+            editBtn.textContent = '\u270F\uFE0F';
+            editBtn.title = 'Edit entry';
+            editBtn.addEventListener('click', function () { openEditModal(entry); });
+            actions.appendChild(editBtn);
+
+            var delBtn = document.createElement('button');
+            delBtn.className = 'btn-delete';
+            delBtn.textContent = '\uD83D\uDDD1\uFE0F';
+            delBtn.title = 'Delete entry';
+            delBtn.addEventListener('click', function () { deleteSingleEntry(entry.id); });
+            actions.appendChild(delBtn);
+
+            var auditBtn = document.createElement('button');
+            auditBtn.className = 'btn-audit';
+            auditBtn.textContent = '\uD83D\uDD50';
+            auditBtn.title = 'View audit trail';
+            auditBtn.addEventListener('click', function (ev) {
+              ev.stopPropagation();
+              showAuditPopover(entry.id, auditBtn);
+            });
+            actions.appendChild(auditBtn);
+
+            row.appendChild(cb);
+            row.appendChild(dateEl);
+            row.appendChild(dirEl);
+            row.appendChild(descEl);
+            row.appendChild(catEl);
+            row.appendChild(amtEl);
+            row.appendChild(actions);
+            body.appendChild(row);
+          });
+
+          group.appendChild(header);
+          group.appendChild(body);
+          entriesContainer.appendChild(group);
+        });
+      }
+
+      // --- TAB SWITCHING ---
+      document.querySelectorAll('.tab-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('is-active'); });
+          btn.classList.add('is-active');
+          currentTab = btn.getAttribute('data-tab');
+          renderEntries();
+        });
+      });
+
+      // --- ENTRY TYPE TOGGLE ---
+      var toggleIn = document.getElementById('toggle-in');
+      var toggleOut = document.getElementById('toggle-out');
+      var catIncomeOpts = document.getElementById('cat-income-opts');
+      var catExpenseOpts = document.getElementById('cat-expense-opts');
+      var sourceGroup = document.getElementById('source-group');
+
+      function setEntryType(type) {
+        entryType = type;
+        if (type === 'income') {
+          toggleIn.className = 'type-toggle__btn is-active--in';
+          toggleOut.className = 'type-toggle__btn';
+          catIncomeOpts.disabled = false;
+          catExpenseOpts.disabled = true;
+          sourceGroup.style.display = 'block';
+        } else {
+          toggleIn.className = 'type-toggle__btn';
+          toggleOut.className = 'type-toggle__btn is-active--out';
+          catIncomeOpts.disabled = true;
+          catExpenseOpts.disabled = false;
+          sourceGroup.style.display = 'none';
+        }
+        document.getElementById('entry-category').value = '';
+      }
+
+      toggleIn.addEventListener('click', function () { setEntryType('income'); });
+      toggleOut.addEventListener('click', function () { setEntryType('expense'); });
+
+      // --- MODALS ---
+      function closeAddModal() {
+        modalAdd.classList.remove('is-open');
+        editingEntryId = null;
+        modalTitle.textContent = 'Add Entry';
+        btnSubmitEntry.textContent = 'Add to Ledger';
+        entryForm.reset();
+      }
+
+      document.getElementById('btn-add-entry').addEventListener('click', function () {
+        editingEntryId = null;
+        modalTitle.textContent = 'Add Entry';
+        btnSubmitEntry.textContent = 'Add to Ledger';
+        entryForm.reset();
+        document.getElementById('entry-date').value = new Date().toISOString().split('T')[0];
+        setEntryType('income');
+        modalAdd.classList.add('is-open');
+      });
+      document.getElementById('modal-add-close').addEventListener('click', closeAddModal);
+      document.getElementById('modal-add-cancel').addEventListener('click', closeAddModal);
+      document.getElementById('btn-login').addEventListener('click', function () { modalLogin.classList.add('is-open'); });
+      document.getElementById('modal-login-close').addEventListener('click', function () { modalLogin.classList.remove('is-open'); });
+
+      modalAdd.addEventListener('click', function (e) { if (e.target === modalAdd) closeAddModal(); });
+      modalLogin.addEventListener('click', function (e) { if (e.target === modalLogin) modalLogin.classList.remove('is-open'); });
+
+      // --- AUTH ---
+      function updateAuthUI() {
+        if (currentUser) {
+          volunteerBar.classList.add('is-visible');
+          volunteerName.textContent = currentUser.displayName || currentUser.email;
+          authSection.style.display = 'none';
+          entriesContainer.classList.add('is-admin');
+          document.getElementById('select-all-bar').classList.add('is-visible');
+        } else {
+          volunteerBar.classList.remove('is-visible');
+          authSection.style.display = 'block';
+          entriesContainer.classList.remove('is-admin');
+          document.getElementById('select-all-bar').classList.remove('is-visible');
+          // Clear selections when logged out
+          selectedEntries = {};
+          updateBulkBar();
+        }
+      }
+
+      // Firebase auth state listener
+      auth.onAuthStateChanged(function (firebaseUser) {
+        currentUser = firebaseUser;
+        updateAuthUI();
+      });
+
+      document.getElementById('btn-do-login').addEventListener('click', function () {
+        var email = document.getElementById('login-email').value;
+        var password = document.getElementById('login-password').value;
+        if (!email || !password) { showToast('Please enter email and password', 'error'); return; }
+
+        // Try sign in first; if user not found, create account
+        auth.signInWithEmailAndPassword(email, password)
+          .then(function (cred) {
+            modalLogin.classList.remove('is-open');
+            showToast('Signed in successfully');
+          })
+          .catch(function (err) {
+            if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+              // Create new account
+              auth.createUserWithEmailAndPassword(email, password)
+                .then(function (cred) {
+                  // Set display name from email prefix
+                  var name = email.split('@')[0];
+                  return cred.user.updateProfile({ displayName: name });
+                })
+                .then(function () {
+                  modalLogin.classList.remove('is-open');
+                  showToast('Account created and signed in');
+                  updateAuthUI();
+                })
+                .catch(function (createErr) {
+                  showToast(createErr.message, 'error');
+                });
+            } else {
+              showToast(err.message, 'error');
+            }
+          });
+      });
+
+      document.getElementById('btn-logout').addEventListener('click', function () {
+        auth.signOut().then(function () {
+          showToast('Signed out');
+        }).catch(function (err) {
+          showToast(err.message, 'error');
+        });
+      });
+
+      // --- ADD / EDIT ENTRY ---
+      entryForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (!currentUser) { showToast('Please sign in first', 'error'); return; }
+
+        var category = document.getElementById('entry-category').value;
+        if (!category) { showToast('Please select a category', 'error'); return; }
+
+        var direction = (incomeCategories.indexOf(category) !== -1) ? 'in' : 'out';
+
+        var entryData = {
+          date: document.getElementById('entry-date').value,
+          direction: direction,
+          description: document.getElementById('entry-description').value,
+          category: category,
+          amount: parseInt(document.getElementById('entry-amount').value) || 0,
+          program: document.getElementById('entry-program').value || 'General',
+          source: document.getElementById('entry-source').value || '',
+          notes: document.getElementById('entry-notes').value || '',
+          addedBy: currentUser.uid,
+          addedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        var promise;
+        var wasEditing = !!editingEntryId;
+        if (editingEntryId) {
+          // Compute diff before updating
+          var oldEntry = null;
+          for (var i = 0; i < allEntries.length; i++) {
+            if (allEntries[i].id === editingEntryId) { oldEntry = allEntries[i]; break; }
+          }
+          entryData.lastEditedBy = currentUser.uid;
+          entryData.lastEditedByName = currentUser.displayName || currentUser.email;
+          entryData.lastEditedAt = firebase.firestore.FieldValue.serverTimestamp();
+          var diffChanges = oldEntry ? computeDiff(oldEntry, entryData) : {};
+          var editId = editingEntryId;
+          promise = db.collection('ledger').doc(editingEntryId).update(entryData).then(function () {
+            writeAuditLog('edit', editId, diffChanges);
+          });
+        } else {
+          entryData.createdBy = currentUser.uid;
+          entryData.createdByName = currentUser.displayName || currentUser.email;
+          entryData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+          promise = db.collection('ledger').add(entryData).then(function (docRef) {
+            writeAuditLog('create', docRef.id, entryData);
+          });
+        }
+
+        promise
+          .then(function () {
+            closeAddModal();
+            showToast(wasEditing ? 'Entry updated' : 'Entry added to ledger');
+            return fetchEntries();
+          })
+          .catch(function (err) {
+            showToast('Error saving entry: ' + err.message, 'error');
+          });
+      });
+
+      // --- EDIT MODAL ---
+      function openEditModal(entry) {
+        editingEntryId = entry.id;
+        modalTitle.textContent = 'Edit Entry';
+        btnSubmitEntry.textContent = 'Save Changes';
+
+        // Pre-fill the form
+        var inc = isIncome(entry);
+        setEntryType(inc ? 'income' : 'expense');
+        document.getElementById('entry-amount').value = entry.amount;
+        document.getElementById('entry-category').value = entry.category;
+        document.getElementById('entry-description').value = entry.description;
+        document.getElementById('entry-program').value = entry.program || 'general';
+        document.getElementById('entry-date').value = entry.date;
+        document.getElementById('entry-source').value = entry.source || '';
+        document.getElementById('entry-notes').value = entry.notes || '';
+
+        modalAdd.classList.add('is-open');
+      }
+
+      // --- DELETE SINGLE ENTRY ---
+      function deleteSingleEntry(entryId) {
+        if (!entryId) return;
+        if (!confirm('Are you sure you want to delete this entry?')) return;
+        // Save entry data before deleting for audit trail
+        var entrySnapshot = null;
+        for (var i = 0; i < allEntries.length; i++) {
+          if (allEntries[i].id === entryId) {
+            entrySnapshot = Object.assign({}, allEntries[i]);
+            break;
+          }
+        }
+        db.collection('ledger').doc(entryId).delete()
+          .then(function () {
+            writeAuditLog('delete', entryId, entrySnapshot || {});
+            showToast('Entry deleted');
+            return fetchEntries();
+          })
+          .catch(function (err) {
+            showToast('Error deleting entry: ' + err.message, 'error');
+          });
+      }
+
+      // --- BULK ACTIONS ---
+      function updateBulkBar() {
+        var count = Object.keys(selectedEntries).length;
+        if (count > 0) {
+          bulkBarText.textContent = count + ' selected';
+          bulkBar.classList.add('is-visible');
+        } else {
+          bulkBar.classList.remove('is-visible');
+        }
+        // Sync select-all checkbox
+        var allCbs = entriesContainer.querySelectorAll('.entry-checkbox');
+        var allChecked = allCbs.length > 0 && count === allCbs.length;
+        selectAllCb.checked = allChecked;
+      }
+
+      // Select All
+      selectAllCb.addEventListener('change', function () {
+        var allCbs = entriesContainer.querySelectorAll('.entry-checkbox');
+        allCbs.forEach(function (cb) {
+          var eid = cb.getAttribute('data-entry-id');
+          if (selectAllCb.checked) {
+            cb.checked = true;
+            if (eid) selectedEntries[eid] = true;
+          } else {
+            cb.checked = false;
+            if (eid) delete selectedEntries[eid];
+          }
+        });
+        updateBulkBar();
+      });
+
+      // Bulk delete
+      document.getElementById('btn-bulk-delete').addEventListener('click', function () {
+        var ids = Object.keys(selectedEntries);
+        if (ids.length === 0) return;
+        if (!confirm('Delete ' + ids.length + ' selected entries? This cannot be undone.')) return;
+
+        // Save snapshots before deleting
+        var snapshots = {};
+        ids.forEach(function (id) {
+          for (var i = 0; i < allEntries.length; i++) {
+            if (allEntries[i].id === id) {
+              snapshots[id] = Object.assign({}, allEntries[i]);
+              break;
+            }
+          }
+        });
+
+        var batch = db.batch();
+        ids.forEach(function (id) {
+          batch.delete(db.collection('ledger').doc(id));
+        });
+        batch.commit()
+          .then(function () {
+            // Write audit logs for each deleted entry (non-blocking)
+            ids.forEach(function (id) {
+              writeAuditLog('delete', id, snapshots[id] || {});
+            });
+            selectedEntries = {};
+            updateBulkBar();
+            showToast(ids.length + ' entries deleted');
+            return fetchEntries();
+          })
+          .catch(function (err) {
+            showToast('Error deleting entries: ' + err.message, 'error');
+          });
+      });
+
+      // Bulk cancel
+      document.getElementById('btn-bulk-cancel').addEventListener('click', function () {
+        selectedEntries = {};
+        var allCbs = entriesContainer.querySelectorAll('.entry-checkbox');
+        allCbs.forEach(function (cb) { cb.checked = false; });
+        selectAllCb.checked = false;
+        updateBulkBar();
+      });
+
+      // --- SEED DATA ---
+      var seedEntries = [
+        // Income
+        { date: '2026-03-01', direction: 'in', category: 'grant', amount: 2000000, description: 'Q1 program support grant', program: 'general', source: 'Foundation A', notes: '' },
+        { date: '2026-03-10', direction: 'in', category: 'partnership', amount: 750000, description: 'Corporate partnership funding', program: 'gifted-talented', source: 'Corp B', notes: '' },
+        { date: '2026-02-15', direction: 'in', category: 'event', amount: 450000, description: 'Community fundraising event proceeds', program: 'general', source: '', notes: '' },
+        { date: '2026-02-01', direction: 'in', category: 'donation', amount: 300000, description: 'Individual support', program: 'general', source: 'Anonymous', notes: '' },
+        { date: '2026-01-15', direction: 'in', category: 'grant', amount: 1500000, description: 'Education initiative grant', program: 'difficult-backgrounds', source: 'Foundation C', notes: '' },
+        { date: '2026-01-05', direction: 'in', category: 'partnership', amount: 500000, description: 'Healthcare partner quarterly support', program: 'special-needs', source: 'Health NGO D', notes: '' },
+
+        // Expenses
+        { date: '2026-03-28', direction: 'out', category: 'food', amount: 180000, description: 'Monthly meal program - 120 meals served', program: 'difficult-backgrounds', source: '', notes: '' },
+        { date: '2026-03-25', direction: 'out', category: 'education', amount: 350000, description: 'School uniforms and registration fees for 35 children', program: 'difficult-backgrounds', source: '', notes: '' },
+        { date: '2026-03-22', direction: 'out', category: 'healthcare', amount: 240000, description: 'Eye examinations and glasses for 48 children', program: 'special-needs', source: '', notes: '' },
+        { date: '2026-03-20', direction: 'out', category: 'counselling', amount: 160000, description: '16 hours one-on-one counselling sessions', program: 'difficult-backgrounds', source: '', notes: '' },
+        { date: '2026-03-18', direction: 'out', category: 'supplies', amount: 250000, description: 'School bags with stationery packs for 50 students', program: 'gifted-talented', source: '', notes: '' },
+        { date: '2026-03-15', direction: 'out', category: 'operations', amount: 120000, description: 'Office rent and utilities', program: 'general', source: '', notes: '' },
+        { date: '2026-03-12', direction: 'out', category: 'food', amount: 95000, description: 'Weekend food packages for 30 families', program: 'difficult-backgrounds', source: '', notes: '' },
+        { date: '2026-03-05', direction: 'out', category: 'education', amount: 425000, description: 'Textbooks for 85 secondary school students', program: 'gifted-talented', source: '', notes: '' },
+        { date: '2026-02-28', direction: 'out', category: 'healthcare', amount: 180000, description: 'Mobile dental clinic - 32 check-ups', program: 'general', source: '', notes: '' },
+        { date: '2026-02-20', direction: 'out', category: 'counselling', amount: 120000, description: 'Group therapy sessions for trauma support', program: 'difficult-backgrounds', source: '', notes: '' },
+        { date: '2026-02-15', direction: 'out', category: 'supplies', amount: 160000, description: 'Assistive devices for 8 children with disabilities', program: 'special-needs', source: '', notes: '' },
+        { date: '2026-02-10', direction: 'out', category: 'operations', amount: 85000, description: 'Transport and logistics', program: 'general', source: '', notes: '' },
+        { date: '2026-02-05', direction: 'out', category: 'food', amount: 140000, description: 'Nutritional supplement packs for 60 children', program: 'special-needs', source: '', notes: '' },
+        { date: '2026-01-28', direction: 'out', category: 'education', amount: 200000, description: 'After-school tutoring program - 40 hours', program: 'gifted-talented', source: '', notes: '' },
+        { date: '2026-01-20', direction: 'out', category: 'operations', amount: 110000, description: 'Staff training and development', program: 'general', source: '', notes: '' },
+        { date: '2026-01-10', direction: 'out', category: 'healthcare', amount: 150000, description: 'Vaccinations and health screenings', program: 'general', source: '', notes: '' },
+      ];
+
+      function seedFirestore() {
+        var batch = db.batch();
+        seedEntries.forEach(function (entry) {
+          var ref = db.collection('ledger').doc();
+          var data = {};
+          data.date = entry.date;
+          data.direction = entry.direction;
+          data.category = entry.category;
+          data.amount = entry.amount;
+          data.description = entry.description;
+          data.program = entry.program;
+          data.source = entry.source;
+          data.notes = entry.notes;
+          data.addedBy = 'seed';
+          data.addedAt = firebase.firestore.FieldValue.serverTimestamp();
+          batch.set(ref, data);
+        });
+        return batch.commit();
+      }
+
+      // --- FETCH ENTRIES FROM FIRESTORE ---
+      function fetchEntries() {
+        return db.collection('ledger').orderBy('date', 'desc').get()
+          .then(function (snapshot) {
+            if (snapshot.empty) {
+              // Seed demo data into Firestore
+              return seedFirestore().then(function () {
+                return db.collection('ledger').orderBy('date', 'desc').get();
+              });
+            }
+            return snapshot;
+          })
+          .then(function (snapshot) {
+            allEntries = [];
+            snapshot.forEach(function (doc) {
+              var data = doc.data();
+              allEntries.push({
+                id: doc.id,
+                date: data.date || '',
+                direction: data.direction || '',
+                category: data.category || '',
+                amount: data.amount || 0,
+                description: data.description || '',
+                program: data.program || 'General',
+                source: data.source || '',
+                notes: data.notes || '',
+                addedBy: data.addedBy || '',
+                addedAt: data.addedAt || null,
+                createdBy: data.createdBy || '',
+                createdByName: data.createdByName || '',
+                createdAt: data.createdAt || null,
+                lastEditedBy: data.lastEditedBy || '',
+                lastEditedByName: data.lastEditedByName || '',
+                lastEditedAt: data.lastEditedAt || null
+              });
+            });
+            allEntries.sort(function (a, b) { return b.date.localeCompare(a.date); });
+            updateDashboard();
+            drawSankey();
+            renderEntries();
+          })
+          .catch(function (err) {
+            console.error('Error fetching ledger entries:', err);
+            // Fallback: load seed data locally so the page is not empty
+            allEntries = seedEntries.slice();
+            allEntries.sort(function (a, b) { return b.date.localeCompare(a.date); });
+            updateDashboard();
+            drawSankey();
+            renderEntries();
+            showToast('Loaded offline data (Firestore unavailable)', 'error');
+          });
+      }
+
+      // --- INIT ---
+      fetchEntries();
+      updateAuthUI();
+
+    })();
+  </script>
+
+</body>
+</html>

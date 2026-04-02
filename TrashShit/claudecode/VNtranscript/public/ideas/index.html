@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ideas Board — Big Sister Foundation</title>
+  <meta name="description" content="Propose ideas, vote on priorities. The community decides what Big Sister Foundation does next.">
+  <meta name="theme-color" content="#2D5E40">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cellipse cx='50' cy='35' rx='35' ry='30' fill='%232D5E40' opacity='0.85'/%3E%3Cellipse cx='30' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cellipse cx='70' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cpath d='M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z' fill='%233A2A1F' opacity='0.8'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #2D5E40;
+      --green-dark: #1E3F2B;
+      --brown: #3A2A1F;
+      --terra: #C2734C;
+      --gold: #D4A96A;
+      --sage: #8BAF8E;
+      --cream: #FFF8F0;
+      --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --section-pad: clamp(48px, 4vw + 20px, 100px);
+      --page-margin: clamp(20px, 4vw, 80px);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.2rem);
+      line-height: 1.7;
+      color: var(--brown);
+      background: var(--cream);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+    button { font: inherit; cursor: pointer; border: none; background: none; }
+
+    .eyebrow {
+      font-family: var(--font-sans);
+      font-size: clamp(0.7rem, 0.5vw + 0.5rem, 0.85rem);
+      font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; margin-bottom: 1rem; color: var(--terra);
+    }
+
+    h1, h2, h3 {
+      font-family: var(--font-serif);
+      font-weight: 500; line-height: 1.08; letter-spacing: -0.02em;
+    }
+    h1 { font-size: clamp(2.2rem, 4vw + 0.5rem, 4rem); }
+    h2 { font-size: clamp(1.8rem, 2.5vw + 0.5rem, 2.8rem); }
+    h3 { font-size: clamp(1.3rem, 1vw + 0.8rem, 1.7rem); line-height: 1.2; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding-left: var(--page-margin); padding-right: var(--page-margin); }
+    .section-pad { padding-top: var(--section-pad); padding-bottom: var(--section-pad); }
+
+    /* NAV */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem var(--page-margin); background: var(--green-dark);
+    }
+    .nav__logo { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; text-decoration: none; color: var(--cream); }
+    .nav__links { list-style: none; display: flex; gap: 2rem; }
+    .nav__links a { font-size: 0.85rem; font-weight: 500; text-decoration: none; color: rgba(255,248,240,0.7); transition: color 0.3s; }
+    .nav__links a:hover { color: var(--cream); }
+    .nav__links a.is-active { color: var(--gold); }
+    @media (max-width: 768px) { .nav__links { gap: 1rem; } .nav__links a { font-size: 0.75rem; } }
+
+    /* HERO */
+    .ideas-hero {
+      padding-top: calc(60px + var(--section-pad));
+      padding-bottom: var(--section-pad);
+      background: var(--green-dark); color: var(--cream);
+    }
+    .ideas-hero .eyebrow { color: var(--gold); }
+    .ideas-hero__sub {
+      max-width: 640px; margin-top: 1.2rem;
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.15rem);
+      line-height: 1.7; color: rgba(255,248,240,0.75);
+    }
+
+    /* STATS */
+    .ideas-stats {
+      display: flex; gap: 2.5rem; margin-top: 1.5rem; flex-wrap: wrap;
+    }
+    .ideas-stat__number {
+      font-family: var(--font-serif);
+      font-size: 1.8rem; font-weight: 500; color: var(--gold);
+    }
+    .ideas-stat__label { font-size: 0.78rem; color: rgba(255,248,240,0.5); }
+
+    /* TOOLBAR */
+    .toolbar {
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;
+    }
+
+    .sort-bar {
+      display: flex; gap: 0; border-radius: 100px;
+      background: rgba(58,42,31,0.05); padding: 3px;
+    }
+    .sort-btn {
+      padding: 0.45rem 1.1rem; border-radius: 100px;
+      font-size: 0.8rem; font-weight: 600;
+      color: rgba(58,42,31,0.5); transition: all 0.3s var(--ease);
+    }
+    .sort-btn.is-active { background: var(--green); color: var(--cream); }
+    .sort-btn:hover:not(.is-active) { color: var(--brown); }
+
+    .filter-pills { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .filter-pill {
+      padding: 0.4rem 1rem; border-radius: 100px;
+      font-size: 0.78rem; font-weight: 600;
+      background: rgba(58,42,31,0.04); color: rgba(58,42,31,0.6);
+      transition: all 0.3s var(--ease); border: 1.5px solid transparent;
+    }
+    .filter-pill:hover { background: rgba(45,94,64,0.06); }
+    .filter-pill.is-active { background: var(--green); color: var(--cream); border-color: var(--green); }
+
+    /* VOLUNTEER BAR */
+    .volunteer-bar {
+      display: none; align-items: center; justify-content: space-between;
+      padding: 1rem 1.5rem; background: rgba(45,94,64,0.06);
+      border-radius: 12px; margin-bottom: 1.5rem;
+      border: 1.5px solid rgba(45,94,64,0.12); flex-wrap: wrap; gap: 0.5rem;
+    }
+    .volunteer-bar.is-visible { display: flex; }
+    .volunteer-bar__text { font-size: 0.9rem; color: var(--green-dark); font-weight: 500; }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.7rem 1.5rem; border-radius: 100px;
+      font-family: var(--font-sans); font-size: 0.85rem; font-weight: 600;
+      letter-spacing: 0.02em; text-decoration: none;
+      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease); cursor: pointer;
+    }
+    .btn:hover { transform: scale(1.03); box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
+    .btn--green { background: var(--green); color: var(--cream); border: none; }
+    .btn--terra { background: var(--terra); color: #fff; border: none; }
+    .btn--ghost-dark { background: transparent; color: var(--brown); border: 1.5px solid rgba(58,42,31,0.2); }
+    .btn--ghost-dark:hover { border-color: var(--brown); background: rgba(58,42,31,0.04); }
+    .btn--sm { padding: 0.5rem 1rem; font-size: 0.8rem; }
+
+    /* IDEAS GRID */
+    .ideas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.25rem;
+    }
+    @media (max-width: 500px) { .ideas-grid { grid-template-columns: 1fr; } }
+
+    /* IDEA CARD */
+    .idea-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+      display: flex;
+      gap: 1rem;
+      transition: box-shadow 0.3s var(--ease), transform 0.2s var(--ease);
+    }
+    .idea-card:hover {
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+    }
+
+    /* Vote column */
+    .idea-vote {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 0.2rem;
+      min-width: 48px; padding-top: 2px;
+    }
+    .idea-vote__btn {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(45,94,64,0.06);
+      color: var(--green); font-size: 1.1rem;
+      transition: all 0.2s var(--ease); border: 1.5px solid transparent;
+    }
+    .idea-vote__btn:hover {
+      background: rgba(45,94,64,0.12);
+      border-color: rgba(45,94,64,0.2);
+    }
+    .idea-vote__btn.is-voted {
+      background: var(--green); color: var(--cream);
+      border-color: var(--green);
+    }
+    .idea-vote__count {
+      font-family: var(--font-serif);
+      font-size: 1.15rem; font-weight: 600; color: var(--brown);
+    }
+    .idea-vote__label { font-size: 0.65rem; color: rgba(58,42,31,0.4); text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* Content column */
+    .idea-content { flex: 1; min-width: 0; }
+
+    .idea-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.5rem; }
+
+    .idea-title {
+      font-family: var(--font-serif);
+      font-size: 1.15rem; font-weight: 600; line-height: 1.3;
+    }
+
+    .idea-status {
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; padding: 0.2rem 0.6rem;
+      border-radius: 100px; white-space: nowrap; flex-shrink: 0;
+    }
+    .status--open { background: rgba(45,94,64,0.08); color: var(--green); }
+    .status--planned { background: rgba(212,169,106,0.15); color: #8a6d2f; }
+    .status--in-progress { background: rgba(194,115,76,0.12); color: var(--terra); }
+    .status--completed { background: rgba(45,94,64,0.15); color: var(--green-dark); }
+
+    .idea-desc {
+      font-size: 0.88rem; color: rgba(58,42,31,0.7);
+      line-height: 1.6; margin-bottom: 0.75rem;
+      display: -webkit-box; -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    .idea-meta {
+      display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+    }
+
+    .idea-tag {
+      font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.04em; padding: 0.2rem 0.55rem;
+      border-radius: 100px;
+    }
+    .tag--difficult-backgrounds { background: rgba(194,115,76,0.08); color: var(--terra); }
+    .tag--special-needs { background: rgba(212,169,106,0.1); color: #8a6d2f; }
+    .tag--gifted-talented { background: rgba(45,94,64,0.06); color: var(--green); }
+    .tag--general { background: rgba(58,42,31,0.05); color: rgba(58,42,31,0.6); }
+
+    .idea-cost {
+      font-size: 0.72rem; color: rgba(58,42,31,0.45);
+      display: flex; align-items: center; gap: 0.25rem;
+    }
+
+    .idea-author {
+      font-size: 0.72rem; color: rgba(58,42,31,0.4);
+      margin-left: auto;
+    }
+
+    /* EMPTY STATE */
+    .ideas-empty {
+      text-align: center; padding: 4rem 1rem; color: rgba(58,42,31,0.4);
+      grid-column: 1 / -1;
+    }
+
+    /* AUTH */
+    .auth-section { text-align: center; padding: 2rem; }
+    .auth-section p { font-size: 0.9rem; color: rgba(58,42,31,0.6); margin-bottom: 1rem; }
+
+    /* MODALS */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(30,63,43,0.5); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center; padding: 1rem;
+    }
+    .modal-overlay.is-open { display: flex; }
+    .modal {
+      background: #fff; border-radius: 16px; padding: 2rem;
+      width: 100%; max-width: 560px; max-height: 90vh;
+      overflow-y: auto; box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+    }
+    .modal__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    .modal__title { font-family: var(--font-serif); font-size: 1.5rem; font-weight: 500; }
+    .modal__close {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(58,42,31,0.06); font-size: 1.2rem; transition: background 0.2s;
+    }
+    .modal__close:hover { background: rgba(58,42,31,0.12); }
+
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label {
+      display: block; font-size: 0.82rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: rgba(58,42,31,0.6); margin-bottom: 0.4rem;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 0.7rem 1rem;
+      border: 1.5px solid rgba(58,42,31,0.15); border-radius: 8px;
+      font-family: var(--font-sans); font-size: 0.95rem;
+      color: var(--brown); background: var(--cream); transition: border-color 0.3s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--green); }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
+    .form-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
+    .form-hint { font-size: 0.75rem; color: rgba(58,42,31,0.4); margin-top: 0.25rem; }
+
+    .login-form { max-width: 360px; margin: 0 auto; }
+    .login-divider {
+      text-align: center; font-size: 0.8rem; color: rgba(58,42,31,0.4);
+      margin: 1.5rem 0; position: relative;
+    }
+    .login-divider::before, .login-divider::after {
+      content: ''; position: absolute; top: 50%; width: 40%; height: 1px; background: rgba(58,42,31,0.1);
+    }
+    .login-divider::before { left: 0; }
+    .login-divider::after { right: 0; }
+
+    /* FOOTER */
+    .footer { background: var(--brown); color: rgba(255,248,240,0.6); padding: 3rem 0; }
+    .footer__layout { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 2rem; }
+    .footer__brand-name { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; color: var(--cream); margin-bottom: 0.25rem; }
+    .footer__tagline { font-size: 0.85rem; color: var(--gold); }
+    .footer__location { font-size: 0.8rem; margin-top: 0.25rem; }
+    .footer__links { list-style: none; display: flex; gap: 1.5rem; margin-bottom: 0.5rem; }
+    .footer__links a { font-size: 0.85rem; text-decoration: none; transition: color 0.3s; }
+    .footer__links a:hover { color: var(--cream); }
+    .footer__copy { font-size: 0.75rem; opacity: 0.5; }
+    .footer__right { text-align: right; }
+    @media (max-width: 600px) { .footer__layout { flex-direction: column; } .footer__right { text-align: left; } }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      padding: 1rem 1.5rem; border-radius: 12px;
+      font-size: 0.9rem; font-weight: 500; color: #fff;
+      z-index: 300; transform: translateY(120%);
+      transition: transform 0.4s var(--ease);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+    .toast.is-visible { transform: translateY(0); }
+    .toast--success { background: var(--green); }
+    .toast--error { background: var(--terra); }
+
+    /* CARD ACTIONS (edit/delete) */
+    .idea-card { position: relative; }
+    .card-actions {
+      position: absolute; top: 0.75rem; right: 0.75rem;
+      display: flex; gap: 0.25rem; opacity: 0;
+      transition: opacity 0.2s var(--ease);
+    }
+    .idea-card:hover .card-actions { opacity: 1; }
+    .card-actions button {
+      width: 28px; height: 28px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(58,42,31,0.06); border: none; cursor: pointer;
+      font-size: 0.82rem; color: rgba(58,42,31,0.5);
+      transition: background 0.2s, color 0.2s;
+    }
+    .card-actions button:hover { background: rgba(58,42,31,0.12); color: var(--brown); }
+    .card-actions .btn-delete:hover { background: rgba(194,115,76,0.15); color: var(--terra); }
+
+    /* CARD CHECKBOX */
+    .card-checkbox {
+      position: absolute; top: 0.75rem; left: 0.75rem;
+      width: 18px; height: 18px; accent-color: var(--green);
+      cursor: pointer; opacity: 0; transition: opacity 0.2s var(--ease);
+    }
+    .idea-card:hover .card-checkbox { opacity: 1; }
+    .card-checkbox:checked { opacity: 1; }
+
+    /* Only show actions/checkboxes when logged in */
+    .card-actions, .card-checkbox { display: none; }
+    .is-admin .card-actions { display: flex; }
+    .is-admin .card-checkbox { display: block; }
+
+    /* BULK ACTION BAR */
+    .bulk-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      z-index: 1000; background: var(--green-dark);
+      padding: 0.75rem 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+      gap: 1rem; transform: translateY(100%);
+      transition: transform 0.3s var(--ease);
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
+    }
+    .bulk-bar.is-visible { transform: translateY(0); }
+    .bulk-bar__label {
+      font-size: 0.85rem; font-weight: 600; color: var(--cream);
+    }
+    .bulk-bar select {
+      padding: 0.4rem 0.6rem; border-radius: 6px;
+      font-family: var(--font-sans); font-size: 0.82rem;
+      border: 1.5px solid rgba(255,248,240,0.2);
+      background: rgba(255,248,240,0.1); color: var(--cream);
+    }
+    .bulk-bar select option { color: var(--brown); background: #fff; }
+    .bulk-bar .btn--bulk {
+      padding: 0.45rem 1rem; border-radius: 100px;
+      font-size: 0.8rem; font-weight: 600; cursor: pointer; border: none;
+    }
+    .bulk-bar .btn--bulk-apply { background: var(--gold); color: var(--brown); }
+    .bulk-bar .btn--bulk-apply:hover { background: #e0b878; }
+    .bulk-bar .btn--bulk-delete { background: var(--terra); color: #fff; }
+    .bulk-bar .btn--bulk-delete:hover { background: #a85d3a; }
+
+    /* AUDIT POPOVER */
+    .audit-popover {
+      position: absolute; top: 2.5rem; right: 0;
+      background: #fff; border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      max-width: 360px; min-width: 260px;
+      max-height: 300px; overflow-y: auto;
+      z-index: 100; padding: 0.75rem;
+      border: 1px solid rgba(58,42,31,0.08);
+    }
+    .audit-popover__title {
+      font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: rgba(58,42,31,0.5);
+      margin-bottom: 0.5rem;
+    }
+    .audit-entry {
+      font-size: 0.8rem; border-bottom: 1px solid rgba(58,42,31,0.06);
+      padding: 0.5rem 0; line-height: 1.5;
+    }
+    .audit-entry:last-child { border-bottom: none; }
+    .audit-action { font-weight: 700; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.04em; margin-right: 0.25rem; }
+    .audit-action--create { color: var(--green); }
+    .audit-action--edit { color: #8a6d2f; }
+    .audit-entry__user { font-weight: 600; }
+    .audit-entry__time { font-size: 0.72rem; color: rgba(58,42,31,0.4); }
+    .audit-entry__changes { font-size: 0.72rem; color: rgba(58,42,31,0.55); margin-top: 0.15rem; }
+
+    .idea-audit-info {
+      font-size: 0.72rem; color: rgba(58,42,31,0.4);
+      margin-top: 0.5rem;
+    }
+    .idea-audit-info .edited-info {
+      font-size: 0.68rem; color: rgba(58,42,31,0.35);
+      margin-top: 0.15rem;
+    }
+
+    /* ANIMATIONS */
+    [data-animate] { opacity: 1; transform: none; }
+    .js-ready [data-animate] { opacity: 0; transform: translateY(24px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
+    .js-ready [data-animate].is-visible { opacity: 1; transform: translateY(0); }
+    .js-ready [data-animate-delay="1"] { transition-delay: 0.1s; }
+    .js-ready [data-animate-delay="2"] { transition-delay: 0.2s; }
+    @media (prefers-reduced-motion: reduce) {
+      .js-ready [data-animate] { opacity: 1 !important; transform: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="/" class="nav__logo">Big Sister Foundation</a>
+    <ul class="nav__links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/ledger/">Ledger</a></li>
+      <li><a href="/ideas/" class="is-active">Ideas</a></li>
+      <li><a href="/scholars/">Scholars</a></li>
+      <li><a href="/volunteer/">Volunteer</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="ideas-hero">
+    <div class="container">
+      <p class="eyebrow" data-animate>Community Powered</p>
+      <h1 data-animate data-animate-delay="1">Ideas Board</h1>
+      <p class="ideas-hero__sub" data-animate data-animate-delay="2">Propose what we should do next. Vote on what matters most. The community decides our priorities.</p>
+      <div class="ideas-stats" data-animate data-animate-delay="2">
+        <div>
+          <p class="ideas-stat__number" id="stat-total">--</p>
+          <p class="ideas-stat__label">Ideas Submitted</p>
+        </div>
+        <div>
+          <p class="ideas-stat__number" id="stat-votes">--</p>
+          <p class="ideas-stat__label">Total Votes</p>
+        </div>
+        <div>
+          <p class="ideas-stat__number" id="stat-planned">--</p>
+          <p class="ideas-stat__label">In Progress</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN -->
+  <section class="section-pad">
+    <div class="container">
+
+      <!-- VOLUNTEER BAR -->
+      <div class="volunteer-bar" id="volunteer-bar">
+        <span class="volunteer-bar__text">Signed in as <strong id="volunteer-name">Volunteer</strong></span>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+          <button class="btn btn--green btn--sm" id="btn-new-idea">+ New Idea</button>
+          <button class="btn btn--ghost-dark btn--sm" id="btn-logout">Sign Out</button>
+        </div>
+      </div>
+
+      <!-- TOOLBAR -->
+      <div class="toolbar" data-animate>
+        <div class="sort-bar">
+          <button class="sort-btn is-active" data-sort="votes">Top Voted</button>
+          <button class="sort-btn" data-sort="newest">Newest</button>
+          <button class="sort-btn" data-sort="status">By Status</button>
+        </div>
+        <div class="filter-pills">
+          <button class="filter-pill is-active" data-filter="all">All</button>
+          <button class="filter-pill" data-filter="difficult-backgrounds">Difficult Backgrounds</button>
+          <button class="filter-pill" data-filter="special-needs">Special Needs</button>
+          <button class="filter-pill" data-filter="gifted-talented">Gifted &amp; Talented</button>
+          <button class="filter-pill" data-filter="general">General</button>
+        </div>
+      </div>
+
+      <!-- IDEAS GRID -->
+      <div class="ideas-grid" id="ideas-grid" data-animate data-animate-delay="1"></div>
+
+      <!-- LOGIN PROMPT -->
+      <div class="auth-section" id="auth-section">
+        <p>Registered volunteers can submit new ideas.</p>
+        <button class="btn btn--ghost-dark" id="btn-login">Volunteer Sign In</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__layout">
+        <div class="footer__left">
+          <p class="footer__brand-name">Big Sister Foundation</p>
+          <p class="footer__tagline">Rooted. Present. Protective.</p>
+          <p class="footer__location">Lagos, Nigeria</p>
+        </div>
+        <div class="footer__right">
+          <ul class="footer__links">
+            <li><a href="https://wa.me/2348000000000">WhatsApp</a></li>
+            <li><a href="mailto:princebolajibreeze@gmail.com">Email</a></li>
+            <li><a href="#">Instagram</a></li>
+          </ul>
+          <p class="footer__copy">&copy; 2026 Big Sister Foundation. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- NEW IDEA MODAL -->
+  <div class="modal-overlay" id="modal-idea">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title">Propose an Idea</h3>
+        <button class="modal__close" id="modal-idea-close">&times;</button>
+      </div>
+      <form id="idea-form">
+        <div class="form-group">
+          <label for="idea-title">Title</label>
+          <input type="text" id="idea-title" placeholder="A clear, short title for your idea" required maxlength="100">
+          <p class="form-hint">Keep it under 100 characters</p>
+        </div>
+        <div class="form-group">
+          <label for="idea-description">Description</label>
+          <textarea id="idea-description" placeholder="What's the idea? Why does it matter? How would it help?" required></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="idea-pathway">Pathway</label>
+            <select id="idea-pathway" required>
+              <option value="">Select...</option>
+              <option value="difficult-backgrounds">Difficult Backgrounds</option>
+              <option value="special-needs">Special Needs &amp; Disabilities</option>
+              <option value="gifted-talented">Gifted &amp; Talented</option>
+              <option value="general">General / Cross-program</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="idea-cost">Estimated Cost (NGN)</label>
+            <input type="number" id="idea-cost" placeholder="e.g. 250000" min="0">
+            <p class="form-hint">Rough estimate is fine</p>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="idea-resources">Resources Needed</label>
+          <input type="text" id="idea-resources" placeholder="e.g. Volunteers, transport, venue space">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn--ghost-dark" id="modal-idea-cancel">Cancel</button>
+          <button type="submit" class="btn btn--green">Submit Idea</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- LOGIN MODAL -->
+  <div class="modal-overlay" id="modal-login">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title">Volunteer Sign In</h3>
+        <button class="modal__close" id="modal-login-close">&times;</button>
+      </div>
+      <div class="login-form">
+        <div class="form-group" id="login-name-group" style="display:none;">
+          <label for="login-name">Name</label>
+          <input type="text" id="login-name" placeholder="Your display name">
+        </div>
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" placeholder="your@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="Your password" required>
+        </div>
+        <button class="btn btn--green" id="btn-do-login" style="width:100%;justify-content:center;">Sign In</button>
+        <p class="login-divider">or</p>
+        <p style="font-size:0.85rem;text-align:center;"><button type="button" id="btn-toggle-auth" style="background:none;border:none;color:var(--terra);font-weight:600;font-size:0.85rem;cursor:pointer;">Need an account? Sign Up</button></p>
+        <p style="font-size:0.8rem;color:rgba(58,42,31,0.4);text-align:center;margin-top:0.75rem;">Want to volunteer? <a href="https://wa.me/2348000000000" style="color:var(--terra);font-weight:600;">Contact us on WhatsApp</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- BULK ACTION BAR -->
+  <div class="bulk-bar" id="bulk-bar"></div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // Firebase init
+      var firebaseConfig = {
+        apiKey: "AIzaSyCwos6XR9-uqAf_Esmh2K_hJoLxq4gnEuU",
+        authDomain: "big-sister-foundation.firebaseapp.com",
+        projectId: "big-sister-foundation",
+        storageBucket: "big-sister-foundation.firebasestorage.app",
+        messagingSenderId: "778723584560",
+        appId: "1:778723584560:web:7499944c30001e7fcf5bf5",
+        measurementId: "G-Q4EYY24EDZ"
+      };
+      firebase.initializeApp(firebaseConfig);
+      var auth = firebase.auth();
+      var db = firebase.firestore();
+
+      document.body.classList.add('js-ready');
+
+      // Animations
+      var animEls = document.querySelectorAll('[data-animate]');
+      if ('IntersectionObserver' in window) {
+        var obs = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) { e.target.classList.add('is-visible'); obs.unobserve(e.target); }
+          });
+        }, { threshold: 0.05 });
+        animEls.forEach(function (el) { obs.observe(el); });
+      } else {
+        animEls.forEach(function (el) { el.classList.add('is-visible'); });
+      }
+
+      // State
+      var ideas = [];
+      var currentSort = 'votes';
+      var currentFilter = 'all';
+      var user = null;
+      var votedIds = {};
+      var isSignUp = false;
+      var editingIdeaId = null;
+      var selectedIds = {};
+
+      // DOM
+      var ideasGrid = document.getElementById('ideas-grid');
+      var bulkBar = document.getElementById('bulk-bar');
+      var volunteerBar = document.getElementById('volunteer-bar');
+      var volunteerName = document.getElementById('volunteer-name');
+      var authSection = document.getElementById('auth-section');
+      var modalIdea = document.getElementById('modal-idea');
+      var modalLogin = document.getElementById('modal-login');
+      var ideaForm = document.getElementById('idea-form');
+      var toastEl = document.getElementById('toast');
+
+      var pathwayLabels = {
+        'difficult-backgrounds': 'Difficult Backgrounds',
+        'special-needs': 'Special Needs',
+        'gifted-talented': 'Gifted & Talented',
+        'general': 'General'
+      };
+
+      var statusOrder = { 'in-progress': 0, 'planned': 1, 'open': 2, 'completed': 3 };
+
+      // Helpers
+      function formatNaira(n) {
+        if (!n || n === 0) return '';
+        if (n >= 1000000) return '\u20A6' + (n / 1000000).toFixed(1) + 'M';
+        if (n >= 1000) return '\u20A6' + (n / 1000).toFixed(0) + 'K';
+        return '\u20A6' + n.toLocaleString();
+      }
+
+      function showToast(msg, type) {
+        toastEl.textContent = msg;
+        toastEl.className = 'toast toast--' + (type || 'success') + ' is-visible';
+        setTimeout(function () { toastEl.classList.remove('is-visible'); }, 3000);
+      }
+
+      // --- Firestore: Load ideas ---
+      var localDemoIdeas = [
+        { id: 'local-1', title: 'Saturday coding classes for gifted students', description: 'Partner with a local tech hub to run free weekly coding workshops for academically gifted students aged 12-17. This gives them a practical skill, keeps them engaged on weekends, and opens career doors in tech.', pathway: 'gifted-talented', cost: 480000, resources: 'Venue, laptops, volunteer instructors', status: 'in-progress', votes: 47, author: 'bolaji', authorId: '', date: '2025-01-15' },
+        { id: 'local-2', title: 'Emergency food relief for Makoko families', description: 'Distribute monthly food packages to 100 families in Makoko whose children are in our program. Many families skip meals to afford school fees. Food security lets children focus on learning instead of hunger.', pathway: 'difficult-backgrounds', cost: 750000, resources: 'Transport, volunteers, storage space', status: 'planned', votes: 38, author: 'chidinma', authorId: '', date: '2025-01-10' },
+        { id: 'local-3', title: 'Sign language training for volunteers', description: 'Train 20 BSF volunteers in Nigerian Sign Language so they can communicate directly with deaf children in our Special Needs program without always needing an interpreter.', pathway: 'special-needs', cost: 320000, resources: 'Sign language instructor, training materials', status: 'open', votes: 31, author: 'kemi', authorId: '', date: '2025-01-08' },
+        { id: 'local-4', title: 'Mobile library van for underserved areas', description: 'Convert a van into a mobile library that visits communities with no access to books. Stock it with age-appropriate books in English and Yoruba. Run weekly reading sessions at each stop.', pathway: 'general', cost: 2500000, resources: 'Van, books, driver, reading volunteers', status: 'open', votes: 29, author: 'tunde', authorId: '', date: '2025-01-05' },
+        { id: 'local-5', title: 'Scholarship fund for top-performing students', description: 'Create a small scholarship that covers secondary school fees for the top 5 students in each pathway who show exceptional growth and commitment. It doesn\'t have to be academic - it should reward effort and character.', pathway: 'gifted-talented', cost: 1200000, resources: 'School partnerships, selection committee', status: 'open', votes: 26, author: 'ada', authorId: '', date: '2025-01-03' },
+        { id: 'local-6', title: 'Art therapy sessions for trauma survivors', description: 'Weekly art therapy sessions led by a trained therapist for children who have experienced abuse, displacement, or family breakdown. Art lets them express what words can\'t.', pathway: 'difficult-backgrounds', cost: 200000, resources: 'Art therapist, supplies, quiet space', status: 'planned', votes: 24, author: 'ngozi', authorId: '', date: '2024-12-28' },
+        { id: 'local-7', title: 'Assistive technology for blind children', description: 'Provide screen readers and braille displays for visually impaired children so they can access digital learning materials alongside their peers. Start with 5 devices.', pathway: 'special-needs', cost: 900000, resources: 'Assistive devices, tech support, training', status: 'open', votes: 21, author: 'emeka', authorId: '', date: '2024-12-20' },
+        { id: 'local-8', title: 'Parent mentorship circles', description: 'Monthly group sessions where parents of children in our program meet to share experiences, learn parenting strategies, and support each other. A parent who feels supported raises a child who thrives.', pathway: 'general', cost: 80000, resources: 'Facilitator, venue, refreshments', status: 'completed', votes: 19, author: 'bolaji', authorId: '', date: '2024-12-15' }
+      ];
+
+      function loadLocalIdeas() {
+        ideas = localDemoIdeas.slice();
+        updateStats();
+        renderIdeas();
+      }
+
+      function loadIdeas() {
+        return db.collection('ideas').get().then(function (snapshot) {
+          if (snapshot.empty) {
+            return seedDemoData();
+          }
+          ideas = [];
+          snapshot.forEach(function (doc) {
+            var data = doc.data();
+            data.id = doc.id;
+            if (data.createdAt && data.createdAt.toDate) {
+              data.date = data.createdAt.toDate().toISOString().split('T')[0];
+            } else if (!data.date) {
+              data.date = '';
+            }
+            ideas.push(data);
+          });
+          return loadVoteCounts();
+        }).then(function () {
+          updateStats();
+          renderIdeas();
+        }).catch(function (err) {
+          console.error('Error loading ideas:', err);
+          loadLocalIdeas();
+        });
+      }
+
+      // --- Firestore: Load vote counts for all ideas and user vote state ---
+      function loadVoteCounts() {
+        return db.collection('votes').get().then(function (snapshot) {
+          var countsMap = {};
+          votedIds = {};
+          snapshot.forEach(function (doc) {
+            var v = doc.data();
+            if (!countsMap[v.ideaId]) countsMap[v.ideaId] = 0;
+            countsMap[v.ideaId]++;
+            if (user && v.userId === user.uid) {
+              votedIds[v.ideaId] = doc.id;
+            }
+          });
+          ideas.forEach(function (idea) {
+            idea.votes = countsMap[idea.id] || 0;
+          });
+        });
+      }
+
+      // --- Firestore: Seed demo data ---
+      function seedDemoData() {
+        var demoIdeas = [
+          {
+            title: 'Saturday coding classes for gifted students',
+            description: 'Partner with a local tech hub to run free weekly coding workshops for academically gifted students aged 12-17. This gives them a practical skill, keeps them engaged on weekends, and opens career doors in tech.',
+            pathway: 'gifted-talented', cost: 480000, resources: 'Venue, laptops, volunteer instructors',
+            status: 'in-progress', votes: 47, author: 'bolaji', authorId: '',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          },
+          {
+            title: 'Emergency food relief for Makoko families',
+            description: 'Distribute monthly food packages to 100 families in Makoko whose children are in our program. Many families skip meals to afford school fees. Food security lets children focus on learning instead of hunger.',
+            pathway: 'difficult-backgrounds', cost: 750000, resources: 'Transport, volunteers, storage space',
+            status: 'planned', votes: 38, author: 'chidinma', authorId: '',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          },
+          {
+            title: 'Sign language training for volunteers',
+            description: 'Train 20 BSF volunteers in Nigerian Sign Language so they can communicate directly with deaf children in our Special Needs program without always needing an interpreter.',
+            pathway: 'special-needs', cost: 320000, resources: 'Sign language instructor, training materials',
+            status: 'open', votes: 31, author: 'kemi', authorId: '',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          },
+          {
+            title: 'Mobile library van for underserved areas',
+            description: 'Convert a van into a mobile library that visits communities with no access to books. Stock it with age-appropriate books in English and Yoruba. Run weekly reading sessions at each stop.',
+            pathway: 'general', cost: 2500000, resources: 'Van, books, driver, reading volunteers',
+            status: 'open', votes: 29, author: 'tunde', authorId: '',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          },
+          {
+            title: 'Scholarship fund for top-performing students',
+            description: 'Create a small scholarship that covers secondary school fees for the top 5 students in each pathway who show exceptional growth and commitment. It doesn\'t have to be academic - it should reward effort and character.',
+            pathway: 'gifted-talented', cost: 1200000, resources: 'School partnerships, selection committee',
+            status: 'open', votes: 26, author: 'ada', authorId: '',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          },
+          {
+            title: 'Art therapy sessions for trauma survivors',
+            description: 'Weekly art therapy sessions led by a trained therapist for children who have experienced abuse, displacement, or family breakdown. Art lets them express what words can\'t.',
+            pathway: 'difficult-backgrounds', cost: 200000, resources: 'Art therapist, supplies, quiet space',
+            status: 'planned', votes: 24, author: 'ngozi', authorId: '',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          },
+          {
+            title: 'Assistive technology for blind children',
+            description: 'Provide screen readers and braille displays for visually impaired children so they can access digital learning materials alongside their peers. Start with 5 devices.',
+            pathway: 'special-needs', cost: 900000, resources: 'Assistive devices, tech support, training',
+            status: 'open', votes: 21, author: 'emeka', authorId: '',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          },
+          {
+            title: 'Parent mentorship circles',
+            description: 'Monthly group sessions where parents of children in our program meet to share experiences, learn parenting strategies, and support each other. A parent who feels supported raises a child who thrives.',
+            pathway: 'general', cost: 80000, resources: 'Facilitator, venue, refreshments',
+            status: 'completed', votes: 19, author: 'bolaji', authorId: '',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          }
+        ];
+
+        var batch = db.batch();
+        var seedVotes = [];
+        demoIdeas.forEach(function (idea) {
+          var docRef = db.collection('ideas').doc();
+          var voteCount = idea.votes;
+          idea.votes = voteCount;
+          batch.set(docRef, idea);
+          // Seed placeholder vote docs to match the denormalized count
+          for (var v = 0; v < voteCount; v++) {
+            seedVotes.push({ ideaId: docRef.id, userId: 'seed-user-' + v, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+          }
+        });
+
+        return batch.commit().then(function () {
+          // Seed votes in batches of 500 (Firestore limit)
+          var voteBatches = [];
+          for (var i = 0; i < seedVotes.length; i += 500) {
+            var vb = db.batch();
+            seedVotes.slice(i, i + 500).forEach(function (sv) {
+              vb.set(db.collection('votes').doc(), sv);
+            });
+            voteBatches.push(vb.commit());
+          }
+          return Promise.all(voteBatches);
+        }).then(function () {
+          return loadIdeas();
+        }).catch(function (err) {
+          console.warn('Seed failed (auth required), using local data:', err.message);
+          loadLocalIdeas();
+        });
+      }
+
+      // --- Firestore: Toggle vote ---
+      function toggleVote(ideaId) {
+        if (!user) {
+          showToast('Please sign in to vote', 'error');
+          modalLogin.classList.add('is-open');
+          return Promise.resolve();
+        }
+        var uid = user.uid;
+        return db.collection('votes')
+          .where('ideaId', '==', ideaId)
+          .where('userId', '==', uid)
+          .get()
+          .then(function (snapshot) {
+            if (!snapshot.empty) {
+              // Already voted - remove vote
+              var deleteOps = [];
+              snapshot.forEach(function (doc) { deleteOps.push(doc.ref.delete()); });
+              return Promise.all(deleteOps);
+            } else {
+              // Add vote
+              return db.collection('votes').add({
+                ideaId: ideaId,
+                userId: uid,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+              });
+            }
+          })
+          .then(function () {
+            return loadVoteCounts();
+          })
+          .then(function () {
+            updateStats();
+            renderIdeas();
+          })
+          .catch(function (err) {
+            console.error('Vote error:', err);
+            showToast('Error recording vote', 'error');
+          });
+      }
+
+      // Build idea card
+      function createIdeaCard(idea) {
+        var card = document.createElement('div');
+        card.className = 'idea-card';
+        card.setAttribute('data-idea-id', idea.id);
+
+        // Checkbox for bulk selection
+        var checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'card-checkbox';
+        checkbox.checked = !!selectedIds[idea.id];
+        checkbox.setAttribute('aria-label', 'Select idea');
+        checkbox.addEventListener('change', function () {
+          if (checkbox.checked) {
+            selectedIds[idea.id] = true;
+          } else {
+            delete selectedIds[idea.id];
+          }
+          updateBulkBar();
+        });
+        card.appendChild(checkbox);
+
+        // Card actions (edit + delete)
+        var actions = document.createElement('div');
+        actions.className = 'card-actions';
+
+        var editBtn = document.createElement('button');
+        editBtn.className = 'btn-edit';
+        editBtn.textContent = '\u270F\uFE0F';
+        editBtn.setAttribute('aria-label', 'Edit idea');
+        editBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          openEditModal(idea);
+        });
+
+        var deleteBtn = document.createElement('button');
+        deleteBtn.className = 'btn-delete';
+        deleteBtn.textContent = '\uD83D\uDDD1\uFE0F';
+        deleteBtn.setAttribute('aria-label', 'Delete idea');
+        deleteBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          deleteSingleIdea(idea.id, idea.title);
+        });
+
+        var auditBtn = document.createElement('button');
+        auditBtn.className = 'btn-audit';
+        auditBtn.textContent = '\uD83D\uDD50';
+        auditBtn.setAttribute('aria-label', 'View audit trail');
+        auditBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          toggleAuditPopover(idea.id, auditBtn);
+        });
+
+        actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
+        actions.appendChild(auditBtn);
+        card.appendChild(actions);
+
+        // Vote column
+        var voteCol = document.createElement('div');
+        voteCol.className = 'idea-vote';
+
+        var voteBtn = document.createElement('button');
+        voteBtn.className = 'idea-vote__btn' + (votedIds[idea.id] ? ' is-voted' : '');
+        voteBtn.textContent = '\u25B2';
+        voteBtn.setAttribute('aria-label', 'Vote for this idea');
+        voteBtn.addEventListener('click', function () {
+          toggleVote(idea.id);
+        });
+
+        var countEl = document.createElement('span');
+        countEl.className = 'idea-vote__count';
+        countEl.textContent = idea.votes;
+
+        var voteLabel = document.createElement('span');
+        voteLabel.className = 'idea-vote__label';
+        voteLabel.textContent = 'votes';
+
+        voteCol.appendChild(voteBtn);
+        voteCol.appendChild(countEl);
+        voteCol.appendChild(voteLabel);
+
+        // Content column
+        var content = document.createElement('div');
+        content.className = 'idea-content';
+
+        var header = document.createElement('div');
+        header.className = 'idea-header';
+
+        var title = document.createElement('h3');
+        title.className = 'idea-title';
+        title.textContent = idea.title;
+
+        var statusEl = document.createElement('span');
+        statusEl.className = 'idea-status status--' + idea.status;
+        statusEl.textContent = idea.status.replace('-', ' ');
+
+        header.appendChild(title);
+        header.appendChild(statusEl);
+
+        var desc = document.createElement('p');
+        desc.className = 'idea-desc';
+        desc.textContent = idea.description;
+
+        var meta = document.createElement('div');
+        meta.className = 'idea-meta';
+
+        var tag = document.createElement('span');
+        tag.className = 'idea-tag tag--' + idea.pathway;
+        tag.textContent = pathwayLabels[idea.pathway] || idea.pathway;
+        meta.appendChild(tag);
+
+        if (idea.cost) {
+          var costEl = document.createElement('span');
+          costEl.className = 'idea-cost';
+          costEl.textContent = '\u2248 ' + formatNaira(idea.cost);
+          meta.appendChild(costEl);
+        }
+
+        var author = document.createElement('span');
+        author.className = 'idea-author';
+        author.textContent = 'by ' + (idea.createdByName || idea.author);
+        meta.appendChild(author);
+
+        content.appendChild(header);
+        content.appendChild(desc);
+        content.appendChild(meta);
+
+        // Audit info section
+        var auditInfo = document.createElement('div');
+        auditInfo.className = 'idea-audit-info';
+
+        var createdByText = document.createElement('div');
+        createdByText.textContent = 'Created by ' + (idea.createdByName || idea.author || 'unknown');
+        auditInfo.appendChild(createdByText);
+
+        if (idea.lastEditedByName && idea.lastEditedAt) {
+          var editedDiv = document.createElement('div');
+          editedDiv.className = 'edited-info';
+          var editDate = idea.lastEditedAt && idea.lastEditedAt.toDate
+            ? idea.lastEditedAt.toDate().toLocaleDateString()
+            : '';
+          editedDiv.textContent = 'Edited by ' + idea.lastEditedByName + (editDate ? ' \u00B7 ' + editDate : '');
+          auditInfo.appendChild(editedDiv);
+        }
+
+        content.appendChild(auditInfo);
+
+        card.appendChild(voteCol);
+        card.appendChild(content);
+
+        return card;
+      }
+
+      // Render
+      function renderIdeas() {
+        while (ideasGrid.firstChild) ideasGrid.removeChild(ideasGrid.firstChild);
+
+        var filtered = currentFilter === 'all'
+          ? ideas.slice()
+          : ideas.filter(function (i) { return i.pathway === currentFilter; });
+
+        // Sort
+        if (currentSort === 'votes') {
+          filtered.sort(function (a, b) { return b.votes - a.votes; });
+        } else if (currentSort === 'newest') {
+          filtered.sort(function (a, b) { return (b.date || '').localeCompare(a.date || ''); });
+        } else if (currentSort === 'status') {
+          filtered.sort(function (a, b) {
+            return (statusOrder[a.status] || 99) - (statusOrder[b.status] || 99);
+          });
+        }
+
+        if (filtered.length === 0) {
+          var empty = document.createElement('div');
+          empty.className = 'ideas-empty';
+          empty.textContent = ideas.length === 0
+            ? 'No ideas yet. Be the first to propose one.'
+            : 'No ideas in this category.';
+          ideasGrid.appendChild(empty);
+          return;
+        }
+
+        filtered.forEach(function (idea) {
+          ideasGrid.appendChild(createIdeaCard(idea));
+        });
+      }
+
+      // Stats
+      function updateStats() {
+        var totalVotes = 0;
+        var inProgress = 0;
+        ideas.forEach(function (i) {
+          totalVotes += i.votes;
+          if (i.status === 'in-progress' || i.status === 'planned') inProgress++;
+        });
+        document.getElementById('stat-total').textContent = ideas.length;
+        document.getElementById('stat-votes').textContent = totalVotes;
+        document.getElementById('stat-planned').textContent = inProgress;
+      }
+
+      // Sort buttons
+      document.querySelectorAll('.sort-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          document.querySelectorAll('.sort-btn').forEach(function (b) { b.classList.remove('is-active'); });
+          btn.classList.add('is-active');
+          currentSort = btn.getAttribute('data-sort');
+          renderIdeas();
+        });
+      });
+
+      // Filter pills
+      document.querySelectorAll('.filter-pill').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          document.querySelectorAll('.filter-pill').forEach(function (b) { b.classList.remove('is-active'); });
+          btn.classList.add('is-active');
+          currentFilter = btn.getAttribute('data-filter');
+          renderIdeas();
+        });
+      });
+
+      // Modal controls
+      var modalIdeaTitle = modalIdea.querySelector('.modal__title');
+      var modalIdeaSubmitBtn = ideaForm.querySelector('button[type="submit"]');
+
+      document.getElementById('btn-new-idea').addEventListener('click', function () {
+        editingIdeaId = null;
+        ideaForm.reset();
+        modalIdeaTitle.textContent = 'Propose an Idea';
+        modalIdeaSubmitBtn.textContent = 'Submit Idea';
+        modalIdea.classList.add('is-open');
+      });
+      document.getElementById('modal-idea-close').addEventListener('click', function () { modalIdea.classList.remove('is-open'); });
+      document.getElementById('modal-idea-cancel').addEventListener('click', function () { modalIdea.classList.remove('is-open'); });
+      document.getElementById('btn-login').addEventListener('click', function () { modalLogin.classList.add('is-open'); });
+      document.getElementById('modal-login-close').addEventListener('click', function () { modalLogin.classList.remove('is-open'); });
+
+      [modalIdea, modalLogin].forEach(function (m) {
+        m.addEventListener('click', function (e) { if (e.target === m) m.classList.remove('is-open'); });
+      });
+
+      // --- Sign-up / Sign-in toggle ---
+      var loginNameGroup = document.getElementById('login-name-group');
+      var btnToggleAuth = document.getElementById('btn-toggle-auth');
+      var btnDoLogin = document.getElementById('btn-do-login');
+
+      if (btnToggleAuth) {
+        btnToggleAuth.addEventListener('click', function () {
+          isSignUp = !isSignUp;
+          loginNameGroup.style.display = isSignUp ? 'block' : 'none';
+          btnDoLogin.textContent = isSignUp ? 'Create Account' : 'Sign In';
+          btnToggleAuth.textContent = isSignUp ? 'Already have an account? Sign In' : 'Need an account? Sign Up';
+        });
+      }
+
+      // Auth state listener
+      auth.onAuthStateChanged(function (firebaseUser) {
+        user = firebaseUser;
+        updateAuthUI();
+        // Reload vote state for new user
+        if (ideas.length > 0) {
+          loadVoteCounts().then(function () {
+            renderIdeas();
+          });
+        }
+      });
+
+      // Auth UI
+      function updateAuthUI() {
+        if (user) {
+          volunteerBar.classList.add('is-visible');
+          volunteerName.textContent = user.displayName || user.email;
+          authSection.style.display = 'none';
+          ideasGrid.classList.add('is-admin');
+        } else {
+          volunteerBar.classList.remove('is-visible');
+          authSection.style.display = 'block';
+          ideasGrid.classList.remove('is-admin');
+          selectedIds = {};
+          updateBulkBar();
+        }
+      }
+
+      // Sign in / Sign up
+      document.getElementById('btn-do-login').addEventListener('click', function () {
+        var email = document.getElementById('login-email').value;
+        var password = document.getElementById('login-password').value;
+        if (!email || !password) { showToast('Please enter email and password', 'error'); return; }
+
+        if (isSignUp) {
+          var nameVal = document.getElementById('login-name').value.trim();
+          if (!nameVal) { showToast('Please enter your name', 'error'); return; }
+          auth.createUserWithEmailAndPassword(email, password)
+            .then(function (cred) {
+              return cred.user.updateProfile({ displayName: nameVal });
+            })
+            .then(function () {
+              // Refresh user object to pick up displayName
+              user = auth.currentUser;
+              updateAuthUI();
+              modalLogin.classList.remove('is-open');
+              showToast('Account created. Welcome, ' + (user.displayName || email) + '!');
+            })
+            .catch(function (err) {
+              showToast(err.message, 'error');
+            });
+        } else {
+          auth.signInWithEmailAndPassword(email, password)
+            .then(function () {
+              modalLogin.classList.remove('is-open');
+              showToast('Signed in');
+            })
+            .catch(function (err) {
+              showToast(err.message, 'error');
+            });
+        }
+      });
+
+      // Sign out
+      document.getElementById('btn-logout').addEventListener('click', function () {
+        auth.signOut().then(function () {
+          showToast('Signed out');
+        }).catch(function (err) {
+          showToast(err.message, 'error');
+        });
+      });
+
+      // Open edit modal pre-filled
+      function openEditModal(idea) {
+        editingIdeaId = idea.id;
+        modalIdeaTitle.textContent = 'Edit Idea';
+        modalIdeaSubmitBtn.textContent = 'Save Changes';
+        document.getElementById('idea-title').value = idea.title || '';
+        document.getElementById('idea-description').value = idea.description || '';
+        document.getElementById('idea-pathway').value = idea.pathway || '';
+        document.getElementById('idea-cost').value = idea.cost || '';
+        document.getElementById('idea-resources').value = idea.resources || '';
+        modalIdea.classList.add('is-open');
+      }
+
+      // Delete a single idea + its votes
+      function deleteSingleIdea(ideaId, title) {
+        if (!confirm('Delete "' + title + '"? This cannot be undone.')) return;
+        deleteIdeaAndVotes(ideaId).then(function () {
+          showToast('Idea deleted');
+          return loadIdeas();
+        }).catch(function (err) {
+          console.error('Delete error:', err);
+          showToast('Error deleting idea', 'error');
+        });
+      }
+
+      // Helper: delete idea doc + all its vote docs
+      function deleteIdeaAndVotes(ideaId) {
+        return db.collection('votes').where('ideaId', '==', ideaId).get().then(function (snap) {
+          var batch = db.batch();
+          snap.forEach(function (doc) { batch.delete(doc.ref); });
+          batch.delete(db.collection('ideas').doc(ideaId));
+          return batch.commit();
+        });
+      }
+
+      // Bulk bar UI
+      function updateBulkBar() {
+        var count = Object.keys(selectedIds).length;
+        while (bulkBar.firstChild) bulkBar.removeChild(bulkBar.firstChild);
+        if (count === 0) {
+          bulkBar.classList.remove('is-visible');
+          return;
+        }
+        bulkBar.classList.add('is-visible');
+
+        var label = document.createElement('span');
+        label.className = 'bulk-bar__label';
+        label.textContent = 'Set Status:';
+        bulkBar.appendChild(label);
+
+        var select = document.createElement('select');
+        var statuses = [
+          { value: 'open', text: 'Open' },
+          { value: 'planned', text: 'Planned' },
+          { value: 'in-progress', text: 'In Progress' },
+          { value: 'completed', text: 'Completed' }
+        ];
+        statuses.forEach(function (s) {
+          var opt = document.createElement('option');
+          opt.value = s.value;
+          opt.textContent = s.text;
+          select.appendChild(opt);
+        });
+        bulkBar.appendChild(select);
+
+        var applyBtn = document.createElement('button');
+        applyBtn.className = 'btn--bulk btn--bulk-apply';
+        applyBtn.textContent = 'Apply to ' + count + ' selected';
+        applyBtn.addEventListener('click', function () {
+          bulkStatusChange(select.value);
+        });
+        bulkBar.appendChild(applyBtn);
+
+        var delBtn = document.createElement('button');
+        delBtn.className = 'btn--bulk btn--bulk-delete';
+        delBtn.textContent = 'Delete ' + count + ' selected';
+        delBtn.addEventListener('click', function () {
+          bulkDelete();
+        });
+        bulkBar.appendChild(delBtn);
+      }
+
+      // Bulk status change
+      function bulkStatusChange(newStatus) {
+        var ids = Object.keys(selectedIds);
+        if (ids.length === 0) return;
+        var batch = db.batch();
+        ids.forEach(function (id) {
+          batch.update(db.collection('ideas').doc(id), { status: newStatus });
+        });
+        batch.commit().then(function () {
+          selectedIds = {};
+          updateBulkBar();
+          showToast('Status updated for ' + ids.length + ' idea' + (ids.length > 1 ? 's' : ''));
+          return loadIdeas();
+        }).catch(function (err) {
+          console.error('Bulk status error:', err);
+          showToast('Error updating status', 'error');
+        });
+      }
+
+      // Bulk delete
+      function bulkDelete() {
+        var ids = Object.keys(selectedIds);
+        if (ids.length === 0) return;
+        if (!confirm('Delete ' + ids.length + ' selected idea' + (ids.length > 1 ? 's' : '') + '? This cannot be undone.')) return;
+        Promise.all(ids.map(function (id) {
+          return deleteIdeaAndVotes(id);
+        })).then(function () {
+          selectedIds = {};
+          updateBulkBar();
+          showToast(ids.length + ' idea' + (ids.length > 1 ? 's' : '') + ' deleted');
+          return loadIdeas();
+        }).catch(function (err) {
+          console.error('Bulk delete error:', err);
+          showToast('Error deleting ideas', 'error');
+        });
+      }
+
+      // Submit idea (create or update)
+      ideaForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (!user) {
+          showToast('Please sign in to submit an idea', 'error');
+          modalIdea.classList.remove('is-open');
+          modalLogin.classList.add('is-open');
+          return;
+        }
+
+        var pathwayVal = document.getElementById('idea-pathway').value;
+        if (!pathwayVal) { showToast('Please select a pathway', 'error'); return; }
+
+        var ideaData = {
+          title: document.getElementById('idea-title').value,
+          description: document.getElementById('idea-description').value,
+          pathway: pathwayVal,
+          cost: parseInt(document.getElementById('idea-cost').value) || 0,
+          resources: document.getElementById('idea-resources').value
+        };
+
+        if (editingIdeaId) {
+          // Capture old values for audit trail
+          var oldIdea = null;
+          ideas.forEach(function (i) { if (i.id === editingIdeaId) oldIdea = i; });
+          var auditChanges = {};
+          var fieldsToTrack = ['title', 'description', 'pathway', 'cost', 'resources'];
+          fieldsToTrack.forEach(function (field) {
+            var oldVal = oldIdea ? (oldIdea[field] || '') : '';
+            var newVal = ideaData[field] || '';
+            if (String(oldVal) !== String(newVal)) {
+              auditChanges[field] = { old: oldVal, new: newVal };
+            }
+          });
+
+          // Add audit metadata to the update
+          ideaData.lastEditedByUid = user.uid;
+          ideaData.lastEditedByName = user.displayName || user.email;
+          ideaData.lastEditedAt = firebase.firestore.FieldValue.serverTimestamp();
+
+          var capturedEditId = editingIdeaId;
+          // Update existing idea
+          db.collection('ideas').doc(editingIdeaId).update(ideaData).then(function () {
+            // Write audit log (non-blocking)
+            db.collection('audit_log').add({
+              collection: 'ideas',
+              docId: capturedEditId,
+              action: 'edit',
+              userId: user.uid,
+              userEmail: user.email,
+              userName: user.displayName || user.email,
+              timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+              changes: auditChanges
+            }).catch(function (err) {
+              console.warn('Audit log write failed:', err);
+            });
+
+            modalIdea.classList.remove('is-open');
+            ideaForm.reset();
+            editingIdeaId = null;
+            showToast('Idea updated!');
+            return loadIdeas();
+          }).catch(function (err) {
+            console.error('Update error:', err);
+            showToast('Error updating idea', 'error');
+          });
+        } else {
+          // Create new idea
+          ideaData.status = 'open';
+          ideaData.votes = 0;
+          ideaData.author = user.displayName || user.email.split('@')[0];
+          ideaData.authorId = user.uid;
+          ideaData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+          ideaData.createdByUid = user.uid;
+          ideaData.createdByName = user.displayName || user.email;
+          ideaData.createdByEmail = user.email;
+
+          db.collection('ideas').add(ideaData).then(function (docRef) {
+            // Write audit log (non-blocking)
+            var auditData = {
+              collection: 'ideas',
+              docId: docRef.id,
+              action: 'create',
+              userId: user.uid,
+              userEmail: user.email,
+              userName: user.displayName || user.email,
+              timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+              changes: {
+                title: ideaData.title,
+                description: ideaData.description,
+                pathway: ideaData.pathway,
+                cost: ideaData.cost,
+                resources: ideaData.resources,
+                status: ideaData.status
+              }
+            };
+            db.collection('audit_log').add(auditData).catch(function (err) {
+              console.warn('Audit log write failed:', err);
+            });
+
+            // Auto-vote for own idea
+            return db.collection('votes').add({
+              ideaId: docRef.id,
+              userId: user.uid,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+          }).then(function () {
+            modalIdea.classList.remove('is-open');
+            ideaForm.reset();
+            showToast('Idea submitted!');
+            return loadIdeas();
+          }).catch(function (err) {
+            console.error('Submit error:', err);
+            showToast('Error submitting idea', 'error');
+          });
+        }
+      });
+
+      // Audit popover
+      var activeAuditPopover = null;
+
+      function closeAuditPopover() {
+        if (activeAuditPopover && activeAuditPopover.parentNode) {
+          activeAuditPopover.parentNode.removeChild(activeAuditPopover);
+        }
+        activeAuditPopover = null;
+      }
+
+      // Close audit popover on outside click
+      document.addEventListener('click', function (e) {
+        if (activeAuditPopover && !activeAuditPopover.contains(e.target)) {
+          closeAuditPopover();
+        }
+      });
+
+      function toggleAuditPopover(ideaId, anchorBtn) {
+        // If already open for this idea, close it
+        if (activeAuditPopover && activeAuditPopover.getAttribute('data-audit-idea') === ideaId) {
+          closeAuditPopover();
+          return;
+        }
+        closeAuditPopover();
+
+        var popover = document.createElement('div');
+        popover.className = 'audit-popover';
+        popover.setAttribute('data-audit-idea', ideaId);
+
+        var titleEl = document.createElement('div');
+        titleEl.className = 'audit-popover__title';
+        titleEl.textContent = 'Audit Trail';
+        popover.appendChild(titleEl);
+
+        var loadingEl = document.createElement('div');
+        loadingEl.className = 'audit-entry';
+        loadingEl.textContent = 'Loading...';
+        popover.appendChild(loadingEl);
+
+        // Position relative to the card-actions container
+        var actionsDiv = anchorBtn.parentNode;
+        actionsDiv.style.position = 'relative';
+        actionsDiv.appendChild(popover);
+        activeAuditPopover = popover;
+
+        // Fetch audit log for this idea
+        db.collection('audit_log')
+          .where('docId', '==', ideaId)
+          .orderBy('timestamp', 'desc')
+          .limit(20)
+          .get()
+          .then(function (snapshot) {
+            // Remove loading
+            if (loadingEl.parentNode) loadingEl.parentNode.removeChild(loadingEl);
+
+            if (snapshot.empty) {
+              var emptyEl = document.createElement('div');
+              emptyEl.className = 'audit-entry';
+              emptyEl.textContent = 'No audit records found.';
+              popover.appendChild(emptyEl);
+              return;
+            }
+
+            snapshot.forEach(function (doc) {
+              var data = doc.data();
+              var entry = document.createElement('div');
+              entry.className = 'audit-entry';
+
+              var actionSpan = document.createElement('span');
+              actionSpan.className = 'audit-action audit-action--' + data.action;
+              actionSpan.textContent = data.action;
+              entry.appendChild(actionSpan);
+
+              var userSpan = document.createElement('span');
+              userSpan.className = 'audit-entry__user';
+              userSpan.textContent = data.userName || data.userEmail || 'unknown';
+              entry.appendChild(userSpan);
+
+              if (data.timestamp && data.timestamp.toDate) {
+                var timeDiv = document.createElement('div');
+                timeDiv.className = 'audit-entry__time';
+                timeDiv.textContent = data.timestamp.toDate().toLocaleString();
+                entry.appendChild(timeDiv);
+              }
+
+              // Show changes
+              if (data.changes && data.action === 'edit') {
+                var changesDiv = document.createElement('div');
+                changesDiv.className = 'audit-entry__changes';
+                var changeKeys = Object.keys(data.changes);
+                if (changeKeys.length > 0) {
+                  changeKeys.forEach(function (key) {
+                    var c = data.changes[key];
+                    var line = document.createElement('div');
+                    line.textContent = key + ': "' + (c.old || '') + '" \u2192 "' + (c.new || '') + '"';
+                    changesDiv.appendChild(line);
+                  });
+                }
+                entry.appendChild(changesDiv);
+              }
+
+              popover.appendChild(entry);
+            });
+          })
+          .catch(function (err) {
+            console.warn('Audit log fetch failed:', err);
+            if (loadingEl.parentNode) loadingEl.parentNode.removeChild(loadingEl);
+            var errEl = document.createElement('div');
+            errEl.className = 'audit-entry';
+            errEl.textContent = 'Could not load audit trail.';
+            popover.appendChild(errEl);
+          });
+      }
+
+      // Init - load from Firestore
+      loadIdeas();
+
+    })();
+  </script>
+
+</body>
+</html>
