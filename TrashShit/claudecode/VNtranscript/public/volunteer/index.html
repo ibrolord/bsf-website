@@ -583,8 +583,10 @@
       <li><a href="/scholars/">Scholars</a></li>
       <li><a href="/ledger/">Ledger</a></li>
       <li><a href="/events/">Events</a></li>
+      <li><a href="/blog/">Blog</a></li>
       <li><a href="/volunteer/" class="is-active">Volunteer</a></li>
       <li><a href="/donate/">Give</a></li>
+      <li><a href="/docs/">Help</a></li>
     </ul>
   </nav>
 
@@ -893,6 +895,7 @@
             <li><a href="/ledger/">Ledger</a></li>
             <li><a href="/events/">Events</a></li>
             <li><a href="/volunteer/">Volunteer</a></li>
+            <li><a href="/blog/">Blog</a></li>
             <li><a href="/forums/">Forums</a></li>
             <li><a href="/ideas/">Ideas</a></li>
             <li><a href="/donations/">Donations</a></li>
@@ -938,6 +941,36 @@
       var toastEl = document.getElementById('toast');
       var rolesSummary = document.getElementById('roles-summary');
       var rolesSummaryTags = document.getElementById('roles-summary-tags');
+
+      /* ── Invite pre-fill ── */
+      var inviteId = null;
+      (function handleInvite() {
+        var params = new URLSearchParams(window.location.search);
+        var iid = params.get('invite');
+        if (!iid) return;
+        inviteId = iid;
+        db.collection('invites').doc(iid).get().then(function(snap) {
+          if (!snap.exists) return;
+          var inv = snap.data();
+          if (inv.email) {
+            var emailField = document.getElementById('field-email');
+            emailField.value = inv.email;
+            emailField.setAttribute('readonly', true);
+            emailField.style.background = '#e8f0eb';
+          }
+          // Show invite banner
+          var banner = document.createElement('div');
+          banner.style.cssText = 'background:#C2734C;color:#fff;text-align:center;padding:14px 20px;font-size:0.95rem;font-weight:500;position:fixed;top:0;left:0;right:0;z-index:9999;box-shadow:0 2px 8px rgba(0,0,0,.2);';
+          banner.innerHTML = "\u2709\uFE0F You've been invited to join Big Sister Foundation as a volunteer! Fill out the form below to accept.";
+          document.body.prepend(banner);
+          document.body.style.paddingTop = '48px';
+          // Scroll to form
+          setTimeout(function() {
+            var formSection = document.querySelector('.form-section');
+            if (formSection) formSection.scrollIntoView({ behavior: 'smooth' });
+          }, 1000);
+        }).catch(function() {});
+      })();
 
       /* ── Role selection ── */
       var selectedRoles = [];
@@ -1123,7 +1156,20 @@
           submittedAt: firebase.firestore.FieldValue.serverTimestamp()
         };
 
+        if (inviteId) {
+          data.inviteId = inviteId;
+          data.status = 'approved';
+        }
+
         db.collection('volunteer_requests').add(data)
+          .then(function() {
+            if (inviteId) {
+              return db.collection('invites').doc(inviteId).update({
+                status: 'accepted',
+                acceptedAt: firebase.firestore.FieldValue.serverTimestamp()
+              });
+            }
+          })
           .then(function() {
             showToast('Application submitted successfully!', 'success');
             showSuccess();

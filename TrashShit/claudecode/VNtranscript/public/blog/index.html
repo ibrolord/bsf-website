@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — Big Sister Foundation</title>
+  <meta name="description" content="Stories, updates, and insights from Big Sister Foundation. Read about our work with vulnerable children in Lagos and the communities we serve.">
+  <meta name="theme-color" content="#2D5E40">
+
+  <meta property="og:title" content="Blog — Big Sister Foundation">
+  <meta property="og:description" content="Stories, updates, and insights from our work with vulnerable children in Lagos.">
+  <meta property="og:type" content="website">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cellipse cx='50' cy='35' rx='35' ry='30' fill='%232D5E40' opacity='0.85'/%3E%3Cellipse cx='30' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cellipse cx='70' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cpath d='M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z' fill='%233A2A1F' opacity='0.8'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #2D5E40;
+      --green-dark: #1E3F2B;
+      --brown: #3A2A1F;
+      --terra: #C2734C;
+      --gold: #D4A96A;
+      --sage: #8BAF8E;
+      --cream: #FFF8F0;
+      --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --section-pad: clamp(48px, 4vw + 20px, 100px);
+      --page-margin: clamp(20px, 4vw, 80px);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.2rem);
+      line-height: 1.7;
+      color: var(--brown);
+      background: var(--cream);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+    button { font: inherit; cursor: pointer; border: none; background: none; }
+
+    .eyebrow {
+      font-family: var(--font-sans);
+      font-size: clamp(0.7rem, 0.5vw + 0.5rem, 0.85rem);
+      font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; margin-bottom: 1rem;
+    }
+
+    h1, h2, h3 {
+      font-family: var(--font-serif);
+      font-weight: 500; line-height: 1.08; letter-spacing: -0.02em;
+    }
+    h1 { font-size: clamp(2.2rem, 4vw + 0.5rem, 4rem); }
+    h2 { font-size: clamp(1.8rem, 2.5vw + 0.5rem, 2.8rem); }
+    h3 { font-size: clamp(1.3rem, 1vw + 0.8rem, 1.7rem); line-height: 1.2; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding-left: var(--page-margin); padding-right: var(--page-margin); }
+    .section-pad { padding-top: var(--section-pad); padding-bottom: var(--section-pad); }
+
+    /* NAV */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem var(--page-margin); background: var(--green-dark);
+    }
+    .nav__logo { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; text-decoration: none; color: var(--cream); }
+    .nav__links { list-style: none; display: flex; gap: 2rem; }
+    .nav__links a { font-size: 0.85rem; font-weight: 500; text-decoration: none; color: rgba(255,248,240,0.7); transition: color 0.3s; }
+    .nav__links a:hover { color: var(--cream); }
+    .nav__links a.is-active { color: var(--gold); }
+    @media (max-width: 768px) { .nav__links { gap: 1rem; } .nav__links a { font-size: 0.75rem; } }
+
+    /* HERO */
+    .hero {
+      padding-top: calc(60px + var(--section-pad));
+      padding-bottom: var(--section-pad);
+      background: var(--green-dark);
+      color: var(--cream);
+      text-align: center;
+    }
+    .hero .eyebrow { color: var(--gold); }
+    .hero h1 { margin-bottom: 1rem; }
+    .hero p { max-width: 600px; margin: 0 auto; opacity: 0.8; font-size: 1.1rem; }
+
+    /* FEATURED POST */
+    .featured {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+      align-items: center;
+      padding: 2.5rem;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+      margin-bottom: 3rem;
+      cursor: pointer;
+      transition: box-shadow 0.3s var(--ease);
+    }
+    .featured:hover { box-shadow: 0 6px 32px rgba(0,0,0,0.1); }
+
+    .featured__img {
+      width: 100%;
+      aspect-ratio: 16/10;
+      border-radius: 10px;
+      object-fit: cover;
+      background: linear-gradient(135deg, var(--sage) 0%, var(--green) 100%);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.5);
+      font-size: 3rem;
+    }
+
+    .featured__content .eyebrow { color: var(--terra); }
+    .featured__content h2 { margin-bottom: 0.75rem; }
+    .featured__content p { opacity: 0.7; margin-bottom: 1rem; }
+    .featured__meta { font-size: 0.8rem; opacity: 0.5; }
+
+    @media (max-width: 768px) {
+      .featured { grid-template-columns: 1fr; padding: 1.5rem; }
+    }
+
+    /* BLOG GRID */
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.5rem;
+    }
+    @media (max-width: 400px) { .blog-grid { grid-template-columns: 1fr; } }
+
+    .post-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      transition: all 0.3s var(--ease);
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+    }
+    .post-card:hover { box-shadow: 0 6px 28px rgba(0,0,0,0.09); transform: translateY(-2px); }
+
+    .post-card__img {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      color: rgba(255,255,255,0.4);
+    }
+    .post-card__img--green { background: linear-gradient(135deg, var(--sage) 0%, var(--green) 100%); }
+    .post-card__img--terra { background: linear-gradient(135deg, var(--gold) 0%, var(--terra) 100%); }
+    .post-card__img--brown { background: linear-gradient(135deg, var(--gold) 0%, var(--brown) 100%); }
+    .post-card__img--sage { background: linear-gradient(135deg, var(--cream) 0%, var(--sage) 100%); }
+
+    .post-card__body {
+      padding: 1.25rem 1.5rem 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .post-card__tag {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.6rem;
+      width: fit-content;
+    }
+    .post-card__tag--story { background: rgba(45,94,64,0.1); color: var(--green-dark); }
+    .post-card__tag--update { background: rgba(194,115,76,0.12); color: var(--terra); }
+    .post-card__tag--insight { background: rgba(212,169,106,0.15); color: #8B6914; }
+    .post-card__tag--guide { background: rgba(139,175,142,0.2); color: var(--green-dark); }
+
+    .post-card__title {
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
+      font-weight: 500;
+      line-height: 1.25;
+      margin-bottom: 0.5rem;
+    }
+
+    .post-card__excerpt {
+      font-size: 0.9rem;
+      opacity: 0.65;
+      line-height: 1.6;
+      flex: 1;
+    }
+
+    .post-card__footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(0,0,0,0.06);
+      font-size: 0.78rem;
+      opacity: 0.45;
+    }
+
+    .post-card__read-time { display: flex; align-items: center; gap: 0.3rem; }
+
+    /* CATEGORY FILTERS */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .filter-tabs {
+      display: flex; gap: 0.5rem; flex-wrap: wrap;
+    }
+    .filter-tab {
+      padding: 0.45rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border: 1.5px solid rgba(0,0,0,0.12);
+      background: transparent;
+      color: var(--brown);
+      transition: all 0.2s;
+    }
+    .filter-tab:hover { border-color: var(--green); color: var(--green); }
+    .filter-tab.active { background: var(--green); color: var(--cream); border-color: var(--green); }
+
+    .search-box {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: 1.5px solid rgba(0,0,0,0.12);
+      border-radius: 8px;
+      background: white;
+      transition: border-color 0.2s;
+    }
+    .search-box:focus-within { border-color: var(--green); }
+    .search-box input {
+      border: none; background: none; outline: none;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      color: var(--brown);
+      width: 180px;
+    }
+    .search-box svg { opacity: 0.4; flex-shrink: 0; }
+
+    /* WRITE POST */
+    .write-post {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+    }
+    .write-post > p { opacity: 0.7; margin-bottom: 1.5rem; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+
+    .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+    .form-group--full { grid-column: 1 / -1; }
+
+    .form-group label {
+      font-size: 0.8rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--brown); opacity: 0.7;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      padding: 0.7rem 0.9rem;
+      border: 1.5px solid rgba(0,0,0,0.12);
+      border-radius: 8px;
+      background: var(--cream);
+      color: var(--brown);
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { outline: none; border-color: var(--green); }
+
+    .form-group textarea { resize: vertical; min-height: 160px; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.85rem 1.8rem;
+      font-weight: 600; font-size: 0.9rem;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: all 0.3s var(--ease);
+    }
+    .btn--primary { background: var(--green); color: var(--cream); }
+    .btn--primary:hover { background: var(--green-dark); }
+    .btn--outline { border: 2px solid var(--green); color: var(--green); background: transparent; }
+    .btn--outline:hover { background: var(--green); color: var(--cream); }
+
+    .form-actions { display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; }
+
+    /* POST DETAIL VIEW */
+    .post-detail {
+      display: none;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .post-detail.active { display: block; }
+
+    .post-detail__back {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-size: 0.85rem; font-weight: 600;
+      color: var(--green);
+      text-decoration: none;
+      margin-bottom: 2rem;
+      cursor: pointer;
+    }
+    .post-detail__back:hover { text-decoration: underline; }
+
+    .post-detail__tag {
+      display: inline-block;
+      padding: 0.25rem 0.7rem;
+      border-radius: 4px;
+      font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      margin-bottom: 1rem;
+    }
+    .post-detail__tag--story { background: rgba(45,94,64,0.1); color: var(--green-dark); }
+    .post-detail__tag--update { background: rgba(194,115,76,0.12); color: var(--terra); }
+    .post-detail__tag--insight { background: rgba(212,169,106,0.15); color: #8B6914; }
+    .post-detail__tag--guide { background: rgba(139,175,142,0.2); color: var(--green-dark); }
+
+    .post-detail h1 { font-size: clamp(1.8rem, 3vw + 0.5rem, 2.8rem); margin-bottom: 1rem; }
+
+    .post-detail__meta {
+      display: flex; gap: 1.5rem; flex-wrap: wrap;
+      font-size: 0.85rem; opacity: 0.5;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .post-detail__body {
+      font-size: 1.05rem;
+      line-height: 1.85;
+    }
+    .post-detail__body p { margin-bottom: 1.25rem; }
+    .post-detail__body h2 {
+      font-size: 1.5rem;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+    .post-detail__body blockquote {
+      border-left: 3px solid var(--terra);
+      padding: 0.5rem 1.25rem;
+      margin: 1.5rem 0;
+      font-style: italic;
+      opacity: 0.8;
+    }
+
+    .post-detail__share {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(0,0,0,0.08);
+    }
+    .post-detail__share span { font-size: 0.85rem; font-weight: 600; opacity: 0.5; }
+    .share-btn {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.05);
+      color: var(--brown);
+      transition: all 0.2s;
+    }
+    .share-btn:hover { background: var(--green); color: var(--cream); }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 2rem; left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--green-dark); color: var(--cream);
+      padding: 0.85rem 1.5rem; border-radius: 8px;
+      font-weight: 600; font-size: 0.9rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      z-index: 200; opacity: 0;
+      transition: all 0.4s var(--ease);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* FOOTER */
+    .footer {
+      background: var(--green-dark);
+      color: rgba(255,248,240,0.6);
+      padding: 3rem 0;
+      font-size: 0.85rem;
+    }
+    .footer__layout { display: flex; justify-content: space-between; gap: 2rem; flex-wrap: wrap; }
+    .footer__brand-name { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; color: var(--cream); margin-bottom: 0.3rem; }
+    .footer__tagline { font-style: italic; margin-bottom: 0.2rem; }
+    .footer__location { font-size: 0.8rem; }
+    .footer__links { list-style: none; display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
+    .footer__links a { text-decoration: none; transition: color 0.3s; }
+    .footer__links a:hover { color: var(--cream); }
+    .footer__copy { font-size: 0.75rem; opacity: 0.5; }
+    .footer__right { text-align: right; }
+    @media (max-width: 768px) {
+      .footer__right { text-align: left; }
+      .footer__links { flex-direction: column; gap: 0.8rem; }
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav" aria-label="Main navigation">
+    <a href="/" class="nav__logo">Big Sister Foundation</a>
+    <ul class="nav__links">
+      <li><a href="/ledger/">Ledger</a></li>
+      <li><a href="/ideas/">Ideas</a></li>
+      <li><a href="/scholars/">Scholars</a></li>
+      <li><a href="/volunteer/">Volunteer</a></li>
+      <li><a href="/events/">Events</a></li>
+      <li><a href="/blog/" class="is-active">Blog</a></li>
+      <li><a href="/forums/">Forums</a></li>
+      <li><a href="/docs/">Help</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <p class="eyebrow">Blog</p>
+      <h1>Stories &amp; Updates</h1>
+      <p>Insights from the ground, stories of resilience, and updates on the work that keeps us rooted in purpose.</p>
+    </div>
+  </section>
+
+  <!-- BLOG LISTING -->
+  <section class="section-pad" id="blogListing">
+    <div class="container">
+
+      <!-- FEATURED POST -->
+      <article class="featured" id="featuredPost"></article>
+
+      <!-- FILTERS -->
+      <div class="filter-bar">
+        <div class="filter-tabs" id="filterTabs">
+          <button class="filter-tab active" data-filter="all">All</button>
+          <button class="filter-tab" data-filter="story">Stories</button>
+          <button class="filter-tab" data-filter="update">Updates</button>
+          <button class="filter-tab" data-filter="insight">Insights</button>
+          <button class="filter-tab" data-filter="guide">Guides</button>
+        </div>
+        <div class="search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="searchInput" placeholder="Search posts...">
+        </div>
+      </div>
+
+      <!-- GRID -->
+      <div class="blog-grid" id="blogGrid"></div>
+    </div>
+  </section>
+
+  <!-- POST DETAIL VIEW -->
+  <section class="section-pad hidden" id="postDetail" style="padding-top: calc(60px + var(--section-pad));">
+    <div class="container">
+      <div class="post-detail active" id="postDetailContent"></div>
+    </div>
+  </section>
+
+  <!-- WRITE POST -->
+  <section class="section-pad" id="writeSection" style="background: rgba(45,94,64,0.04);">
+    <div class="container">
+      <div class="write-post">
+        <p class="eyebrow" style="color: var(--green);">Contribute</p>
+        <h2>Write a Post</h2>
+        <p>Share a story, an update, or insight with the BSF community.</p>
+
+        <form id="postForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="postTitle">Title</label>
+              <input type="text" id="postTitle" placeholder="e.g. What I Learned Volunteering in Makoko" required>
+            </div>
+            <div class="form-group">
+              <label for="postCategory">Category</label>
+              <select id="postCategory" required>
+                <option value="story">Story</option>
+                <option value="update">Update</option>
+                <option value="insight">Insight</option>
+                <option value="guide">Guide</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="postAuthor">Author</label>
+              <input type="text" id="postAuthor" placeholder="Your name" required>
+            </div>
+            <div class="form-group">
+              <label for="postExcerpt">Excerpt</label>
+              <input type="text" id="postExcerpt" placeholder="A short summary (1-2 sentences)" required>
+            </div>
+            <div class="form-group form-group--full">
+              <label for="postBody">Body</label>
+              <textarea id="postBody" placeholder="Write your post here. Use blank lines for paragraphs." required></textarea>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn--primary">Publish Post</button>
+            <button type="reset" class="btn btn--outline">Clear</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__layout">
+        <div class="footer__left">
+          <p class="footer__brand-name">Big Sister Foundation</p>
+          <p class="footer__tagline">Rooted. Present. Protective.</p>
+          <p class="footer__location">Lagos, Nigeria</p>
+        </div>
+        <div class="footer__right">
+          <ul class="footer__links">
+            <li><a href="/ledger/">Ledger</a></li>
+            <li><a href="/ideas/">Ideas</a></li>
+            <li><a href="/scholars/">Scholars</a></li>
+            <li><a href="/volunteer/">Volunteer</a></li>
+            <li><a href="/events/">Events</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="/forums/">Forums</a></li>
+            <li><a href="https://wa.me/2348000000000">WhatsApp</a></li>
+            <li><a href="mailto:princebolajibreeze@gmail.com">Email</a></li>
+          </ul>
+          <p class="footer__copy">&copy; 2026 Big Sister Foundation. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var STORAGE_KEY = 'bsf_blog_posts';
+      var AI_POSTS_KEY = 'bsf_ai_posts_cache';
+      var colorClasses = ['post-card__img--green', 'post-card__img--terra', 'post-card__img--brown', 'post-card__img--sage'];
+
+      var defaultPosts = [
+        {
+          id: 1,
+          title: 'Why We Start with the Child, Not the Problem',
+          category: 'insight',
+          author: 'Bolaji Agunbiade',
+          date: '2026-03-28',
+          excerpt: 'Most interventions begin by defining the crisis. We begin by understanding the child standing in the middle of it.',
+          body: 'When you walk into a community like Makoko, the first thing outsiders see is the problem — the flooding, the poverty, the overcrowded classrooms. But the first thing we see is the child.\n\nThis is not sentimentality. It is strategy.\n\nEvery child we work with carries a map of their own world — who they trust, what they fear, where they feel safe. If we start with the problem, we build solutions that look good on paper but miss the child entirely. If we start with the child, we build something that actually holds.\n\nOur scholarship program does not begin with academic performance. It begins with a conversation. We sit with the child. We listen. We learn what keeps them awake at night and what makes them laugh in the morning. Only then do we design the support around them.\n\nThis is slower. It is harder to measure. And it is the only thing that works.\n\nThe nonprofit sector loves scale. But scale without depth is just noise. We would rather reach 30 children and actually change their trajectory than touch 3,000 names on a spreadsheet.\n\nEvery child we invest in becomes someone who raises the community around them. That is not a metaphor. That is our theory of change, and we have seen it happen — in Surulere, in Makoko, in communities where people said nothing could grow.',
+          readTime: 4
+        },
+        {
+          id: 2,
+          title: 'Makoko Outreach Recap: March 2026',
+          category: 'update',
+          author: 'BSF Team',
+          date: '2026-03-22',
+          excerpt: 'Our March outreach reached 45 families across the Makoko waterfront. Here is what happened and what comes next.',
+          body: 'On Saturday, March 15th, a team of 12 volunteers arrived at the Makoko waterfront at 7:30 AM. By noon, we had visited 45 families, distributed school supplies to 67 children, and conducted health screenings with our partner clinic.\n\nThis was our largest single-day outreach this quarter.\n\nThree things stood out:\n\nFirst, we met a grandmother raising five grandchildren alone after losing her daughter last year. She had kept all five in school by selling smoked fish six days a week. We are now connecting her with our scholars program.\n\nSecond, the community elders asked us to run a monthly literacy circle for parents. Many parents want to support their children\'s education but struggle with reading themselves. We are building this into our Q2 programming.\n\nThird, water levels have risen again. Several families we visited in January have relocated to higher ground. Access is becoming harder, which means the children who need us most are becoming harder to reach.\n\nWe will return in April with a larger team and a boat-based distribution strategy. If you want to volunteer, check our events page.',
+          readTime: 3
+        },
+        {
+          id: 3,
+          title: 'How to Talk to Children About Difficult Things',
+          category: 'guide',
+          author: 'Amara Okafor',
+          date: '2026-03-15',
+          excerpt: 'A practical guide for volunteers and parents on having honest, age-appropriate conversations with children facing hardship.',
+          body: 'Children know more than we think they do. They sense tension, notice absences, and fill silence with their own explanations — which are almost always worse than the truth.\n\nAs volunteers and caregivers, our job is not to shield children from reality. It is to help them process it.\n\nHere are the principles we use at BSF:\n\nStart with what they already know. Ask, "What have you heard about this?" or "What do you think is happening?" Their answer tells you where to begin.\n\nUse simple, honest language. "Your mum is sick and the doctors are helping her" is better than vague reassurance. Children can handle truth. They cannot handle uncertainty.\n\nName the feelings. "It is okay to feel scared. I feel scared sometimes too." This is not weakness. This is modelling emotional honesty.\n\nDo not promise what you cannot deliver. "Everything will be fine" is a lie when you do not know if it will be. Instead: "I am here with you, and we will figure this out together."\n\nFollow up. One conversation is not enough. Check in the next day. And the day after. Consistency matters more than any single perfect response.\n\nFinally, take care of yourself. You cannot pour from an empty cup, and children are remarkably perceptive about the emotional state of the adults around them. If you are overwhelmed, it is okay to say so — and to take a break.\n\nThese conversations are hard. They are also the most important thing we do.',
+          readTime: 5
+        },
+        {
+          id: 4,
+          title: 'Meet Adaeze: From Scholar to Volunteer',
+          category: 'story',
+          author: 'Bolaji Agunbiade',
+          date: '2026-03-08',
+          excerpt: 'Adaeze joined our scholars program at 11. Now 17, she leads our junior volunteer team. This is her story.',
+          body: 'Adaeze was 11 when we met her. She was living with an aunt in Surulere after her parents separated, attending school intermittently, and falling behind in every subject.\n\nShe did not need charity. She needed someone to notice her.\n\nOur scholars program paired her with a mentor — Funke, a university student who visited her twice a week. They did homework together, yes, but mostly they talked. About school. About feeling invisible. About what Adaeze wanted to become.\n\n"A doctor," she said, every single time.\n\nTwo years into the program, Adaeze was top five in her class. Not because we gave her anything extraordinary, but because someone showed up for her consistently. That is the thing about children — they do not need miracles. They need presence.\n\nAt 15, Adaeze asked if she could help with our Saturday tutoring sessions. By 16, she was leading the junior volunteer team — a group of scholars-turned-mentors who work with younger children in the program.\n\nLast month, she told me something I will not forget: "I do not do this because someone helped me. I do this because I remember what it felt like when no one did."\n\nThis is what we mean when we say every child we reach becomes someone who raises their community. Adaeze is proof that the cycle can break — and that the person who breaks it often turns around to help the next one through.',
+          readTime: 4
+        },
+        {
+          id: 5,
+          title: 'Transparency Update: Where Your Support Goes',
+          category: 'update',
+          author: 'BSF Team',
+          date: '2026-02-28',
+          excerpt: 'A quarterly breakdown of how resources are allocated across our programs, with full figures on the public ledger.',
+          body: 'Every quarter, we publish a full breakdown of how resources are used. This is not a fundraising tactic — it is an accountability practice. If you support us, you deserve to know where it goes.\n\nQ1 2026 allocation:\n\nScholars Program (42%) — School fees, uniforms, books, and mentor stipends for 28 active scholars. This includes three new scholars added in January.\n\nCommunity Outreach (28%) — Transportation, supplies distribution, and volunteer coordination for monthly outreach visits across four Lagos communities.\n\nOperations (18%) — Rent for our Surulere community center, internet, phone costs, and administrative support. We run lean — two full-time staff and a rotating team of volunteers.\n\nEmergency Fund (12%) — Set aside for urgent needs — medical emergencies, family crises, or sudden school fee shortfalls. This fund was used twice this quarter: once for a hospital bill and once for emergency relocation after flooding.\n\nThe full figures are available on our public ledger. We believe radical transparency builds trust, and trust is the foundation of everything we do.\n\nQuestions? Reach out on WhatsApp or email. We answer everything.',
+          readTime: 3
+        },
+        {
+          id: 6,
+          title: 'The Problem with "Saving" Children',
+          category: 'insight',
+          author: 'Bolaji Agunbiade',
+          date: '2026-02-18',
+          excerpt: 'The saviour narrative hurts the very children it claims to help. Here is what we do instead.',
+          body: 'Let me be direct: the language of "saving" children is harmful.\n\nIt positions the child as helpless and the giver as heroic. It erases the child\'s agency, their family\'s efforts, and the community structures that existed long before any nonprofit arrived.\n\nWe do not save children. We invest in them.\n\nThe difference is not semantic. It is structural.\n\nWhen you "save" someone, you create dependency. You make decisions for them. You measure success by your own output — how many meals served, how many uniforms distributed, how many photos taken.\n\nWhen you invest in someone, you listen first. You build their capacity, not your brand. You measure success by what happens after you leave.\n\nAt BSF, our goal is to become unnecessary. Every program we run is designed to build independence — in the child, in the family, in the community. If we are still doing the same thing in the same way five years from now, we have failed.\n\nThis is uncomfortable for donors who want to feel like heroes. But our job is not to make donors feel good. Our job is to make sure children are actually better off.\n\nThe children we work with are not broken. They are under-resourced. There is a world of difference between the two, and how you understand that difference determines whether your help actually helps.',
+          readTime: 4
+        }
+      ];
+
+      function loadPosts() {
+        var stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) return JSON.parse(stored);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultPosts));
+        return defaultPosts;
+      }
+
+      function savePosts(posts) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+      }
+
+      var posts = loadPosts();
+      var activeFilter = 'all';
+      var searchQuery = '';
+
+      // ── Helpers ──
+      function formatDate(dateStr) {
+        var d = new Date(dateStr + 'T00:00:00');
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+      }
+
+      function estimateReadTime(text) {
+        return Math.max(1, Math.ceil(text.split(/\s+/).length / 220));
+      }
+
+      function getFilteredPosts() {
+        var filtered = posts.slice().sort(function(a, b) {
+          return new Date(b.date) - new Date(a.date);
+        });
+
+        if (activeFilter !== 'all') {
+          filtered = filtered.filter(function(p) { return p.category === activeFilter; });
+        }
+
+        if (searchQuery) {
+          var q = searchQuery.toLowerCase();
+          filtered = filtered.filter(function(p) {
+            return p.title.toLowerCase().indexOf(q) !== -1 ||
+                   p.excerpt.toLowerCase().indexOf(q) !== -1 ||
+                   p.author.toLowerCase().indexOf(q) !== -1;
+          });
+        }
+
+        return filtered;
+      }
+
+      // ── Render featured ──
+      function renderFeatured() {
+        var el = document.getElementById('featuredPost');
+        var sorted = posts.slice().sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
+        var post = sorted[0];
+        if (!post) { el.classList.add('hidden'); return; }
+
+        el.dataset.id = post.id;
+        el.innerHTML =
+          '<div class="featured__img ' + colorClasses[post.id % colorClasses.length] + '">' +
+            '<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>' +
+          '</div>' +
+          '<div class="featured__content">' +
+            '<p class="eyebrow">' + post.category.charAt(0).toUpperCase() + post.category.slice(1) + '</p>' +
+            '<h2>' + post.title + '</h2>' +
+            '<p>' + post.excerpt + '</p>' +
+            '<span class="featured__meta">' + formatDate(post.date) + ' &middot; ' + post.author + ' &middot; ' + (post.readTime || estimateReadTime(post.body)) + ' min read</span>' +
+          '</div>';
+
+        el.onclick = function() { showPost(post.id); };
+      }
+
+      // ── Render grid ──
+      function renderGrid() {
+        var grid = document.getElementById('blogGrid');
+        var filtered = getFilteredPosts();
+
+        // Skip the featured post (most recent) in the grid
+        var sorted = posts.slice().sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
+        var featuredId = sorted.length ? sorted[0].id : null;
+        filtered = filtered.filter(function(p) { return p.id !== featuredId; });
+
+        if (filtered.length === 0) {
+          grid.innerHTML = '<p style="opacity:0.5;grid-column:1/-1;text-align:center;padding:2rem;">No posts found.</p>';
+          return;
+        }
+
+        grid.innerHTML = filtered.map(function(post) {
+          var colorClass = colorClasses[post.id % colorClasses.length];
+          return '<article class="post-card" data-id="' + post.id + '">' +
+            '<div class="post-card__img ' + colorClass + '">' +
+              '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>' +
+            '</div>' +
+            '<div class="post-card__body">' +
+              '<span class="post-card__tag post-card__tag--' + post.category + '">' + post.category + '</span>' +
+              '<h3 class="post-card__title">' + post.title + '</h3>' +
+              '<p class="post-card__excerpt">' + post.excerpt + '</p>' +
+              '<div class="post-card__footer">' +
+                '<span>' + formatDate(post.date) + ' &middot; ' + post.author + '</span>' +
+                '<span class="post-card__read-time"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' + (post.readTime || estimateReadTime(post.body)) + ' min</span>' +
+              '</div>' +
+            '</div>' +
+          '</article>';
+        }).join('');
+      }
+
+      // ── Post detail view ──
+      function showPost(id) {
+        var post = posts.find(function(p) { return p.id === id; });
+        if (!post) return;
+
+        var pageUrl = window.location.origin + '/blog/?post=' + post.id;
+        var bodyHtml = post.body.split('\n\n').map(function(para) {
+          para = para.trim();
+          if (!para) return '';
+          if (para.charAt(0) === '>') return '<blockquote>' + para.substring(1).trim() + '</blockquote>';
+          return '<p>' + para + '</p>';
+        }).join('');
+
+        var content = document.getElementById('postDetailContent');
+        content.innerHTML =
+          '<a class="post-detail__back" id="backToList"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg> Back to all posts</a>' +
+          '<span class="post-detail__tag post-detail__tag--' + post.category + '">' + post.category + '</span>' +
+          '<h1>' + post.title + '</h1>' +
+          '<div class="post-detail__meta">' +
+            '<span>' + post.author + '</span>' +
+            '<span>' + formatDate(post.date) + '</span>' +
+            '<span>' + (post.readTime || estimateReadTime(post.body)) + ' min read</span>' +
+          '</div>' +
+          '<div class="post-detail__body">' + bodyHtml + '</div>' +
+          '<div class="post-detail__share">' +
+            '<span>Share:</span>' +
+            '<button class="share-btn" data-share="copy" title="Copy link"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>' +
+            '<button class="share-btn" data-share="x" title="Share on X"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></button>' +
+            '<button class="share-btn" data-share="whatsapp" title="Share on WhatsApp"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></button>' +
+            '<button class="share-btn" data-share="linkedin" title="Share on LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></button>' +
+            '<button class="share-btn" data-share="facebook" title="Share on Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></button>' +
+          '</div>';
+
+        // Wire share buttons
+        content.querySelector('.post-detail__share').addEventListener('click', function(e) {
+          var btn = e.target.closest('[data-share]');
+          if (!btn) return;
+          var type = btn.dataset.share;
+          var text = post.title + ' — Big Sister Foundation';
+
+          if (type === 'copy') {
+            copyToClipboard(pageUrl);
+            showToast('Link copied!');
+          } else if (type === 'x') {
+            window.open('https://x.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(pageUrl), '_blank');
+          } else if (type === 'whatsapp') {
+            window.open('https://wa.me/?text=' + encodeURIComponent(text + ' ' + pageUrl), '_blank');
+          } else if (type === 'linkedin') {
+            window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(pageUrl), '_blank');
+          } else if (type === 'facebook') {
+            window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(pageUrl), '_blank');
+          }
+        });
+
+        document.getElementById('backToList').addEventListener('click', function() {
+          hidePost();
+        });
+
+        document.getElementById('blogListing').classList.add('hidden');
+        document.getElementById('writeSection').classList.add('hidden');
+        document.getElementById('postDetail').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        history.pushState({ post: id }, '', '/blog/?post=' + id);
+      }
+
+      function hidePost() {
+        document.getElementById('postDetail').classList.add('hidden');
+        document.getElementById('blogListing').classList.remove('hidden');
+        document.getElementById('writeSection').classList.remove('hidden');
+        history.pushState({}, '', '/blog/');
+      }
+
+      // ── Click handlers ──
+      document.getElementById('blogGrid').addEventListener('click', function(e) {
+        var card = e.target.closest('.post-card');
+        if (!card) return;
+        showPost(parseInt(card.dataset.id, 10));
+      });
+
+      // ── Filters ──
+      document.getElementById('filterTabs').addEventListener('click', function(e) {
+        if (!e.target.classList.contains('filter-tab')) return;
+        document.querySelectorAll('.filter-tab').forEach(function(t) { t.classList.remove('active'); });
+        e.target.classList.add('active');
+        activeFilter = e.target.dataset.filter;
+        renderGrid();
+      });
+
+      // ── Search ──
+      var searchTimeout;
+      document.getElementById('searchInput').addEventListener('input', function(e) {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(function() {
+          searchQuery = e.target.value.trim();
+          renderGrid();
+        }, 250);
+      });
+
+      // ── Publish post ──
+      document.getElementById('postForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        var body = document.getElementById('postBody').value.trim();
+        var newPost = {
+          id: Date.now(),
+          title: document.getElementById('postTitle').value.trim(),
+          category: document.getElementById('postCategory').value,
+          author: document.getElementById('postAuthor').value.trim(),
+          date: new Date().toISOString().split('T')[0],
+          excerpt: document.getElementById('postExcerpt').value.trim(),
+          body: body,
+          readTime: estimateReadTime(body)
+        };
+
+        posts.unshift(newPost);
+        savePosts(posts);
+        renderFeatured();
+        renderGrid();
+        e.target.reset();
+        showToast('Post published!');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      // ── Handle back/forward ──
+      window.addEventListener('popstate', function() {
+        var params = new URLSearchParams(window.location.search);
+        var postId = params.get('post');
+        if (postId) {
+          showPost(parseInt(postId, 10));
+        } else {
+          document.getElementById('postDetail').classList.add('hidden');
+          document.getElementById('blogListing').classList.remove('hidden');
+          document.getElementById('writeSection').classList.remove('hidden');
+        }
+      });
+
+      // ── Utilities ──
+      function copyToClipboard(text) {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(text);
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.cssText = 'position:fixed;opacity:0';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+      }
+
+      function showToast(msg) {
+        var toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(function() { toast.classList.remove('show'); }, 3000);
+      }
+
+      // ── Init ──
+      var params = new URLSearchParams(window.location.search);
+      var postParam = params.get('post');
+      if (postParam) {
+        renderFeatured();
+        renderGrid();
+        showPost(parseInt(postParam, 10));
+      } else {
+        renderFeatured();
+        renderGrid();
+      }
+
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Help Center — Big Sister Foundation</title>
+  <meta name="description" content="Step-by-step guides for everything on the Big Sister Foundation platform. Learn how to use the Ideas Board, Ledger, Scholars Tracker, Forums, and more.">
+  <meta name="theme-color" content="#2D5E40">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cellipse cx='50' cy='35' rx='35' ry='30' fill='%232D5E40' opacity='0.85'/%3E%3Cellipse cx='30' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cellipse cx='70' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cpath d='M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z' fill='%233A2A1F' opacity='0.8'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #2D5E40;
+      --green-dark: #1E3F2B;
+      --brown: #3A2A1F;
+      --terra: #C2734C;
+      --gold: #D4A96A;
+      --sage: #8BAF8E;
+      --cream: #FFF8F0;
+      --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --section-pad: clamp(48px, 4vw + 20px, 100px);
+      --page-margin: clamp(20px, 4vw, 80px);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.2rem);
+      line-height: 1.7;
+      color: var(--brown);
+      background: var(--cream);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+    button { font: inherit; cursor: pointer; border: none; background: none; }
+
+    .eyebrow {
+      font-family: var(--font-sans);
+      font-size: clamp(0.7rem, 0.5vw + 0.5rem, 0.85rem);
+      font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; margin-bottom: 1rem; color: var(--terra);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 500; line-height: 1.15; letter-spacing: -0.02em;
+    }
+    h1 { font-size: clamp(2.2rem, 4vw + 0.5rem, 4rem); line-height: 1.08; }
+    h2 { font-size: clamp(1.8rem, 2.5vw + 0.5rem, 2.8rem); }
+    h3 { font-size: clamp(1.3rem, 1vw + 0.8rem, 1.7rem); line-height: 1.2; }
+    h4 { font-size: clamp(1.1rem, 0.5vw + 0.8rem, 1.3rem); }
+
+    .container { max-width: 1200px; margin: 0 auto; padding-left: var(--page-margin); padding-right: var(--page-margin); }
+    .section-pad { padding-top: var(--section-pad); padding-bottom: var(--section-pad); }
+
+    /* NAV */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem var(--page-margin); background: var(--green-dark);
+    }
+    .nav__logo { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; text-decoration: none; color: var(--cream); }
+    .nav__links { list-style: none; display: flex; gap: 2rem; }
+    .nav__links a { font-size: 0.85rem; font-weight: 500; text-decoration: none; color: rgba(255,248,240,0.7); transition: color 0.3s; }
+    .nav__links a:hover { color: var(--cream); }
+    .nav__links a.is-active { color: var(--gold); }
+    @media (max-width: 768px) { .nav__links { gap: 1rem; } .nav__links a { font-size: 0.75rem; } }
+
+    /* HERO */
+    .docs-hero {
+      padding-top: calc(60px + var(--section-pad));
+      padding-bottom: var(--section-pad);
+      background: var(--green-dark); color: var(--cream);
+    }
+    .docs-hero .eyebrow { color: var(--gold); }
+    .docs-hero__sub {
+      max-width: 640px; margin-top: 1.2rem;
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.15rem);
+      line-height: 1.7; color: rgba(255,248,240,0.75);
+    }
+
+    /* HERO SEARCH */
+    .hero-search {
+      margin-top: 2rem; max-width: 560px;
+      display: flex; align-items: center;
+      background: rgba(255,248,240,0.1); border: 1.5px solid rgba(255,248,240,0.2);
+      border-radius: 100px; padding: 0.5rem 1.25rem;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .hero-search:focus-within {
+      border-color: var(--gold); background: rgba(255,248,240,0.15);
+    }
+    .hero-search__icon { font-size: 1.1rem; color: rgba(255,248,240,0.4); margin-right: 0.75rem; }
+    .hero-search__input {
+      border: none; background: none; outline: none; width: 100%;
+      font-family: var(--font-sans); font-size: 1rem;
+      color: var(--cream);
+    }
+    .hero-search__input::placeholder { color: rgba(255,248,240,0.4); }
+
+    /* QUICK LINKS */
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem; margin-top: 2.5rem;
+    }
+    .quick-link {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 1rem 1.25rem; border-radius: 12px;
+      background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      text-decoration: none; color: var(--brown);
+      transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+      cursor: pointer;
+    }
+    .quick-link:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,0,0,0.08); }
+    .quick-link__icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0;
+    }
+    .quick-link__icon--green { background: rgba(45,94,64,0.08); color: var(--green); }
+    .quick-link__icon--terra { background: rgba(194,115,76,0.08); color: var(--terra); }
+    .quick-link__icon--gold { background: rgba(212,169,106,0.1); color: #8a6d2f; }
+    .quick-link__icon--sage { background: rgba(139,175,142,0.12); color: #3d6b42; }
+    .quick-link__text { font-size: 0.88rem; font-weight: 600; }
+
+    /* SECTION DIVIDERS */
+    .docs-section {
+      padding-top: var(--section-pad);
+      padding-bottom: var(--section-pad);
+      border-bottom: 1px solid rgba(58,42,31,0.08);
+    }
+    .docs-section:last-of-type { border-bottom: none; }
+
+    .section-header {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    .section-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; flex-shrink: 0;
+    }
+
+    /* GUIDE CARDS */
+    .guide-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .guide-card {
+      background: #fff; border-radius: 16px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+      overflow: hidden;
+      transition: box-shadow 0.3s var(--ease);
+    }
+    .guide-card:hover { box-shadow: 0 6px 28px rgba(0,0,0,0.07); }
+
+    .guide-card__header {
+      padding: 1.25rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; user-select: none;
+      transition: background 0.2s;
+    }
+    .guide-card__header:hover { background: rgba(45,94,64,0.02); }
+
+    .guide-card__title {
+      font-family: var(--font-serif);
+      font-size: 1.1rem; font-weight: 600; line-height: 1.3;
+    }
+    .guide-card__toggle {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(58,42,31,0.06); font-size: 0.85rem;
+      transition: transform 0.3s var(--ease), background 0.2s;
+      flex-shrink: 0;
+    }
+    .guide-card.is-open .guide-card__toggle { transform: rotate(180deg); background: rgba(45,94,64,0.1); }
+
+    .guide-card__body {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.5s var(--ease);
+    }
+    .guide-card.is-open .guide-card__body {
+      max-height: 5000px;
+    }
+
+    .guide-card__content {
+      padding: 0 1.5rem 1.5rem;
+    }
+
+    /* STEPS */
+    .steps { counter-reset: step; list-style: none; }
+    .step {
+      position: relative;
+      padding-left: 3.5rem;
+      padding-bottom: 1.75rem;
+      border-left: 2px solid rgba(45,94,64,0.12);
+      margin-left: 1rem;
+    }
+    .step:last-child { border-left-color: transparent; padding-bottom: 0; }
+
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute; left: -1rem; top: 0;
+      width: 2rem; height: 2rem; border-radius: 50%;
+      background: var(--green); color: var(--cream);
+      font-family: var(--font-serif); font-size: 0.95rem; font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .step__title {
+      font-weight: 700; font-size: 0.95rem;
+      margin-bottom: 0.4rem; color: var(--brown);
+    }
+    .step__desc {
+      font-size: 0.88rem; color: rgba(58,42,31,0.7); line-height: 1.7;
+    }
+
+    /* VISUAL MOCKUPS */
+    .mockup {
+      margin: 1rem 0; border-radius: 10px; overflow: hidden;
+      border: 1.5px solid rgba(58,42,31,0.1);
+      background: var(--cream);
+    }
+    .mockup__bar {
+      background: var(--green-dark); padding: 0.5rem 0.75rem;
+      display: flex; align-items: center; gap: 0.35rem;
+    }
+    .mockup__dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,248,240,0.25);
+    }
+    .mockup__url {
+      margin-left: 0.5rem; font-size: 0.65rem;
+      color: rgba(255,248,240,0.5); font-family: monospace;
+    }
+    .mockup__body { padding: 1rem; }
+
+    /* Mockup internal elements */
+    .m-nav {
+      background: var(--green-dark); padding: 0.5rem 0.75rem;
+      border-radius: 6px; margin-bottom: 0.75rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .m-nav__logo { font-size: 0.65rem; color: var(--cream); font-weight: 700; font-family: var(--font-serif); }
+    .m-nav__links { display: flex; gap: 0.5rem; }
+    .m-nav__link { font-size: 0.55rem; color: rgba(255,248,240,0.5); }
+    .m-nav__link--active { color: var(--gold); }
+
+    .m-btn {
+      display: inline-block;
+      padding: 0.25rem 0.6rem; border-radius: 100px;
+      font-size: 0.6rem; font-weight: 700;
+    }
+    .m-btn--green { background: var(--green); color: var(--cream); }
+    .m-btn--terra { background: var(--terra); color: #fff; }
+    .m-btn--ghost { background: transparent; border: 1px solid rgba(58,42,31,0.2); color: var(--brown); }
+
+    .m-card {
+      background: #fff; border-radius: 8px; padding: 0.6rem;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.05); margin-bottom: 0.4rem;
+    }
+    .m-card__title { font-size: 0.65rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .m-card__text { font-size: 0.55rem; color: rgba(58,42,31,0.5); }
+
+    .m-input {
+      width: 100%; padding: 0.3rem 0.5rem;
+      border: 1px solid rgba(58,42,31,0.15); border-radius: 4px;
+      font-size: 0.6rem; color: rgba(58,42,31,0.4);
+      background: var(--cream); margin-bottom: 0.3rem;
+    }
+
+    .m-label { font-size: 0.5rem; font-weight: 700; text-transform: uppercase; color: rgba(58,42,31,0.4); margin-bottom: 0.15rem; letter-spacing: 0.05em; }
+
+    .m-pills { display: flex; gap: 0.25rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+    .m-pill {
+      padding: 0.15rem 0.45rem; border-radius: 100px;
+      font-size: 0.5rem; font-weight: 700;
+      background: rgba(58,42,31,0.05); color: rgba(58,42,31,0.5);
+    }
+    .m-pill--active { background: var(--green); color: var(--cream); }
+
+    .m-tag {
+      display: inline-block; padding: 0.1rem 0.35rem; border-radius: 100px;
+      font-size: 0.45rem; font-weight: 700; text-transform: uppercase;
+    }
+    .m-tag--green { background: rgba(45,94,64,0.08); color: var(--green); }
+    .m-tag--gold { background: rgba(212,169,106,0.12); color: #8a6d2f; }
+    .m-tag--terra { background: rgba(194,115,76,0.1); color: var(--terra); }
+
+    .m-vote {
+      display: flex; flex-direction: column; align-items: center; gap: 0.1rem;
+    }
+    .m-vote__arrow {
+      width: 20px; height: 20px; border-radius: 4px;
+      background: rgba(45,94,64,0.08); color: var(--green);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem;
+    }
+    .m-vote__arrow--active { background: var(--green); color: var(--cream); }
+    .m-vote__count { font-size: 0.65rem; font-weight: 700; }
+
+    .m-highlight {
+      position: relative;
+    }
+    .m-highlight::after {
+      content: '';
+      position: absolute; inset: -3px;
+      border: 2px solid var(--terra);
+      border-radius: 8px;
+      animation: pulse-border 2s ease-in-out infinite;
+    }
+    @keyframes pulse-border {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    .m-arrow-label {
+      display: flex; align-items: center; gap: 0.3rem;
+      font-size: 0.55rem; font-weight: 700; color: var(--terra);
+      margin: 0.4rem 0;
+    }
+    .m-arrow-label::before {
+      content: '';
+      width: 16px; height: 2px; background: var(--terra);
+    }
+
+    .m-modal {
+      background: #fff; border-radius: 10px; padding: 0.75rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      border: 1px solid rgba(58,42,31,0.08);
+      max-width: 280px; margin: 0 auto;
+    }
+    .m-modal__title { font-family: var(--font-serif); font-size: 0.75rem; font-weight: 600; margin-bottom: 0.5rem; }
+
+    .m-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 0.55rem;
+    }
+    .m-table th {
+      text-align: left; font-weight: 700; text-transform: uppercase;
+      font-size: 0.45rem; letter-spacing: 0.04em;
+      color: rgba(58,42,31,0.4); padding: 0.3rem 0.4rem;
+      border-bottom: 1px solid rgba(58,42,31,0.1);
+    }
+    .m-table td {
+      padding: 0.3rem 0.4rem; color: rgba(58,42,31,0.7);
+      border-bottom: 1px solid rgba(58,42,31,0.05);
+    }
+
+    .m-form-row { display: flex; gap: 0.4rem; margin-bottom: 0.3rem; }
+    .m-form-row > div { flex: 1; }
+
+    .m-success {
+      background: rgba(45,94,64,0.06);
+      border: 1px solid rgba(45,94,64,0.15);
+      border-radius: 6px; padding: 0.5rem;
+      text-align: center;
+    }
+    .m-success__icon { font-size: 1.2rem; margin-bottom: 0.2rem; }
+    .m-success__text { font-size: 0.6rem; font-weight: 600; color: var(--green); }
+
+    /* TIP BOXES */
+    .tip {
+      display: flex; gap: 0.75rem;
+      padding: 1rem; border-radius: 10px;
+      margin: 1rem 0;
+    }
+    .tip--info {
+      background: rgba(45,94,64,0.04);
+      border: 1px solid rgba(45,94,64,0.1);
+    }
+    .tip--warning {
+      background: rgba(212,169,106,0.06);
+      border: 1px solid rgba(212,169,106,0.15);
+    }
+    .tip__icon { font-size: 1.1rem; flex-shrink: 0; line-height: 1; }
+    .tip__text { font-size: 0.85rem; color: rgba(58,42,31,0.7); }
+    .tip__text strong { color: var(--brown); }
+
+    /* SIDEBAR NAV */
+    .docs-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .docs-layout { grid-template-columns: 1fr; }
+      .docs-sidebar { display: none; }
+    }
+
+    .docs-sidebar {
+      position: sticky; top: 80px;
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+    }
+    .docs-sidebar__title {
+      font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: rgba(58,42,31,0.4); margin-bottom: 0.75rem;
+    }
+    .docs-sidebar__list { list-style: none; }
+    .docs-sidebar__list li { margin-bottom: 0.15rem; }
+    .docs-sidebar__list a {
+      display: block; padding: 0.4rem 0.75rem;
+      font-size: 0.82rem; font-weight: 500;
+      text-decoration: none; color: rgba(58,42,31,0.6);
+      border-radius: 6px; transition: all 0.2s;
+      border-left: 2px solid transparent;
+    }
+    .docs-sidebar__list a:hover {
+      color: var(--brown); background: rgba(45,94,64,0.04);
+    }
+    .docs-sidebar__list a.is-active {
+      color: var(--green); border-left-color: var(--green);
+      background: rgba(45,94,64,0.06); font-weight: 600;
+    }
+
+    /* SEARCH RESULTS */
+    .search-results {
+      display: none; margin-top: 1rem;
+    }
+    .search-results.is-visible { display: block; }
+    .search-result {
+      padding: 0.75rem 1rem; border-radius: 10px;
+      background: #fff; margin-bottom: 0.5rem;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+      cursor: pointer; transition: background 0.2s;
+    }
+    .search-result:hover { background: rgba(45,94,64,0.03); }
+    .search-result__title { font-weight: 700; font-size: 0.9rem; margin-bottom: 0.15rem; }
+    .search-result__section { font-size: 0.75rem; color: var(--terra); font-weight: 600; }
+    .search-result__preview { font-size: 0.8rem; color: rgba(58,42,31,0.55); }
+    .search-results__empty {
+      text-align: center; padding: 2rem; color: rgba(58,42,31,0.4);
+      font-size: 0.9rem;
+    }
+
+    /* FAQ */
+    .faq-item {
+      background: #fff; border-radius: 12px;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.03);
+      margin-bottom: 0.5rem; overflow: hidden;
+    }
+    .faq-item__q {
+      padding: 1rem 1.25rem;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; font-weight: 600; font-size: 0.95rem;
+    }
+    .faq-item__q:hover { background: rgba(45,94,64,0.02); }
+    .faq-item__toggle {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: rgba(58,42,31,0.06); display: flex;
+      align-items: center; justify-content: center;
+      font-size: 0.75rem; flex-shrink: 0;
+      transition: transform 0.3s var(--ease);
+    }
+    .faq-item.is-open .faq-item__toggle { transform: rotate(180deg); }
+    .faq-item__a {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.4s var(--ease);
+    }
+    .faq-item.is-open .faq-item__a { max-height: 500px; }
+    .faq-item__a-content {
+      padding: 0 1.25rem 1.25rem;
+      font-size: 0.9rem; color: rgba(58,42,31,0.7); line-height: 1.7;
+    }
+
+    /* FOOTER */
+    .footer { background: var(--brown); color: rgba(255,248,240,0.6); padding: 3rem 0; }
+    .footer__layout { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 2rem; }
+    .footer__brand-name { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; color: var(--cream); margin-bottom: 0.25rem; }
+    .footer__tagline { font-size: 0.85rem; color: var(--gold); }
+    .footer__location { font-size: 0.8rem; margin-top: 0.25rem; }
+    .footer__links { list-style: none; display: flex; gap: 1.5rem; margin-bottom: 0.5rem; }
+    .footer__links a { font-size: 0.85rem; text-decoration: none; transition: color 0.3s; }
+    .footer__links a:hover { color: var(--cream); }
+    .footer__copy { font-size: 0.75rem; opacity: 0.5; }
+    .footer__right { text-align: right; }
+    @media (max-width: 600px) { .footer__layout { flex-direction: column; } .footer__right { text-align: left; } }
+
+    /* ANIMATIONS */
+    [data-animate] { opacity: 1; transform: none; }
+    .js-ready [data-animate] { opacity: 0; transform: translateY(24px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
+    .js-ready [data-animate].is-visible { opacity: 1; transform: translateY(0); }
+    .js-ready [data-animate-delay="1"] { transition-delay: 0.1s; }
+    .js-ready [data-animate-delay="2"] { transition-delay: 0.2s; }
+    @media (prefers-reduced-motion: reduce) {
+      .js-ready [data-animate] { opacity: 1 !important; transform: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="/" class="nav__logo">Big Sister Foundation</a>
+    <ul class="nav__links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/ledger/">Ledger</a></li>
+      <li><a href="/ideas/">Ideas</a></li>
+      <li><a href="/scholars/">Scholars</a></li>
+      <li><a href="/forums/">Forums</a></li>
+      <li><a href="/volunteer/">Volunteer</a></li>
+      <li><a href="/docs/" class="is-active">Help</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="docs-hero">
+    <div class="container">
+      <p class="eyebrow" data-animate>Help Center</p>
+      <h1 data-animate data-animate-delay="1">How can we help?</h1>
+      <p class="docs-hero__sub" data-animate data-animate-delay="2">Step-by-step guides for everything on the Big Sister Foundation platform. If you can't find what you need, reach out to us on WhatsApp.</p>
+
+      <!-- SEARCH -->
+      <div class="hero-search" data-animate data-animate-delay="2">
+        <span class="hero-search__icon">&#128269;</span>
+        <input type="text" class="hero-search__input" id="docs-search" placeholder="Search for help... e.g. 'how to vote' or 'add a scholar'">
+      </div>
+      <div class="search-results" id="search-results"></div>
+    </div>
+  </section>
+
+  <!-- QUICK LINKS -->
+  <section style="padding: 2rem 0 0;">
+    <div class="container">
+      <div class="quick-links" data-animate>
+        <a class="quick-link" href="#getting-started">
+          <span class="quick-link__icon quick-link__icon--green">&#127793;</span>
+          <span class="quick-link__text">Getting Started</span>
+        </a>
+        <a class="quick-link" href="#ideas-board">
+          <span class="quick-link__icon quick-link__icon--gold">&#128161;</span>
+          <span class="quick-link__text">Ideas Board</span>
+        </a>
+        <a class="quick-link" href="#ledger">
+          <span class="quick-link__icon quick-link__icon--terra">&#128176;</span>
+          <span class="quick-link__text">Financial Ledger</span>
+        </a>
+        <a class="quick-link" href="#scholars">
+          <span class="quick-link__icon quick-link__icon--green">&#127891;</span>
+          <span class="quick-link__text">Scholars Tracker</span>
+        </a>
+        <a class="quick-link" href="#forums">
+          <span class="quick-link__icon quick-link__icon--sage">&#128172;</span>
+          <span class="quick-link__text">Forums</span>
+        </a>
+        <a class="quick-link" href="#volunteer">
+          <span class="quick-link__icon quick-link__icon--terra">&#9997;&#65039;</span>
+          <span class="quick-link__text">Volunteer</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN DOCS -->
+  <div class="container section-pad">
+    <div class="docs-layout">
+
+      <!-- SIDEBAR -->
+      <aside class="docs-sidebar">
+        <p class="docs-sidebar__title">On this page</p>
+        <ul class="docs-sidebar__list" id="sidebar-list">
+          <li><a href="#getting-started">Getting Started</a></li>
+          <li><a href="#ideas-board">Ideas Board</a></li>
+          <li><a href="#ledger">Financial Ledger</a></li>
+          <li><a href="#scholars">Scholars Tracker</a></li>
+          <li><a href="#forums">Community Forums</a></li>
+          <li><a href="#volunteer">Volunteer Application</a></li>
+          <li><a href="#accounts">Accounts &amp; Sign In</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </aside>
+
+      <!-- DOCS CONTENT -->
+      <div class="docs-content">
+
+        <!-- ===== GETTING STARTED ===== -->
+        <section class="docs-section" id="getting-started">
+          <div class="section-header">
+            <div class="section-icon quick-link__icon--green" style="font-size:1.4rem;">&#127793;</div>
+            <div>
+              <h2>Getting Started</h2>
+              <p style="font-size:0.9rem;color:rgba(58,42,31,0.6);margin-top:0.25rem;">First time here? Start with the basics.</p>
+            </div>
+          </div>
+
+          <div class="guide-grid">
+            <!-- What is BSF -->
+            <div class="guide-card is-open" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">What is the Big Sister Foundation platform?</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">The Big Sister Foundation (BSF) platform is a website where you can see exactly how the foundation works — where money goes, which children are being supported, what ideas the community has, and how you can get involved. Everything is transparent and open.</p>
+
+                  <p style="font-size:0.92rem;color:rgba(58,42,31,0.75);margin-bottom:1rem;">The platform has 6 main sections:</p>
+
+                  <!-- Visual: Platform overview -->
+                  <div class="mockup">
+                    <div class="mockup__bar">
+                      <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                      <span class="mockup__url">bigsisterfoundation.org</span>
+                    </div>
+                    <div class="mockup__body">
+                      <div class="m-nav">
+                        <span class="m-nav__logo">Big Sister Foundation</span>
+                        <div class="m-nav__links">
+                          <span class="m-nav__link m-nav__link--active">Home</span>
+                          <span class="m-nav__link">Ledger</span>
+                          <span class="m-nav__link">Ideas</span>
+                          <span class="m-nav__link">Scholars</span>
+                          <span class="m-nav__link">Forums</span>
+                          <span class="m-nav__link">Volunteer</span>
+                        </div>
+                      </div>
+                      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.4rem;">
+                        <div class="m-card">
+                          <div class="m-card__title">&#128176; Ledger</div>
+                          <div class="m-card__text">See every naira in and out</div>
+                        </div>
+                        <div class="m-card">
+                          <div class="m-card__title">&#128161; Ideas</div>
+                          <div class="m-card__text">Vote on what BSF does next</div>
+                        </div>
+                        <div class="m-card">
+                          <div class="m-card__title">&#127891; Scholars</div>
+                          <div class="m-card__text">Track the children we support</div>
+                        </div>
+                        <div class="m-card">
+                          <div class="m-card__title">&#128172; Forums</div>
+                          <div class="m-card__text">Discuss and share stories</div>
+                        </div>
+                        <div class="m-card">
+                          <div class="m-card__title">&#9997;&#65039; Volunteer</div>
+                          <div class="m-card__text">Apply to join our team</div>
+                        </div>
+                        <div class="m-card">
+                          <div class="m-card__title">&#128218; Help</div>
+                          <div class="m-card__text">You are here!</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="tip tip--info">
+                    <span class="tip__icon">&#128161;</span>
+                    <span class="tip__text"><strong>You don't need an account to browse.</strong> Anyone can view the ledger, scholars, ideas, and forums. You only need to sign in if you want to submit ideas (as a volunteer) or manage data (as an admin).</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Navigating the site -->
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">How to navigate the website</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">The navigation bar at the top of every page lets you move between sections. It's always visible, even when you scroll down.</p>
+
+                  <div class="mockup">
+                    <div class="mockup__bar">
+                      <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                      <span class="mockup__url">bigsisterfoundation.org</span>
+                    </div>
+                    <div class="mockup__body" style="padding:0.5rem;">
+                      <div style="background:var(--green-dark);padding:0.6rem 0.75rem;border-radius:6px;display:flex;align-items:center;justify-content:space-between;">
+                        <span style="font-size:0.7rem;color:var(--cream);font-weight:700;font-family:var(--font-serif);">Big Sister Foundation</span>
+                        <div style="display:flex;gap:0.6rem;">
+                          <span style="font-size:0.6rem;color:rgba(255,248,240,0.5);">Home</span>
+                          <span style="font-size:0.6rem;color:rgba(255,248,240,0.5);">Ledger</span>
+                          <span style="font-size:0.6rem;color:rgba(255,248,240,0.5);">Ideas</span>
+                          <span style="font-size:0.6rem;color:rgba(255,248,240,0.5);">Scholars</span>
+                          <span style="font-size:0.6rem;color:rgba(255,248,240,0.5);">Forums</span>
+                          <span style="font-size:0.6rem;color:rgba(255,248,240,0.5);">Volunteer</span>
+                        </div>
+                      </div>
+                      <div class="m-arrow-label">Click any link to go to that section</div>
+                    </div>
+                  </div>
+
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Find the navigation bar</p>
+                      <p class="step__desc">It's the dark green bar at the very top of the page. It stays there even when you scroll.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Click on any page name</p>
+                      <p class="step__desc">Click "Ledger" to see finances, "Ideas" to see community proposals, "Scholars" to see supported children, "Forums" to join discussions, or "Volunteer" to apply.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Click "Big Sister Foundation" to go home</p>
+                      <p class="step__desc">The logo on the left always takes you back to the main homepage.</p>
+                    </li>
+                  </ol>
+
+                  <div class="tip tip--info">
+                    <span class="tip__icon">&#128241;</span>
+                    <span class="tip__text"><strong>On mobile:</strong> The navigation works the same way. The links may appear smaller but they're all still there at the top of the screen.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== IDEAS BOARD ===== -->
+        <section class="docs-section" id="ideas-board">
+          <div class="section-header">
+            <div class="section-icon quick-link__icon--gold" style="font-size:1.4rem;">&#128161;</div>
+            <div>
+              <h2>Ideas Board</h2>
+              <p style="font-size:0.9rem;color:rgba(58,42,31,0.6);margin-top:0.25rem;">Propose ideas and vote on what BSF should do next.</p>
+            </div>
+          </div>
+
+          <div class="guide-grid">
+            <!-- Voting on ideas -->
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">How to vote on an idea</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">Voting is the simplest way to support an idea you care about. Anyone can vote — no account needed.</p>
+
+                  <div class="mockup">
+                    <div class="mockup__bar">
+                      <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                      <span class="mockup__url">bigsisterfoundation.org/ideas/</span>
+                    </div>
+                    <div class="mockup__body">
+                      <div class="m-card" style="display:flex;gap:0.6rem;align-items:flex-start;">
+                        <div class="m-vote" style="position:relative;">
+                          <div class="m-vote__arrow m-highlight" style="position:relative;">&#9650;</div>
+                          <div class="m-vote__count">47</div>
+                        </div>
+                        <div style="flex:1;">
+                          <div class="m-card__title">Saturday coding classes for gifted students</div>
+                          <div class="m-card__text">Partner with a local tech hub to run free weekly coding workshops...</div>
+                          <div style="margin-top:0.3rem;display:flex;gap:0.3rem;">
+                            <span class="m-tag m-tag--green">Gifted &amp; Talented</span>
+                            <span class="m-tag m-tag--gold">In Progress</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="m-arrow-label">Click the up arrow to vote</div>
+                    </div>
+                  </div>
+
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Go to the Ideas page</p>
+                      <p class="step__desc">Click "Ideas" in the navigation bar at the top.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Find an idea you support</p>
+                      <p class="step__desc">Scroll through the idea cards. Each one shows a title, description, category, and vote count.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Click the up arrow</p>
+                      <p class="step__desc">On the left side of each idea card, there's a small up arrow (&#9650;). Click it. It turns green when your vote is counted.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">To undo your vote, click again</p>
+                      <p class="step__desc">Clicking the same arrow again removes your vote. The arrow goes back to its normal color.</p>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+
+            <!-- Submitting ideas -->
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">How to submit a new idea (volunteers only)</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">Registered volunteers can propose new ideas for the foundation to consider. You'll need to sign in first.</p>
+
+                  <div class="mockup">
+                    <div class="mockup__bar">
+                      <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                      <span class="mockup__url">bigsisterfoundation.org/ideas/</span>
+                    </div>
+                    <div class="mockup__body">
+                      <div class="m-modal">
+                        <div class="m-modal__title">Propose an Idea</div>
+                        <div class="m-label">Title</div>
+                        <div class="m-input">A clear, short title for your idea</div>
+                        <div class="m-label">Description</div>
+                        <div class="m-input" style="height:2rem;">What's the idea? Why does it matter?</div>
+                        <div class="m-form-row">
+                          <div>
+                            <div class="m-label">Pathway</div>
+                            <div class="m-input">Select...</div>
+                          </div>
+                          <div>
+                            <div class="m-label">Est. Cost (NGN)</div>
+                            <div class="m-input">e.g. 250000</div>
+                          </div>
+                        </div>
+                        <div class="m-label">Resources Needed</div>
+                        <div class="m-input">e.g. Volunteers, transport</div>
+                        <div style="display:flex;gap:0.3rem;justify-content:flex-end;margin-top:0.4rem;">
+                          <span class="m-btn m-btn--ghost">Cancel</span>
+                          <span class="m-btn m-btn--green">Submit Idea</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Sign in as a volunteer</p>
+                      <p class="step__desc">Click "Volunteer Sign In" at the bottom of the Ideas page. Enter your email and password. If you don't have an account, click "Need an account? Sign Up".</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Click "+ New Idea"</p>
+                      <p class="step__desc">Once signed in, a green bar appears at the top with your name. Click the "+ New Idea" button.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Fill in the form</p>
+                      <p class="step__desc"><strong>Title:</strong> A short, clear name for your idea (under 100 characters).<br><strong>Description:</strong> What's the idea? Why does it matter? How would it help?<br><strong>Pathway:</strong> Which group of children does this help? (Difficult Backgrounds, Special Needs, Gifted &amp; Talented, or General).<br><strong>Cost:</strong> Rough estimate in naira (optional).<br><strong>Resources:</strong> What would be needed? (optional).</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Click "Submit Idea"</p>
+                      <p class="step__desc">Your idea appears immediately on the board for everyone to see and vote on.</p>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+
+            <!-- Filtering ideas -->
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">How to filter and sort ideas</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <div class="mockup">
+                    <div class="mockup__bar">
+                      <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                      <span class="mockup__url">bigsisterfoundation.org/ideas/</span>
+                    </div>
+                    <div class="mockup__body">
+                      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                        <div class="m-pills">
+                          <span class="m-pill m-pill--active">Top Voted</span>
+                          <span class="m-pill">Newest</span>
+                          <span class="m-pill">By Status</span>
+                        </div>
+                      </div>
+                      <div class="m-pills">
+                        <span class="m-pill m-pill--active">All</span>
+                        <span class="m-pill">Difficult Backgrounds</span>
+                        <span class="m-pill">Special Needs</span>
+                        <span class="m-pill">Gifted &amp; Talented</span>
+                        <span class="m-pill">General</span>
+                      </div>
+                      <div class="m-arrow-label">Click any pill to filter</div>
+                    </div>
+                  </div>
+
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Sort ideas</p>
+                      <p class="step__desc">Use the rounded buttons at the top: <strong>Top Voted</strong> shows the most popular first, <strong>Newest</strong> shows the latest, and <strong>By Status</strong> groups ideas by their progress (In Progress, Planned, Open, Completed).</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Filter by category</p>
+                      <p class="step__desc">Below the sort buttons, click a category pill (e.g. "Special Needs") to only show ideas for that group. Click "All" to see everything again.</p>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== FINANCIAL LEDGER ===== -->
+        <section class="docs-section" id="ledger">
+          <div class="section-header">
+            <div class="section-icon quick-link__icon--terra" style="font-size:1.4rem;">&#128176;</div>
+            <div>
+              <h2>Financial Ledger</h2>
+              <p style="font-size:0.9rem;color:rgba(58,42,31,0.6);margin-top:0.25rem;">See every naira that comes in and goes out. Full transparency.</p>
+            </div>
+          </div>
+
+          <div class="guide-grid">
+            <!-- Reading the ledger -->
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">How to read the financial ledger</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">The ledger shows all money coming into and going out of the foundation. Anyone can view it — no sign-in needed.</p>
+
+                  <div class="mockup">
+                    <div class="mockup__bar">
+                      <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                      <span class="mockup__url">bigsisterfoundation.org/ledger/</span>
+                    </div>
+                    <div class="mockup__body">
+                      <div class="m-pills" style="margin-bottom:0.5rem;">
+                        <span class="m-pill m-pill--active">All Transactions</span>
+                        <span class="m-pill">Money In</span>
+                        <span class="m-pill">Money Out</span>
+                      </div>
+                      <div style="font-size:0.55rem;font-weight:700;color:rgba(58,42,31,0.4);margin-bottom:0.3rem;">MARCH 2026</div>
+                      <table class="m-table">
+                        <tr><th>Date</th><th>Category</th><th>Amount</th><th>Description</th></tr>
+                        <tr><td>Mar 15</td><td><span class="m-tag m-tag--green">Grant</span></td><td style="color:var(--green);font-weight:700;">+&#8358;500K</td><td>USAID education grant</td></tr>
+                        <tr><td>Mar 12</td><td><span class="m-tag m-tag--terra">Food</span></td><td style="color:var(--terra);font-weight:700;">-&#8358;75K</td><td>Monthly food packages</td></tr>
+                        <tr><td>Mar 8</td><td><span class="m-tag m-tag--terra">Education</span></td><td style="color:var(--terra);font-weight:700;">-&#8358;120K</td><td>School fees — term 2</td></tr>
+                      </table>
+                    </div>
+                  </div>
+
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Go to the Ledger page</p>
+                      <p class="step__desc">Click "Ledger" in the navigation bar.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Understand the layout</p>
+                      <p class="step__desc">Entries are grouped by month. Each entry shows the date, category (e.g. Grant, Food, Education), the amount, and a description. <strong>Green amounts</strong> are money coming in. <strong>Orange/red amounts</strong> are money going out.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Filter by type</p>
+                      <p class="step__desc">Use the tabs at the top: "All Transactions" shows everything, "Money In" shows only income (grants, donations), "Money Out" shows only expenses.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">View the flow diagram</p>
+                      <p class="step__desc">The Sankey diagram at the top of the page gives you a visual picture of where money comes from and where it goes — follow the flowing lines from sources on the left to programs on the right.</p>
+                    </li>
+                  </ol>
+
+                  <div class="tip tip--info">
+                    <span class="tip__icon">&#128274;</span>
+                    <span class="tip__text"><strong>Radical transparency:</strong> The ledger is public by design. BSF believes you should be able to see exactly how every naira is used.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Adding entries (volunteer) -->
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">How to add a ledger entry (volunteers)</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">Signed-in volunteers can record financial transactions to keep the ledger up to date.</p>
+
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Sign in on the Ledger page</p>
+                      <p class="step__desc">Click "Volunteer Sign In" and enter your email and password.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Click "+ Add Entry"</p>
+                      <p class="step__desc">A form pops up asking for the transaction details.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Choose "Money In" or "Money Out"</p>
+                      <p class="step__desc">Click the toggle at the top of the form. This changes the available categories.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Fill in the details</p>
+                      <p class="step__desc"><strong>Amount:</strong> The amount in naira.<br><strong>Category:</strong> For income: Grant, Partnership, Event Proceeds, Donation. For expenses: Food, Education, Healthcare, Counselling, Supplies, Operations.<br><strong>Description:</strong> Brief explanation of the transaction.<br><strong>Date:</strong> When it happened.<br><strong>Program:</strong> Which program it relates to (optional).</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Click "Add to Ledger"</p>
+                      <p class="step__desc">The entry appears immediately in the ledger, visible to everyone.</p>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== SCHOLARS TRACKER ===== -->
+        <section class="docs-section" id="scholars">
+          <div class="section-header">
+            <div class="section-icon quick-link__icon--green" style="font-size:1.4rem;">&#127891;</div>
+            <div>
+              <h2>Scholars Tracker</h2>
+              <p style="font-size:0.9rem;color:rgba(58,42,31,0.6);margin-top:0.25rem;">Track every child the foundation supports.</p>
+            </div>
+          </div>
+
+          <div class="guide-grid">
+            <!-- Viewing scholars -->
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">How to view and search for scholars</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">The Scholars page shows all children currently supported by BSF. You can filter, search, and sort to find specific information.</p>
+
+                  <div class="mockup">
+                    <div class="mockup__bar">
+                      <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                      <span class="mockup__url">bigsisterfoundation.org/scholars/</span>
+                    </div>
+                    <div class="mockup__body">
+                      <div style="display:flex;gap:0.3rem;margin-bottom:0.5rem;flex-wrap:wrap;">
+                        <div class="m-input" style="width:auto;flex:1;min-width:80px;">All Pathways &#9660;</div>
+                        <div class="m-input" style="width:auto;flex:1;min-width:80px;">All Statuses &#9660;</div>
+                        <div class="m-input" style="width:auto;flex:1;min-width:80px;">Search by name...</div>
+                      </div>
+                      <table class="m-table">
+                        <tr><th>Name</th><th>School</th><th>Pathway</th><th>Performance</th><th>Status</th></tr>
+                        <tr><td style="font-weight:600;">Amina K.</td><td>Lagos State Model</td><td><span class="m-tag m-tag--green">Gifted</span></td><td>Outstanding</td><td><span class="m-tag m-tag--green">Active</span></td></tr>
+                        <tr><td style="font-weight:600;">David O.</td><td>Community School</td><td><span class="m-tag m-tag--terra">Difficult BG</span></td><td>Good</td><td><span class="m-tag m-tag--green">Active</span></td></tr>
+                      </table>
+                    </div>
+                  </div>
+
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Go to the Scholars page</p>
+                      <p class="step__desc">Click "Scholars" in the navigation bar.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Browse the table</p>
+                      <p class="step__desc">Each row shows a scholar's name, school, class, pathway, performance rating, extracurriculars, status, and total spending. On mobile, this appears as cards instead of a table.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Use the filters</p>
+                      <p class="step__desc"><strong>Pathway:</strong> Filter by Difficult Backgrounds, Special Needs, Gifted &amp; Talented, or Other.<br><strong>Status:</strong> Active, Graduated, On Hold, or Withdrawn.<br><strong>Performance:</strong> Outstanding, Excellent, Good, Satisfactory, or Needs Support.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Search by name</p>
+                      <p class="step__desc">Type a name in the search box to quickly find a specific scholar.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Sort by columns</p>
+                      <p class="step__desc">Click any column header to sort the table by that column.</p>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+
+            <!-- Adding scholars -->
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">How to add a new scholar (volunteers)</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Sign in on the Scholars page</p>
+                      <p class="step__desc">Click "Volunteer Sign In" and enter your credentials.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Click "+ Add Scholar"</p>
+                      <p class="step__desc">A form appears with all the fields for a new scholar.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Fill in the details</p>
+                      <p class="step__desc"><strong>First Name &amp; Last Initial:</strong> For privacy, we use first name + last initial only (e.g., "Amina K.").<br><strong>School:</strong> Select from the dropdown, or choose "Other" and type a new school name.<br><strong>Class/Grade:</strong> e.g. "JSS 2" or "Primary 5".<br><strong>Enrolled Date:</strong> When the child joined BSF.<br><strong>Pathway:</strong> Which program pathway they belong to.<br><strong>Performance:</strong> Current academic/personal performance level.<br><strong>Extracurriculars:</strong> Type an activity and press Enter to add it as a tag. Add as many as needed.<br><strong>Status:</strong> Active, Graduated, On Hold, or Withdrawn.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Click "Add Scholar"</p>
+                      <p class="step__desc">The scholar appears in the table immediately.</p>
+                    </li>
+                  </ol>
+
+                  <div class="tip tip--warning">
+                    <span class="tip__icon">&#9888;&#65039;</span>
+                    <span class="tip__text"><strong>Privacy reminder:</strong> Never enter a child's full last name. Always use first name + last initial only. Never upload photos without explicit consent from the family.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Understanding spending -->
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">Understanding per-scholar spending</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">Each scholar has a financial breakdown showing exactly how much has been spent on their support, across categories like tuition, books, food, and healthcare.</p>
+
+                  <div class="mockup">
+                    <div class="mockup__bar">
+                      <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                      <span class="mockup__url">bigsisterfoundation.org/scholars/</span>
+                    </div>
+                    <div class="mockup__body">
+                      <div class="m-card">
+                        <div class="m-card__title">Amina K. — Spending Breakdown</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.3rem;margin-top:0.3rem;">
+                          <div style="background:rgba(45,94,64,0.06);padding:0.3rem 0.4rem;border-radius:4px;">
+                            <div style="font-size:0.5rem;color:rgba(58,42,31,0.4);">Tuition</div>
+                            <div style="font-size:0.65rem;font-weight:700;">&#8358;180,000</div>
+                          </div>
+                          <div style="background:rgba(194,115,76,0.06);padding:0.3rem 0.4rem;border-radius:4px;">
+                            <div style="font-size:0.5rem;color:rgba(58,42,31,0.4);">Books</div>
+                            <div style="font-size:0.65rem;font-weight:700;">&#8358;25,000</div>
+                          </div>
+                          <div style="background:rgba(212,169,106,0.08);padding:0.3rem 0.4rem;border-radius:4px;">
+                            <div style="font-size:0.5rem;color:rgba(58,42,31,0.4);">Food</div>
+                            <div style="font-size:0.65rem;font-weight:700;">&#8358;45,000</div>
+                          </div>
+                          <div style="background:rgba(139,175,142,0.1);padding:0.3rem 0.4rem;border-radius:4px;">
+                            <div style="font-size:0.5rem;color:rgba(58,42,31,0.4);">Healthcare</div>
+                            <div style="font-size:0.65rem;font-weight:700;">&#8358;12,000</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p style="font-size:0.92rem;color:rgba(58,42,31,0.75);">The "Total Spend" column in the scholars table shows the combined amount. Click on a scholar's row to expand their full spending breakdown by category.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== FORUMS ===== -->
+        <section class="docs-section" id="forums">
+          <div class="section-header">
+            <div class="section-icon quick-link__icon--sage" style="font-size:1.4rem;">&#128172;</div>
+            <div>
+              <h2>Community Forums</h2>
+              <p style="font-size:0.9rem;color:rgba(58,42,31,0.6);margin-top:0.25rem;">Discuss, share stories, and connect with the community.</p>
+            </div>
+          </div>
+
+          <div class="guide-grid">
+            <!-- Starting a thread -->
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">How to start a new discussion thread</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">Anyone can start a discussion — no account needed. Just enter your name and start talking.</p>
+
+                  <div class="mockup">
+                    <div class="mockup__bar">
+                      <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                      <span class="mockup__url">bigsisterfoundation.org/forums/</span>
+                    </div>
+                    <div class="mockup__body">
+                      <div class="m-modal">
+                        <div class="m-modal__title">Start a New Thread</div>
+                        <div class="m-form-row">
+                          <div>
+                            <div class="m-label">Your Name</div>
+                            <div class="m-input">How should we call you?</div>
+                          </div>
+                          <div>
+                            <div class="m-label">Email (optional)</div>
+                            <div class="m-input">Not displayed publicly</div>
+                          </div>
+                        </div>
+                        <div class="m-label">Thread Title</div>
+                        <div class="m-input">What do you want to discuss?</div>
+                        <div class="m-label">Category</div>
+                        <div class="m-input">Select a category... &#9660;</div>
+                        <div class="m-label">Your Message</div>
+                        <div class="m-input" style="height:2.5rem;">Share your thoughts...</div>
+                        <div style="display:flex;gap:0.3rem;justify-content:flex-end;margin-top:0.4rem;">
+                          <span class="m-btn m-btn--ghost">Cancel</span>
+                          <span class="m-btn m-btn--green">Post Thread</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Go to the Forums page</p>
+                      <p class="step__desc">Click "Forums" in the navigation bar.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Click "+ New Thread"</p>
+                      <p class="step__desc">The green button near the top of the page. A form will pop up.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Enter your name</p>
+                      <p class="step__desc">Type whatever name you'd like to be known by. Email is optional — it's only used if someone replies and you want to be notified. It's never shown publicly.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Write your thread title</p>
+                      <p class="step__desc">Keep it clear and descriptive so people know what the discussion is about. Under 120 characters.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Choose a category</p>
+                      <p class="step__desc"><strong>General:</strong> Anything that doesn't fit elsewhere.<br><strong>Volunteering:</strong> Tips, questions, experiences about volunteering.<br><strong>Programs:</strong> Questions about BSF's programs and how they work.<br><strong>Fundraising:</strong> Ideas and discussions about raising funds.<br><strong>Stories:</strong> Personal stories and experiences.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Write your message and post</p>
+                      <p class="step__desc">Type your message in the text area and click "Post Thread". It appears immediately.</p>
+                    </li>
+                  </ol>
+
+                  <div class="tip tip--info">
+                    <span class="tip__icon">&#128173;</span>
+                    <span class="tip__text"><strong>Your name is remembered.</strong> After your first post, the forum saves your name so you don't have to type it again next time.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Replying -->
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">How to reply to a thread</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Click on any thread</p>
+                      <p class="step__desc">From the forums list, click on a thread title or card to open it.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Read the discussion</p>
+                      <p class="step__desc">The original post appears at the top, followed by all replies in order.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Scroll to the reply form</p>
+                      <p class="step__desc">At the bottom of the page, you'll see "Leave a Reply" with name, email, and message fields.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Enter your name and message</p>
+                      <p class="step__desc">Type your name (it may already be filled in if you've posted before), write your reply, and click "Post Reply".</p>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+
+            <!-- Voting & searching -->
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">How to vote, search, and filter threads</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <div class="mockup">
+                    <div class="mockup__bar">
+                      <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                      <span class="mockup__url">bigsisterfoundation.org/forums/</span>
+                    </div>
+                    <div class="mockup__body">
+                      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
+                        <div class="m-pills">
+                          <span class="m-pill m-pill--active">Newest</span>
+                          <span class="m-pill">Most Active</span>
+                          <span class="m-pill">Top Voted</span>
+                        </div>
+                        <div class="m-input" style="width:120px;margin-bottom:0;">&#128269; Search threads...</div>
+                      </div>
+                      <div class="m-pills">
+                        <span class="m-pill m-pill--active">All</span>
+                        <span class="m-pill">General</span>
+                        <span class="m-pill">Volunteering</span>
+                        <span class="m-pill">Programs</span>
+                        <span class="m-pill">Fundraising</span>
+                        <span class="m-pill">Stories</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Upvote a thread</p>
+                      <p class="step__desc">Click the up arrow (&#9650;) on the left side of any thread card. It turns green when voted. Click again to undo.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Like a reply</p>
+                      <p class="step__desc">Inside a thread, click the heart (&#9825;) next to any reply to like it.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Search for threads</p>
+                      <p class="step__desc">Use the search box in the top right. It searches thread titles, content, and author names in real time as you type.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Sort threads</p>
+                      <p class="step__desc"><strong>Newest:</strong> Most recently created first.<br><strong>Most Active:</strong> Threads with the latest replies first.<br><strong>Top Voted:</strong> Most upvoted threads first.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Filter by category</p>
+                      <p class="step__desc">Click any category pill to show only threads in that category. Click "All" to show everything.</p>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== VOLUNTEER ===== -->
+        <section class="docs-section" id="volunteer">
+          <div class="section-header">
+            <div class="section-icon quick-link__icon--terra" style="font-size:1.4rem;">&#9997;&#65039;</div>
+            <div>
+              <h2>Volunteer Application</h2>
+              <p style="font-size:0.9rem;color:rgba(58,42,31,0.6);margin-top:0.25rem;">Join the team. Here's how to apply.</p>
+            </div>
+          </div>
+
+          <div class="guide-grid">
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">How to apply to volunteer</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">Anyone can apply to volunteer with BSF. The application takes about 2 minutes.</p>
+
+                  <div class="mockup">
+                    <div class="mockup__bar">
+                      <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                      <span class="mockup__url">bigsisterfoundation.org/volunteer/</span>
+                    </div>
+                    <div class="mockup__body">
+                      <div class="m-modal" style="max-width:100%;">
+                        <div class="m-modal__title">Volunteer Application</div>
+                        <div class="m-form-row">
+                          <div><div class="m-label">Full Name</div><div class="m-input">Your full name</div></div>
+                          <div><div class="m-label">Email</div><div class="m-input">your@email.com</div></div>
+                        </div>
+                        <div class="m-form-row">
+                          <div><div class="m-label">Phone</div><div class="m-input">+234...</div></div>
+                          <div><div class="m-label">Location</div><div class="m-input">City, State</div></div>
+                        </div>
+                        <div class="m-label">Why do you want to volunteer?</div>
+                        <div class="m-input" style="height:1.5rem;">Tell us about your motivation...</div>
+                        <div class="m-label">Skills &amp; Experience</div>
+                        <div class="m-input">Teaching, first aid, etc.</div>
+                        <div class="m-label">Availability</div>
+                        <div style="display:flex;gap:0.3rem;margin-bottom:0.3rem;">
+                          <span class="m-pill m-pill--active">Weekdays</span>
+                          <span class="m-pill">Weekends</span>
+                          <span class="m-pill">Evenings</span>
+                          <span class="m-pill">Flexible</span>
+                        </div>
+                        <div style="display:flex;justify-content:flex-end;margin-top:0.4rem;">
+                          <span class="m-btn m-btn--green">Submit Application</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Go to the Volunteer page</p>
+                      <p class="step__desc">Click "Volunteer" in the navigation bar, or click "Apply Now" on the homepage.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Fill in your details</p>
+                      <p class="step__desc"><strong>Full Name</strong> and <strong>Email</strong> are required. Phone and Location are optional but help us place you with nearby programs.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Tell us why you want to volunteer</p>
+                      <p class="step__desc">Write a short message about your motivation. There's a 500-character limit — keep it genuine, not formal.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Share your skills (optional)</p>
+                      <p class="step__desc">Teaching, counselling, medical training, tech skills, driving — anything that could help.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Select your availability</p>
+                      <p class="step__desc">Check all the boxes that apply: Weekdays, Weekends, Evenings, or Flexible.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Click "Submit Application"</p>
+                      <p class="step__desc">You'll see a confirmation message. The BSF team will review your application and get back to you via email or WhatsApp.</p>
+                    </li>
+                  </ol>
+
+                  <div class="mockup" style="max-width:300px;">
+                    <div class="mockup__body">
+                      <div class="m-success">
+                        <div class="m-success__icon">&#10003;</div>
+                        <div class="m-success__text">Application submitted!</div>
+                        <div style="font-size:0.55rem;color:rgba(58,42,31,0.5);margin-top:0.2rem;">We'll be in touch within a few days.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== ACCOUNTS & SIGN IN ===== -->
+        <section class="docs-section" id="accounts">
+          <div class="section-header">
+            <div class="section-icon quick-link__icon--green" style="font-size:1.4rem;">&#128274;</div>
+            <div>
+              <h2>Accounts &amp; Sign In</h2>
+              <p style="font-size:0.9rem;color:rgba(58,42,31,0.6);margin-top:0.25rem;">When you need an account and how to sign in.</p>
+            </div>
+          </div>
+
+          <div class="guide-grid">
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">Do I need an account?</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">Most things on the platform do NOT require an account. Here's a breakdown:</p>
+
+                  <table class="m-table" style="font-size:0.85rem;">
+                    <tr><th style="font-size:0.75rem;">Action</th><th style="font-size:0.75rem;">Account Needed?</th></tr>
+                    <tr><td>View the ledger</td><td style="color:var(--green);font-weight:700;">No</td></tr>
+                    <tr><td>View scholars</td><td style="color:var(--green);font-weight:700;">No</td></tr>
+                    <tr><td>Vote on ideas</td><td style="color:var(--green);font-weight:700;">No</td></tr>
+                    <tr><td>Read forum threads</td><td style="color:var(--green);font-weight:700;">No</td></tr>
+                    <tr><td>Post on the forums</td><td style="color:var(--green);font-weight:700;">No — just enter a name</td></tr>
+                    <tr><td>Reply to forum threads</td><td style="color:var(--green);font-weight:700;">No — just enter a name</td></tr>
+                    <tr><td>Apply to volunteer</td><td style="color:var(--green);font-weight:700;">No</td></tr>
+                    <tr><td>Submit a new idea</td><td style="color:var(--terra);font-weight:700;">Yes — volunteer account</td></tr>
+                    <tr><td>Add ledger entries</td><td style="color:var(--terra);font-weight:700;">Yes — volunteer account</td></tr>
+                    <tr><td>Add/edit scholars</td><td style="color:var(--terra);font-weight:700;">Yes — volunteer account</td></tr>
+                    <tr><td>Admin dashboard</td><td style="color:var(--terra);font-weight:700;">Yes — admin account</td></tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">How to sign in or create an account</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <div class="mockup">
+                    <div class="mockup__bar">
+                      <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                    </div>
+                    <div class="mockup__body">
+                      <div class="m-modal">
+                        <div class="m-modal__title">Volunteer Sign In</div>
+                        <div class="m-label">Email</div>
+                        <div class="m-input">your@email.com</div>
+                        <div class="m-label">Password</div>
+                        <div class="m-input">Your password</div>
+                        <div style="margin-top:0.4rem;"><span class="m-btn m-btn--green" style="width:100%;text-align:center;display:block;">Sign In</span></div>
+                        <div style="text-align:center;margin-top:0.3rem;font-size:0.5rem;color:rgba(58,42,31,0.4);">or</div>
+                        <div style="text-align:center;margin-top:0.2rem;font-size:0.55rem;color:var(--terra);font-weight:600;">Need an account? Sign Up</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Find the "Volunteer Sign In" button</p>
+                      <p class="step__desc">On the Ideas, Ledger, or Scholars pages, look for the "Volunteer Sign In" button near the bottom of the page.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">To sign in: enter email and password</p>
+                      <p class="step__desc">Type your email and password, then click "Sign In".</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">To create a new account: click "Sign Up"</p>
+                      <p class="step__desc">Click "Need an account? Sign Up" at the bottom. You'll see an extra field for your display name. Fill in your name, email, and choose a password, then click "Sign Up".</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">To sign out</p>
+                      <p class="step__desc">Once signed in, you'll see your name in a green bar at the top. Click "Sign Out" to log out.</p>
+                    </li>
+                  </ol>
+
+                  <div class="tip tip--warning">
+                    <span class="tip__icon">&#128272;</span>
+                    <span class="tip__text"><strong>Forgot your password?</strong> Contact the BSF team on <a href="https://wa.me/2348000000000" style="color:var(--terra);font-weight:600;">WhatsApp</a> and they'll help you reset it.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== FAQ ===== -->
+        <section class="docs-section" id="faq">
+          <div class="section-header">
+            <div class="section-icon quick-link__icon--gold" style="font-size:1.4rem;">&#10067;</div>
+            <div>
+              <h2>Frequently Asked Questions</h2>
+              <p style="font-size:0.9rem;color:rgba(58,42,31,0.6);margin-top:0.25rem;">Quick answers to common questions.</p>
+            </div>
+          </div>
+
+          <div class="faq-list">
+            <div class="faq-item" data-faq>
+              <div class="faq-item__q">
+                <span>Is the platform free to use?</span>
+                <span class="faq-item__toggle">&#9660;</span>
+              </div>
+              <div class="faq-item__a">
+                <div class="faq-item__a-content">Yes, completely free. There are no fees, subscriptions, or hidden costs. The platform is built and maintained by volunteers.</div>
+              </div>
+            </div>
+
+            <div class="faq-item" data-faq>
+              <div class="faq-item__q">
+                <span>Can I volunteer from outside Lagos?</span>
+                <span class="faq-item__toggle">&#9660;</span>
+              </div>
+              <div class="faq-item__a">
+                <div class="faq-item__a-content">Yes! While in-person volunteering happens in Lagos, you can contribute remotely — tutoring online, helping with the platform, fundraising, social media, or mentoring. Apply through the Volunteer page and mention your location.</div>
+              </div>
+            </div>
+
+            <div class="faq-item" data-faq>
+              <div class="faq-item__q">
+                <span>Why can't I see a child's full name?</span>
+                <span class="faq-item__toggle">&#9660;</span>
+              </div>
+              <div class="faq-item__a">
+                <div class="faq-item__a-content">To protect the children's privacy, we only display first names and last initials (e.g., "Amina K."). Full names are kept confidential and only accessible to authorized BSF staff.</div>
+              </div>
+            </div>
+
+            <div class="faq-item" data-faq>
+              <div class="faq-item__q">
+                <span>How do I report something inappropriate on the forums?</span>
+                <span class="faq-item__toggle">&#9660;</span>
+              </div>
+              <div class="faq-item__a">
+                <div class="faq-item__a-content">Contact the BSF team directly via <a href="https://wa.me/2348000000000" style="color:var(--terra);font-weight:600;">WhatsApp</a> or <a href="mailto:princebolajibreeze@gmail.com" style="color:var(--terra);font-weight:600;">email</a> with details of the post or thread. The team can remove inappropriate content from the admin dashboard.</div>
+              </div>
+            </div>
+
+            <div class="faq-item" data-faq>
+              <div class="faq-item__q">
+                <span>How can I nominate a child for BSF support?</span>
+                <span class="faq-item__toggle">&#9660;</span>
+              </div>
+              <div class="faq-item__a">
+                <div class="faq-item__a-content">External nominations are welcome. Contact the BSF team via <a href="https://wa.me/2348000000000" style="color:var(--terra);font-weight:600;">WhatsApp</a> with the family's details. The team visits every family before enrollment to understand their situation and needs.</div>
+              </div>
+            </div>
+
+            <div class="faq-item" data-faq>
+              <div class="faq-item__q">
+                <span>Is the financial data real?</span>
+                <span class="faq-item__toggle">&#9660;</span>
+              </div>
+              <div class="faq-item__a">
+                <div class="faq-item__a-content">Yes. The ledger reflects actual transactions. BSF is committed to radical financial transparency — every naira that comes in or goes out is recorded and publicly visible. This is core to how the foundation operates.</div>
+              </div>
+            </div>
+
+            <div class="faq-item" data-faq>
+              <div class="faq-item__q">
+                <span>I'm having trouble with the website. Who do I contact?</span>
+                <span class="faq-item__toggle">&#9660;</span>
+              </div>
+              <div class="faq-item__a">
+                <div class="faq-item__a-content">Reach out on <a href="https://wa.me/2348000000000" style="color:var(--terra);font-weight:600;">WhatsApp</a> or email <a href="mailto:princebolajibreeze@gmail.com" style="color:var(--terra);font-weight:600;">princebolajibreeze@gmail.com</a>. Include a description of the problem and what page you were on.</div>
+              </div>
+            </div>
+
+            <div class="faq-item" data-faq>
+              <div class="faq-item__q">
+                <span>Can I donate to the foundation?</span>
+                <span class="faq-item__toggle">&#9660;</span>
+              </div>
+              <div class="faq-item__a">
+                <div class="faq-item__a-content">Contact the BSF team via <a href="https://wa.me/2348000000000" style="color:var(--terra);font-weight:600;">WhatsApp</a> to discuss how you can contribute. All donations are recorded transparently in the public ledger.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- STILL NEED HELP -->
+        <section class="docs-section" style="text-align:center;">
+          <div style="max-width:480px;margin:0 auto;">
+            <h2 style="margin-bottom:0.75rem;">Still need help?</h2>
+            <p style="font-size:0.95rem;color:rgba(58,42,31,0.65);margin-bottom:1.5rem;">Can't find what you're looking for? Reach out to us directly and we'll help you out.</p>
+            <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+              <a href="https://wa.me/2348000000000" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.7rem 1.5rem;border-radius:100px;background:var(--green);color:var(--cream);font-size:0.85rem;font-weight:600;text-decoration:none;transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">WhatsApp Us</a>
+              <a href="mailto:princebolajibreeze@gmail.com" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.7rem 1.5rem;border-radius:100px;background:transparent;color:var(--brown);border:1.5px solid rgba(58,42,31,0.2);font-size:0.85rem;font-weight:600;text-decoration:none;transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">Email Us</a>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__layout">
+        <div class="footer__left">
+          <p class="footer__brand-name">Big Sister Foundation</p>
+          <p class="footer__tagline">Rooted. Present. Protective.</p>
+          <p class="footer__location">Lagos, Nigeria</p>
+        </div>
+        <div class="footer__right">
+          <ul class="footer__links">
+            <li><a href="https://wa.me/2348000000000">WhatsApp</a></li>
+            <li><a href="mailto:princebolajibreeze@gmail.com">Email</a></li>
+            <li><a href="#">Instagram</a></li>
+          </ul>
+          <p class="footer__copy">&copy; 2026 Big Sister Foundation. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      'use strict';
+
+      document.body.classList.add('js-ready');
+
+      // Animations
+      var animEls = document.querySelectorAll('[data-animate]');
+      if ('IntersectionObserver' in window) {
+        var obs = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) { e.target.classList.add('is-visible'); obs.unobserve(e.target); }
+          });
+        }, { threshold: 0.05 });
+        animEls.forEach(function (el) { obs.observe(el); });
+      } else {
+        animEls.forEach(function (el) { el.classList.add('is-visible'); });
+      }
+
+      // Guide card toggles
+      document.querySelectorAll('[data-guide] .guide-card__header').forEach(function (header) {
+        header.addEventListener('click', function () {
+          header.parentElement.classList.toggle('is-open');
+        });
+      });
+
+      // FAQ toggles
+      document.querySelectorAll('[data-faq] .faq-item__q').forEach(function (q) {
+        q.addEventListener('click', function () {
+          q.parentElement.classList.toggle('is-open');
+        });
+      });
+
+      // Sidebar active state
+      var sidebarLinks = document.querySelectorAll('.docs-sidebar__list a');
+      var sections = [];
+      sidebarLinks.forEach(function (link) {
+        var id = link.getAttribute('href').replace('#', '');
+        var el = document.getElementById(id);
+        if (el) sections.push({ el: el, link: link });
+      });
+
+      function updateSidebar() {
+        var scrollY = window.scrollY + 120;
+        var active = null;
+        sections.forEach(function (s) {
+          if (s.el.offsetTop <= scrollY) active = s;
+        });
+        sidebarLinks.forEach(function (l) { l.classList.remove('is-active'); });
+        if (active) active.link.classList.add('is-active');
+      }
+      window.addEventListener('scroll', updateSidebar);
+      updateSidebar();
+
+      // Search
+      var searchInput = document.getElementById('docs-search');
+      var searchResults = document.getElementById('search-results');
+
+      // Build search index from guide cards and FAQ
+      var searchIndex = [];
+
+      document.querySelectorAll('[data-guide]').forEach(function (card) {
+        var section = card.closest('.docs-section');
+        var sectionTitle = section ? section.querySelector('h2') : null;
+        var title = card.querySelector('.guide-card__title');
+        var content = card.querySelector('.guide-card__content');
+        if (title && content) {
+          searchIndex.push({
+            title: title.textContent,
+            section: sectionTitle ? sectionTitle.textContent : '',
+            sectionId: section ? section.id : '',
+            text: content.textContent.toLowerCase(),
+            el: card
+          });
+        }
+      });
+
+      document.querySelectorAll('[data-faq]').forEach(function (faq) {
+        var q = faq.querySelector('.faq-item__q span');
+        var a = faq.querySelector('.faq-item__a-content');
+        if (q && a) {
+          searchIndex.push({
+            title: q.textContent,
+            section: 'FAQ',
+            sectionId: 'faq',
+            text: (q.textContent + ' ' + a.textContent).toLowerCase(),
+            el: faq
+          });
+        }
+      });
+
+      var searchTimeout;
+      searchInput.addEventListener('input', function () {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(function () {
+          var query = searchInput.value.trim().toLowerCase();
+          if (query.length < 2) {
+            searchResults.classList.remove('is-visible');
+            return;
+          }
+
+          var results = searchIndex.filter(function (item) {
+            return item.text.indexOf(query) !== -1 ||
+                   item.title.toLowerCase().indexOf(query) !== -1;
+          });
+
+          if (results.length === 0) {
+            searchResults.innerHTML = '<div class="search-results__empty">No results found. Try a different search term.</div>';
+          } else {
+            var html = '';
+            results.slice(0, 8).forEach(function (r) {
+              // Extract preview around the match
+              var idx = r.text.indexOf(query);
+              var start = Math.max(0, idx - 40);
+              var end = Math.min(r.text.length, idx + query.length + 60);
+              var preview = (start > 0 ? '...' : '') + r.text.substring(start, end).replace(/\s+/g, ' ') + (end < r.text.length ? '...' : '');
+
+              html += '<div class="search-result" data-section="' + r.sectionId + '">';
+              html += '<div class="search-result__section">' + r.section + '</div>';
+              html += '<div class="search-result__title">' + r.title + '</div>';
+              html += '<div class="search-result__preview">' + preview + '</div>';
+              html += '</div>';
+            });
+            searchResults.innerHTML = html;
+
+            // Click to navigate
+            searchResults.querySelectorAll('.search-result').forEach(function (result, i) {
+              result.addEventListener('click', function () {
+                var sectionId = result.getAttribute('data-section');
+                var section = document.getElementById(sectionId);
+                if (section) {
+                  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  // Open the matching card
+                  var matchedItem = results[i];
+                  if (matchedItem && matchedItem.el) {
+                    if (!matchedItem.el.classList.contains('is-open')) {
+                      matchedItem.el.classList.add('is-open');
+                    }
+                  }
+                }
+                searchResults.classList.remove('is-visible');
+                searchInput.value = '';
+              });
+            });
+          }
+
+          searchResults.classList.add('is-visible');
+        }, 200);
+      });
+
+      // Close search results when clicking outside
+      document.addEventListener('click', function (e) {
+        if (!searchResults.contains(e.target) && e.target !== searchInput) {
+          searchResults.classList.remove('is-visible');
+        }
+      });
+
+    })();
+  </script>
+</body>
+</html>

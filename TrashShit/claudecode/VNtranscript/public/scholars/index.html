@@ -743,30 +743,6 @@
     .issue-priority--high { background: rgba(194,115,76,0.15); color: var(--terra); }
     .issue-priority--urgent { background: rgba(200,40,40,0.12); color: #b92828; }
 
-    /* Teacher contact cards */
-    .teacher-card {
-      background: var(--cream); border-radius: 10px;
-      padding: 1rem 1.25rem; margin-bottom: 0.75rem;
-      border: 1px solid rgba(58,42,31,0.06);
-      display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;
-    }
-    @media (max-width: 500px) { .teacher-card { grid-template-columns: 1fr; } }
-    .teacher-card__name {
-      font-family: var(--font-serif); font-size: 1rem;
-      font-weight: 500; color: var(--brown); grid-column: 1 / -1;
-    }
-    .teacher-card__role {
-      font-size: 0.8rem; color: var(--terra); font-weight: 600;
-      grid-column: 1 / -1; margin-top: -0.25rem;
-    }
-    .teacher-card__detail {
-      font-size: 0.82rem; color: rgba(58,42,31,0.6);
-    }
-    .teacher-card__detail a {
-      color: var(--green); text-decoration: none;
-    }
-    .teacher-card__detail a:hover { text-decoration: underline; }
-
     /* Add entry button */
     .add-entry-btn {
       display: none; width: 100%; padding: 0.6rem 1rem; border-radius: 10px;
@@ -800,8 +776,10 @@
       <li><a href="/scholars/" class="is-active">Scholars</a></li>
       <li><a href="/ledger/">Ledger</a></li>
       <li><a href="/events/">Events</a></li>
+      <li><a href="/blog/">Blog</a></li>
       <li><a href="/volunteer/">Volunteer</a></li>
       <li><a href="/donate/">Give</a></li>
+      <li><a href="/docs/">Help</a></li>
     </ul>
   </nav>
 
@@ -953,6 +931,7 @@
             <li><a href="/ledger/">Ledger</a></li>
             <li><a href="/events/">Events</a></li>
             <li><a href="/volunteer/">Volunteer</a></li>
+            <li><a href="/blog/">Blog</a></li>
             <li><a href="/forums/">Forums</a></li>
             <li><a href="/ideas/">Ideas</a></li>
             <li><a href="/donations/">Donations</a></li>
@@ -1184,29 +1163,6 @@
               <option value="high">High</option>
               <option value="urgent">Urgent</option>
             </select>
-          </div>
-        </div>
-
-        <div id="school-note-teacher-fields" style="display:none;">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="school-note-teacherName">Teacher Name</label>
-              <input type="text" id="school-note-teacherName" placeholder="e.g. Mr. Okonkwo">
-            </div>
-            <div class="form-group">
-              <label for="school-note-teacherRole">Role</label>
-              <input type="text" id="school-note-teacherRole" placeholder="e.g. Class Teacher">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="school-note-teacherPhone">Phone</label>
-              <input type="tel" id="school-note-teacherPhone" placeholder="+234 ...">
-            </div>
-            <div class="form-group">
-              <label for="school-note-teacherEmail">Email</label>
-              <input type="email" id="school-note-teacherEmail" placeholder="teacher@school.com">
-            </div>
           </div>
         </div>
 
@@ -1717,7 +1673,6 @@
         tabs.className = 'school-tabs';
         var tabDefs = [
           { key: 'notes', label: 'Notes' },
-          { key: 'teachers', label: 'Teachers' },
           { key: 'issues', label: 'Issues' },
           { key: 'events', label: 'Events' }
         ];
@@ -1753,15 +1708,15 @@
       function renderSchoolTabContent(container, school, tabKey) {
         clearChildren(container);
         var notes = schoolNotesCache[school.id] || [];
-        var filtered = notes.filter(function (n) { return n.type === (tabKey === 'teachers' ? 'teacher' : tabKey === 'issues' ? 'issue' : tabKey === 'events' ? 'event' : 'note'); });
+        var filtered = notes.filter(function (n) { return n.type === (tabKey === 'issues' ? 'issue' : tabKey === 'events' ? 'event' : 'note'); });
 
         // Add button
         var addBtn = document.createElement('button');
         addBtn.className = 'add-entry-btn';
-        var labels = { notes: 'Note', teachers: 'Teacher', issues: 'Issue', events: 'Event' };
+        var labels = { notes: 'Note', issues: 'Issue', events: 'Event' };
         addBtn.textContent = '+ Add ' + labels[tabKey];
         addBtn.addEventListener('click', function () {
-          openSchoolNoteModal(school, tabKey === 'teachers' ? 'teacher' : tabKey === 'issues' ? 'issue' : tabKey === 'events' ? 'event' : 'note');
+          openSchoolNoteModal(school, tabKey === 'issues' ? 'issue' : tabKey === 'events' ? 'event' : 'note');
         });
         container.appendChild(addBtn);
 
@@ -1780,11 +1735,7 @@
           return db2 - da;
         });
 
-        if (tabKey === 'teachers') {
-          filtered.forEach(function (entry) {
-            container.appendChild(createTeacherCard(entry));
-          });
-        } else if (tabKey === 'issues') {
+        if (tabKey === 'issues') {
           filtered.forEach(function (entry) {
             container.appendChild(createIssueCard(entry));
           });
@@ -1859,56 +1810,6 @@
           // Insert after header
           hdr.parentNode.insertBefore(meta, hdr.nextSibling);
         }
-        return card;
-      }
-
-      function createTeacherCard(entry) {
-        var card = document.createElement('div');
-        card.className = 'teacher-card';
-
-        var nameEl = document.createElement('div');
-        nameEl.className = 'teacher-card__name';
-        nameEl.textContent = entry.teacherName || entry.title || 'Unknown';
-        card.appendChild(nameEl);
-
-        if (entry.teacherRole) {
-          var roleEl = document.createElement('div');
-          roleEl.className = 'teacher-card__role';
-          roleEl.textContent = entry.teacherRole;
-          card.appendChild(roleEl);
-        }
-
-        if (entry.teacherPhone) {
-          var phoneEl = document.createElement('div');
-          phoneEl.className = 'teacher-card__detail';
-          var phoneLabel = document.createTextNode('Phone: ');
-          phoneEl.appendChild(phoneLabel);
-          var phoneLink = document.createElement('a');
-          phoneLink.href = 'tel:' + entry.teacherPhone;
-          phoneLink.textContent = entry.teacherPhone;
-          phoneEl.appendChild(phoneLink);
-          card.appendChild(phoneEl);
-        }
-
-        if (entry.teacherEmail) {
-          var emailEl = document.createElement('div');
-          emailEl.className = 'teacher-card__detail';
-          var emailLabel = document.createTextNode('Email: ');
-          emailEl.appendChild(emailLabel);
-          var emailLink = document.createElement('a');
-          emailLink.href = 'mailto:' + entry.teacherEmail;
-          emailLink.textContent = entry.teacherEmail;
-          emailEl.appendChild(emailLink);
-          card.appendChild(emailEl);
-        }
-
-        var meta = document.createElement('div');
-        meta.className = 'school-entry__author';
-        meta.style.gridColumn = '1 / -1';
-        meta.style.marginTop = '0.25rem';
-        meta.textContent = 'Added by ' + (entry.createdByName || 'Unknown');
-        card.appendChild(meta);
-
         return card;
       }
 
@@ -2054,28 +1955,19 @@
         document.getElementById('school-note-schoolName').value = school.name;
         document.getElementById('school-note-type').value = type;
 
-        var typeLabels = { note: 'Note', teacher: 'Teacher', issue: 'Issue', event: 'Event' };
+        var typeLabels = { note: 'Note', issue: 'Issue', event: 'Event' };
         document.getElementById('modal-school-note-title').textContent = 'Add ' + typeLabels[type];
         document.getElementById('btn-submit-school-note').textContent = 'Add ' + typeLabels[type];
 
         // Toggle field visibility
         var issueFields = document.getElementById('school-note-issue-fields');
-        var teacherFields = document.getElementById('school-note-teacher-fields');
         var titleGroup = document.getElementById('school-note-title-group');
         var contentGroup = document.getElementById('school-note-content-group');
 
         issueFields.style.display = type === 'issue' ? '' : 'none';
-        teacherFields.style.display = type === 'teacher' ? '' : 'none';
-
-        if (type === 'teacher') {
-          titleGroup.style.display = 'none';
-          contentGroup.style.display = 'none';
-          document.getElementById('school-note-title-input').required = false;
-        } else {
-          titleGroup.style.display = '';
-          contentGroup.style.display = '';
-          document.getElementById('school-note-title-input').required = true;
-        }
+        titleGroup.style.display = '';
+        contentGroup.style.display = '';
+        document.getElementById('school-note-title-input').required = true;
 
         // Default date to today
         var today = new Date();
