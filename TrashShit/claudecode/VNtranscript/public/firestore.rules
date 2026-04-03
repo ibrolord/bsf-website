@@ -1,0 +1,119 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Ideas — anyone can read, authenticated volunteers can create, owners/admins can edit/delete
+    match /ideas/{ideaId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null &&
+        (request.auth.uid == resource.data.authorId ||
+         request.auth.token.email in ['princebolajibreeze@gmail.com']);
+    }
+
+    // Votes — anyone can read, authenticated users can create/delete their own
+    match /votes/{voteId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow delete: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
+
+    // Ledger — anyone can read, authenticated volunteers can create, admins can edit/delete
+    match /ledger/{entryId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null &&
+        request.auth.token.email in ['princebolajibreeze@gmail.com'];
+    }
+
+    // Scholars — anyone can read, authenticated volunteers can create/update, admins can delete
+    match /scholars/{scholarId} {
+      allow read: if true;
+      allow create, update: if request.auth != null;
+      allow delete: if request.auth != null &&
+        request.auth.token.email in ['princebolajibreeze@gmail.com'];
+    }
+
+    // Schools — anyone can read, authenticated volunteers can manage
+    match /schools/{schoolId} {
+      allow read: if true;
+      allow create, update, delete: if request.auth != null;
+    }
+
+    // Forum threads — anyone can read and create (open forums), admins can delete
+    match /forum_threads/{threadId} {
+      allow read: if true;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if request.auth != null &&
+        request.auth.token.email in ['princebolajibreeze@gmail.com'];
+
+      // Replies subcollection — anyone can read and create, admins can delete
+      match /replies/{replyId} {
+        allow read: if true;
+        allow create: if true;
+        allow update: if true;
+        allow delete: if request.auth != null &&
+          request.auth.token.email in ['princebolajibreeze@gmail.com'];
+      }
+    }
+
+    // Volunteer requests — anyone can create (apply), only admins can read/update/delete
+    match /volunteer_requests/{requestId} {
+      allow create: if true;
+      allow read, update, delete: if request.auth != null &&
+        request.auth.token.email in ['princebolajibreeze@gmail.com'];
+    }
+
+    // Donations — anyone can create (from Paystack), anyone can read, admins can manage
+    match /donations/{donationId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if request.auth != null &&
+        request.auth.token.email in ['princebolajibreeze@gmail.com'];
+    }
+
+    // Audit log — only admins can read, system can write
+    match /audit_log/{logId} {
+      allow read: if request.auth != null &&
+        request.auth.token.email in ['princebolajibreeze@gmail.com'];
+      allow create: if request.auth != null;
+      allow update, delete: if false;
+    }
+
+    // Events — anyone can read, admins can manage
+    match /events/{eventId} {
+      allow read: if true;
+      allow create, update, delete: if request.auth != null &&
+        request.auth.token.email in ['princebolajibreeze@gmail.com'];
+    }
+
+    // Event RSVPs — anyone can create, admins can read/manage
+    match /events/{eventId}/rsvps/{rsvpId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if request.auth != null &&
+        request.auth.token.email in ['princebolajibreeze@gmail.com'];
+    }
+
+    // Blog posts — anyone can read, admins can manage
+    match /blog_posts/{postId} {
+      allow read: if true;
+      allow create, update, delete: if request.auth != null &&
+        request.auth.token.email in ['princebolajibreeze@gmail.com'];
+    }
+
+    // Sponsors — anyone can read, admins can manage
+    match /sponsors/{sponsorId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if request.auth != null &&
+        request.auth.token.email in ['princebolajibreeze@gmail.com'];
+    }
+
+    // Deny everything else by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found — Big Sister Foundation</title>
+  <meta name="description" content="The page you're looking for doesn't exist. Let's get you back on track.">
+  <meta name="theme-color" content="#2D5E40">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cellipse cx='50' cy='35' rx='35' ry='30' fill='%232D5E40' opacity='0.85'/%3E%3Cellipse cx='30' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cellipse cx='70' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cpath d='M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z' fill='%233A2A1F' opacity='0.8'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #2D5E40;
+      --green-dark: #1E3F2B;
+      --brown: #3A2A1F;
+      --terra: #C2734C;
+      --gold: #D4A96A;
+      --sage: #8BAF8E;
+      --cream: #FFF8F0;
+      --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.2rem);
+      line-height: 1.7;
+      color: var(--brown);
+      background: var(--cream);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a { color: inherit; }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-weight: 500;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      font-size: clamp(3rem, 6vw + 1rem, 8rem);
+      color: var(--green);
+    }
+
+    h2 {
+      font-family: var(--font-serif);
+      font-weight: 500;
+      font-size: clamp(1.5rem, 2vw + 0.5rem, 2.2rem);
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    .error-page {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem clamp(20px, 4vw, 80px);
+      text-align: center;
+    }
+
+    .error-content {
+      max-width: 560px;
+    }
+
+    .error-code {
+      opacity: 0.08;
+      margin-bottom: -1.5rem;
+      position: relative;
+      z-index: 0;
+    }
+
+    .error-message {
+      position: relative;
+      z-index: 1;
+    }
+
+    .error-desc {
+      font-size: 0.95rem;
+      color: rgba(58,42,31,0.6);
+      margin-bottom: 2rem;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .error-links {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.5rem;
+      border-radius: 100px;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+    }
+
+    .btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    }
+
+    .btn--green {
+      background: var(--green);
+      color: var(--cream);
+    }
+
+    .btn--ghost {
+      background: transparent;
+      color: var(--brown);
+      border: 1.5px solid rgba(58,42,31,0.2);
+    }
+
+    .btn--ghost:hover {
+      border-color: var(--brown);
+      background: rgba(58,42,31,0.04);
+    }
+
+    .quick-pages {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      justify-content: center;
+    }
+
+    .quick-pages a {
+      padding: 0.35rem 0.85rem;
+      border-radius: 100px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: rgba(58,42,31,0.04);
+      color: rgba(58,42,31,0.55);
+      text-decoration: none;
+      transition: all 0.2s var(--ease);
+    }
+
+    .quick-pages a:hover {
+      background: rgba(45,94,64,0.08);
+      color: var(--green);
+    }
+
+    /* Tree illustration */
+    .error-tree {
+      margin: 0 auto 1.5rem;
+      width: 80px;
+      height: 100px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .btn { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="error-page">
+    <div class="error-content">
+      <!-- Little wilting tree -->
+      <svg class="error-tree" viewBox="0 0 80 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M38 65 Q37 78 36 92 Q40 93 44 92 Q43 78 42 65 Z" fill="#3A2A1F" opacity="0.6"/>
+        <ellipse cx="40" cy="38" rx="18" ry="15" fill="#8BAF8E" opacity="0.3"/>
+        <ellipse cx="30" cy="44" rx="14" ry="12" fill="#8BAF8E" opacity="0.25"/>
+        <ellipse cx="50" cy="44" rx="14" ry="12" fill="#8BAF8E" opacity="0.25"/>
+        <text x="40" y="42" text-anchor="middle" font-size="16" fill="#2D5E40" opacity="0.4">?</text>
+      </svg>
+
+      <h1 class="error-code">404</h1>
+      <div class="error-message">
+        <h2>This page doesn't exist</h2>
+        <p class="error-desc">The page you're looking for may have been moved or removed. Let's get you somewhere useful.</p>
+      </div>
+
+      <div class="error-links">
+        <a href="/" class="btn btn--green">Go Home</a>
+        <a href="/docs/" class="btn btn--ghost">Help Center</a>
+      </div>
+
+      <div class="quick-pages">
+        <a href="/ledger/">Ledger</a>
+        <a href="/ideas/">Ideas</a>
+        <a href="/scholars/">Scholars</a>
+        <a href="/forums/">Forums</a>
+        <a href="/volunteer/">Volunteer</a>
+        <a href="/donate/">Give</a>
+        <a href="/events/">Events</a>
+        <a href="/blog/">Blog</a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
