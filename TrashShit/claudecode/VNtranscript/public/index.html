@@ -6,6 +6,11 @@
   <title>Big Sister Foundation — Rooted. Present. Protective.</title>
   <meta name="description" content="Big Sister Foundation invests in vulnerable children in Lagos — not as recipients, but as future leaders who will lift the communities around them.">
   <meta name="theme-color" content="#2D5E40">
+  <link rel="canonical" href="https://public-mu-steel.vercel.app/">
+  <meta property="og:url" content="https://public-mu-steel.vercel.app/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Big Sister Foundation — Rooted. Present. Protective.">
+  <meta name="twitter:description" content="Big Sister Foundation invests in vulnerable children in Lagos — not as recipients, but as future leaders who will lift the communities around them.">
 
   <meta property="og:title" content="Big Sister Foundation — Rooted. Present. Protective.">
   <meta property="og:description" content="Breaking cycles for vulnerable children in Lagos. Every child we reach becomes someone who raises their community.">
@@ -739,8 +744,8 @@
     .tree-bg {
       position: fixed;
       top: 0;
-      right: 5%;
-      width: 200px;
+      right: -2vw;
+      width: clamp(300px, 35vw, 500px);
       height: 100vh;
       pointer-events: none;
       z-index: 50;
@@ -752,6 +757,7 @@
     .tree-bg svg {
       width: 100%;
       height: 90vh;
+      filter: drop-shadow(0 0 20px rgba(45,94,64,0.08));
     }
 
     /* === GROWTH STAGE ELEMENTS === */
@@ -806,8 +812,8 @@
       stroke: var(--brown);
       stroke-linecap: round;
       stroke-linejoin: round;
-      opacity: 0.2;
-      stroke-width: 3;
+      opacity: 0.28;
+      stroke-width: 5;
     }
 
     /* Roots spread from base */
@@ -815,8 +821,8 @@
       fill: none;
       stroke: var(--brown);
       stroke-linecap: round;
-      stroke-width: 1.5;
-      opacity: 0.15;
+      stroke-width: 3;
+      opacity: 0.22;
     }
 
     /* Branches fork out from trunk */
@@ -825,8 +831,8 @@
       stroke: #2D5E40;
       stroke-linecap: round;
       stroke-linejoin: round;
-      stroke-width: 2;
-      opacity: 0.18;
+      stroke-width: 3.5;
+      opacity: 0.25;
     }
 
     /* Small leaf buds on branches */
@@ -851,7 +857,7 @@
       transform: scale(0.5);
     }
     .tree-leaf.is-shown {
-      opacity: 0.15;
+      opacity: 0.22;
       transform: scale(1);
     }
 
@@ -866,7 +872,7 @@
         stroke-dashoffset: 0 !important;
       }
       .tree-bud { opacity: 0.18 !important; transform: scale(1) !important; }
-      .tree-leaf { opacity: 0.15 !important; transform: scale(1) !important; }
+      .tree-leaf { opacity: 0.22 !important; transform: scale(1) !important; }
     }
       /* =============================================
        MOBILE HAMBURGER MENU
@@ -950,6 +956,27 @@
       }
     }
   </style>
+
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "NGO",
+  "name": "Big Sister Foundation",
+  "description": "Big Sister Foundation invests in vulnerable children in Lagos — not as recipients, but as future leaders who will lift the communities around them.",
+  "url": "https://public-mu-steel.vercel.app",
+  "logo": "https://public-mu-steel.vercel.app/og-image.svg",
+  "foundingLocation": {
+    "@type": "Place",
+    "name": "Lagos, Nigeria"
+  },
+  "sameAs": [],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "email": "princebolajibreeze@gmail.com",
+    "contactType": "general"
+  }
+}
+</script>
 </head>
 <body>
 
@@ -1053,7 +1080,7 @@
       <p class="hero__sub">Big Sister Foundation invests in vulnerable children in Lagos — not as recipients, but as the future leaders who will lift the communities around them.</p>
       <p class="hero__tagline">Rooted &middot; Present &middot; Protective</p>
       <div class="hero__buttons">
-        <a href="https://wa.me/2348000000000" class="btn btn--terra">Let's Talk</a>
+        <a href="mailto:princebolajibreeze@gmail.com?subject=Let's Talk — Big Sister Foundation" class="btn btn--terra">Let's Talk</a>
         <a href="#founder" class="btn btn--ghost">Our Story</a>
       </div>
     </div>
@@ -1526,5 +1553,6 @@
   });
 })();
 </script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

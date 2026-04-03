@@ -1,21 +1,126 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Invites: public read (IDs are unguessable), auth write
-    match /invites/{inviteId} {
+
+    // ── Public pages: read-only for visitors ──
+    match /scholars/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /schools/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /ledger/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /events/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /goals/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /forums/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /forum_replies/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /announcements/{docId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
 
-    // Volunteer requests: public create, auth read/update/delete
+    // ── Public forms: visitors can create, only auth can read/modify ──
     match /volunteer_requests/{docId} {
       allow create: if true;
       allow read, update, delete: if request.auth != null;
     }
+    match /invites/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /donations/{docId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if request.auth != null;
+    }
+    match /ideas/{docId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if request.auth != null;
+    }
+    match /votes/{docId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if request.auth != null;
+    }
+    match /forum_threads/{docId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if request.auth != null;
 
-    // All other collections: authenticated users only
-    match /{document=**} {
+      match /replies/{replyId} {
+        allow read: if true;
+        allow create: if true;
+        allow update: if true;
+        allow delete: if request.auth != null;
+      }
+    }
+
+    // ── Sponsor dashboard: public read for sponsor lookups ──
+    match /sponsor_notes/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // ── Admin-only collections ──
+    match /admins/{docId} {
       allow read, write: if request.auth != null;
+    }
+    match /users/{docId} {
+      allow read, write: if request.auth != null;
+    }
+    match /audit_log/{docId} {
+      allow read, write: if request.auth != null;
+    }
+    match /volunteers/{docId} {
+      allow read, write: if request.auth != null;
+    }
+    match /teams/{docId} {
+      allow read, write: if request.auth != null;
+    }
+    match /team_forums/{docId} {
+      allow read, write: if request.auth != null;
+    }
+    match /team_forum_replies/{docId} {
+      allow read, write: if request.auth != null;
+    }
+    match /scholar_expenses/{docId} {
+      allow read, write: if request.auth != null;
+    }
+    match /school_notes/{docId} {
+      allow read, write: if request.auth != null;
+    }
+    match /ledger_requests/{docId} {
+      allow read, write: if request.auth != null;
+    }
+    match /outreach/{docId} {
+      allow read, write: if request.auth != null;
+    }
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // ── Deny everything else by default ──
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

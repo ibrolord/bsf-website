@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /sponsor/dashboard.html
+
+Sitemap: https://public-mu-steel.vercel.app/sitemap.xml

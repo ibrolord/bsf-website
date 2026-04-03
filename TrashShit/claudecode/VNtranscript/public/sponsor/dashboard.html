@@ -1872,8 +1872,9 @@
           desc.className = 'goal-card__desc';
           desc.textContent = goal.description || '';
           card.appendChild(desc);
-          var target = goal.targetAmount || 0;
-          var raised = goal.raisedAmount || 0;
+          var isNonFinancial = goal.goalType && goal.goalType !== 'financial';
+          var target = isNonFinancial ? (goal.targetCapacity || 0) : (goal.targetAmount || 0);
+          var raised = isNonFinancial ? (goal.raisedCapacity || 0) : (goal.raisedAmount || 0);
           var pct = target > 0 ? Math.min(100, Math.round((raised / target) * 100)) : 0;
           var progress = document.createElement('div');
           progress.className = 'goal-card__progress';
@@ -1888,22 +1889,40 @@
           amounts.className = 'goal-card__amounts';
           var raisedSpan = document.createElement('span');
           var raisedStrong = document.createElement('strong');
-          raisedStrong.textContent = 'NGN ' + Number(raised).toLocaleString();
-          raisedSpan.appendChild(raisedStrong);
-          raisedSpan.appendChild(document.createTextNode(' raised'));
+          if (isNonFinancial) {
+            var unitLabels = { 'volunteer': 'volunteers signed up', 'outreach': (goal.unit || 'people') + ' reached', 'mentoring': 'mentors enrolled' };
+            raisedStrong.textContent = raised;
+            raisedSpan.appendChild(raisedStrong);
+            raisedSpan.appendChild(document.createTextNode(' ' + (unitLabels[goal.goalType] || (goal.unit || 'units') + ' pledged')));
+          } else {
+            raisedStrong.textContent = 'NGN ' + Number(raised).toLocaleString();
+            raisedSpan.appendChild(raisedStrong);
+            raisedSpan.appendChild(document.createTextNode(' raised'));
+          }
           amounts.appendChild(raisedSpan);
           var targetSpan = document.createElement('span');
-          targetSpan.textContent = 'Goal: NGN ' + Number(target).toLocaleString();
+          if (isNonFinancial) {
+            targetSpan.textContent = 'Goal: ' + target + ' ' + (goal.unit || 'units');
+          } else {
+            targetSpan.textContent = 'Goal: NGN ' + Number(target).toLocaleString();
+          }
           amounts.appendChild(targetSpan);
           progress.appendChild(amounts);
           card.appendChild(progress);
           var btn = document.createElement('button');
           btn.className = 'goal-card__btn';
-          btn.textContent = 'Contribute to This Goal';
-          btn.onclick = function() {
-            var remaining = target - raised;
-            window.location.href = '/donate/?goal=' + encodeURIComponent(goal.title || '') + '&amount=' + Math.max(0, remaining);
-          };
+          if (isNonFinancial) {
+            btn.textContent = 'Pledge for This Goal';
+            btn.onclick = function() {
+              window.location.href = '/volunteer/?goal=' + encodeURIComponent(goal.id || goal.title || '');
+            };
+          } else {
+            btn.textContent = 'Contribute to This Goal';
+            btn.onclick = function() {
+              var remaining = target - raised;
+              window.location.href = '/donate/?goal=' + encodeURIComponent(goal.title || '') + '&amount=' + Math.max(0, remaining);
+            };
+          }
           card.appendChild(btn);
           grid.appendChild(card);
         });
@@ -1956,5 +1975,6 @@
   });
 })();
 </script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

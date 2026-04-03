@@ -10,6 +10,11 @@
   <meta property="og:type" content="website">
   <meta property="og:image" content="/og-image.svg">
   <meta name="theme-color" content="#2D5E40">
+  <link rel="canonical" href="https://public-mu-steel.vercel.app/scholars/">
+  <meta property="og:url" content="https://public-mu-steel.vercel.app/scholars/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Scholars Tracker — Big Sister Foundation">
+  <meta name="twitter:description" content="Tracking progress and celebrating every sponsored child. Big Sister Foundation's Scholars Tracker.">
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cellipse cx='50' cy='35' rx='35' ry='30' fill='%232D5E40' opacity='0.85'/%3E%3Cellipse cx='30' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cellipse cx='70' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cpath d='M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z' fill='%233A2A1F' opacity='0.8'/%3E%3C/svg%3E">
 
@@ -868,6 +873,137 @@
     .loading-skeleton__text {
       font-size: 0.9rem;
     }
+
+    /* =============================================
+       SCHOLAR PROFILE VIEW
+    ============================================= */
+    .scholar-profile { display: none; }
+    .scholar-profile.is-active { display: block; }
+
+    .profile-back {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-size: 0.88rem; font-weight: 600; color: rgba(255,248,240,0.7);
+      text-decoration: none; margin-bottom: 1.25rem; transition: color 0.2s;
+    }
+    .profile-back:hover { color: var(--cream); }
+    .profile-back__arrow { font-size: 1.1rem; }
+
+    .profile-hero {
+      padding-top: calc(60px + var(--section-pad));
+      padding-bottom: var(--section-pad);
+      background: var(--green-dark); color: var(--cream);
+    }
+    .profile-hero .eyebrow { color: var(--gold); }
+    .profile-hero__name {
+      font-family: var(--font-serif); font-size: clamp(2.2rem, 4vw + 0.5rem, 3.5rem);
+      font-weight: 500; line-height: 1.08; letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+    .profile-hero__badges {
+      display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+    }
+    .profile-hero__school {
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.15rem);
+      color: rgba(255,248,240,0.7); margin-top: 0.75rem;
+    }
+
+    .profile-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 2.5rem;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .profile-layout { grid-template-columns: 1fr; }
+    }
+
+    .profile-main {}
+
+    .profile-section {
+      margin-bottom: 2.5rem;
+    }
+    .profile-section__title {
+      font-family: var(--font-serif); font-size: clamp(1.3rem, 1vw + 0.8rem, 1.7rem);
+      font-weight: 500; line-height: 1.2; margin-bottom: 1rem; color: var(--brown);
+    }
+    .profile-section__subtitle {
+      font-family: var(--font-serif); font-size: 1.1rem; font-weight: 500;
+      color: var(--terra); margin-bottom: 0.5rem; margin-top: 1.25rem;
+    }
+    .profile-section__text {
+      font-size: 0.95rem; line-height: 1.8; color: rgba(58,42,31,0.75);
+    }
+    .profile-section__empty {
+      font-size: 0.9rem; color: rgba(58,42,31,0.35); font-style: italic;
+    }
+
+    /* Investment card */
+    .profile-invest-total {
+      background: #fff; border-radius: 16px; padding: 1.5rem 2rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.04); margin-bottom: 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .profile-invest-total__label {
+      font-size: 0.78rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.06em; color: rgba(58,42,31,0.5);
+    }
+    .profile-invest-total__value {
+      font-family: var(--font-serif); font-size: clamp(1.6rem, 2vw + 0.3rem, 2.2rem);
+      font-weight: 600; color: var(--green-dark);
+    }
+    .profile-invest-breakdown {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 0.75rem;
+    }
+    .profile-invest-cat {
+      background: #fff; border-radius: 12px; padding: 1rem 1.25rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+    }
+    .profile-invest-cat__label {
+      font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.06em; color: rgba(58,42,31,0.45); margin-bottom: 0.2rem;
+    }
+    .profile-invest-cat__value {
+      font-family: var(--font-serif); font-size: 1.15rem; font-weight: 500;
+      color: var(--brown);
+    }
+
+    /* Sidebar */
+    .profile-sidebar {
+      position: sticky; top: calc(60px + 2rem);
+    }
+    .profile-sidebar-card {
+      background: #fff; border-radius: 16px; padding: 1.5rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+    }
+    .profile-sidebar-card__title {
+      font-family: var(--font-serif); font-size: 1.15rem; font-weight: 500;
+      margin-bottom: 1rem; padding-bottom: 0.75rem;
+      border-bottom: 1.5px solid rgba(58,42,31,0.06);
+    }
+    .profile-detail-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 0.6rem 0; border-bottom: 1px solid rgba(58,42,31,0.04);
+    }
+    .profile-detail-row:last-child { border-bottom: none; }
+    .profile-detail-row__label {
+      font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.06em; color: rgba(58,42,31,0.45);
+    }
+    .profile-detail-row__value {
+      font-size: 0.9rem; color: var(--brown); text-align: right; font-weight: 500;
+    }
+    .profile-detail-row__chips {
+      display: flex; flex-wrap: wrap; gap: 0.3rem; justify-content: flex-end;
+      max-width: 180px;
+    }
+
+    /* Scholar rows / cards clickable */
+    .scholars-table tr[data-scholar-id] { cursor: pointer; }
+    .scholars-table tr[data-scholar-id]:hover td { background: rgba(45,94,64,0.05); }
+    .scholar-card[data-scholar-id] { cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; border: 1.5px solid transparent; }
+    .scholar-card[data-scholar-id]:hover { border-color: rgba(45,94,64,0.2); box-shadow: 0 6px 28px rgba(0,0,0,0.07); }
   </style>
 </head>
 <body>
@@ -888,8 +1024,8 @@
     </ul>
   </nav>
 
-  <!-- HERO -->
-  <section class="scholars-hero">
+  <!-- HERO (listing) -->
+  <section class="scholars-hero" id="listing-hero">
     <div class="container">
       <p class="eyebrow">Our Scholars</p>
       <h1>Every Child Has a Name.<br>Here, They Have a Future.</h1>
@@ -897,8 +1033,59 @@
     </div>
   </section>
 
-  <!-- MAIN CONTENT -->
-  <section class="section-pad">
+  <!-- SCHOLAR PROFILE VIEW (hidden by default, shown when ?id= is present) -->
+  <div class="scholar-profile" id="scholar-profile">
+    <section class="profile-hero" id="profile-hero">
+      <div class="container">
+        <a href="/scholars/" class="profile-back"><span class="profile-back__arrow">&larr;</span> Back to all scholars</a>
+        <p class="eyebrow" id="profile-pathway-eyebrow"></p>
+        <div class="profile-hero__name" id="profile-name"></div>
+        <div class="profile-hero__badges" id="profile-badges"></div>
+        <div class="profile-hero__school" id="profile-school"></div>
+      </div>
+    </section>
+    <section class="section-pad">
+      <div class="container">
+        <div class="profile-layout">
+          <div class="profile-main">
+            <!-- Story -->
+            <div class="profile-section" id="profile-story-section">
+              <h2 class="profile-section__title">Their Story</h2>
+              <div id="profile-story"></div>
+              <h3 class="profile-section__subtitle" id="profile-bg-subtitle" style="display:none;">Background</h3>
+              <div id="profile-background"></div>
+            </div>
+            <!-- Goals -->
+            <div class="profile-section" id="profile-goals-section">
+              <h2 class="profile-section__title">Aspirations</h2>
+              <div id="profile-goals"></div>
+            </div>
+            <!-- Investment -->
+            <div class="profile-section" id="profile-invest-section">
+              <h2 class="profile-section__title">Investment in This Scholar</h2>
+              <div class="profile-invest-total" id="profile-invest-total">
+                <div>
+                  <div class="profile-invest-total__label">Total Invested</div>
+                  <div class="profile-invest-total__value" id="profile-invest-value">&#8358;0</div>
+                </div>
+              </div>
+              <div class="profile-invest-breakdown" id="profile-invest-breakdown"></div>
+            </div>
+          </div>
+          <!-- Sidebar -->
+          <div class="profile-sidebar">
+            <div class="profile-sidebar-card">
+              <h3 class="profile-sidebar-card__title">Details</h3>
+              <div id="profile-details-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- MAIN CONTENT (listing) -->
+  <section class="section-pad" id="listing-section">
     <div class="container">
 
       <!-- DASHBOARD -->
@@ -1065,15 +1252,9 @@
         <button class="modal__close" id="modal-scholar-close">&times;</button>
       </div>
       <form id="scholar-form">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="scholar-firstName">First Name</label>
-            <input type="text" id="scholar-firstName" placeholder="e.g. Adaeze" required>
-          </div>
-          <div class="form-group">
-            <label for="scholar-lastInitial">Last Initial</label>
-            <input type="text" id="scholar-lastInitial" placeholder="e.g. O" maxlength="1" required>
-          </div>
+        <div class="form-group">
+          <label for="scholar-name">Full Name</label>
+          <input type="text" id="scholar-name" placeholder="e.g. Adaeze O." required>
         </div>
 
         <div class="form-group school-select-group">
@@ -1675,7 +1856,7 @@
               if (schoolDataItem.managed) {
                 toggleSchoolDetail(schoolDataItem.managed, schoolDataItem);
               } else {
-                showToast('This school is not yet managed. Add it as a managed school first.', 'error');
+                if(confirm('This school is not yet managed. Would you like to go to the admin panel to add it?')){window.location.href='/admin/';}
               }
             });
           })(sd);
@@ -2163,7 +2344,7 @@
           if (st && s.status !== st) return false;
           if (pf && s.performance !== pf) return false;
           if (q) {
-            var displayName = (s.firstName + ' ' + s.lastInitial + '.').toLowerCase();
+            var displayName = (s.name || (s.firstName ? s.firstName + ' ' + s.lastInitial + '.' : '(No name)')).toLowerCase();
             var school = (s.school || '').toLowerCase();
             var classGrade = (s.classGrade || '').toLowerCase();
             if (displayName.indexOf(q) === -1 && school.indexOf(q) === -1 && classGrade.indexOf(q) === -1) return false;
@@ -2179,8 +2360,8 @@
         return list.slice().sort(function (a, b) {
           var va, vb;
           if (field === 'name') {
-            va = (a.firstName + ' ' + a.lastInitial).toLowerCase();
-            vb = (b.firstName + ' ' + b.lastInitial).toLowerCase();
+            va = (a.name || (a.firstName ? a.firstName + ' ' + a.lastInitial : '')).toLowerCase();
+            vb = (b.name || (b.firstName ? b.firstName + ' ' + b.lastInitial : '')).toLowerCase();
           } else if (field === 'performance') {
             va = performanceRank[a.performance] || 0;
             vb = performanceRank[b.performance] || 0;
@@ -2252,7 +2433,7 @@
         deleteBtn.textContent = '\uD83D\uDDD1\uFE0F';
         deleteBtn.addEventListener('click', function (e) {
           e.stopPropagation();
-          deleteScholar(scholar.id, scholar.firstName + ' ' + scholar.lastInitial + '.');
+          deleteScholar(scholar.id, scholar.name || (scholar.firstName ? scholar.firstName + ' ' + scholar.lastInitial + '.' : '(No name)'));
         });
 
         var auditBtn = document.createElement('button');
@@ -2288,6 +2469,10 @@
         clearChildren(scholarsBody);
         sorted.forEach(function (s) {
           var tr = document.createElement('tr');
+          tr.setAttribute('data-scholar-id', s.id);
+          tr.addEventListener('click', function () {
+            window.location.href = '/scholars/?id=' + encodeURIComponent(s.id);
+          });
 
           var tdName = document.createElement('td');
           tdName.style.fontWeight = '600';
@@ -2357,6 +2542,12 @@
         sorted.forEach(function (s) {
           var card = document.createElement('div');
           card.className = 'scholar-card';
+          card.setAttribute('data-scholar-id', s.id);
+          card.addEventListener('click', function (e) {
+            // Don't navigate if clicking action buttons
+            if (e.target.closest('.scholar-card__actions') || e.target.closest('.expense-btn')) return;
+            window.location.href = '/scholars/?id=' + encodeURIComponent(s.id);
+          });
 
           var header = document.createElement('div');
           header.className = 'scholar-card__header';
@@ -3587,9 +3778,277 @@
           });
       }
 
+      // --- SCHOLAR PROFILE VIEW ---
+
+      var profileScholarId = (function () {
+        var params = new URLSearchParams(window.location.search);
+        return params.get('id') || null;
+      })();
+
+      function showProfileView() {
+        var listingHero = document.getElementById('listing-hero');
+        var listingSection = document.getElementById('listing-section');
+        var profileEl = document.getElementById('scholar-profile');
+        if (listingHero) listingHero.style.display = 'none';
+        if (listingSection) listingSection.style.display = 'none';
+        if (profileEl) profileEl.classList.add('is-active');
+        document.title = 'Scholar Profile \u2014 Big Sister Foundation';
+      }
+
+      function getDisplayName(s) {
+        if (s.firstName) {
+          return s.firstName + ' ' + (s.lastInitial ? s.lastInitial + '.' : '');
+        }
+        if (s.name) {
+          var parts = s.name.trim().split(/\s+/);
+          if (parts.length > 1) {
+            return parts[0] + ' ' + parts[parts.length - 1].charAt(0) + '.';
+          }
+          return parts[0];
+        }
+        return 'Scholar';
+      }
+
+      function makeTextNode(parent, className, text) {
+        var el = document.createElement('p');
+        el.className = className;
+        el.textContent = text;
+        parent.appendChild(el);
+        return el;
+      }
+
+      function renderProfileView(scholar, expenses) {
+        var displayName = getDisplayName(scholar);
+        document.title = displayName + ' \u2014 Big Sister Foundation';
+
+        // Hero
+        document.getElementById('profile-pathway-eyebrow').textContent = getPathwayLabel(scholar.pathway);
+        document.getElementById('profile-name').textContent = displayName;
+
+        var badgesEl = document.getElementById('profile-badges');
+        clearChildren(badgesEl);
+        badgesEl.appendChild(createStatusBadge(scholar.status));
+        badgesEl.appendChild(createPerfBadge(scholar.performance));
+
+        document.getElementById('profile-school').textContent = scholar.school || '';
+
+        // Story
+        var storyDiv = document.getElementById('profile-story');
+        clearChildren(storyDiv);
+        if (scholar.story) {
+          makeTextNode(storyDiv, 'profile-section__text', scholar.story);
+        } else {
+          makeTextNode(storyDiv, 'profile-section__empty', 'This scholar\'s story has not been shared yet.');
+        }
+
+        var bgSubtitle = document.getElementById('profile-bg-subtitle');
+        var bgDiv = document.getElementById('profile-background');
+        clearChildren(bgDiv);
+        if (scholar.background) {
+          bgSubtitle.style.display = '';
+          makeTextNode(bgDiv, 'profile-section__text', scholar.background);
+        } else {
+          bgSubtitle.style.display = 'none';
+        }
+
+        // Goals
+        var goalsDiv = document.getElementById('profile-goals');
+        clearChildren(goalsDiv);
+        if (scholar.goals) {
+          makeTextNode(goalsDiv, 'profile-section__text', scholar.goals);
+        } else {
+          makeTextNode(goalsDiv, 'profile-section__empty', 'Goals and aspirations have not been recorded yet.');
+        }
+
+        // Investment
+        var totalSpend = 0;
+        var catTotals = {};
+        for (var i = 0; i < expenses.length; i++) {
+          var ex = expenses[i];
+          totalSpend += (ex.amount || 0);
+          var cat = ex.category || 'other';
+          catTotals[cat] = (catTotals[cat] || 0) + (ex.amount || 0);
+        }
+
+        document.getElementById('profile-invest-value').textContent = totalSpend > 0 ? formatNairaFull(totalSpend) : '\u20A60';
+
+        var breakdownEl = document.getElementById('profile-invest-breakdown');
+        clearChildren(breakdownEl);
+        if (totalSpend > 0) {
+          var cats = Object.keys(catTotals).sort(function (a, b) { return catTotals[b] - catTotals[a]; });
+          cats.forEach(function (catKey) {
+            var card = document.createElement('div');
+            card.className = 'profile-invest-cat';
+            var label = document.createElement('div');
+            label.className = 'profile-invest-cat__label';
+            label.textContent = expenseCategoryLabels[catKey] || catKey;
+            card.appendChild(label);
+            var val = document.createElement('div');
+            val.className = 'profile-invest-cat__value';
+            val.textContent = formatNairaFull(catTotals[catKey]);
+            card.appendChild(val);
+            breakdownEl.appendChild(card);
+          });
+        } else {
+          makeTextNode(breakdownEl, 'profile-section__empty', 'No expenses recorded for this scholar yet.');
+        }
+
+        // Sidebar details
+        var detailsList = document.getElementById('profile-details-list');
+        clearChildren(detailsList);
+
+        var details = [];
+
+        if (scholar.age) {
+          details.push({ label: 'Age', value: scholar.age + ' years' });
+        } else if (scholar.dateOfBirth) {
+          var dob;
+          if (scholar.dateOfBirth.toDate) dob = scholar.dateOfBirth.toDate();
+          else dob = new Date(scholar.dateOfBirth);
+          if (!isNaN(dob.getTime())) {
+            var ageDiff = new Date().getFullYear() - dob.getFullYear();
+            details.push({ label: 'Age', value: ageDiff + ' years' });
+          }
+        }
+
+        if (scholar.gender) {
+          details.push({ label: 'Gender', value: scholar.gender.charAt(0).toUpperCase() + scholar.gender.slice(1) });
+        }
+
+        if (scholar.classGrade) {
+          details.push({ label: 'Class / Grade', value: scholar.classGrade });
+        }
+
+        if (scholar.enrolledDate) {
+          var enrolled;
+          if (scholar.enrolledDate.toDate) enrolled = scholar.enrolledDate.toDate();
+          else enrolled = new Date(scholar.enrolledDate);
+          if (!isNaN(enrolled.getTime())) {
+            details.push({ label: 'Enrolled', value: enrolled.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }) });
+          }
+        }
+
+        details.push({ label: 'Tenure', value: computeTenure(scholar.enrolledDate) });
+        details.push({ label: 'Performance', value: '', badge: true, badgeType: 'perf' });
+        details.push({ label: 'Status', value: '', badge: true, badgeType: 'status' });
+
+        if (scholar.additionalSupport) {
+          details.push({ label: 'Support Notes', value: scholar.additionalSupport });
+        }
+
+        details.forEach(function (d) {
+          var row = document.createElement('div');
+          row.className = 'profile-detail-row';
+
+          var labelEl = document.createElement('div');
+          labelEl.className = 'profile-detail-row__label';
+          labelEl.textContent = d.label;
+          row.appendChild(labelEl);
+
+          if (d.badge && d.badgeType === 'perf') {
+            row.appendChild(createPerfBadge(scholar.performance));
+          } else if (d.badge && d.badgeType === 'status') {
+            row.appendChild(createStatusBadge(scholar.status));
+          } else {
+            var valEl = document.createElement('div');
+            valEl.className = 'profile-detail-row__value';
+            valEl.textContent = d.value;
+            row.appendChild(valEl);
+          }
+          detailsList.appendChild(row);
+        });
+
+        // Extracurriculars as chips
+        if (scholar.extracurriculars && scholar.extracurriculars.length > 0) {
+          var extraRow = document.createElement('div');
+          extraRow.className = 'profile-detail-row';
+          extraRow.style.flexDirection = 'column';
+          extraRow.style.gap = '0.4rem';
+
+          var extraLabel = document.createElement('div');
+          extraLabel.className = 'profile-detail-row__label';
+          extraLabel.textContent = 'Extracurriculars';
+          extraRow.appendChild(extraLabel);
+
+          var chipWrap = document.createElement('div');
+          chipWrap.className = 'profile-detail-row__chips';
+          chipWrap.style.justifyContent = 'flex-start';
+          scholar.extracurriculars.forEach(function (tag) {
+            var chip = document.createElement('span');
+            chip.className = 'chip';
+            chip.textContent = tag;
+            chipWrap.appendChild(chip);
+          });
+          extraRow.appendChild(chipWrap);
+          detailsList.appendChild(extraRow);
+        }
+      }
+
+      function loadProfileData(scholarId) {
+        showProfileView();
+        db.collection('scholars').doc(scholarId).get()
+          .then(function (doc) {
+            if (!doc.exists) {
+              document.getElementById('profile-name').textContent = 'Scholar Not Found';
+              document.getElementById('profile-pathway-eyebrow').textContent = '';
+              document.getElementById('profile-school').textContent = 'This scholar could not be found. They may have been removed.';
+              return;
+            }
+            var data = doc.data();
+            var scholar = {
+              id: doc.id,
+              firstName: data.firstName || '',
+              lastInitial: data.lastInitial || '',
+              name: data.name || '',
+              school: data.school || '',
+              classGrade: data.classGrade || '',
+              pathway: data.pathway || '',
+              enrolledDate: data.enrolledDate || null,
+              performance: data.performance || 'good',
+              extracurriculars: data.extracurriculars || [],
+              additionalSupport: data.additionalSupport || '',
+              status: data.status || 'active',
+              story: data.story || '',
+              background: data.background || '',
+              goals: data.goals || '',
+              age: data.age || null,
+              dateOfBirth: data.dateOfBirth || null,
+              gender: data.gender || ''
+            };
+
+            return db.collection('scholar_expenses')
+              .where('scholarId', '==', scholarId)
+              .get()
+              .then(function (snapshot) {
+                var expenses = [];
+                snapshot.forEach(function (expDoc) {
+                  var expData = expDoc.data();
+                  expenses.push({
+                    id: expDoc.id,
+                    amount: expData.amount || 0,
+                    category: expData.category || 'other',
+                    description: expData.description || '',
+                    date: expData.date || null
+                  });
+                });
+                renderProfileView(scholar, expenses);
+              });
+          })
+          .catch(function (err) {
+            console.error('Error loading profile:', err);
+            document.getElementById('profile-name').textContent = 'Error Loading Profile';
+            document.getElementById('profile-school').textContent = 'Please try again later or go back to the scholars listing.';
+          });
+      }
+
       // --- INIT ---
-      fetchScholars();
-      updateAuthUI();
+      if (profileScholarId) {
+        loadProfileData(profileScholarId);
+        updateAuthUI();
+      } else {
+        fetchScholars();
+        updateAuthUI();
+      }
 
     })();
   </script>
@@ -3635,5 +4094,6 @@
   });
 })();
 </script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
