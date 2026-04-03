@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Help Center — Big Sister Foundation</title>
-  <meta name="description" content="Step-by-step guides for everything on the Big Sister Foundation platform. Learn how to use the Ideas Board, Ledger, Scholars Tracker, Forums, and more.">
+  <meta name="description" content="Step-by-step guides for everything on the Big Sister Foundation platform. Learn how to use the Ideas Board, Ledger, Scholars Tracker, Forums, Donations, Events, and more.">
   <meta name="theme-color" content="#2D5E40">
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cellipse cx='50' cy='35' rx='35' ry='30' fill='%232D5E40' opacity='0.85'/%3E%3Cellipse cx='30' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cellipse cx='70' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cpath d='M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z' fill='%233A2A1F' opacity='0.8'/%3E%3C/svg%3E">
@@ -482,13 +482,33 @@
       font-size: 0.9rem; color: rgba(58,42,31,0.7); line-height: 1.7;
     }
 
+    /* FLOW DIAGRAM */
+    .flow-diagram {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.5rem; flex-wrap: wrap; margin: 1.5rem 0;
+      padding: 1.5rem; background: #fff; border-radius: 12px;
+      border: 1.5px solid rgba(58,42,31,0.08);
+    }
+    .flow-node {
+      padding: 0.5rem 0.85rem; border-radius: 8px;
+      font-size: 0.75rem; font-weight: 600; text-align: center;
+      min-width: 90px;
+    }
+    .flow-node--green { background: rgba(45,94,64,0.08); color: var(--green); }
+    .flow-node--terra { background: rgba(194,115,76,0.08); color: var(--terra); }
+    .flow-node--gold { background: rgba(212,169,106,0.1); color: #8a6d2f; }
+    .flow-node--sage { background: rgba(139,175,142,0.12); color: #3d6b42; }
+    .flow-arrow {
+      font-size: 1.1rem; color: rgba(58,42,31,0.25); flex-shrink: 0;
+    }
+
     /* FOOTER */
     .footer { background: var(--brown); color: rgba(255,248,240,0.6); padding: 3rem 0; }
     .footer__layout { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 2rem; }
     .footer__brand-name { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; color: var(--cream); margin-bottom: 0.25rem; }
     .footer__tagline { font-size: 0.85rem; color: var(--gold); }
     .footer__location { font-size: 0.8rem; margin-top: 0.25rem; }
-    .footer__links { list-style: none; display: flex; gap: 1.5rem; margin-bottom: 0.5rem; }
+    .footer__links { list-style: none; display: flex; gap: 1.5rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
     .footer__links a { font-size: 0.85rem; text-decoration: none; transition: color 0.3s; }
     .footer__links a:hover { color: var(--cream); }
     .footer__copy { font-size: 0.75rem; opacity: 0.5; }
@@ -513,12 +533,11 @@
     <a href="/" class="nav__logo">Big Sister Foundation</a>
     <ul class="nav__links">
       <li><a href="/">Home</a></li>
-      <li><a href="/ledger/">Ledger</a></li>
-      <li><a href="/ideas/">Ideas</a></li>
       <li><a href="/scholars/">Scholars</a></li>
-      <li><a href="/forums/">Forums</a></li>
+      <li><a href="/ledger/">Ledger</a></li>
+      <li><a href="/events/">Events</a></li>
       <li><a href="/volunteer/">Volunteer</a></li>
-      <li><a href="/docs/" class="is-active">Help</a></li>
+      <li><a href="/donate/">Give</a></li>
     </ul>
   </nav>
 
@@ -527,12 +546,12 @@
     <div class="container">
       <p class="eyebrow" data-animate>Help Center</p>
       <h1 data-animate data-animate-delay="1">How can we help?</h1>
-      <p class="docs-hero__sub" data-animate data-animate-delay="2">Step-by-step guides for everything on the Big Sister Foundation platform. If you can't find what you need, reach out to us on WhatsApp.</p>
+      <p class="docs-hero__sub" data-animate data-animate-delay="2">Step-by-step guides for every page and feature on the Big Sister Foundation platform. Learn how to donate, volunteer, track scholars, manage finances, and more. If you can't find what you need, reach out to us on WhatsApp.</p>
 
       <!-- SEARCH -->
       <div class="hero-search" data-animate data-animate-delay="2">
         <span class="hero-search__icon">&#128269;</span>
-        <input type="text" class="hero-search__input" id="docs-search" placeholder="Search for help... e.g. 'how to vote' or 'add a scholar'">
+        <input type="text" class="hero-search__input" id="docs-search" placeholder="Search for help... e.g. 'how to donate' or 'add a scholar'">
       </div>
       <div class="search-results" id="search-results"></div>
     </div>
@@ -545,6 +564,10 @@
         <a class="quick-link" href="#getting-started">
           <span class="quick-link__icon quick-link__icon--green">&#127793;</span>
           <span class="quick-link__text">Getting Started</span>
+        </a>
+        <a class="quick-link" href="#homepage">
+          <span class="quick-link__icon quick-link__icon--sage">&#127968;</span>
+          <span class="quick-link__text">Homepage</span>
         </a>
         <a class="quick-link" href="#ideas-board">
           <span class="quick-link__icon quick-link__icon--gold">&#128161;</span>
@@ -566,6 +589,26 @@
           <span class="quick-link__icon quick-link__icon--terra">&#9997;&#65039;</span>
           <span class="quick-link__text">Volunteer</span>
         </a>
+        <a class="quick-link" href="#donations">
+          <span class="quick-link__icon quick-link__icon--green">&#128154;</span>
+          <span class="quick-link__text">Donations</span>
+        </a>
+        <a class="quick-link" href="#events">
+          <span class="quick-link__icon quick-link__icon--gold">&#128197;</span>
+          <span class="quick-link__text">Events</span>
+        </a>
+        <a class="quick-link" href="#admin">
+          <span class="quick-link__icon quick-link__icon--terra">&#128736;</span>
+          <span class="quick-link__text">Admin</span>
+        </a>
+        <a class="quick-link" href="#connections">
+          <span class="quick-link__icon quick-link__icon--sage">&#128279;</span>
+          <span class="quick-link__text">How It Connects</span>
+        </a>
+        <a class="quick-link" href="#faq">
+          <span class="quick-link__icon quick-link__icon--gold">&#10067;</span>
+          <span class="quick-link__text">FAQ</span>
+        </a>
       </div>
     </div>
   </section>
@@ -579,12 +622,19 @@
         <p class="docs-sidebar__title">On this page</p>
         <ul class="docs-sidebar__list" id="sidebar-list">
           <li><a href="#getting-started">Getting Started</a></li>
+          <li><a href="#homepage">Homepage</a></li>
           <li><a href="#ideas-board">Ideas Board</a></li>
           <li><a href="#ledger">Financial Ledger</a></li>
           <li><a href="#scholars">Scholars Tracker</a></li>
           <li><a href="#forums">Community Forums</a></li>
-          <li><a href="#volunteer">Volunteer Application</a></li>
-          <li><a href="#accounts">Accounts &amp; Sign In</a></li>
+          <li><a href="#volunteer">Volunteering</a></li>
+          <li><a href="#donations">Donations &amp; Payments</a></li>
+          <li><a href="#events">Events</a></li>
+          <li><a href="#blog">Blog</a></li>
+          <li><a href="#sponsor">Sponsor a Scholar</a></li>
+          <li><a href="#admin">Admin Dashboard</a></li>
+          <li><a href="#accounts">Accounts &amp; Roles</a></li>
+          <li><a href="#connections">How It All Connects</a></li>
           <li><a href="#faq">FAQ</a></li>
         </ul>
       </aside>
@@ -613,7 +663,7 @@
                 <div class="guide-card__content">
                   <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">The Big Sister Foundation (BSF) platform is a website where you can see exactly how the foundation works — where money goes, which children are being supported, what ideas the community has, and how you can get involved. Everything is transparent and open.</p>
 
-                  <p style="font-size:0.92rem;color:rgba(58,42,31,0.75);margin-bottom:1rem;">The platform has 6 main sections:</p>
+                  <p style="font-size:0.92rem;color:rgba(58,42,31,0.75);margin-bottom:1rem;">The platform has 13 pages across its ecosystem:</p>
 
                   <!-- Visual: Platform overview -->
                   <div class="mockup">
@@ -631,9 +681,14 @@
                           <span class="m-nav__link">Scholars</span>
                           <span class="m-nav__link">Forums</span>
                           <span class="m-nav__link">Volunteer</span>
+                          <span class="m-nav__link">Give</span>
                         </div>
                       </div>
                       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.4rem;">
+                        <div class="m-card">
+                          <div class="m-card__title">&#127968; Homepage</div>
+                          <div class="m-card__text">Our story and mission</div>
+                        </div>
                         <div class="m-card">
                           <div class="m-card__title">&#128176; Ledger</div>
                           <div class="m-card__text">See every naira in and out</div>
@@ -644,7 +699,7 @@
                         </div>
                         <div class="m-card">
                           <div class="m-card__title">&#127891; Scholars</div>
-                          <div class="m-card__text">Track the children we support</div>
+                          <div class="m-card__text">Track supported children</div>
                         </div>
                         <div class="m-card">
                           <div class="m-card__title">&#128172; Forums</div>
@@ -652,11 +707,31 @@
                         </div>
                         <div class="m-card">
                           <div class="m-card__title">&#9997;&#65039; Volunteer</div>
-                          <div class="m-card__text">Apply to join our team</div>
+                          <div class="m-card__text">Apply to join the team</div>
                         </div>
                         <div class="m-card">
-                          <div class="m-card__title">&#128218; Help</div>
-                          <div class="m-card__text">You are here!</div>
+                          <div class="m-card__title">&#128154; Give</div>
+                          <div class="m-card__text">Donate via Paystack</div>
+                        </div>
+                        <div class="m-card">
+                          <div class="m-card__title">&#128203; Donations</div>
+                          <div class="m-card__text">Track all donations</div>
+                        </div>
+                        <div class="m-card">
+                          <div class="m-card__title">&#128197; Events</div>
+                          <div class="m-card__text">RSVP to upcoming events</div>
+                        </div>
+                        <div class="m-card">
+                          <div class="m-card__title">&#128221; Blog</div>
+                          <div class="m-card__text">Stories and updates</div>
+                        </div>
+                        <div class="m-card">
+                          <div class="m-card__title">&#128149; Sponsor</div>
+                          <div class="m-card__text">Monthly sponsorship</div>
+                        </div>
+                        <div class="m-card">
+                          <div class="m-card__title">&#128736; Admin</div>
+                          <div class="m-card__text">Central management hub</div>
                         </div>
                       </div>
                     </div>
@@ -664,7 +739,7 @@
 
                   <div class="tip tip--info">
                     <span class="tip__icon">&#128161;</span>
-                    <span class="tip__text"><strong>You don't need an account to browse.</strong> Anyone can view the ledger, scholars, ideas, and forums. You only need to sign in if you want to submit ideas (as a volunteer) or manage data (as an admin).</span>
+                    <span class="tip__text"><strong>You don't need an account to browse.</strong> Anyone can view the ledger, scholars, ideas (and vote), forums (read, post, and reply), apply to volunteer, and donate. You only need to sign in if you want to submit ideas (as a volunteer), add ledger entries, or manage data (as an admin).</span>
                   </div>
                 </div>
               </div>
@@ -690,11 +765,11 @@
                         <span style="font-size:0.7rem;color:var(--cream);font-weight:700;font-family:var(--font-serif);">Big Sister Foundation</span>
                         <div style="display:flex;gap:0.6rem;">
                           <span style="font-size:0.6rem;color:rgba(255,248,240,0.5);">Home</span>
-                          <span style="font-size:0.6rem;color:rgba(255,248,240,0.5);">Ledger</span>
-                          <span style="font-size:0.6rem;color:rgba(255,248,240,0.5);">Ideas</span>
                           <span style="font-size:0.6rem;color:rgba(255,248,240,0.5);">Scholars</span>
-                          <span style="font-size:0.6rem;color:rgba(255,248,240,0.5);">Forums</span>
+                          <span style="font-size:0.6rem;color:rgba(255,248,240,0.5);">Ledger</span>
+                          <span style="font-size:0.6rem;color:rgba(255,248,240,0.5);">Events</span>
                           <span style="font-size:0.6rem;color:rgba(255,248,240,0.5);">Volunteer</span>
+                          <span style="font-size:0.6rem;color:var(--gold);">Give</span>
                         </div>
                       </div>
                       <div class="m-arrow-label">Click any link to go to that section</div>
@@ -708,11 +783,15 @@
                     </li>
                     <li class="step">
                       <p class="step__title">Click on any page name</p>
-                      <p class="step__desc">Click "Ledger" to see finances, "Ideas" to see community proposals, "Scholars" to see supported children, "Forums" to join discussions, or "Volunteer" to apply.</p>
+                      <p class="step__desc">Click "Scholars" to see supported children, "Ledger" to see finances, "Events" for upcoming activities, "Volunteer" to apply, or "Give" to donate.</p>
                     </li>
                     <li class="step">
                       <p class="step__title">Click "Big Sister Foundation" to go home</p>
                       <p class="step__desc">The logo on the left always takes you back to the main homepage.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Discover more pages in the footer</p>
+                      <p class="step__desc">Scroll to the bottom of any page to find links to additional sections including Forums, Ideas, Donations tracker, Blog, and Sponsor pages.</p>
                     </li>
                   </ol>
 
@@ -720,6 +799,101 @@
                     <span class="tip__icon">&#128241;</span>
                     <span class="tip__text"><strong>On mobile:</strong> The navigation works the same way. The links may appear smaller but they're all still there at the top of the screen.</span>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Role overview -->
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">Understanding user roles: Public, Volunteer, and Admin</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">The platform has three levels of access. Most features are open to everyone with no account required.</p>
+
+                  <table class="m-table" style="font-size:0.85rem;">
+                    <tr><th style="font-size:0.75rem;">Role</th><th style="font-size:0.75rem;">What You Can Do</th></tr>
+                    <tr><td style="font-weight:700;color:var(--green);">Public (no account)</td><td>View ledger, view scholars, vote on ideas, read/post/reply on forums, apply to volunteer, donate, RSVP to events, read blog</td></tr>
+                    <tr><td style="font-weight:700;color:var(--terra);">Volunteer (signed in)</td><td>All public features + submit new ideas, add ledger entries, edit own content</td></tr>
+                    <tr><td style="font-weight:700;color:#8a6d2f;">Admin</td><td>All volunteer features + edit/delete all content, manage volunteers (approve/reject), manage scholars and schools, bulk operations, audit log, export data to CSV</td></tr>
+                  </table>
+
+                  <div class="tip tip--info">
+                    <span class="tip__icon">&#128100;</span>
+                    <span class="tip__text"><strong>How to become a volunteer:</strong> Apply through the <a href="/volunteer/" style="color:var(--terra);font-weight:600;">Volunteer page</a>. Once approved by an admin, you'll receive access to the volunteer registration page with onboarding steps.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== HOMEPAGE ===== -->
+        <section class="docs-section" id="homepage">
+          <div class="section-header">
+            <div class="section-icon quick-link__icon--sage" style="font-size:1.4rem;">&#127968;</div>
+            <div>
+              <h2>Homepage</h2>
+              <p style="font-size:0.9rem;color:rgba(58,42,31,0.6);margin-top:0.25rem;">The front door to the foundation. Our story and mission.</p>
+            </div>
+          </div>
+
+          <div class="guide-grid">
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">Understanding the homepage and the tree animation</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">The homepage tells the story of the Big Sister Foundation through marketing content and an animated tree that grows as you scroll down the page. The tree serves as a metaphor for growth and impact.</p>
+
+                  <div class="mockup">
+                    <div class="mockup__bar">
+                      <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                      <span class="mockup__url">bigsisterfoundation.org/</span>
+                    </div>
+                    <div class="mockup__body">
+                      <div style="text-align:center;padding:0.5rem 0;">
+                        <div style="font-size:1.5rem;margin-bottom:0.3rem;">&#127793;</div>
+                        <div style="font-size:0.5rem;font-weight:700;color:rgba(58,42,31,0.4);text-transform:uppercase;letter-spacing:0.05em;">Scroll to grow the tree</div>
+                        <div style="display:flex;justify-content:center;gap:0.4rem;margin-top:0.4rem;font-size:0.9rem;">
+                          <span>&#127793;</span>
+                          <span style="color:rgba(58,42,31,0.3);">&#8594;</span>
+                          <span>&#127794;</span>
+                          <span style="color:rgba(58,42,31,0.3);">&#8594;</span>
+                          <span>&#127795;</span>
+                          <span style="color:rgba(58,42,31,0.3);">&#8594;</span>
+                          <span>&#127796;</span>
+                          <span style="color:rgba(58,42,31,0.3);">&#8594;</span>
+                          <span>&#127797;</span>
+                        </div>
+                        <div style="font-size:0.5rem;color:rgba(58,42,31,0.4);margin-top:0.3rem;">Seeds &rarr; Sprout &rarr; Trunk &rarr; Branches &rarr; Canopy</div>
+                      </div>
+                      <div style="display:flex;gap:0.3rem;justify-content:center;margin-top:0.5rem;">
+                        <span class="m-btn m-btn--green">Donate</span>
+                        <span class="m-btn m-btn--terra">Volunteer</span>
+                        <span class="m-btn m-btn--ghost">Explore</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Watch the tree grow</p>
+                      <p class="step__desc">As you scroll down the homepage, an animated tree grows from seeds into a full canopy. Each stage represents the foundation's growth: seeds (potential), sprout (early support), trunk (stability), branches (expanding reach), and canopy (full impact). Just scroll at your own pace and watch it unfold.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Read about the mission</p>
+                      <p class="step__desc">The page tells the story of BSF: who we are, what we do, and the children we support. Scroll through each section to learn more.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Take action with the CTA buttons</p>
+                      <p class="step__desc">The homepage has prominent call-to-action buttons: <strong>Donate</strong> takes you to the payment page, <strong>Volunteer</strong> takes you to the application, and <strong>Explore</strong> lets you browse the rest of the platform.</p>
+                    </li>
+                  </ol>
                 </div>
               </div>
             </div>
@@ -774,11 +948,11 @@
                   <ol class="steps">
                     <li class="step">
                       <p class="step__title">Go to the Ideas page</p>
-                      <p class="step__desc">Click "Ideas" in the navigation bar at the top.</p>
+                      <p class="step__desc">Click "Ideas" in the navigation bar or footer links.</p>
                     </li>
                     <li class="step">
                       <p class="step__title">Find an idea you support</p>
-                      <p class="step__desc">Scroll through the idea cards. Each one shows a title, description, category, and vote count.</p>
+                      <p class="step__desc">Scroll through the idea cards. Each one shows a title, description, category, status, and vote count.</p>
                     </li>
                     <li class="step">
                       <p class="step__title">Click the up arrow</p>
@@ -789,6 +963,11 @@
                       <p class="step__desc">Clicking the same arrow again removes your vote. The arrow goes back to its normal color.</p>
                     </li>
                   </ol>
+
+                  <div class="tip tip--info">
+                    <span class="tip__icon">&#128274;</span>
+                    <span class="tip__text"><strong>Votes are per-device.</strong> Your votes are stored in your browser (localStorage), so they persist between visits on the same device. If you switch to a different phone or computer, you can vote again.</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -846,13 +1025,18 @@
                     </li>
                     <li class="step">
                       <p class="step__title">Fill in the form</p>
-                      <p class="step__desc"><strong>Title:</strong> A short, clear name for your idea (under 100 characters).<br><strong>Description:</strong> What's the idea? Why does it matter? How would it help?<br><strong>Pathway:</strong> Which group of children does this help? (Difficult Backgrounds, Special Needs, Gifted &amp; Talented, or General).<br><strong>Cost:</strong> Rough estimate in naira (optional).<br><strong>Resources:</strong> What would be needed? (optional).</p>
+                      <p class="step__desc"><strong>Title:</strong> A short, clear name for your idea (under 100 characters).<br><strong>Description:</strong> What's the idea? Why does it matter? How would it help?<br><strong>Pathway:</strong> Which group of children does this help? Categories: Difficult Backgrounds, Special Needs, Gifted &amp; Talented, or General.<br><strong>Cost:</strong> Rough estimate in naira (optional).<br><strong>Resources:</strong> What would be needed? (optional).</p>
                     </li>
                     <li class="step">
                       <p class="step__title">Click "Submit Idea"</p>
-                      <p class="step__desc">Your idea appears immediately on the board for everyone to see and vote on.</p>
+                      <p class="step__desc">Your idea appears immediately on the board with "Open" status for everyone to see and vote on.</p>
                     </li>
                   </ol>
+
+                  <div class="tip tip--info">
+                    <span class="tip__icon">&#128279;</span>
+                    <span class="tip__text"><strong>Ideas connect to admin actions.</strong> When an admin decides to act on a popular idea, they can change its status from Open to Planned, then In Progress, and finally Completed. You can track the progress of your idea on the board.</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -892,11 +1076,46 @@
                   <ol class="steps">
                     <li class="step">
                       <p class="step__title">Sort ideas</p>
-                      <p class="step__desc">Use the rounded buttons at the top: <strong>Top Voted</strong> shows the most popular first, <strong>Newest</strong> shows the latest, and <strong>By Status</strong> groups ideas by their progress (In Progress, Planned, Open, Completed).</p>
+                      <p class="step__desc">Use the rounded buttons at the top: <strong>Top Voted</strong> shows the most popular first, <strong>Newest</strong> shows the latest, and <strong>By Status</strong> groups ideas by their progress.</p>
                     </li>
                     <li class="step">
                       <p class="step__title">Filter by category</p>
                       <p class="step__desc">Below the sort buttons, click a category pill (e.g. "Special Needs") to only show ideas for that group. Click "All" to see everything again.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Understand status labels</p>
+                      <p class="step__desc">Each idea has a status: <strong>Open</strong> means it's new and collecting votes. <strong>Planned</strong> means admin has acknowledged it. <strong>In Progress</strong> means the foundation is working on it. <strong>Completed</strong> means it's been done.</p>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+
+            <!-- Admin managing ideas -->
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">Managing ideas (admin only)</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">Admins can edit, delete, and bulk manage ideas from the Ideas page or the Admin Dashboard.</p>
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Sign in as an admin</p>
+                      <p class="step__desc">Log in with your admin credentials.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Edit any idea</p>
+                      <p class="step__desc">Click the edit icon on any idea card to change its title, description, category, or status. Changing the status to "In Progress" lets the community know work has begun.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Delete ideas</p>
+                      <p class="step__desc">Click the delete icon to remove an idea. This action is logged in the audit trail.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Bulk manage</p>
+                      <p class="step__desc">Select multiple ideas and perform bulk status changes or deletions from the admin dashboard.</p>
                     </li>
                   </ol>
                 </div>
@@ -916,7 +1135,6 @@
           </div>
 
           <div class="guide-grid">
-            <!-- Reading the ledger -->
             <div class="guide-card" data-guide>
               <div class="guide-card__header">
                 <span class="guide-card__title">How to read the financial ledger</span>
@@ -924,7 +1142,7 @@
               </div>
               <div class="guide-card__body">
                 <div class="guide-card__content">
-                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">The ledger shows all money coming into and going out of the foundation. Anyone can view it — no sign-in needed.</p>
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">The ledger shows all money coming into and going out of the foundation. Anyone can view it — no sign-in needed. Income sources include Donations, Grants, and Fundraisers. Expense categories include School Fees, Food, Healthcare, Events, and Reserves.</p>
 
                   <div class="mockup">
                     <div class="mockup__bar">
@@ -939,10 +1157,10 @@
                       </div>
                       <div style="font-size:0.55rem;font-weight:700;color:rgba(58,42,31,0.4);margin-bottom:0.3rem;">MARCH 2026</div>
                       <table class="m-table">
-                        <tr><th>Date</th><th>Category</th><th>Amount</th><th>Description</th></tr>
-                        <tr><td>Mar 15</td><td><span class="m-tag m-tag--green">Grant</span></td><td style="color:var(--green);font-weight:700;">+&#8358;500K</td><td>USAID education grant</td></tr>
-                        <tr><td>Mar 12</td><td><span class="m-tag m-tag--terra">Food</span></td><td style="color:var(--terra);font-weight:700;">-&#8358;75K</td><td>Monthly food packages</td></tr>
-                        <tr><td>Mar 8</td><td><span class="m-tag m-tag--terra">Education</span></td><td style="color:var(--terra);font-weight:700;">-&#8358;120K</td><td>School fees — term 2</td></tr>
+                        <tr><th>Date</th><th>Category</th><th>Amount</th><th>Description</th><th>Added By</th></tr>
+                        <tr><td>Mar 15</td><td><span class="m-tag m-tag--green">Donation</span></td><td style="color:var(--green);font-weight:700;">+&#8358;500K</td><td>Online donation via Paystack</td><td style="font-size:0.5rem;">Auto</td></tr>
+                        <tr><td>Mar 12</td><td><span class="m-tag m-tag--terra">Food</span></td><td style="color:var(--terra);font-weight:700;">-&#8358;75K</td><td>Monthly food packages</td><td style="font-size:0.5rem;">Kemi A.</td></tr>
+                        <tr><td>Mar 8</td><td><span class="m-tag m-tag--terra">School Fees</span></td><td style="color:var(--terra);font-weight:700;">-&#8358;120K</td><td>School fees — term 2</td><td style="font-size:0.5rem;">Admin</td></tr>
                       </table>
                     </div>
                   </div>
@@ -953,18 +1171,23 @@
                       <p class="step__desc">Click "Ledger" in the navigation bar.</p>
                     </li>
                     <li class="step">
-                      <p class="step__title">Understand the layout</p>
-                      <p class="step__desc">Entries are grouped by month. Each entry shows the date, category (e.g. Grant, Food, Education), the amount, and a description. <strong>Green amounts</strong> are money coming in. <strong>Orange/red amounts</strong> are money going out.</p>
+                      <p class="step__title">View the Sankey flow diagram</p>
+                      <p class="step__desc">At the top of the page, a Sankey diagram visually shows money flowing from income sources on the left (Donations, Grants, Fundraisers) to expense categories on the right (School Fees, Food, Healthcare, Events, Reserves). Follow the flowing coloured lines to understand where money comes from and where it goes.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Browse the transaction table</p>
+                      <p class="step__desc">Below the diagram, entries are grouped by month. Each entry shows the date, fund category, income or expense type, a description, the amount, and who added it. <strong>Green amounts</strong> are money coming in. <strong>Orange amounts</strong> are money going out.</p>
                     </li>
                     <li class="step">
                       <p class="step__title">Filter by type</p>
-                      <p class="step__desc">Use the tabs at the top: "All Transactions" shows everything, "Money In" shows only income (grants, donations), "Money Out" shows only expenses.</p>
-                    </li>
-                    <li class="step">
-                      <p class="step__title">View the flow diagram</p>
-                      <p class="step__desc">The Sankey diagram at the top of the page gives you a visual picture of where money comes from and where it goes — follow the flowing lines from sources on the left to programs on the right.</p>
+                      <p class="step__desc">Use the tabs at the top: "All Transactions" shows everything, "Money In" shows only income (donations, grants, fundraisers), "Money Out" shows only expenses.</p>
                     </li>
                   </ol>
+
+                  <div class="tip tip--info">
+                    <span class="tip__icon">&#128279;</span>
+                    <span class="tip__text"><strong>Donations auto-appear here.</strong> When someone donates via the Give page (Paystack), their transaction is automatically recorded on this public ledger. No manual entry needed.</span>
+                  </div>
 
                   <div class="tip tip--info">
                     <span class="tip__icon">&#128274;</span>
@@ -974,7 +1197,6 @@
               </div>
             </div>
 
-            <!-- Adding entries (volunteer) -->
             <div class="guide-card" data-guide>
               <div class="guide-card__header">
                 <span class="guide-card__title">How to add a ledger entry (volunteers)</span>
@@ -983,7 +1205,6 @@
               <div class="guide-card__body">
                 <div class="guide-card__content">
                   <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">Signed-in volunteers can record financial transactions to keep the ledger up to date.</p>
-
                   <ol class="steps">
                     <li class="step">
                       <p class="step__title">Sign in on the Ledger page</p>
@@ -995,15 +1216,45 @@
                     </li>
                     <li class="step">
                       <p class="step__title">Choose "Money In" or "Money Out"</p>
-                      <p class="step__desc">Click the toggle at the top of the form. This changes the available categories.</p>
+                      <p class="step__desc">Click the toggle at the top of the form. This changes the available fund categories.</p>
                     </li>
                     <li class="step">
                       <p class="step__title">Fill in the details</p>
-                      <p class="step__desc"><strong>Amount:</strong> The amount in naira.<br><strong>Category:</strong> For income: Grant, Partnership, Event Proceeds, Donation. For expenses: Food, Education, Healthcare, Counselling, Supplies, Operations.<br><strong>Description:</strong> Brief explanation of the transaction.<br><strong>Date:</strong> When it happened.<br><strong>Program:</strong> Which program it relates to (optional).</p>
+                      <p class="step__desc"><strong>Date:</strong> When the transaction happened.<br><strong>Fund Category:</strong> For income: Donations, Grants, Fundraisers. For expenses: School Fees, Food, Healthcare, Events, Reserves.<br><strong>Description:</strong> Brief explanation of the transaction.<br><strong>Amount:</strong> The amount in naira.</p>
                     </li>
                     <li class="step">
                       <p class="step__title">Click "Add to Ledger"</p>
-                      <p class="step__desc">The entry appears immediately in the ledger, visible to everyone.</p>
+                      <p class="step__desc">The entry appears immediately in the ledger, visible to everyone. Your name is recorded as the person who added it.</p>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">Managing ledger entries (admin only)</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">Admins have full control over the ledger, including editing, deleting, bulk operations, and CSV export.</p>
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Edit any entry</p>
+                      <p class="step__desc">Click the edit icon on any ledger row to modify the date, category, amount, or description.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Delete entries</p>
+                      <p class="step__desc">Click delete to remove an entry. All deletions are recorded in the admin audit log.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Bulk manage</p>
+                      <p class="step__desc">Select multiple entries for bulk deletion or category reassignment.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Export to CSV</p>
+                      <p class="step__desc">Click the export button to download all ledger data as a CSV file for accounting and reporting.</p>
                     </li>
                   </ol>
                 </div>
@@ -1023,7 +1274,6 @@
           </div>
 
           <div class="guide-grid">
-            <!-- Viewing scholars -->
             <div class="guide-card" data-guide>
               <div class="guide-card__header">
                 <span class="guide-card__title">How to view and search for scholars</span>
@@ -1031,7 +1281,7 @@
               </div>
               <div class="guide-card__body">
                 <div class="guide-card__content">
-                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">The Scholars page shows all children currently supported by BSF. You can filter, search, and sort to find specific information.</p>
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">The Scholars page shows all children currently supported by BSF. At the top you'll see a dashboard with Total Scholars, Average Performance, and Total Investment figures.</p>
 
                   <div class="mockup">
                     <div class="mockup__bar">
@@ -1039,15 +1289,29 @@
                       <span class="mockup__url">bigsisterfoundation.org/scholars/</span>
                     </div>
                     <div class="mockup__body">
+                      <div style="display:flex;gap:0.4rem;margin-bottom:0.6rem;">
+                        <div style="flex:1;background:rgba(45,94,64,0.06);padding:0.4rem;border-radius:6px;text-align:center;">
+                          <div style="font-size:0.85rem;font-weight:700;color:var(--green);">24</div>
+                          <div style="font-size:0.45rem;color:rgba(58,42,31,0.4);text-transform:uppercase;">Total Scholars</div>
+                        </div>
+                        <div style="flex:1;background:rgba(212,169,106,0.08);padding:0.4rem;border-radius:6px;text-align:center;">
+                          <div style="font-size:0.85rem;font-weight:700;color:#8a6d2f;">3.8</div>
+                          <div style="font-size:0.45rem;color:rgba(58,42,31,0.4);text-transform:uppercase;">Avg Performance</div>
+                        </div>
+                        <div style="flex:1;background:rgba(194,115,76,0.06);padding:0.4rem;border-radius:6px;text-align:center;">
+                          <div style="font-size:0.85rem;font-weight:700;color:var(--terra);">&#8358;4.2M</div>
+                          <div style="font-size:0.45rem;color:rgba(58,42,31,0.4);text-transform:uppercase;">Total Investment</div>
+                        </div>
+                      </div>
                       <div style="display:flex;gap:0.3rem;margin-bottom:0.5rem;flex-wrap:wrap;">
-                        <div class="m-input" style="width:auto;flex:1;min-width:80px;">All Pathways &#9660;</div>
                         <div class="m-input" style="width:auto;flex:1;min-width:80px;">All Statuses &#9660;</div>
                         <div class="m-input" style="width:auto;flex:1;min-width:80px;">Search by name...</div>
                       </div>
                       <table class="m-table">
-                        <tr><th>Name</th><th>School</th><th>Pathway</th><th>Performance</th><th>Status</th></tr>
-                        <tr><td style="font-weight:600;">Amina K.</td><td>Lagos State Model</td><td><span class="m-tag m-tag--green">Gifted</span></td><td>Outstanding</td><td><span class="m-tag m-tag--green">Active</span></td></tr>
-                        <tr><td style="font-weight:600;">David O.</td><td>Community School</td><td><span class="m-tag m-tag--terra">Difficult BG</span></td><td>Good</td><td><span class="m-tag m-tag--green">Active</span></td></tr>
+                        <tr><th>Name</th><th>Age</th><th>Grade</th><th>School</th><th>Performance</th><th>Status</th></tr>
+                        <tr><td style="font-weight:600;">Amina K.</td><td>12</td><td>JSS 2</td><td>Lagos State Model</td><td>&#11088;&#11088;&#11088;&#11088;&#11088;</td><td><span class="m-tag m-tag--green">Active</span></td></tr>
+                        <tr><td style="font-weight:600;">David O.</td><td>10</td><td>Primary 5</td><td>Community School</td><td>&#11088;&#11088;&#11088;</td><td><span class="m-tag m-tag--green">Active</span></td></tr>
+                        <tr><td style="font-weight:600;">Grace M.</td><td>14</td><td>SSS 1</td><td>Federal College</td><td>&#11088;&#11088;&#11088;&#11088;</td><td><span class="m-tag m-tag--gold">Graduated</span></td></tr>
                       </table>
                     </div>
                   </div>
@@ -1058,38 +1322,42 @@
                       <p class="step__desc">Click "Scholars" in the navigation bar.</p>
                     </li>
                     <li class="step">
+                      <p class="step__title">Check the dashboard numbers</p>
+                      <p class="step__desc">At the top, see at a glance the total number of scholars, the average performance rating, and the total amount invested.</p>
+                    </li>
+                    <li class="step">
                       <p class="step__title">Browse the table</p>
-                      <p class="step__desc">Each row shows a scholar's name, school, class, pathway, performance rating, extracurriculars, status, and total spending. On mobile, this appears as cards instead of a table.</p>
+                      <p class="step__desc">Each row shows a scholar's anonymized name (first name + last initial), age, grade, school, performance rating (1-5 stars), status, and amount invested. On mobile, this appears as cards instead of a table.</p>
                     </li>
                     <li class="step">
                       <p class="step__title">Use the filters</p>
-                      <p class="step__desc"><strong>Pathway:</strong> Filter by Difficult Backgrounds, Special Needs, Gifted &amp; Talented, or Other.<br><strong>Status:</strong> Active, Graduated, On Hold, or Withdrawn.<br><strong>Performance:</strong> Outstanding, Excellent, Good, Satisfactory, or Needs Support.</p>
+                      <p class="step__desc"><strong>Status:</strong> Active, Graduated, On Hold, or Withdrawn.<br><strong>Search:</strong> Type a name to quickly find a specific scholar.</p>
                     </li>
                     <li class="step">
-                      <p class="step__title">Search by name</p>
-                      <p class="step__desc">Type a name in the search box to quickly find a specific scholar.</p>
-                    </li>
-                    <li class="step">
-                      <p class="step__title">Sort by columns</p>
-                      <p class="step__desc">Click any column header to sort the table by that column.</p>
+                      <p class="step__title">View update history</p>
+                      <p class="step__desc">Click on a scholar's row to expand their full profile, including their update history showing changes over time.</p>
                     </li>
                   </ol>
+
+                  <div class="tip tip--warning">
+                    <span class="tip__icon">&#128272;</span>
+                    <span class="tip__text"><strong>Child protection:</strong> Scholar names are anonymized (first name + last initial only, e.g., "Amina K.") to protect the children's privacy. Full names are never displayed publicly.</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <!-- Adding scholars -->
             <div class="guide-card" data-guide>
               <div class="guide-card__header">
-                <span class="guide-card__title">How to add a new scholar (volunteers)</span>
+                <span class="guide-card__title">How to add and manage scholars (admin only)</span>
                 <span class="guide-card__toggle">&#9660;</span>
               </div>
               <div class="guide-card__body">
                 <div class="guide-card__content">
                   <ol class="steps">
                     <li class="step">
-                      <p class="step__title">Sign in on the Scholars page</p>
-                      <p class="step__desc">Click "Volunteer Sign In" and enter your credentials.</p>
+                      <p class="step__title">Sign in as an admin</p>
+                      <p class="step__desc">Click "Sign In" and enter your admin credentials.</p>
                     </li>
                     <li class="step">
                       <p class="step__title">Click "+ Add Scholar"</p>
@@ -1097,11 +1365,11 @@
                     </li>
                     <li class="step">
                       <p class="step__title">Fill in the details</p>
-                      <p class="step__desc"><strong>First Name &amp; Last Initial:</strong> For privacy, we use first name + last initial only (e.g., "Amina K.").<br><strong>School:</strong> Select from the dropdown, or choose "Other" and type a new school name.<br><strong>Class/Grade:</strong> e.g. "JSS 2" or "Primary 5".<br><strong>Enrolled Date:</strong> When the child joined BSF.<br><strong>Pathway:</strong> Which program pathway they belong to.<br><strong>Performance:</strong> Current academic/personal performance level.<br><strong>Extracurriculars:</strong> Type an activity and press Enter to add it as a tag. Add as many as needed.<br><strong>Status:</strong> Active, Graduated, On Hold, or Withdrawn.</p>
+                      <p class="step__desc"><strong>First Name &amp; Last Initial:</strong> For privacy, we use first name + last initial only (e.g., "Amina K.").<br><strong>Age:</strong> The child's current age.<br><strong>Grade:</strong> e.g. "JSS 2" or "Primary 5".<br><strong>School:</strong> Select from the dropdown or add a new school.<br><strong>Status:</strong> Active, Graduated, On Hold, or Withdrawn.<br><strong>Performance Rating:</strong> 1-5 scale.<br><strong>Amount Invested:</strong> Total spent on this scholar's support.</p>
                     </li>
                     <li class="step">
-                      <p class="step__title">Click "Add Scholar"</p>
-                      <p class="step__desc">The scholar appears in the table immediately.</p>
+                      <p class="step__title">Manage schools</p>
+                      <p class="step__desc">Admins can add, edit, and remove schools. Each school can have notes and teacher information attached.</p>
                     </li>
                   </ol>
 
@@ -1113,15 +1381,14 @@
               </div>
             </div>
 
-            <!-- Understanding spending -->
             <div class="guide-card" data-guide>
               <div class="guide-card__header">
-                <span class="guide-card__title">Understanding per-scholar spending</span>
+                <span class="guide-card__title">Understanding per-scholar investment</span>
                 <span class="guide-card__toggle">&#9660;</span>
               </div>
               <div class="guide-card__body">
                 <div class="guide-card__content">
-                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">Each scholar has a financial breakdown showing exactly how much has been spent on their support, across categories like tuition, books, food, and healthcare.</p>
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">Each scholar has a financial breakdown showing exactly how much has been invested in their support.</p>
 
                   <div class="mockup">
                     <div class="mockup__bar">
@@ -1130,30 +1397,33 @@
                     </div>
                     <div class="mockup__body">
                       <div class="m-card">
-                        <div class="m-card__title">Amina K. — Spending Breakdown</div>
+                        <div class="m-card__title">Amina K. — Investment Breakdown</div>
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.3rem;margin-top:0.3rem;">
                           <div style="background:rgba(45,94,64,0.06);padding:0.3rem 0.4rem;border-radius:4px;">
-                            <div style="font-size:0.5rem;color:rgba(58,42,31,0.4);">Tuition</div>
+                            <div style="font-size:0.5rem;color:rgba(58,42,31,0.4);">School Fees</div>
                             <div style="font-size:0.65rem;font-weight:700;">&#8358;180,000</div>
                           </div>
                           <div style="background:rgba(194,115,76,0.06);padding:0.3rem 0.4rem;border-radius:4px;">
-                            <div style="font-size:0.5rem;color:rgba(58,42,31,0.4);">Books</div>
-                            <div style="font-size:0.65rem;font-weight:700;">&#8358;25,000</div>
-                          </div>
-                          <div style="background:rgba(212,169,106,0.08);padding:0.3rem 0.4rem;border-radius:4px;">
                             <div style="font-size:0.5rem;color:rgba(58,42,31,0.4);">Food</div>
                             <div style="font-size:0.65rem;font-weight:700;">&#8358;45,000</div>
                           </div>
-                          <div style="background:rgba(139,175,142,0.1);padding:0.3rem 0.4rem;border-radius:4px;">
+                          <div style="background:rgba(212,169,106,0.08);padding:0.3rem 0.4rem;border-radius:4px;">
                             <div style="font-size:0.5rem;color:rgba(58,42,31,0.4);">Healthcare</div>
                             <div style="font-size:0.65rem;font-weight:700;">&#8358;12,000</div>
+                          </div>
+                          <div style="background:rgba(139,175,142,0.1);padding:0.3rem 0.4rem;border-radius:4px;">
+                            <div style="font-size:0.5rem;color:rgba(58,42,31,0.4);">Events</div>
+                            <div style="font-size:0.65rem;font-weight:700;">&#8358;8,000</div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <p style="font-size:0.92rem;color:rgba(58,42,31,0.75);">The "Total Spend" column in the scholars table shows the combined amount. Click on a scholar's row to expand their full spending breakdown by category.</p>
+                  <div class="tip tip--info">
+                    <span class="tip__icon">&#128279;</span>
+                    <span class="tip__text"><strong>Connected to the ledger.</strong> Scholar expenses are tied to entries on the financial ledger. When school fees are paid, it appears both in the scholar's investment breakdown and in the public ledger.</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1166,12 +1436,11 @@
             <div class="section-icon quick-link__icon--sage" style="font-size:1.4rem;">&#128172;</div>
             <div>
               <h2>Community Forums</h2>
-              <p style="font-size:0.9rem;color:rgba(58,42,31,0.6);margin-top:0.25rem;">Discuss, share stories, and connect with the community.</p>
+              <p style="font-size:0.9rem;color:rgba(58,42,31,0.6);margin-top:0.25rem;">Discuss, share stories, and connect with the community. No account required.</p>
             </div>
           </div>
 
           <div class="guide-grid">
-            <!-- Starting a thread -->
             <div class="guide-card" data-guide>
               <div class="guide-card__header">
                 <span class="guide-card__title">How to start a new discussion thread</span>
@@ -1216,7 +1485,7 @@
                   <ol class="steps">
                     <li class="step">
                       <p class="step__title">Go to the Forums page</p>
-                      <p class="step__desc">Click "Forums" in the navigation bar.</p>
+                      <p class="step__desc">Click "Forums" in the navigation links or footer.</p>
                     </li>
                     <li class="step">
                       <p class="step__title">Click "+ New Thread"</p>
@@ -1224,31 +1493,26 @@
                     </li>
                     <li class="step">
                       <p class="step__title">Enter your name</p>
-                      <p class="step__desc">Type whatever name you'd like to be known by. Email is optional — it's only used if someone replies and you want to be notified. It's never shown publicly.</p>
-                    </li>
-                    <li class="step">
-                      <p class="step__title">Write your thread title</p>
-                      <p class="step__desc">Keep it clear and descriptive so people know what the discussion is about. Under 120 characters.</p>
+                      <p class="step__desc">Type whatever name you'd like to be known by. Email is optional and never shown publicly.</p>
                     </li>
                     <li class="step">
                       <p class="step__title">Choose a category</p>
-                      <p class="step__desc"><strong>General:</strong> Anything that doesn't fit elsewhere.<br><strong>Volunteering:</strong> Tips, questions, experiences about volunteering.<br><strong>Programs:</strong> Questions about BSF's programs and how they work.<br><strong>Fundraising:</strong> Ideas and discussions about raising funds.<br><strong>Stories:</strong> Personal stories and experiences.</p>
+                      <p class="step__desc"><strong>General:</strong> Anything that doesn't fit elsewhere.<br><strong>Volunteering:</strong> Tips, questions, experiences.<br><strong>Programs:</strong> Questions about BSF's programs.<br><strong>Fundraising:</strong> Ideas about raising funds.<br><strong>Stories:</strong> Personal stories and experiences.</p>
                     </li>
                     <li class="step">
                       <p class="step__title">Write your message and post</p>
-                      <p class="step__desc">Type your message in the text area and click "Post Thread". It appears immediately.</p>
+                      <p class="step__desc">Type your message and click "Post Thread". It appears immediately.</p>
                     </li>
                   </ol>
 
                   <div class="tip tip--info">
                     <span class="tip__icon">&#128173;</span>
-                    <span class="tip__text"><strong>Your name is remembered.</strong> After your first post, the forum saves your name so you don't have to type it again next time.</span>
+                    <span class="tip__text"><strong>Your name and email are remembered.</strong> After your first post, the forum saves your name and email in your browser (localStorage) so you don't have to type them again next time.</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Replying -->
             <div class="guide-card" data-guide>
               <div class="guide-card__header">
                 <span class="guide-card__title">How to reply to a thread</span>
@@ -1267,21 +1531,20 @@
                     </li>
                     <li class="step">
                       <p class="step__title">Scroll to the reply form</p>
-                      <p class="step__desc">At the bottom of the page, you'll see "Leave a Reply" with name, email, and message fields.</p>
+                      <p class="step__desc">At the bottom, you'll see "Leave a Reply" with name, email, and message fields.</p>
                     </li>
                     <li class="step">
                       <p class="step__title">Enter your name and message</p>
-                      <p class="step__desc">Type your name (it may already be filled in if you've posted before), write your reply, and click "Post Reply".</p>
+                      <p class="step__desc">Type your name (it may already be filled in), write your reply, and click "Post Reply".</p>
                     </li>
                   </ol>
                 </div>
               </div>
             </div>
 
-            <!-- Voting & searching -->
             <div class="guide-card" data-guide>
               <div class="guide-card__header">
-                <span class="guide-card__title">How to vote, search, and filter threads</span>
+                <span class="guide-card__title">Voting, searching, filtering, and pinned threads</span>
                 <span class="guide-card__toggle">&#9660;</span>
               </div>
               <div class="guide-card__body">
@@ -1308,13 +1571,20 @@
                         <span class="m-pill">Fundraising</span>
                         <span class="m-pill">Stories</span>
                       </div>
+                      <div class="m-card" style="margin-top:0.4rem;border-left:3px solid var(--gold);">
+                        <div style="display:flex;align-items:center;gap:0.3rem;">
+                          <span style="font-size:0.55rem;color:var(--gold);font-weight:700;">&#128204; PINNED</span>
+                          <span class="m-card__title">Welcome to BSF Forums — Read this first!</span>
+                        </div>
+                        <div class="m-card__text">Important community guidelines and announcements...</div>
+                      </div>
                     </div>
                   </div>
 
                   <ol class="steps">
                     <li class="step">
                       <p class="step__title">Upvote a thread</p>
-                      <p class="step__desc">Click the up arrow (&#9650;) on the left side of any thread card. It turns green when voted. Click again to undo.</p>
+                      <p class="step__desc">Click the up arrow (&#9650;) on any thread card. Votes are stored in your browser.</p>
                     </li>
                     <li class="step">
                       <p class="step__title">Like a reply</p>
@@ -1322,15 +1592,15 @@
                     </li>
                     <li class="step">
                       <p class="step__title">Search for threads</p>
-                      <p class="step__desc">Use the search box in the top right. It searches thread titles, content, and author names in real time as you type.</p>
+                      <p class="step__desc">Use the search box to find threads by title, content, or author name in real time.</p>
                     </li>
                     <li class="step">
                       <p class="step__title">Sort threads</p>
-                      <p class="step__desc"><strong>Newest:</strong> Most recently created first.<br><strong>Most Active:</strong> Threads with the latest replies first.<br><strong>Top Voted:</strong> Most upvoted threads first.</p>
+                      <p class="step__desc"><strong>Newest:</strong> Most recently created.<br><strong>Most Active:</strong> Latest replies first.<br><strong>Top Voted:</strong> Most upvoted first.</p>
                     </li>
                     <li class="step">
-                      <p class="step__title">Filter by category</p>
-                      <p class="step__desc">Click any category pill to show only threads in that category. Click "All" to show everything.</p>
+                      <p class="step__title">Look for pinned threads</p>
+                      <p class="step__desc">Pinned threads always appear at the top, marked with a pin icon and gold border. These contain important announcements.</p>
                     </li>
                   </ol>
                 </div>
@@ -1344,8 +1614,8 @@
           <div class="section-header">
             <div class="section-icon quick-link__icon--terra" style="font-size:1.4rem;">&#9997;&#65039;</div>
             <div>
-              <h2>Volunteer Application</h2>
-              <p style="font-size:0.9rem;color:rgba(58,42,31,0.6);margin-top:0.25rem;">Join the team. Here's how to apply.</p>
+              <h2>Volunteering</h2>
+              <p style="font-size:0.9rem;color:rgba(58,42,31,0.6);margin-top:0.25rem;">Apply to join the team, and what to expect once you're approved.</p>
             </div>
           </div>
 
@@ -1375,7 +1645,7 @@
                           <div><div class="m-label">Phone</div><div class="m-input">+234...</div></div>
                           <div><div class="m-label">Location</div><div class="m-input">City, State</div></div>
                         </div>
-                        <div class="m-label">Why do you want to volunteer?</div>
+                        <div class="m-label">Why do you want to volunteer? (500 char max)</div>
                         <div class="m-input" style="height:1.5rem;">Tell us about your motivation...</div>
                         <div class="m-label">Skills &amp; Experience</div>
                         <div class="m-input">Teaching, first aid, etc.</div>
@@ -1386,6 +1656,8 @@
                           <span class="m-pill">Evenings</span>
                           <span class="m-pill">Flexible</span>
                         </div>
+                        <div class="m-label">How did you hear about us?</div>
+                        <div class="m-input">Select... &#9660;</div>
                         <div style="display:flex;justify-content:flex-end;margin-top:0.4rem;">
                           <span class="m-btn m-btn--green">Submit Application</span>
                         </div>
@@ -1399,36 +1671,530 @@
                       <p class="step__desc">Click "Volunteer" in the navigation bar, or click "Apply Now" on the homepage.</p>
                     </li>
                     <li class="step">
+                      <p class="step__title">Read the volunteer expectations</p>
+                      <p class="step__desc">Before applying, review the expectations: commit to <strong>4 hours/month minimum</strong>, <strong>no photos on social media</strong> of children, <strong>listen before you lead</strong>, <strong>report safeguarding concerns</strong> immediately, and <strong>communicate — don't disappear</strong>.</p>
+                    </li>
+                    <li class="step">
                       <p class="step__title">Fill in your details</p>
-                      <p class="step__desc"><strong>Full Name</strong> and <strong>Email</strong> are required. Phone and Location are optional but help us place you with nearby programs.</p>
+                      <p class="step__desc"><strong>Full Name</strong> and <strong>Email</strong> are required. Phone and Location help us place you with nearby programs.</p>
                     </li>
                     <li class="step">
                       <p class="step__title">Tell us why you want to volunteer</p>
-                      <p class="step__desc">Write a short message about your motivation. There's a 500-character limit — keep it genuine, not formal.</p>
+                      <p class="step__desc">Write a short message about your motivation. 500-character limit — keep it genuine.</p>
                     </li>
                     <li class="step">
-                      <p class="step__title">Share your skills (optional)</p>
-                      <p class="step__desc">Teaching, counselling, medical training, tech skills, driving — anything that could help.</p>
-                    </li>
-                    <li class="step">
-                      <p class="step__title">Select your availability</p>
-                      <p class="step__desc">Check all the boxes that apply: Weekdays, Weekends, Evenings, or Flexible.</p>
+                      <p class="step__title">Share your skills and availability</p>
+                      <p class="step__desc">Skills: teaching, counselling, medical, tech, driving. Availability: Weekdays, Weekends, Evenings, or Flexible.</p>
                     </li>
                     <li class="step">
                       <p class="step__title">Click "Submit Application"</p>
-                      <p class="step__desc">You'll see a confirmation message. The BSF team will review your application and get back to you via email or WhatsApp.</p>
+                      <p class="step__desc">You'll see a confirmation message. The BSF team will review and respond via email or WhatsApp.</p>
                     </li>
                   </ol>
 
-                  <div class="mockup" style="max-width:300px;">
+                  <div class="tip tip--info">
+                    <span class="tip__icon">&#128279;</span>
+                    <span class="tip__text"><strong>Applications are reviewed in the Admin Dashboard.</strong> An admin will see your application, review your motivation and skills, and approve or reject it.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">What happens after you're approved (Volunteer Registration)</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">Once approved, you'll be directed to the Volunteer Registration page at /volunteer/register/ with onboarding steps.</p>
+
+                  <div class="mockup">
+                    <div class="mockup__bar">
+                      <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                      <span class="mockup__url">bigsisterfoundation.org/volunteer/register/</span>
+                    </div>
                     <div class="mockup__body">
-                      <div class="m-success">
-                        <div class="m-success__icon">&#10003;</div>
-                        <div class="m-success__text">Application submitted!</div>
-                        <div style="font-size:0.55rem;color:rgba(58,42,31,0.5);margin-top:0.2rem;">We'll be in touch within a few days.</div>
+                      <div style="text-align:center;margin-bottom:0.5rem;">
+                        <div style="font-size:1rem;">&#127881;</div>
+                        <div style="font-size:0.7rem;font-weight:700;font-family:var(--font-serif);">Welcome to the Team!</div>
+                      </div>
+                      <div style="font-size:0.5rem;font-weight:700;color:rgba(58,42,31,0.4);text-transform:uppercase;margin-bottom:0.3rem;">Onboarding Steps</div>
+                      <div class="m-card" style="display:flex;align-items:center;gap:0.3rem;">
+                        <span style="font-size:0.7rem;">1&#65039;&#8419;</span>
+                        <span class="m-card__text" style="font-weight:600;">Join the WhatsApp group</span>
+                      </div>
+                      <div class="m-card" style="display:flex;align-items:center;gap:0.3rem;">
+                        <span style="font-size:0.7rem;">2&#65039;&#8419;</span>
+                        <span class="m-card__text" style="font-weight:600;">Attend orientation session</span>
+                      </div>
+                      <div class="m-card" style="display:flex;align-items:center;gap:0.3rem;">
+                        <span style="font-size:0.7rem;">3&#65039;&#8419;</span>
+                        <span class="m-card__text" style="font-weight:600;">Read the volunteer guide</span>
+                      </div>
+                      <div class="m-card" style="display:flex;align-items:center;gap:0.3rem;">
+                        <span style="font-size:0.7rem;">4&#65039;&#8419;</span>
+                        <span class="m-card__text" style="font-weight:600;">Show up for your first session</span>
+                      </div>
+                      <div style="display:flex;gap:0.3rem;margin-top:0.4rem;flex-wrap:wrap;">
+                        <span class="m-btn m-btn--green">WhatsApp Group</span>
+                        <span class="m-btn m-btn--ghost">Scholar Profiles</span>
+                        <span class="m-btn m-btn--ghost">Ideas Board</span>
+                        <span class="m-btn m-btn--ghost">Open Ledger</span>
                       </div>
                     </div>
                   </div>
+
+                  <p style="margin-top:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">The registration page also restates the volunteer expectations and provides quick links to Scholar profiles, the Ideas board, and the Open Ledger so you can start contributing right away.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== DONATIONS & PAYMENTS ===== -->
+        <section class="docs-section" id="donations">
+          <div class="section-header">
+            <div class="section-icon quick-link__icon--green" style="font-size:1.4rem;">&#128154;</div>
+            <div>
+              <h2>Donations &amp; Payments</h2>
+              <p style="font-size:0.9rem;color:rgba(58,42,31,0.6);margin-top:0.25rem;">How to donate, track donations, and generate receipts.</p>
+            </div>
+          </div>
+
+          <div class="guide-grid">
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">How to make a donation (Give page)</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">The Give page (/donate/) uses Paystack to securely process donations. No account needed.</p>
+
+                  <div class="mockup">
+                    <div class="mockup__bar">
+                      <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                      <span class="mockup__url">bigsisterfoundation.org/donate/</span>
+                    </div>
+                    <div class="mockup__body">
+                      <div class="m-modal" style="max-width:100%;">
+                        <div class="m-modal__title">Support a Child's Future</div>
+                        <div class="m-label">Choose a Fund</div>
+                        <div class="m-pills">
+                          <span class="m-pill m-pill--active">School Fees</span>
+                          <span class="m-pill">Food</span>
+                          <span class="m-pill">Healthcare</span>
+                          <span class="m-pill">Events</span>
+                          <span class="m-pill">Reserves</span>
+                        </div>
+                        <div class="m-label">Amount (NGN)</div>
+                        <div class="m-input">Enter amount...</div>
+                        <div class="m-form-row">
+                          <div><div class="m-label">Your Name (optional)</div><div class="m-input">Anonymous if blank</div></div>
+                          <div><div class="m-label">Email (optional)</div><div class="m-input">For receipt</div></div>
+                        </div>
+                        <div style="margin-top:0.4rem;">
+                          <span class="m-btn m-btn--green" style="width:100%;text-align:center;display:block;">Pay with Paystack</span>
+                        </div>
+                        <div style="text-align:center;margin-top:0.2rem;font-size:0.45rem;color:rgba(58,42,31,0.3);">Card / Bank Transfer / USSD</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Go to the Give page</p>
+                      <p class="step__desc">Click "Give" in the navigation bar, or "Donate" on the homepage.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Choose a fund category</p>
+                      <p class="step__desc">Select where you want your donation to go: <strong>School Fees</strong>, <strong>Food</strong>, <strong>Healthcare</strong>, <strong>Events</strong>, or <strong>Reserves</strong> (general fund).</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Enter your amount in NGN</p>
+                      <p class="step__desc">Type the amount you'd like to donate in Nigerian Naira.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Add your name and email (optional)</p>
+                      <p class="step__desc">If left blank, the donation is recorded as anonymous. If you provide an email, you'll receive a receipt.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Click "Pay with Paystack"</p>
+                      <p class="step__desc">You'll be redirected to Paystack's secure payment portal. Choose your method: card, bank transfer, or USSD.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">See your confirmation</p>
+                      <p class="step__desc">On success, you'll see a reference number and receipt. Your donation is automatically added to the public ledger.</p>
+                    </li>
+                  </ol>
+
+                  <div class="tip tip--info">
+                    <span class="tip__icon">&#128279;</span>
+                    <span class="tip__text"><strong>Auto-recorded on the public ledger.</strong> When your Paystack payment succeeds, the donation is automatically added to the public financial ledger at /ledger/. Your receipt and reference number are generated instantly. No manual entry needed.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">Using the Donations Tracker</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">The Donations page at /donations/ is a dedicated tracker for recording and managing all donations, including offline ones (cash, bank transfers, checks).</p>
+
+                  <div class="mockup">
+                    <div class="mockup__bar">
+                      <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                      <span class="mockup__url">bigsisterfoundation.org/donations/</span>
+                    </div>
+                    <div class="mockup__body">
+                      <div class="m-pills" style="margin-bottom:0.4rem;">
+                        <span class="m-pill m-pill--active">All</span>
+                        <span class="m-pill">Cash</span>
+                        <span class="m-pill">Transfer</span>
+                        <span class="m-pill">Check</span>
+                        <span class="m-pill">Online</span>
+                      </div>
+                      <table class="m-table">
+                        <tr><th>Donor</th><th>Amount</th><th>Type</th><th>Date</th><th>Receipt</th></tr>
+                        <tr><td>Anonymous</td><td style="font-weight:700;">&#8358;50,000</td><td><span class="m-tag m-tag--green">Online</span></td><td>Mar 20</td><td style="color:var(--terra);font-size:0.5rem;">&#128196; View</td></tr>
+                        <tr><td>Mr. Okafor</td><td style="font-weight:700;">&#8358;100,000</td><td><span class="m-tag m-tag--gold">Transfer</span></td><td>Mar 18</td><td style="color:var(--terra);font-size:0.5rem;">&#128196; View</td></tr>
+                      </table>
+                    </div>
+                  </div>
+
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Log a donation</p>
+                      <p class="step__desc">Click "+ Add Donation" and fill in: donor name, email, amount, type (cash, transfer, check, or online), date, and notes.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Generate a receipt</p>
+                      <p class="step__desc">Each donation has a receipt button. Click it to print, download as PDF, or share via WhatsApp.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Filter by type or month</p>
+                      <p class="step__desc">Use the filter pills to show specific donation types or select a month from the dropdown.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Export data (admin)</p>
+                      <p class="step__desc">Admins can export all donation data to CSV and edit or delete any entry.</p>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== EVENTS ===== -->
+        <section class="docs-section" id="events">
+          <div class="section-header">
+            <div class="section-icon quick-link__icon--gold" style="font-size:1.4rem;">&#128197;</div>
+            <div>
+              <h2>Events</h2>
+              <p style="font-size:0.9rem;color:rgba(58,42,31,0.6);margin-top:0.25rem;">Upcoming and past events. RSVP and stay connected.</p>
+            </div>
+          </div>
+
+          <div class="guide-grid">
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">How to browse and RSVP to events</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">The Events page lists all upcoming and past BSF events — community meetups, fundraisers, workshops, and celebrations.</p>
+
+                  <div class="mockup">
+                    <div class="mockup__bar">
+                      <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                      <span class="mockup__url">bigsisterfoundation.org/events/</span>
+                    </div>
+                    <div class="mockup__body">
+                      <div style="font-size:0.5rem;font-weight:700;color:rgba(58,42,31,0.4);text-transform:uppercase;margin-bottom:0.3rem;">Upcoming Events</div>
+                      <div class="m-card">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                          <div>
+                            <div class="m-card__title">Annual Fundraiser Gala</div>
+                            <div class="m-card__text">&#128197; April 15, 2026 &nbsp; &#128205; Lagos Continental Hotel</div>
+                            <div class="m-card__text" style="margin-top:0.15rem;">An evening of celebration and impact stories...</div>
+                          </div>
+                          <span class="m-btn m-btn--green">RSVP</span>
+                        </div>
+                      </div>
+                      <div class="m-card">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                          <div>
+                            <div class="m-card__title">Saturday Coding Workshop</div>
+                            <div class="m-card__text">&#128197; April 20, 2026 &nbsp; &#128205; CcHub Yaba</div>
+                          </div>
+                          <span class="m-btn m-btn--green">RSVP</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Go to the Events page</p>
+                      <p class="step__desc">Click "Events" in the navigation bar.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Browse upcoming events</p>
+                      <p class="step__desc">Each event card shows the name, date, location, and description. Upcoming events appear first.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">RSVP to an event</p>
+                      <p class="step__desc">Click "RSVP" on any upcoming event and enter your name and email to confirm attendance.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">View past events</p>
+                      <p class="step__desc">Scroll below upcoming events to see past events with summaries of what happened.</p>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== BLOG ===== -->
+        <section class="docs-section" id="blog">
+          <div class="section-header">
+            <div class="section-icon quick-link__icon--sage" style="font-size:1.4rem;">&#128221;</div>
+            <div>
+              <h2>Blog</h2>
+              <p style="font-size:0.9rem;color:rgba(58,42,31,0.6);margin-top:0.25rem;">Stories, updates, and impact reports from the foundation.</p>
+            </div>
+          </div>
+
+          <div class="guide-grid">
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">How to read and navigate the blog</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">The Blog at /blog/ features stories about our scholars, updates on foundation activities, impact reports, and volunteer experiences.</p>
+
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Browse blog posts</p>
+                      <p class="step__desc">The listing shows all posts with title, date, author, and preview. Newest posts appear first.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Read a post</p>
+                      <p class="step__desc">Click on any post card to open the full article.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Share a post</p>
+                      <p class="step__desc">Use the share buttons on individual posts to share via social media or WhatsApp.</p>
+                    </li>
+                  </ol>
+
+                  <div class="tip tip--info">
+                    <span class="tip__icon">&#128279;</span>
+                    <span class="tip__text"><strong>Blog and forums are connected.</strong> Blog posts about programs often reference information visible on the Scholars page and relate to discussions in the Community Forums.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== SPONSOR ===== -->
+        <section class="docs-section" id="sponsor">
+          <div class="section-header">
+            <div class="section-icon quick-link__icon--terra" style="font-size:1.4rem;">&#128149;</div>
+            <div>
+              <h2>Sponsor a Scholar</h2>
+              <p style="font-size:0.9rem;color:rgba(58,42,31,0.6);margin-top:0.25rem;">Become a monthly sponsor and make a lasting impact.</p>
+            </div>
+          </div>
+
+          <div class="guide-grid">
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">How to become a recurring sponsor</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">The Sponsor page at /sponsor/ explains how you can set up recurring monthly support. Unlike one-time donations, sponsorships provide consistent funding that allows BSF to plan ahead.</p>
+
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Visit the Sponsor page</p>
+                      <p class="step__desc">Navigate to /sponsor/ through the footer links.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Learn about sponsorship</p>
+                      <p class="step__desc">The page explains what your monthly contribution covers and the impact of consistent support.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Browse scholars being sponsored</p>
+                      <p class="step__desc">See links to scholar profiles that are currently being sponsored or need a sponsor.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Set up your sponsorship</p>
+                      <p class="step__desc">Follow the instructions to set up recurring payments. Contact the BSF team to coordinate.</p>
+                    </li>
+                  </ol>
+
+                  <div class="tip tip--info">
+                    <span class="tip__icon">&#128279;</span>
+                    <span class="tip__text"><strong>Sponsorships link to scholars.</strong> Your recurring sponsorship is connected to specific scholars on the Scholars Tracker. Track the impact through their progress updates and investment breakdowns.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== ADMIN DASHBOARD ===== -->
+        <section class="docs-section" id="admin">
+          <div class="section-header">
+            <div class="section-icon quick-link__icon--terra" style="font-size:1.4rem;">&#128736;</div>
+            <div>
+              <h2>Admin Dashboard</h2>
+              <p style="font-size:0.9rem;color:rgba(58,42,31,0.6);margin-top:0.25rem;">Central management hub for the entire platform. Admin access only.</p>
+            </div>
+          </div>
+
+          <div class="guide-grid">
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">Admin Dashboard overview</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">The Admin Dashboard at /admin/ is the central management hub. Only admin accounts can access it.</p>
+
+                  <div class="mockup">
+                    <div class="mockup__bar">
+                      <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                      <span class="mockup__url">bigsisterfoundation.org/admin/</span>
+                    </div>
+                    <div class="mockup__body">
+                      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.3rem;margin-bottom:0.5rem;">
+                        <div style="background:rgba(45,94,64,0.06);padding:0.3rem;border-radius:6px;text-align:center;">
+                          <div style="font-size:0.7rem;font-weight:700;color:var(--green);">24</div>
+                          <div style="font-size:0.4rem;color:rgba(58,42,31,0.4);">SCHOLARS</div>
+                        </div>
+                        <div style="background:rgba(194,115,76,0.06);padding:0.3rem;border-radius:6px;text-align:center;">
+                          <div style="font-size:0.7rem;font-weight:700;color:var(--terra);">8</div>
+                          <div style="font-size:0.4rem;color:rgba(58,42,31,0.4);">VOLUNTEERS</div>
+                        </div>
+                        <div style="background:rgba(212,169,106,0.08);padding:0.3rem;border-radius:6px;text-align:center;">
+                          <div style="font-size:0.7rem;font-weight:700;color:#8a6d2f;">3</div>
+                          <div style="font-size:0.4rem;color:rgba(58,42,31,0.4);">PENDING</div>
+                        </div>
+                      </div>
+                      <div style="font-size:0.5rem;font-weight:700;color:rgba(58,42,31,0.4);text-transform:uppercase;margin-bottom:0.2rem;">Management Sections</div>
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.25rem;">
+                        <div class="m-card"><div class="m-card__title">&#128100; Volunteers</div></div>
+                        <div class="m-card"><div class="m-card__title">&#127891; Scholars</div></div>
+                        <div class="m-card"><div class="m-card__title">&#127979; Schools</div></div>
+                        <div class="m-card"><div class="m-card__title">&#128176; Ledger</div></div>
+                        <div class="m-card"><div class="m-card__title">&#128161; Ideas</div></div>
+                        <div class="m-card"><div class="m-card__title">&#128203; Audit Log</div></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Dashboard stats</p>
+                      <p class="step__desc">At-a-glance numbers: total scholars, active volunteers, pending applications, and recent activity.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Volunteer management</p>
+                      <p class="step__desc">Review pending applications, approve or reject them, and manage existing volunteers.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Scholar management</p>
+                      <p class="step__desc">Full CRUD operations on scholars. Add new scholars, edit profiles, update statuses and performance.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">School management</p>
+                      <p class="step__desc">Add, edit, and remove schools. Attach notes about conditions and teacher contact info.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Ledger management</p>
+                      <p class="step__desc">Edit, delete, and bulk manage ledger entries. Export financial data to CSV.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Ideas management</p>
+                      <p class="step__desc">Edit, delete, and bulk manage ideas. Change statuses (Open, Planned, In Progress, Completed).</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Audit log</p>
+                      <p class="step__desc">A permanent record of every create, edit, and delete action across the platform. Shows who did what, when, and on which record.</p>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">How to approve or reject volunteer applications</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <ol class="steps">
+                    <li class="step">
+                      <p class="step__title">Go to Volunteer Management</p>
+                      <p class="step__desc">Click on the "Volunteers" section. Pending applications will be highlighted.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Review the application</p>
+                      <p class="step__desc">Read the applicant's name, location, motivation, skills, and availability.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Approve or reject</p>
+                      <p class="step__desc">Click "Approve" to grant volunteer access (they'll be directed to /volunteer/register/) or "Reject" to decline. Both actions are recorded in the audit log.</p>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+
+            <div class="guide-card" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">Understanding the audit log</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">The audit log tracks every change across the platform for full accountability.</p>
+
+                  <div class="mockup">
+                    <div class="mockup__bar">
+                      <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                      <span class="mockup__url">bigsisterfoundation.org/admin/ — Audit Log</span>
+                    </div>
+                    <div class="mockup__body">
+                      <table class="m-table">
+                        <tr><th>Time</th><th>User</th><th>Action</th><th>Record</th></tr>
+                        <tr><td style="font-size:0.5rem;">Mar 20, 14:32</td><td style="font-size:0.5rem;">Kemi A.</td><td><span class="m-tag m-tag--green">Created</span></td><td style="font-size:0.5rem;">Ledger: +&#8358;50K donation</td></tr>
+                        <tr><td style="font-size:0.5rem;">Mar 20, 11:15</td><td style="font-size:0.5rem;">Admin</td><td><span class="m-tag m-tag--gold">Edited</span></td><td style="font-size:0.5rem;">Scholar: Amina K. status</td></tr>
+                        <tr><td style="font-size:0.5rem;">Mar 19, 09:40</td><td style="font-size:0.5rem;">Admin</td><td><span class="m-tag m-tag--terra">Deleted</span></td><td style="font-size:0.5rem;">Idea: Duplicate entry</td></tr>
+                        <tr><td style="font-size:0.5rem;">Mar 19, 08:22</td><td style="font-size:0.5rem;">Admin</td><td><span class="m-tag m-tag--green">Approved</span></td><td style="font-size:0.5rem;">Volunteer: Tunde M.</td></tr>
+                      </table>
+                    </div>
+                  </div>
+
+                  <p style="font-size:0.92rem;color:rgba(58,42,31,0.75);">Every action is recorded: who did it, when, what type of action (create, edit, delete, approve, reject), and which record was affected. This log cannot be edited or deleted — it's a permanent record for accountability.</p>
                 </div>
               </div>
             </div>
@@ -1440,7 +2206,7 @@
           <div class="section-header">
             <div class="section-icon quick-link__icon--green" style="font-size:1.4rem;">&#128274;</div>
             <div>
-              <h2>Accounts &amp; Sign In</h2>
+              <h2>Accounts &amp; Roles</h2>
               <p style="font-size:0.9rem;color:rgba(58,42,31,0.6);margin-top:0.25rem;">When you need an account and how to sign in.</p>
             </div>
           </div>
@@ -1453,21 +2219,25 @@
               </div>
               <div class="guide-card__body">
                 <div class="guide-card__content">
-                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">Most things on the platform do NOT require an account. Here's a breakdown:</p>
+                  <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">Most things on the platform do NOT require an account:</p>
 
                   <table class="m-table" style="font-size:0.85rem;">
                     <tr><th style="font-size:0.75rem;">Action</th><th style="font-size:0.75rem;">Account Needed?</th></tr>
-                    <tr><td>View the ledger</td><td style="color:var(--green);font-weight:700;">No</td></tr>
+                    <tr><td>View the financial ledger</td><td style="color:var(--green);font-weight:700;">No</td></tr>
                     <tr><td>View scholars</td><td style="color:var(--green);font-weight:700;">No</td></tr>
                     <tr><td>Vote on ideas</td><td style="color:var(--green);font-weight:700;">No</td></tr>
-                    <tr><td>Read forum threads</td><td style="color:var(--green);font-weight:700;">No</td></tr>
-                    <tr><td>Post on the forums</td><td style="color:var(--green);font-weight:700;">No — just enter a name</td></tr>
-                    <tr><td>Reply to forum threads</td><td style="color:var(--green);font-weight:700;">No — just enter a name</td></tr>
+                    <tr><td>Read/post/reply on forums</td><td style="color:var(--green);font-weight:700;">No — just enter a name</td></tr>
                     <tr><td>Apply to volunteer</td><td style="color:var(--green);font-weight:700;">No</td></tr>
-                    <tr><td>Submit a new idea</td><td style="color:var(--terra);font-weight:700;">Yes — volunteer account</td></tr>
-                    <tr><td>Add ledger entries</td><td style="color:var(--terra);font-weight:700;">Yes — volunteer account</td></tr>
-                    <tr><td>Add/edit scholars</td><td style="color:var(--terra);font-weight:700;">Yes — volunteer account</td></tr>
-                    <tr><td>Admin dashboard</td><td style="color:var(--terra);font-weight:700;">Yes — admin account</td></tr>
+                    <tr><td>Donate via Paystack</td><td style="color:var(--green);font-weight:700;">No</td></tr>
+                    <tr><td>RSVP to events</td><td style="color:var(--green);font-weight:700;">No</td></tr>
+                    <tr><td>Read the blog</td><td style="color:var(--green);font-weight:700;">No</td></tr>
+                    <tr><td>Submit a new idea</td><td style="color:var(--terra);font-weight:700;">Yes — volunteer</td></tr>
+                    <tr><td>Add ledger entries</td><td style="color:var(--terra);font-weight:700;">Yes — volunteer</td></tr>
+                    <tr><td>Edit own content</td><td style="color:var(--terra);font-weight:700;">Yes — volunteer</td></tr>
+                    <tr><td>Admin dashboard &amp; management</td><td style="color:var(--terra);font-weight:700;">Yes — admin</td></tr>
+                    <tr><td>Approve/reject volunteers</td><td style="color:var(--terra);font-weight:700;">Yes — admin</td></tr>
+                    <tr><td>Manage scholars &amp; schools</td><td style="color:var(--terra);font-weight:700;">Yes — admin</td></tr>
+                    <tr><td>Bulk operations &amp; CSV export</td><td style="color:var(--terra);font-weight:700;">Yes — admin</td></tr>
                   </table>
                 </div>
               </div>
@@ -1501,7 +2271,7 @@
                   <ol class="steps">
                     <li class="step">
                       <p class="step__title">Find the "Volunteer Sign In" button</p>
-                      <p class="step__desc">On the Ideas, Ledger, or Scholars pages, look for the "Volunteer Sign In" button near the bottom of the page.</p>
+                      <p class="step__desc">On the Ideas, Ledger, or Scholars pages, look for the "Volunteer Sign In" button near the bottom.</p>
                     </li>
                     <li class="step">
                       <p class="step__title">To sign in: enter email and password</p>
@@ -1509,11 +2279,11 @@
                     </li>
                     <li class="step">
                       <p class="step__title">To create a new account: click "Sign Up"</p>
-                      <p class="step__desc">Click "Need an account? Sign Up" at the bottom. You'll see an extra field for your display name. Fill in your name, email, and choose a password, then click "Sign Up".</p>
+                      <p class="step__desc">Click "Need an account? Sign Up". Fill in your name, email, and password.</p>
                     </li>
                     <li class="step">
                       <p class="step__title">To sign out</p>
-                      <p class="step__desc">Once signed in, you'll see your name in a green bar at the top. Click "Sign Out" to log out.</p>
+                      <p class="step__desc">Once signed in, you'll see your name in a green bar. Click "Sign Out" to log out.</p>
                     </li>
                   </ol>
 
@@ -1521,6 +2291,85 @@
                     <span class="tip__icon">&#128272;</span>
                     <span class="tip__text"><strong>Forgot your password?</strong> Contact the BSF team on <a href="https://wa.me/2348000000000" style="color:var(--terra);font-weight:600;">WhatsApp</a> and they'll help you reset it.</span>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== HOW IT ALL CONNECTS ===== -->
+        <section class="docs-section" id="connections">
+          <div class="section-header">
+            <div class="section-icon quick-link__icon--sage" style="font-size:1.4rem;">&#128279;</div>
+            <div>
+              <h2>How It All Connects</h2>
+              <p style="font-size:0.9rem;color:rgba(58,42,31,0.6);margin-top:0.25rem;">The BSF platform is not a collection of separate pages — everything is connected.</p>
+            </div>
+          </div>
+
+          <div class="guide-grid">
+            <div class="guide-card is-open" data-guide>
+              <div class="guide-card__header">
+                <span class="guide-card__title">Platform data flow and cross-page connections</span>
+                <span class="guide-card__toggle">&#9660;</span>
+              </div>
+              <div class="guide-card__body">
+                <div class="guide-card__content">
+                  <p style="margin-bottom:1.5rem;font-size:0.92rem;color:rgba(58,42,31,0.75);">Every page on the BSF platform feeds into others. Here's how data flows between them:</p>
+
+                  <h4 style="margin-bottom:0.75rem;color:var(--green);">Donation Flow</h4>
+                  <div class="flow-diagram">
+                    <div class="flow-node flow-node--green">Give Page<br><span style="font-size:0.6rem;opacity:0.7;">/donate/</span></div>
+                    <span class="flow-arrow">&#8594;</span>
+                    <div class="flow-node flow-node--gold">Paystack<br><span style="font-size:0.6rem;opacity:0.7;">Payment</span></div>
+                    <span class="flow-arrow">&#8594;</span>
+                    <div class="flow-node flow-node--terra">Public Ledger<br><span style="font-size:0.6rem;opacity:0.7;">/ledger/</span></div>
+                    <span class="flow-arrow">&#8594;</span>
+                    <div class="flow-node flow-node--sage">Donations Tracker<br><span style="font-size:0.6rem;opacity:0.7;">/donations/</span></div>
+                  </div>
+                  <p style="font-size:0.88rem;color:rgba(58,42,31,0.65);margin-bottom:1.5rem;">When you donate on the Give page, Paystack processes the payment. On success, the transaction is <strong>automatically</strong> recorded on the public ledger and appears in the donations tracker with a generated receipt.</p>
+
+                  <h4 style="margin-bottom:0.75rem;color:var(--terra);">Volunteer Flow</h4>
+                  <div class="flow-diagram">
+                    <div class="flow-node flow-node--terra">Volunteer Page<br><span style="font-size:0.6rem;opacity:0.7;">/volunteer/</span></div>
+                    <span class="flow-arrow">&#8594;</span>
+                    <div class="flow-node flow-node--gold">Admin Review<br><span style="font-size:0.6rem;opacity:0.7;">/admin/</span></div>
+                    <span class="flow-arrow">&#8594;</span>
+                    <div class="flow-node flow-node--green">Registration<br><span style="font-size:0.6rem;opacity:0.7;">/volunteer/register/</span></div>
+                    <span class="flow-arrow">&#8594;</span>
+                    <div class="flow-node flow-node--sage">Active Volunteer<br><span style="font-size:0.6rem;opacity:0.7;">Ideas + Ledger</span></div>
+                  </div>
+                  <p style="font-size:0.88rem;color:rgba(58,42,31,0.65);margin-bottom:1.5rem;">When you apply on the Volunteer page, your application goes to Admin for review. If approved, you're directed to Volunteer Registration with onboarding steps. Once onboarded, you can submit ideas and add ledger entries.</p>
+
+                  <h4 style="margin-bottom:0.75rem;color:#8a6d2f;">Ideas Flow</h4>
+                  <div class="flow-diagram">
+                    <div class="flow-node flow-node--gold">Community Votes<br><span style="font-size:0.6rem;opacity:0.7;">/ideas/</span></div>
+                    <span class="flow-arrow">&#8594;</span>
+                    <div class="flow-node flow-node--terra">Admin Reviews<br><span style="font-size:0.6rem;opacity:0.7;">/admin/</span></div>
+                    <span class="flow-arrow">&#8594;</span>
+                    <div class="flow-node flow-node--green">Status: In Progress</div>
+                    <span class="flow-arrow">&#8594;</span>
+                    <div class="flow-node flow-node--sage">Completed</div>
+                  </div>
+                  <p style="font-size:0.88rem;color:rgba(58,42,31,0.65);margin-bottom:1.5rem;">Community members vote on ideas. When an idea gets traction, admins change its status through Planned, In Progress, and finally Completed.</p>
+
+                  <h4 style="margin-bottom:0.75rem;color:var(--green);">Scholar-Ledger Connection</h4>
+                  <div class="flow-diagram">
+                    <div class="flow-node flow-node--green">Scholar Profile<br><span style="font-size:0.6rem;opacity:0.7;">/scholars/</span></div>
+                    <span class="flow-arrow">&#8596;</span>
+                    <div class="flow-node flow-node--terra">Ledger Entries<br><span style="font-size:0.6rem;opacity:0.7;">/ledger/</span></div>
+                  </div>
+                  <p style="font-size:0.88rem;color:rgba(58,42,31,0.65);margin-bottom:1.5rem;">Scholar expenses (school fees, food, healthcare) connect to ledger entries. Spending on a scholar appears in both their investment breakdown and the public ledger.</p>
+
+                  <h4 style="margin-bottom:0.75rem;color:var(--terra);">Admin as Central Hub</h4>
+                  <div class="flow-diagram">
+                    <div class="flow-node flow-node--green">Scholars</div>
+                    <div class="flow-node flow-node--gold">Ideas</div>
+                    <div class="flow-node flow-node--terra" style="border:2px solid var(--terra);">Admin Dashboard<br><span style="font-size:0.6rem;opacity:0.7;">Manages ALL</span></div>
+                    <div class="flow-node flow-node--sage">Ledger</div>
+                    <div class="flow-node flow-node--green">Volunteers</div>
+                  </div>
+                  <p style="font-size:0.88rem;color:rgba(58,42,31,0.65);">The Admin Dashboard manages all content across the platform. Every action is tracked in the audit log for full accountability.</p>
                 </div>
               </div>
             </div>
@@ -1550,11 +2399,71 @@
 
             <div class="faq-item" data-faq>
               <div class="faq-item__q">
+                <span>How do I donate to BSF?</span>
+                <span class="faq-item__toggle">&#9660;</span>
+              </div>
+              <div class="faq-item__a">
+                <div class="faq-item__a-content">Go to the <a href="/donate/" style="color:var(--terra);font-weight:600;">Give page</a>. Choose a fund category (School Fees, Food, Healthcare, Events, or Reserves), enter an amount in naira, and pay via Paystack using card, bank transfer, or USSD. No account needed. Your donation is automatically recorded on the public ledger.</div>
+              </div>
+            </div>
+
+            <div class="faq-item" data-faq>
+              <div class="faq-item__q">
+                <span>Where does my donation go?</span>
+                <span class="faq-item__toggle">&#9660;</span>
+              </div>
+              <div class="faq-item__a">
+                <div class="faq-item__a-content">Your donation goes to the specific fund category you choose during payment. You can verify this on the <a href="/ledger/" style="color:var(--terra);font-weight:600;">public ledger</a>, which shows every transaction. The Sankey diagram visually shows how money flows from sources to expense categories.</div>
+              </div>
+            </div>
+
+            <div class="faq-item" data-faq>
+              <div class="faq-item__q">
+                <span>Can I get a receipt for my donation?</span>
+                <span class="faq-item__toggle">&#9660;</span>
+              </div>
+              <div class="faq-item__a">
+                <div class="faq-item__a-content">Yes. After a successful payment, a receipt is automatically generated with a reference number. You can also visit the <a href="/donations/" style="color:var(--terra);font-weight:600;">Donations Tracker</a> to view, print, download as PDF, or share your receipt via WhatsApp.</div>
+              </div>
+            </div>
+
+            <div class="faq-item" data-faq>
+              <div class="faq-item__q">
+                <span>What payment methods are supported?</span>
+                <span class="faq-item__toggle">&#9660;</span>
+              </div>
+              <div class="faq-item__a">
+                <div class="faq-item__a-content">Online donations through the Give page are processed via Paystack and support card payments, bank transfers, and USSD. For offline donations (cash, checks), the BSF team can log them manually through the Donations Tracker page.</div>
+              </div>
+            </div>
+
+            <div class="faq-item" data-faq>
+              <div class="faq-item__q">
                 <span>Can I volunteer from outside Lagos?</span>
                 <span class="faq-item__toggle">&#9660;</span>
               </div>
               <div class="faq-item__a">
-                <div class="faq-item__a-content">Yes! While in-person volunteering happens in Lagos, you can contribute remotely — tutoring online, helping with the platform, fundraising, social media, or mentoring. Apply through the Volunteer page and mention your location.</div>
+                <div class="faq-item__a-content">Yes! While in-person volunteering happens in Lagos, you can contribute remotely — tutoring online, helping with the platform, fundraising, social media, or mentoring. Apply through the <a href="/volunteer/" style="color:var(--terra);font-weight:600;">Volunteer page</a> and mention your location.</div>
+              </div>
+            </div>
+
+            <div class="faq-item" data-faq>
+              <div class="faq-item__q">
+                <span>What is expected of volunteers?</span>
+                <span class="faq-item__toggle">&#9660;</span>
+              </div>
+              <div class="faq-item__a">
+                <div class="faq-item__a-content">BSF expects volunteers to: commit to <strong>4 hours per month minimum</strong>, <strong>never post photos of children on social media</strong>, <strong>listen before you lead</strong>, <strong>report any safeguarding concerns immediately</strong>, and <strong>communicate — don't disappear</strong>. If your availability changes, let the team know.</div>
+              </div>
+            </div>
+
+            <div class="faq-item" data-faq>
+              <div class="faq-item__q">
+                <span>What happens after I submit a volunteer application?</span>
+                <span class="faq-item__toggle">&#9660;</span>
+              </div>
+              <div class="faq-item__a">
+                <div class="faq-item__a-content">Your application goes to the Admin Dashboard for review. An admin will evaluate your motivation, skills, and availability, then approve or reject it. If approved, you'll get access to the Volunteer Registration page with onboarding steps: join the WhatsApp group, attend orientation, read the volunteer guide, and attend your first session.</div>
               </div>
             </div>
 
@@ -1564,7 +2473,37 @@
                 <span class="faq-item__toggle">&#9660;</span>
               </div>
               <div class="faq-item__a">
-                <div class="faq-item__a-content">To protect the children's privacy, we only display first names and last initials (e.g., "Amina K."). Full names are kept confidential and only accessible to authorized BSF staff.</div>
+                <div class="faq-item__a-content">To protect the children's privacy, we only display first names and last initials (e.g., "Amina K."). Full names are kept confidential and only accessible to authorized BSF staff. This is a core child protection measure.</div>
+              </div>
+            </div>
+
+            <div class="faq-item" data-faq>
+              <div class="faq-item__q">
+                <span>Is the financial data real?</span>
+                <span class="faq-item__toggle">&#9660;</span>
+              </div>
+              <div class="faq-item__a">
+                <div class="faq-item__a-content">Yes. The ledger reflects actual transactions. BSF is committed to radical financial transparency — every naira in or out is recorded and publicly visible. Online donations via Paystack are automatically recorded. The Sankey diagram provides a visual summary of all financial flows.</div>
+              </div>
+            </div>
+
+            <div class="faq-item" data-faq>
+              <div class="faq-item__q">
+                <span>Do I need an account to post on the forums?</span>
+                <span class="faq-item__toggle">&#9660;</span>
+              </div>
+              <div class="faq-item__a">
+                <div class="faq-item__a-content">No. The forums are completely open. Just enter your name and start posting. Your name and email (if provided) are saved in your browser for convenience. No sign-up or login required.</div>
+              </div>
+            </div>
+
+            <div class="faq-item" data-faq>
+              <div class="faq-item__q">
+                <span>Why did my vote disappear when I switched devices?</span>
+                <span class="faq-item__toggle">&#9660;</span>
+              </div>
+              <div class="faq-item__a">
+                <div class="faq-item__a-content">Votes on ideas and forum threads are stored in your browser's localStorage. They persist on the same device and browser but don't sync across devices. If you switch to a different device, you'll be able to vote again.</div>
               </div>
             </div>
 
@@ -1574,7 +2513,17 @@
                 <span class="faq-item__toggle">&#9660;</span>
               </div>
               <div class="faq-item__a">
-                <div class="faq-item__a-content">Contact the BSF team directly via <a href="https://wa.me/2348000000000" style="color:var(--terra);font-weight:600;">WhatsApp</a> or <a href="mailto:princebolajibreeze@gmail.com" style="color:var(--terra);font-weight:600;">email</a> with details of the post or thread. The team can remove inappropriate content from the admin dashboard.</div>
+                <div class="faq-item__a-content">Contact the BSF team directly via <a href="https://wa.me/2348000000000" style="color:var(--terra);font-weight:600;">WhatsApp</a> or <a href="mailto:princebolajibreeze@gmail.com" style="color:var(--terra);font-weight:600;">email</a> with details. The team can remove inappropriate content from the admin dashboard. All moderation actions are tracked in the audit log.</div>
+              </div>
+            </div>
+
+            <div class="faq-item" data-faq>
+              <div class="faq-item__q">
+                <span>Can I become a monthly sponsor instead of a one-time donor?</span>
+                <span class="faq-item__toggle">&#9660;</span>
+              </div>
+              <div class="faq-item__a">
+                <div class="faq-item__a-content">Yes! Visit the <a href="/sponsor/" style="color:var(--terra);font-weight:600;">Sponsor page</a> to learn about recurring sponsorship. Monthly sponsors provide consistent funding that helps BSF plan ahead. You'll be connected to specific scholars and can track impact through their profiles.</div>
               </div>
             </div>
 
@@ -1590,11 +2539,21 @@
 
             <div class="faq-item" data-faq>
               <div class="faq-item__q">
-                <span>Is the financial data real?</span>
+                <span>What is the admin audit log?</span>
                 <span class="faq-item__toggle">&#9660;</span>
               </div>
               <div class="faq-item__a">
-                <div class="faq-item__a-content">Yes. The ledger reflects actual transactions. BSF is committed to radical financial transparency — every naira that comes in or goes out is recorded and publicly visible. This is core to how the foundation operates.</div>
+                <div class="faq-item__a-content">The audit log is a permanent, uneditable record of every create, edit, and delete action performed across the entire platform. It tracks who did what, when, and on which record. This ensures complete accountability for all changes to scholars, ledger entries, ideas, and volunteer decisions.</div>
+              </div>
+            </div>
+
+            <div class="faq-item" data-faq>
+              <div class="faq-item__q">
+                <span>Can I export data from the platform?</span>
+                <span class="faq-item__toggle">&#9660;</span>
+              </div>
+              <div class="faq-item__a">
+                <div class="faq-item__a-content">Admins can export ledger data and donation records to CSV files from the admin dashboard. This is useful for accounting, reporting, and auditing. Regular users and volunteers do not have export access.</div>
               </div>
             </div>
 
@@ -1604,17 +2563,7 @@
                 <span class="faq-item__toggle">&#9660;</span>
               </div>
               <div class="faq-item__a">
-                <div class="faq-item__a-content">Reach out on <a href="https://wa.me/2348000000000" style="color:var(--terra);font-weight:600;">WhatsApp</a> or email <a href="mailto:princebolajibreeze@gmail.com" style="color:var(--terra);font-weight:600;">princebolajibreeze@gmail.com</a>. Include a description of the problem and what page you were on.</div>
-              </div>
-            </div>
-
-            <div class="faq-item" data-faq>
-              <div class="faq-item__q">
-                <span>Can I donate to the foundation?</span>
-                <span class="faq-item__toggle">&#9660;</span>
-              </div>
-              <div class="faq-item__a">
-                <div class="faq-item__a-content">Contact the BSF team via <a href="https://wa.me/2348000000000" style="color:var(--terra);font-weight:600;">WhatsApp</a> to discuss how you can contribute. All donations are recorded transparently in the public ledger.</div>
+                <div class="faq-item__a-content">Reach out on <a href="https://wa.me/2348000000000" style="color:var(--terra);font-weight:600;">WhatsApp</a> or email <a href="mailto:princebolajibreeze@gmail.com" style="color:var(--terra);font-weight:600;">princebolajibreeze@gmail.com</a>. Include a description of the problem, what page you were on, and what device/browser you were using.</div>
               </div>
             </div>
           </div>
@@ -1647,9 +2596,18 @@
         </div>
         <div class="footer__right">
           <ul class="footer__links">
+            <li><a href="/scholars/">Scholars</a></li>
+            <li><a href="/ledger/">Ledger</a></li>
+            <li><a href="/events/">Events</a></li>
+            <li><a href="/volunteer/">Volunteer</a></li>
+            <li><a href="/forums/">Forums</a></li>
+            <li><a href="/ideas/">Ideas</a></li>
+            <li><a href="/donations/">Donations</a></li>
+            <li><a href="/donate/">Give</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="/sponsor/">Sponsor</a></li>
             <li><a href="https://wa.me/2348000000000">WhatsApp</a></li>
             <li><a href="mailto:princebolajibreeze@gmail.com">Email</a></li>
-            <li><a href="#">Instagram</a></li>
           </ul>
           <p class="footer__copy">&copy; 2026 Big Sister Foundation. All rights reserved.</p>
         </div>
@@ -1768,7 +2726,6 @@
           } else {
             var html = '';
             results.slice(0, 8).forEach(function (r) {
-              // Extract preview around the match
               var idx = r.text.indexOf(query);
               var start = Math.max(0, idx - 40);
               var end = Math.min(r.text.length, idx + query.length + 60);
@@ -1782,14 +2739,12 @@
             });
             searchResults.innerHTML = html;
 
-            // Click to navigate
             searchResults.querySelectorAll('.search-result').forEach(function (result, i) {
               result.addEventListener('click', function () {
                 var sectionId = result.getAttribute('data-section');
                 var section = document.getElementById(sectionId);
                 if (section) {
                   section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  // Open the matching card
                   var matchedItem = results[i];
                   if (matchedItem && matchedItem.el) {
                     if (!matchedItem.el.classList.contains('is-open')) {
@@ -1807,7 +2762,6 @@
         }, 200);
       });
 
-      // Close search results when clicking outside
       document.addEventListener('click', function (e) {
         if (!searchResults.contains(e.target) && e.target !== searchInput) {
           searchResults.classList.remove('is-visible');
