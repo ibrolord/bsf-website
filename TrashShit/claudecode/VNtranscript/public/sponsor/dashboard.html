@@ -52,6 +52,7 @@
       font-weight: 600;
       letter-spacing: 0.12em;
       text-transform: uppercase;
+      color: var(--terra);
       margin-bottom: 1rem;
     }
 
@@ -117,9 +118,9 @@
     .btn--ghost-dark:hover { background: rgba(255,255,255,0.15); }
 
     /* ── NOT REGISTERED STATE ── */
-    .not-registered {
-      min-height: 100vh; display: flex; align-items: center; justify-content: center;
-      padding-top: 80px; text-align: center;
+    .not-registered { /* compact height so community sections show below */
+      min-height: auto; display: flex; align-items: center; justify-content: center;
+      padding: 80px 0 40px; text-align: center;
     }
     .not-registered__inner { max-width: 520px; }
     .not-registered__icon {
@@ -579,23 +580,57 @@
         transition-duration: 0.01ms !important;
       }
     }
+    /* IDEA CARDS */
+    .idea-card {
+      background: #fff; border: 1.5px solid rgba(58,42,31,0.08); border-radius: 12px;
+      padding: 1.25rem; transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+    }
+    .idea-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(58,42,31,0.06); }
+    .idea-card__title { font-family: var(--font-serif); font-size: 1.05rem; font-weight: 600; color: var(--brown); margin-bottom: 0.35rem; }
+    .idea-card__desc { font-size: 0.85rem; line-height: 1.6; color: rgba(58,42,31,0.55); margin-bottom: 0.75rem; }
+    .idea-card__meta { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; }
+    .idea-card__cost { font-size: 0.8rem; font-weight: 600; color: var(--green); }
+    .idea-card__votes { font-size: 0.75rem; color: rgba(58,42,31,0.4); }
+    .idea-card__tag { display: inline-block; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;
+      padding: 0.2rem 0.5rem; border-radius: 100px; background: rgba(212,169,106,0.12); color: var(--gold); }
+    .idea-card__btn { margin-top: 0.75rem; display: inline-flex; align-items: center; gap: 0.35rem;
+      font-size: 0.8rem; font-weight: 600; color: var(--terra); cursor: pointer; background: none; border: none; padding: 0; }
+    .idea-card__btn:hover { text-decoration: underline; }
+
+    /* GOAL CARDS */
+    .goal-card {
+      background: #fff; border: 1.5px solid rgba(58,42,31,0.08); border-radius: 12px;
+      padding: 1.5rem; transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+    }
+    .goal-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(58,42,31,0.06); }
+    .goal-card__title { font-family: var(--font-serif); font-size: 1.1rem; font-weight: 600; color: var(--brown); margin-bottom: 0.25rem; }
+    .goal-card__desc { font-size: 0.85rem; line-height: 1.6; color: rgba(58,42,31,0.55); margin-bottom: 1rem; }
+    .goal-card__progress { margin-bottom: 0.5rem; }
+    .goal-card__bar-track { width: 100%; height: 8px; border-radius: 4px; background: rgba(58,42,31,0.06); overflow: hidden; }
+    .goal-card__bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--green), var(--sage)); transition: width 0.6s var(--ease); }
+    .goal-card__amounts { display: flex; justify-content: space-between; margin-top: 0.4rem; font-size: 0.75rem; color: rgba(58,42,31,0.45); }
+    .goal-card__amounts strong { color: var(--green); font-weight: 600; }
+    .goal-card__btn { margin-top: 1rem; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.6rem 1.25rem;
+      border-radius: 100px; font-size: 0.8rem; font-weight: 600; background: var(--terra); color: #fff; border: none; cursor: pointer;
+      transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease); }
+    .goal-card__btn:hover { transform: scale(1.03); box-shadow: 0 6px 20px rgba(194,115,76,0.2); }
+
+    /* NOTES */
+    #notes-textarea:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(45,94,64,0.08); }
   </style>
 </head>
 <body>
 
   <!-- NAV -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Main navigation">
     <a href="/" class="nav__logo">Big Sister Foundation</a>
     <ul class="nav__links">
-      <li><a href="/#pathways">Pathways</a></li>
-      <li><a href="/#different">Approach</a></li>
-      <li><a href="/ledger/">Ledger</a></li>
-      <li><a href="/ideas/">Ideas</a></li>
+      <li><a href="/">Home</a></li>
       <li><a href="/scholars/">Scholars</a></li>
+      <li><a href="/ledger/">Ledger</a></li>
+      <li><a href="/events/">Events</a></li>
       <li><a href="/volunteer/">Volunteer</a></li>
-      <li><a href="/forums/">Forums</a></li>
-      <li><a href="/donate/">Donate</a></li>
-      <li><a href="/sponsor/" class="is-active">Sponsor</a></li>
+      <li><a href="/donate/">Give</a></li>
     </ul>
   </nav>
 
@@ -848,8 +883,60 @@
     </div><!-- .container -->
   </div><!-- #dashboard -->
 
+  <!-- COMMUNITY SECTIONS (always visible) -->
+  <div class="container" style="padding-top:0;padding-bottom:clamp(24px, 2vw + 10px, 40px);">
+      <!-- F. SPONSOR AN IDEA -->
+      <div class="dash-section" id="ideas-section">
+        <div class="dash-section__header">
+          <div class="dash-section__header-left">
+            <div class="dash-section__icon" style="background:rgba(212,169,106,0.1);">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--gold)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <span class="dash-section__title">Sponsor an Idea</span>
+          </div>
+          <a href="/ideas/" style="font-size:0.85rem;font-weight:600;color:var(--terra);text-decoration:none;">View All Ideas</a>
+        </div>
+        <p style="font-size:0.9rem;color:rgba(58,42,31,0.55);margin-bottom:1.25rem;">Fund ideas proposed by the community. Your sponsorship makes them happen.</p>
+        <div id="ideas-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;"></div>
+        <div id="ideas-empty" style="display:none;text-align:center;padding:2rem;color:rgba(58,42,31,0.4);font-size:0.9rem;">No ideas awaiting sponsorship right now. <a href="/ideas/" style="color:var(--terra);font-weight:600;text-decoration:none;">Propose one</a></div>
+      </div>
+
+      <!-- G. PENDING GOALS -->
+      <div class="dash-section" id="goals-section">
+        <div class="dash-section__header">
+          <div class="dash-section__header-left">
+            <div class="dash-section__icon" style="background:rgba(45,94,64,0.08);">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--green)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v1.5M3 21v-6m0 0l2.77-.693a9 9 0 016.208.682l.108.054a9 9 0 006.086.71l3.114-.732a48.524 48.524 0 01-.005-10.499l-3.11.732a9 9 0 01-6.085-.711l-.108-.054a9 9 0 00-6.208-.682L3 4.5M3 15V4.5"/></svg>
+            </div>
+            <span class="dash-section__title">Foundation Goals</span>
+          </div>
+        </div>
+        <p style="font-size:0.9rem;color:rgba(58,42,31,0.55);margin-bottom:1.25rem;">Active goals that need funding. Pick one and help us reach the target.</p>
+        <div id="goals-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;"></div>
+        <div id="goals-empty" style="display:none;text-align:center;padding:2rem;color:rgba(58,42,31,0.4);font-size:0.9rem;">No active goals right now. Check back soon.</div>
+      </div>
+
+      <!-- H. MY NOTES -->
+      <div class="dash-section" id="notes-section">
+        <div class="dash-section__header">
+          <div class="dash-section__header-left">
+            <div class="dash-section__icon" style="background:rgba(139,175,142,0.15);">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--sage)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
+            </div>
+            <span class="dash-section__title">My Notes</span>
+          </div>
+          <div id="notes-save-status" style="font-size:0.75rem;color:var(--sage);font-weight:600;opacity:0;transition:opacity 0.3s;"></div>
+        </div>
+        <p style="font-size:0.9rem;color:rgba(58,42,31,0.55);margin-bottom:1rem;">Your private space. Jot down thoughts, reminders, or reflections. Only you can see this.</p>
+        <textarea id="notes-textarea" style="width:100%;min-height:160px;padding:1rem;border:1.5px solid rgba(58,42,31,0.1);border-radius:12px;font-family:var(--font-sans);font-size:0.95rem;color:var(--brown);background:#fff;resize:vertical;outline:none;transition:border-color 0.3s,box-shadow 0.3s;line-height:1.7;" placeholder="Why I chose to give... thoughts after today's session... ideas for next time..."></textarea>
+        <p style="font-size:0.75rem;color:rgba(58,42,31,0.35);margin-top:0.5rem;">Auto-saved as you type</p>
+      </div>
+
+  </div>
+
+
   <!-- WELCOME MODAL -->
-  <div class="welcome-overlay" id="welcome-overlay">
+  <div class="welcome-overlay" id="welcome-overlay" style="display:none;">
     <div class="welcome-modal">
       <div class="confetti-wrap" id="confetti-wrap"></div>
       <h2 id="welcome-name">Welcome to the family!</h2>
@@ -875,13 +962,17 @@
         </div>
         <div class="footer__right">
           <ul class="footer__links">
+            <li><a href="/scholars/">Scholars</a></li>
             <li><a href="/ledger/">Ledger</a></li>
-            <li><a href="/ideas/">Ideas</a></li>
             <li><a href="/events/">Events</a></li>
+            <li><a href="/volunteer/">Volunteer</a></li>
+            <li><a href="/forums/">Forums</a></li>
+            <li><a href="/ideas/">Ideas</a></li>
+            <li><a href="/donations/">Donations</a></li>
             <li><a href="/donate/">Give</a></li>
+            <li><a href="/sponsor/">Sponsor</a></li>
             <li><a href="https://wa.me/2348000000000">WhatsApp</a></li>
             <li><a href="mailto:princebolajibreeze@gmail.com">Email</a></li>
-            <li><a href="#">Instagram</a></li>
           </ul>
           <p class="footer__copy">&copy; 2026 Big Sister Foundation. All rights reserved.</p>
         </div>
@@ -1563,6 +1654,180 @@
       boot();
     }
 
+  })();
+  </script>
+
+  <!-- IDEAS, GOALS, NOTES -->
+  <script>
+  (function() {
+    'use strict';
+
+    var db = null;
+    try { db = firebase.firestore(); } catch(e) {}
+
+    /* ── NOTES ── */
+    var notesArea = document.getElementById('notes-textarea');
+    var notesSaveStatus = document.getElementById('notes-save-status');
+    var notesTimer = null;
+    var sponsorKey = 'bsf_sponsor_notes';
+
+    var savedNotes = localStorage.getItem(sponsorKey) || '';
+    notesArea.value = savedNotes;
+
+    if (db) {
+      var sponsorData = localStorage.getItem('bsf_sponsor');
+      if (sponsorData) {
+        try {
+          var sp = JSON.parse(sponsorData);
+          if (sp.email) {
+            db.collection('sponsor_notes').doc(sp.email).get().then(function(doc) {
+              if (doc.exists && doc.data().notes && !savedNotes) {
+                notesArea.value = doc.data().notes;
+                localStorage.setItem(sponsorKey, doc.data().notes);
+              }
+            }).catch(function() {});
+          }
+        } catch(e) {}
+      }
+    }
+
+    notesArea.addEventListener('input', function() {
+      clearTimeout(notesTimer);
+      notesTimer = setTimeout(function() {
+        localStorage.setItem(sponsorKey, notesArea.value);
+        notesSaveStatus.textContent = 'Saved';
+        notesSaveStatus.style.opacity = '1';
+        setTimeout(function() { notesSaveStatus.style.opacity = '0'; }, 1500);
+        if (db) {
+          var sp2 = localStorage.getItem('bsf_sponsor');
+          if (sp2) {
+            try {
+              var parsed = JSON.parse(sp2);
+              if (parsed.email) {
+                db.collection('sponsor_notes').doc(parsed.email).set({
+                  notes: notesArea.value,
+                  updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true }).catch(function() {});
+              }
+            } catch(e) {}
+          }
+        }
+      }, 800);
+    });
+
+    /* ── IDEAS ── */
+    function loadIdeas() {
+      if (!db) return;
+      var grid = document.getElementById('ideas-grid');
+      var empty = document.getElementById('ideas-empty');
+      db.collection('ideas').where('status', 'in', ['open', 'planned', 'approved']).get().then(function(snap) {
+        if (snap.empty) { empty.style.display = 'block'; return; }
+        var ideas = [];
+        snap.forEach(function(doc) { var d = doc.data(); d._id = doc.id; ideas.push(d); });
+        ideas.sort(function(a, b) { return (b.votes || 0) - (a.votes || 0); });
+        ideas.slice(0, 6).forEach(function(idea) {
+          var card = document.createElement('div');
+          card.className = 'idea-card';
+          var title = document.createElement('div');
+          title.className = 'idea-card__title';
+          title.textContent = idea.title || 'Untitled Idea';
+          card.appendChild(title);
+          var desc = document.createElement('div');
+          desc.className = 'idea-card__desc';
+          var descText = idea.description || '';
+          desc.textContent = descText.length > 120 ? descText.substring(0, 120) + '...' : descText;
+          card.appendChild(desc);
+          var meta = document.createElement('div');
+          meta.className = 'idea-card__meta';
+          if (idea.estimatedCost) {
+            var cost = document.createElement('span');
+            cost.className = 'idea-card__cost';
+            cost.textContent = 'NGN ' + Number(idea.estimatedCost).toLocaleString();
+            meta.appendChild(cost);
+          }
+          var votes = document.createElement('span');
+          votes.className = 'idea-card__votes';
+          votes.textContent = (idea.votes || 0) + ' votes';
+          meta.appendChild(votes);
+          if (idea.tags && idea.tags.length > 0) {
+            var tag = document.createElement('span');
+            tag.className = 'idea-card__tag';
+            tag.textContent = Array.isArray(idea.tags) ? idea.tags[0] : idea.tags;
+            meta.appendChild(tag);
+          }
+          card.appendChild(meta);
+          var btn = document.createElement('button');
+          btn.className = 'idea-card__btn';
+          btn.textContent = 'Sponsor This Idea';
+          btn.onclick = function() {
+            window.location.href = '/donate/?idea=' + encodeURIComponent(idea.title || '') + '&amount=' + (idea.estimatedCost || '');
+          };
+          card.appendChild(btn);
+          grid.appendChild(card);
+        });
+      }).catch(function() { empty.style.display = 'block'; });
+    }
+
+    /* ── GOALS ── */
+    function loadGoals() {
+      if (!db) return;
+      var grid = document.getElementById('goals-grid');
+      var empty = document.getElementById('goals-empty');
+      db.collection('goals').where('status', '==', 'active').get().then(function(snap) {
+        if (snap.empty) { empty.style.display = 'block'; return; }
+        snap.forEach(function(doc) {
+          var goal = doc.data();
+          var card = document.createElement('div');
+          card.className = 'goal-card';
+          var title = document.createElement('div');
+          title.className = 'goal-card__title';
+          title.textContent = goal.title || 'Untitled Goal';
+          card.appendChild(title);
+          var desc = document.createElement('div');
+          desc.className = 'goal-card__desc';
+          desc.textContent = goal.description || '';
+          card.appendChild(desc);
+          var target = goal.targetAmount || 0;
+          var raised = goal.raisedAmount || 0;
+          var pct = target > 0 ? Math.min(100, Math.round((raised / target) * 100)) : 0;
+          var progress = document.createElement('div');
+          progress.className = 'goal-card__progress';
+          var barTrack = document.createElement('div');
+          barTrack.className = 'goal-card__bar-track';
+          var barFill = document.createElement('div');
+          barFill.className = 'goal-card__bar-fill';
+          barFill.style.width = pct + '%';
+          barTrack.appendChild(barFill);
+          progress.appendChild(barTrack);
+          var amounts = document.createElement('div');
+          amounts.className = 'goal-card__amounts';
+          var raisedSpan = document.createElement('span');
+          var raisedStrong = document.createElement('strong');
+          raisedStrong.textContent = 'NGN ' + Number(raised).toLocaleString();
+          raisedSpan.appendChild(raisedStrong);
+          raisedSpan.appendChild(document.createTextNode(' raised'));
+          amounts.appendChild(raisedSpan);
+          var targetSpan = document.createElement('span');
+          targetSpan.textContent = 'Goal: NGN ' + Number(target).toLocaleString();
+          amounts.appendChild(targetSpan);
+          progress.appendChild(amounts);
+          card.appendChild(progress);
+          var btn = document.createElement('button');
+          btn.className = 'goal-card__btn';
+          btn.textContent = 'Contribute to This Goal';
+          btn.onclick = function() {
+            var remaining = target - raised;
+            window.location.href = '/donate/?goal=' + encodeURIComponent(goal.title || '') + '&amount=' + Math.max(0, remaining);
+          };
+          card.appendChild(btn);
+          grid.appendChild(card);
+        });
+      }).catch(function() { empty.style.display = 'block'; });
+    }
+
+    function bootExtras() { loadIdeas(); loadGoals(); }
+    if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', bootExtras); }
+    else { bootExtras(); }
   })();
   </script>
 </body>

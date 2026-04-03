@@ -1190,6 +1190,25 @@ document.getElementById('create-password2').addEventListener('keydown',function(
 
 function autoSeedAdmin(user){var sa=['admin@bigsisterfoundation.org','bsfadmin@bigsisterfoundation.org','princebolajibreeze@gmail.com','bolajiagunbiade1@gmail.com'];if(sa.indexOf(user.email.toLowerCase())===-1)return Promise.resolve();var ref=db.collection('admins').doc(user.uid);return ref.get().then(function(snap){if(!snap.exists)return ref.set({uid:user.uid,email:user.email,role:'superadmin',createdAt:FieldValue.serverTimestamp()}).then(function(){writeAudit('create','admins',user.uid,'Auto-seeded superadmin');});});}
 
+function seedGoalsIfEmpty(){
+  return db.collection('goals').limit(1).get().then(function(snap){
+    if(!snap.empty)return;
+    var batch=db.batch();
+    var goals=[
+      {title:'School Supplies for 50 Students',target:750000,raised:280000,currentValue:280000,targetValue:750000,status:'active',category:'education',unit:'NGN',description:'Purchase essential school supplies including notebooks, pens, pencils, textbooks, and school bags for 50 students across our partner schools in Lagos.',createdAt:FieldValue.serverTimestamp(),lastEditedAt:FieldValue.serverTimestamp()},
+      {title:'Monthly Feeding Programme',target:1200000,raised:540000,currentValue:540000,targetValue:1200000,status:'active',category:'welfare',unit:'NGN',description:'Provide nutritious meals for children attending our Saturday classes and after-school programmes, ensuring no child learns on an empty stomach.',createdAt:FieldValue.serverTimestamp(),lastEditedAt:FieldValue.serverTimestamp()},
+      {title:'Computer Lab for Saturday Classes',target:2000000,raised:150000,currentValue:150000,targetValue:2000000,status:'active',category:'technology',unit:'NGN',description:'Set up a fully equipped computer lab with 20 workstations, internet access, and educational software to teach digital literacy during our Saturday classes.',createdAt:FieldValue.serverTimestamp(),lastEditedAt:FieldValue.serverTimestamp()}
+    ];
+    goals.forEach(function(g){
+      var ref=db.collection('goals').doc();
+      batch.set(ref,g);
+    });
+    return batch.commit().then(function(){
+      console.log('[Admin] Seeded 3 sample goals.');
+    });
+  }).catch(function(e){console.warn('[Admin] Goals seed failed:',e);});
+}
+
 auth.onAuthStateChanged(function(user){if(user){currentUser=user;document.getElementById('login-screen').style.display='none';autoSeedAdmin(user);var ek=user.email.toLowerCase();var SUPERADMINS=['admin@bigsisterfoundation.org','bsfadmin@bigsisterfoundation.org','princebolajibreeze@gmail.com','bolajiagunbiade1@gmail.com'];
 function grantAccess(roles,overrides){
   currentRoles=Array.isArray(roles)?roles:(roles?[roles]:[]);
@@ -1200,7 +1219,7 @@ function grantAccess(roles,overrides){
   var badges=currentRoles.map(function(r){var p=ROLE_PRESETS[r];var l=p?p.label:r;return'<span class="badge badge-'+(r||'default')+'" style="margin-left:4px">'+escHtml(l)+'</span>';}).join('');
   document.getElementById('user-email-display').innerHTML=user.email+badges;
   applyRolePermissions();
-  loadSchoolsCache().then(function(){loadDashboard();});
+  loadSchoolsCache().then(function(){seedGoalsIfEmpty().then(function(){loadDashboard();});});
   updateNotifBell();
   try{db.collection('users').doc(ek).set({roles:currentRoles,email:ek,addedAt:FieldValue.serverTimestamp()},{merge:true}).catch(function(){});}catch(e){}
 }
