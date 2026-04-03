@@ -436,14 +436,12 @@
   <nav class="nav" aria-label="Main navigation">
     <a href="/" class="nav__logo">Big Sister Foundation</a>
     <ul class="nav__links">
-      <li><a href="/ledger/">Ledger</a></li>
-      <li><a href="/ideas/">Ideas</a></li>
+      <li><a href="/">Home</a></li>
       <li><a href="/scholars/">Scholars</a></li>
-      <li><a href="/volunteer/">Volunteer</a></li>
+      <li><a href="/ledger/">Ledger</a></li>
       <li><a href="/events/">Events</a></li>
-      <li><a href="/blog/" class="is-active">Blog</a></li>
-      <li><a href="/forums/">Forums</a></li>
-      <li><a href="/docs/">Help</a></li>
+      <li><a href="/volunteer/">Volunteer</a></li>
+      <li><a href="/donate/">Give</a></li>
     </ul>
   </nav>
 
@@ -546,13 +544,15 @@
         </div>
         <div class="footer__right">
           <ul class="footer__links">
-            <li><a href="/ledger/">Ledger</a></li>
-            <li><a href="/ideas/">Ideas</a></li>
             <li><a href="/scholars/">Scholars</a></li>
-            <li><a href="/volunteer/">Volunteer</a></li>
+            <li><a href="/ledger/">Ledger</a></li>
             <li><a href="/events/">Events</a></li>
-            <li><a href="/blog/">Blog</a></li>
+            <li><a href="/volunteer/">Volunteer</a></li>
             <li><a href="/forums/">Forums</a></li>
+            <li><a href="/ideas/">Ideas</a></li>
+            <li><a href="/donations/">Donations</a></li>
+            <li><a href="/donate/">Give</a></li>
+            <li><a href="/sponsor/">Sponsor</a></li>
             <li><a href="https://wa.me/2348000000000">WhatsApp</a></li>
             <li><a href="mailto:princebolajibreeze@gmail.com">Email</a></li>
           </ul>
@@ -642,13 +642,54 @@
         return defaultPosts;
       }
 
-      function savePosts(posts) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+      function savePosts(allPosts) {
+        // Only save user-created posts to localStorage (not AI ones)
+        var userPosts = allPosts.filter(function(p) { return !p.aiGenerated; });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(userPosts));
+      }
+
+      function mergeAndDedupe(localPosts, aiPosts) {
+        var seen = {};
+        var merged = [];
+        localPosts.concat(aiPosts).forEach(function(p) {
+          if (!seen[p.id]) {
+            seen[p.id] = true;
+            merged.push(p);
+          }
+        });
+        return merged;
       }
 
       var posts = loadPosts();
       var activeFilter = 'all';
       var searchQuery = '';
+
+      // Fetch AI-generated posts from API and merge
+      (function fetchAIPosts() {
+        // Try cached AI posts first
+        var cached = localStorage.getItem(AI_POSTS_KEY);
+        if (cached) {
+          try {
+            var aiPosts = JSON.parse(cached);
+            posts = mergeAndDedupe(posts, aiPosts);
+            renderFeatured();
+            renderGrid();
+          } catch(e) {}
+        }
+
+        // Try API first, fallback to static JSON
+        fetch('/api/posts')
+          .then(function(r) { return r.ok ? r.json() : fetch('/data/ai-posts.json').then(function(r2) { return r2.ok ? r2.json() : []; }); })
+          .then(function(aiPosts) {
+            if (aiPosts && aiPosts.length) {
+              localStorage.setItem(AI_POSTS_KEY, JSON.stringify(aiPosts));
+              posts = mergeAndDedupe(loadPosts(), aiPosts);
+              renderFeatured();
+              renderGrid();
+            }
+          })
+          .catch(function() { /* API not available, use local posts only */ });
+      })();
 
       // ── Helpers ──
       function formatDate(dateStr) {
