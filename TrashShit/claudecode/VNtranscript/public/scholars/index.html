@@ -2476,7 +2476,7 @@
 
           var tdName = document.createElement('td');
           tdName.style.fontWeight = '600';
-          tdName.textContent = s.firstName + ' ' + s.lastInitial + '.';
+          tdName.textContent = s.name || (s.firstName ? s.firstName + ' ' + s.lastInitial + '.' : '(No name)');
           tr.appendChild(tdName);
 
           var tdSchool = document.createElement('td');
@@ -2553,7 +2553,7 @@
           header.className = 'scholar-card__header';
           var nameEl = document.createElement('div');
           nameEl.className = 'scholar-card__name';
-          nameEl.textContent = s.firstName + ' ' + s.lastInitial + '.';
+          nameEl.textContent = s.name || (s.firstName ? s.firstName + ' ' + s.lastInitial + '.' : '(No name)');
           header.appendChild(nameEl);
           header.appendChild(createStatusBadge(s.status));
           card.appendChild(header);
@@ -2629,11 +2629,33 @@
             card.appendChild(rowExtra);
           }
 
-          if (s.additionalSupport) {
+          var supportText = s.supportNotes || s.additionalSupport || '';
+          if (supportText) {
             var support = document.createElement('div');
             support.className = 'scholar-card__support';
-            support.textContent = s.additionalSupport;
+            support.textContent = supportText;
             card.appendChild(support);
+          }
+
+          if (s.story) {
+            var storyEl = document.createElement('div');
+            storyEl.className = 'scholar-card__story';
+            storyEl.style.cssText = 'margin-top:0.5rem;font-size:0.85rem;color:#555;';
+            var storyExcerpt = s.story.length > 100 ? s.story.substring(0, 100) + '...' : s.story;
+            var storyLabel = document.createElement('strong');
+            storyLabel.textContent = 'Story: ';
+            storyEl.appendChild(storyLabel);
+            var storyText = document.createElement('span');
+            storyText.textContent = storyExcerpt;
+            storyEl.appendChild(storyText);
+            if (s.story.length > 100) {
+              var readMore = document.createElement('a');
+              readMore.href = '/scholars/?id=' + encodeURIComponent(s.id);
+              readMore.textContent = ' Read more';
+              readMore.style.cssText = 'color:#b35900;font-weight:600;text-decoration:none;';
+              storyEl.appendChild(readMore);
+            }
+            card.appendChild(storyEl);
           }
 
           var actions = document.createElement('div');
@@ -2645,7 +2667,7 @@
           var deleteBtn = document.createElement('button');
           deleteBtn.className = 'btn btn--terra btn--sm';
           deleteBtn.textContent = 'Delete';
-          deleteBtn.addEventListener('click', function () { deleteScholar(s.id, s.firstName + ' ' + s.lastInitial + '.'); });
+          deleteBtn.addEventListener('click', function () { deleteScholar(s.id, s.name || (s.firstName ? s.firstName + ' ' + s.lastInitial + '.' : '(No name)')); });
           var auditBtn = document.createElement('button');
           auditBtn.className = 'btn btn--ghost-dark btn--sm';
           auditBtn.textContent = 'Audit';
@@ -2711,8 +2733,7 @@
         modalTitle.textContent = 'Edit Scholar';
         btnSubmit.textContent = 'Save Changes';
 
-        document.getElementById('scholar-firstName').value = scholar.firstName || '';
-        document.getElementById('scholar-lastInitial').value = scholar.lastInitial || '';
+        document.getElementById('scholar-name').value = scholar.name || (scholar.firstName ? scholar.firstName + ' ' + scholar.lastInitial + '.' : '');
 
         // Set school dropdown
         var schoolFound = false;
@@ -2761,7 +2782,7 @@
 
         document.getElementById('scholar-performance').value = scholar.performance || '';
         document.getElementById('scholar-status').value = scholar.status || 'active';
-        document.getElementById('scholar-support').value = scholar.additionalSupport || '';
+        document.getElementById('scholar-support').value = scholar.supportNotes || scholar.additionalSupport || '';
 
         formTags = (scholar.extracurriculars || []).slice();
         renderFormTags();
@@ -2864,8 +2885,7 @@
         e.preventDefault();
         if (!currentUser) { showToast('Please sign in first', 'error'); return; }
 
-        var firstName = document.getElementById('scholar-firstName').value.trim();
-        var lastInitial = document.getElementById('scholar-lastInitial').value.trim().toUpperCase();
+        var name = document.getElementById('scholar-name').value.trim();
         var schoolVal = scholarSchoolSelect.value;
         var school = schoolVal;
         if (schoolVal === '__other') {
@@ -2877,14 +2897,14 @@
         var pathway = pathwaySelect.value;
         var performance = document.getElementById('scholar-performance').value;
         var status = document.getElementById('scholar-status').value;
-        var additionalSupport = document.getElementById('scholar-support').value.trim();
+        var supportNotes = document.getElementById('scholar-support').value.trim();
 
         if (pathway === '__other') {
           pathway = document.getElementById('scholar-customPathway').value.trim();
           if (!pathway) { showToast('Please enter a custom pathway name', 'error'); return; }
         }
 
-        if (!firstName || !lastInitial || !school || !classGrade || !enrolledDateStr || !pathway || !performance) {
+        if (!name || !school || !classGrade || !enrolledDateStr || !pathway || !performance) {
           showToast('Please fill all required fields', 'error');
           return;
         }
@@ -2892,15 +2912,14 @@
         var enrolledDate = firebase.firestore.Timestamp.fromDate(new Date(enrolledDateStr));
 
         var scholarData = {
-          firstName: firstName,
-          lastInitial: lastInitial,
+          name: name,
           school: school,
           classGrade: classGrade,
           pathway: pathway,
           enrolledDate: enrolledDate,
           performance: performance,
           extracurriculars: formTags.slice(),
-          additionalSupport: additionalSupport,
+          supportNotes: supportNotes,
           status: status
         };
 
@@ -2920,7 +2939,7 @@
 
           var changes = {};
           if (oldScholar) {
-            var checkFields = ['firstName', 'lastInitial', 'school', 'classGrade', 'pathway', 'performance', 'additionalSupport', 'status'];
+            var checkFields = ['name', 'school', 'classGrade', 'pathway', 'performance', 'supportNotes', 'status'];
             checkFields.forEach(function (f) {
               var oldVal = oldScholar[f] || '';
               var newVal = scholarData[f] || '';
@@ -3218,7 +3237,7 @@
 
       function openExpenseDrawer(scholar) {
         activeDrawerScholarId = scholar.id;
-        var displayName = scholar.firstName + ' ' + scholar.lastInitial + '.';
+        var displayName = scholar.name || (scholar.firstName ? scholar.firstName + ' ' + scholar.lastInitial + '.' : '(No name)');
         expenseDrawerTitle.textContent = 'Expenses \u2014 ' + displayName;
 
         clearChildren(expenseDrawerBody);
@@ -3404,7 +3423,7 @@
           var userName = currentUser.displayName || currentUser.email.split('@')[0];
           var expenseData = {
             scholarId: scholar.id,
-            scholarName: scholar.firstName + ' ' + scholar.lastInitial + '.',
+            scholarName: scholar.name || (scholar.firstName ? scholar.firstName + ' ' + scholar.lastInitial + '.' : '(No name)'),
             school: scholar.school,
             date: firebase.firestore.Timestamp.fromDate(new Date(dateVal)),
             amount: amountVal,
@@ -3498,7 +3517,7 @@
 
         scholarDocs.forEach(function (doc) {
           var data = doc.data();
-          var scholarName = (data.firstName || '') + ' ' + (data.lastInitial || '') + '.';
+          var scholarName = data.name || ((data.firstName || '') + ' ' + (data.lastInitial || '') + '.');
           var school = data.school || '';
 
           // 3-6 expenses per scholar
@@ -3540,18 +3559,18 @@
       // --- SEED DATA ---
 
       var seedScholars = [
-        { firstName: 'Adaeze', lastInitial: 'O', school: 'Corona Secondary School, Agbara', classGrade: 'SS 1', pathway: 'gifted-talented', enrolledDate: '2024-01-15', performance: 'outstanding', extracurriculars: ['Debate', 'Science Club'], additionalSupport: 'Receives weekly tutoring in Mathematics', status: 'active' },
-        { firstName: 'Tunde', lastInitial: 'M', school: 'Greensprings School, Lekki', classGrade: 'JSS 2', pathway: 'difficult-backgrounds', enrolledDate: '2023-09-05', performance: 'excellent', extracurriculars: ['Football', 'Art'], additionalSupport: 'Monthly counselling sessions', status: 'active' },
-        { firstName: 'Ngozi', lastInitial: 'E', school: 'Atlantic Hall, Epe', classGrade: 'SS 2', pathway: 'special-needs', enrolledDate: '2022-06-10', performance: 'good', extracurriculars: ['Music', 'Swimming'], additionalSupport: 'Assistive technology provided, hearing aid maintenance', status: 'active' },
-        { firstName: 'Emeka', lastInitial: 'A', school: 'Chrisland College, Ikeja', classGrade: 'JSS 3', pathway: 'gifted-talented', enrolledDate: '2023-01-20', performance: 'outstanding', extracurriculars: ['Mathematics Olympiad', 'Chess', 'Coding Club'], additionalSupport: '', status: 'active' },
-        { firstName: 'Fatima', lastInitial: 'B', school: 'Day Waterman College, Abeokuta', classGrade: 'SS 1', pathway: 'difficult-backgrounds', enrolledDate: '2024-04-12', performance: 'good', extracurriculars: ['Volleyball'], additionalSupport: 'After-school meal program, transport assistance', status: 'active' },
-        { firstName: 'Oluwaseun', lastInitial: 'K', school: 'Lagoon School, Victoria Island', classGrade: 'Primary 5', pathway: 'special-needs', enrolledDate: '2023-03-18', performance: 'satisfactory', extracurriculars: ['Art', 'Drama'], additionalSupport: 'Speech therapy twice weekly, dedicated learning aide', status: 'active' },
-        { firstName: 'Chidinma', lastInitial: 'U', school: 'Corona Secondary School, Agbara', classGrade: 'SS 3', pathway: 'gifted-talented', enrolledDate: '2021-09-01', performance: 'excellent', extracurriculars: ['Debate', 'Model UN', 'Creative Writing'], additionalSupport: 'University preparation mentoring', status: 'graduated' },
-        { firstName: 'Ibrahim', lastInitial: 'D', school: 'Greensprings School, Lekki', classGrade: 'JSS 1', pathway: 'difficult-backgrounds', enrolledDate: '2025-01-10', performance: 'satisfactory', extracurriculars: ['Football'], additionalSupport: 'Receives school supplies and uniforms, weekly check-ins', status: 'active' },
-        { firstName: 'Blessing', lastInitial: 'N', school: 'Vivian Fowler Memorial College, Ikorodu', classGrade: 'SS 2', pathway: 'difficult-backgrounds', enrolledDate: '2023-06-22', performance: 'excellent', extracurriculars: ['Track and Field', 'Science Club', 'Choir'], additionalSupport: '', status: 'active' },
-        { firstName: 'Yusuf', lastInitial: 'S', school: 'Atlantic Hall, Epe', classGrade: 'JSS 2', pathway: 'special-needs', enrolledDate: '2024-09-03', performance: 'needs-support', extracurriculars: [], additionalSupport: 'Occupational therapy, braille learning materials, one-on-one tutoring', status: 'active' },
-        { firstName: 'Aisha', lastInitial: 'L', school: 'Chrisland College, Ikeja', classGrade: 'SS 1', pathway: 'gifted-talented', enrolledDate: '2024-02-14', performance: 'good', extracurriculars: ['Robotics', 'Basketball', 'French Club'], additionalSupport: '', status: 'on-hold' },
-        { firstName: 'Obinna', lastInitial: 'W', school: 'Lagoon School, Victoria Island', classGrade: 'Primary 6', pathway: 'difficult-backgrounds', enrolledDate: '2022-01-25', performance: 'excellent', extracurriculars: ['Music', 'Football', 'Coding Club'], additionalSupport: 'Nutritional supplement program', status: 'active' }
+        { name: 'Adaeze O.', school: 'Corona Secondary School, Agbara', classGrade: 'SS 1', pathway: 'gifted-talented', enrolledDate: '2024-01-15', performance: 'outstanding', extracurriculars: ['Debate', 'Science Club'], supportNotes: 'Receives weekly tutoring in Mathematics', status: 'active' },
+        { name: 'Tunde M.', school: 'Greensprings School, Lekki', classGrade: 'JSS 2', pathway: 'difficult-backgrounds', enrolledDate: '2023-09-05', performance: 'excellent', extracurriculars: ['Football', 'Art'], supportNotes: 'Monthly counselling sessions', status: 'active' },
+        { name: 'Ngozi E.', school: 'Atlantic Hall, Epe', classGrade: 'SS 2', pathway: 'special-needs', enrolledDate: '2022-06-10', performance: 'good', extracurriculars: ['Music', 'Swimming'], supportNotes: 'Assistive technology provided, hearing aid maintenance', status: 'active' },
+        { name: 'Emeka A.', school: 'Chrisland College, Ikeja', classGrade: 'JSS 3', pathway: 'gifted-talented', enrolledDate: '2023-01-20', performance: 'outstanding', extracurriculars: ['Mathematics Olympiad', 'Chess', 'Coding Club'], supportNotes: '', status: 'active' },
+        { name: 'Fatima B.', school: 'Day Waterman College, Abeokuta', classGrade: 'SS 1', pathway: 'difficult-backgrounds', enrolledDate: '2024-04-12', performance: 'good', extracurriculars: ['Volleyball'], supportNotes: 'After-school meal program, transport assistance', status: 'active' },
+        { name: 'Oluwaseun K.', school: 'Lagoon School, Victoria Island', classGrade: 'Primary 5', pathway: 'special-needs', enrolledDate: '2023-03-18', performance: 'satisfactory', extracurriculars: ['Art', 'Drama'], supportNotes: 'Speech therapy twice weekly, dedicated learning aide', status: 'active' },
+        { name: 'Chidinma U.', school: 'Corona Secondary School, Agbara', classGrade: 'SS 3', pathway: 'gifted-talented', enrolledDate: '2021-09-01', performance: 'excellent', extracurriculars: ['Debate', 'Model UN', 'Creative Writing'], supportNotes: 'University preparation mentoring', status: 'graduated' },
+        { name: 'Ibrahim D.', school: 'Greensprings School, Lekki', classGrade: 'JSS 1', pathway: 'difficult-backgrounds', enrolledDate: '2025-01-10', performance: 'satisfactory', extracurriculars: ['Football'], supportNotes: 'Receives school supplies and uniforms, weekly check-ins', status: 'active' },
+        { name: 'Blessing N.', school: 'Vivian Fowler Memorial College, Ikorodu', classGrade: 'SS 2', pathway: 'difficult-backgrounds', enrolledDate: '2023-06-22', performance: 'excellent', extracurriculars: ['Track and Field', 'Science Club', 'Choir'], supportNotes: '', status: 'active' },
+        { name: 'Yusuf S.', school: 'Atlantic Hall, Epe', classGrade: 'JSS 2', pathway: 'special-needs', enrolledDate: '2024-09-03', performance: 'needs-support', extracurriculars: [], supportNotes: 'Occupational therapy, braille learning materials, one-on-one tutoring', status: 'active' },
+        { name: 'Aisha L.', school: 'Chrisland College, Ikeja', classGrade: 'SS 1', pathway: 'gifted-talented', enrolledDate: '2024-02-14', performance: 'good', extracurriculars: ['Robotics', 'Basketball', 'French Club'], supportNotes: '', status: 'on-hold' },
+        { name: 'Obinna W.', school: 'Lagoon School, Victoria Island', classGrade: 'Primary 6', pathway: 'difficult-backgrounds', enrolledDate: '2022-01-25', performance: 'excellent', extracurriculars: ['Music', 'Football', 'Coding Club'], supportNotes: 'Nutritional supplement program', status: 'active' }
       ];
 
       var seedSchoolsData = [
@@ -3657,15 +3676,14 @@
         seedScholars.forEach(function (s) {
           var ref = db.collection('scholars').doc();
           var data = {
-            firstName: s.firstName,
-            lastInitial: s.lastInitial,
+            name: s.name,
             school: s.school,
             classGrade: s.classGrade,
             pathway: s.pathway,
             enrolledDate: firebase.firestore.Timestamp.fromDate(new Date(s.enrolledDate)),
             performance: s.performance,
             extracurriculars: s.extracurriculars,
-            additionalSupport: s.additionalSupport,
+            supportNotes: s.supportNotes,
             status: s.status,
             createdBy: 'seed',
             createdByName: 'System',
@@ -3683,11 +3701,15 @@
 
       function fetchScholars() {
         var scholarsSnapshot;
-        return db.collection('scholars').orderBy('firstName', 'asc').get()
+        return db.collection('scholars').orderBy('name', 'asc').get()
+          .catch(function () {
+            // Fallback: if 'name' field doesn't exist in index, try legacy 'firstName' ordering
+            return db.collection('scholars').orderBy('firstName', 'asc').get();
+          })
           .then(function (snapshot) {
             if (snapshot.empty) {
               return seedFirestore().then(function () {
-                return db.collection('scholars').orderBy('firstName', 'asc').get();
+                return db.collection('scholars').orderBy('name', 'asc').get();
               });
             }
             return snapshot;
@@ -3699,6 +3721,7 @@
               var data = doc.data();
               allScholars.push({
                 id: doc.id,
+                name: data.name || '',
                 firstName: data.firstName || '',
                 lastInitial: data.lastInitial || '',
                 school: data.school || '',
@@ -3707,8 +3730,14 @@
                 enrolledDate: data.enrolledDate || null,
                 performance: data.performance || 'good',
                 extracurriculars: data.extracurriculars || [],
+                supportNotes: data.supportNotes || data.additionalSupport || '',
                 additionalSupport: data.additionalSupport || '',
                 status: data.status || 'active',
+                story: data.story || '',
+                background: data.background || '',
+                goals: data.goals || '',
+                age: data.age || null,
+                gender: data.gender || '',
                 createdBy: data.createdBy || '',
                 createdByName: data.createdByName || '',
                 createdAt: data.createdAt || null,
@@ -3748,15 +3777,17 @@
             allScholars = seedScholars.map(function (s, i) {
               return {
                 id: 'local-' + i,
-                firstName: s.firstName,
-                lastInitial: s.lastInitial,
+                name: s.name,
+                firstName: s.firstName || '',
+                lastInitial: s.lastInitial || '',
                 school: s.school,
                 classGrade: s.classGrade,
                 pathway: s.pathway,
                 enrolledDate: s.enrolledDate,
                 performance: s.performance,
                 extracurriculars: s.extracurriculars,
-                additionalSupport: s.additionalSupport,
+                supportNotes: s.supportNotes,
+                additionalSupport: s.supportNotes,
                 status: s.status,
                 createdBy: 'seed',
                 createdByName: 'System',
@@ -3796,15 +3827,11 @@
       }
 
       function getDisplayName(s) {
+        if (s.name) {
+          return s.name;
+        }
         if (s.firstName) {
           return s.firstName + ' ' + (s.lastInitial ? s.lastInitial + '.' : '');
-        }
-        if (s.name) {
-          var parts = s.name.trim().split(/\s+/);
-          if (parts.length > 1) {
-            return parts[0] + ' ' + parts[parts.length - 1].charAt(0) + '.';
-          }
-          return parts[0];
         }
         return 'Scholar';
       }
@@ -3932,8 +3959,19 @@
         details.push({ label: 'Performance', value: '', badge: true, badgeType: 'perf' });
         details.push({ label: 'Status', value: '', badge: true, badgeType: 'status' });
 
-        if (scholar.additionalSupport) {
-          details.push({ label: 'Support Notes', value: scholar.additionalSupport });
+        var profileSupportText = scholar.supportNotes || scholar.additionalSupport || '';
+        if (profileSupportText) {
+          details.push({ label: 'Support Notes', value: profileSupportText });
+        }
+
+        if (scholar.story) {
+          details.push({ label: 'Story', value: scholar.story });
+        }
+        if (scholar.background) {
+          details.push({ label: 'Background', value: scholar.background });
+        }
+        if (scholar.goals) {
+          details.push({ label: 'Goals', value: scholar.goals });
         }
 
         details.forEach(function (d) {
@@ -3997,15 +4035,16 @@
             var data = doc.data();
             var scholar = {
               id: doc.id,
+              name: data.name || '',
               firstName: data.firstName || '',
               lastInitial: data.lastInitial || '',
-              name: data.name || '',
               school: data.school || '',
               classGrade: data.classGrade || '',
               pathway: data.pathway || '',
               enrolledDate: data.enrolledDate || null,
               performance: data.performance || 'good',
               extracurriculars: data.extracurriculars || [],
+              supportNotes: data.supportNotes || data.additionalSupport || '',
               additionalSupport: data.additionalSupport || '',
               status: data.status || 'active',
               story: data.story || '',
