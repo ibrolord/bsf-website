@@ -60,13 +60,8 @@ Things Claude can't do for you. Each item has clear steps and where to plug the 
 ---
 
 ## 5. WhatsApp Business Number
-**Status:** Placeholder `2348000000000` across all pages
-**Why:** All "WhatsApp" and "Confirm via WhatsApp" links go nowhere
-**Steps:**
-1. Decide on the official BSF WhatsApp number
-2. Tell Claude the number — it appears in ~10+ pages
-
-**Where to update:** Global find-replace `2348000000000` → your real number across all HTML files
+**Status:** DONE — All placeholder `2348000000000` references replaced with email (princebolajibreeze@gmail.com)
+**What was done:** WhatsApp links across all pages replaced with mailto links. Footer WhatsApp entries removed. CTA buttons updated to email equivalents.
 
 ---
 

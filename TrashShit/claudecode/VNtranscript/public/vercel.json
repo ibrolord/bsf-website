@@ -4,5 +4,15 @@
       "path": "/api/generate-post",
       "schedule": "0 8 * * 1,3,5"
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    },
+    {
+      "source": "/feed.xml",
+      "destination": "/api/feed"
+    }
   ]
 }

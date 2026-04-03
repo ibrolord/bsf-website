@@ -12,6 +12,8 @@
   <meta property="og:type" content="website">
   <meta property="og:image" content="/og-image.svg">
 
+  <link rel="alternate" type="application/rss+xml" title="Big Sister Foundation Blog" href="/feed.xml">
+
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cellipse cx='50' cy='35' rx='35' ry='30' fill='%232D5E40' opacity='0.85'/%3E%3Cellipse cx='30' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cellipse cx='70' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cpath d='M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z' fill='%233A2A1F' opacity='0.8'/%3E%3C/svg%3E">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -638,7 +640,6 @@
             <li><a href="/donations/">Donations</a></li>
             <li><a href="/donate/">Give</a></li>
             <li><a href="/sponsor/">Sponsor</a></li>
-            <li><a href="https://wa.me/2348000000000">WhatsApp</a></li>
             <li><a href="mailto:princebolajibreeze@gmail.com">Email</a></li>
           </ul>
           <p class="footer__copy">&copy; 2026 Big Sister Foundation. All rights reserved.</p>
@@ -922,6 +923,35 @@
           hidePost();
         });
 
+        // Dynamic meta tags for SEO
+        document.title = post.title + ' — Big Sister Foundation Blog';
+        var metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) metaDesc.setAttribute('content', post.metaDescription || post.excerpt);
+        var ogTitle = document.querySelector('meta[property="og:title"]');
+        if (ogTitle) ogTitle.setAttribute('content', post.title + ' — Big Sister Foundation');
+        var ogDesc = document.querySelector('meta[property="og:description"]');
+        if (ogDesc) ogDesc.setAttribute('content', post.metaDescription || post.excerpt);
+
+        // Remove any existing article schema
+        var existingSchema = document.getElementById('article-schema');
+        if (existingSchema) existingSchema.remove();
+
+        // Add new one
+        var schema = document.createElement('script');
+        schema.type = 'application/ld+json';
+        schema.id = 'article-schema';
+        schema.textContent = JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": post.title,
+          "description": post.metaDescription || post.excerpt,
+          "author": {"@type": "Person", "name": post.author || "Big Sister Foundation"},
+          "publisher": {"@type": "Organization", "name": "Big Sister Foundation"},
+          "datePublished": post.date,
+          "keywords": (post.keywords || []).join(", ")
+        });
+        document.head.appendChild(schema);
+
         document.getElementById('blogListing').classList.add('hidden');
         document.getElementById('writeSection').classList.add('hidden');
         document.getElementById('postDetail').classList.remove('hidden');
@@ -934,6 +964,19 @@
         document.getElementById('blogListing').classList.remove('hidden');
         document.getElementById('writeSection').classList.remove('hidden');
         history.pushState({}, '', '/blog/');
+
+        // Restore original meta tags
+        document.title = 'Blog — Big Sister Foundation';
+        var metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) metaDesc.setAttribute('content', 'Stories, updates, and insights from Big Sister Foundation. Read about our work with vulnerable children in Lagos and the communities we serve.');
+        var ogTitle = document.querySelector('meta[property="og:title"]');
+        if (ogTitle) ogTitle.setAttribute('content', 'Blog — Big Sister Foundation');
+        var ogDesc = document.querySelector('meta[property="og:description"]');
+        if (ogDesc) ogDesc.setAttribute('content', 'Stories, updates, and insights from our work with vulnerable children in Lagos.');
+
+        // Remove article schema
+        var existingSchema = document.getElementById('article-schema');
+        if (existingSchema) existingSchema.remove();
       }
 
       // ── Click handlers ──
