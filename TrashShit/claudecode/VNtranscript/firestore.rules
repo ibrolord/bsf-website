@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Invites: public read (IDs are unguessable), auth write
+    match /invites/{inviteId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Volunteer requests: public create, auth read/update/delete
+    match /volunteer_requests/{docId} {
+      allow create: if true;
+      allow read, update, delete: if request.auth != null;
+    }
+
+    // All other collections: authenticated users only
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

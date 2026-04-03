@@ -769,17 +769,15 @@
 <body>
 
   <!-- NAV -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Main navigation">
     <a href="/" class="nav__logo">Big Sister Foundation</a>
     <ul class="nav__links">
       <li><a href="/">Home</a></li>
       <li><a href="/scholars/" class="is-active">Scholars</a></li>
       <li><a href="/ledger/">Ledger</a></li>
       <li><a href="/events/">Events</a></li>
-      <li><a href="/blog/">Blog</a></li>
       <li><a href="/volunteer/">Volunteer</a></li>
       <li><a href="/donate/">Give</a></li>
-      <li><a href="/docs/">Help</a></li>
     </ul>
   </nav>
 
@@ -931,7 +929,7 @@
             <li><a href="/ledger/">Ledger</a></li>
             <li><a href="/events/">Events</a></li>
             <li><a href="/volunteer/">Volunteer</a></li>
-            <li><a href="/blog/">Blog</a></li>
+
             <li><a href="/forums/">Forums</a></li>
             <li><a href="/ideas/">Ideas</a></li>
             <li><a href="/donations/">Donations</a></li>
@@ -1119,7 +1117,7 @@
     </div>
   </div>
 
-  <!-- ADD SCHOOL NOTE/ISSUE/EVENT/TEACHER MODAL -->
+  <!-- ADD SCHOOL NOTE/ISSUE/EVENT MODAL -->
   <div class="modal-overlay" id="modal-school-note">
     <div class="modal">
       <div class="modal__header">
@@ -1998,10 +1996,6 @@
           date: dateStr ? firebase.firestore.Timestamp.fromDate(new Date(dateStr)) : null,
           status: null,
           priority: null,
-          teacherName: '',
-          teacherRole: '',
-          teacherPhone: '',
-          teacherEmail: '',
           createdBy: currentUser.uid,
           createdByName: userName,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -2012,21 +2006,9 @@
           noteData.priority = document.getElementById('school-note-priority').value;
         }
 
-        if (type === 'teacher') {
-          noteData.teacherName = document.getElementById('school-note-teacherName').value.trim();
-          noteData.teacherRole = document.getElementById('school-note-teacherRole').value.trim();
-          noteData.teacherPhone = document.getElementById('school-note-teacherPhone').value.trim();
-          noteData.teacherEmail = document.getElementById('school-note-teacherEmail').value.trim();
-          noteData.title = noteData.teacherName;
-          if (!noteData.teacherName) {
-            showToast('Please enter the teacher name', 'error');
-            return;
-          }
-        } else {
-          if (!title) {
-            showToast('Please enter a title', 'error');
-            return;
-          }
+        if (!title) {
+          showToast('Please enter a title', 'error');
+          return;
         }
 
         db.collection('school_notes').add(noteData)
@@ -3278,56 +3260,46 @@
 
       var seedSchoolNotes = [
         // Corona Secondary School, Agbara
-        { schoolName: 'Corona Secondary School, Agbara', type: 'note', title: 'PTA Meeting Attendance', content: 'Attended PTA meeting. Principal expressed satisfaction with scholars progress. Discussed scholarship renewal terms for next academic year.', date: '2025-11-15', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
-        { schoolName: 'Corona Secondary School, Agbara', type: 'note', title: 'Facilities Inspection', content: 'Visited school to inspect laboratory and library facilities. Both are well-maintained and suitable for our scholars needs.', date: '2025-09-20', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
-        { schoolName: 'Corona Secondary School, Agbara', type: 'teacher', title: 'Mr. Chukwuma Eze', content: '', date: '2025-08-01', status: null, priority: null, teacherName: 'Mr. Chukwuma Eze', teacherRole: 'Class Teacher (SS 1)', teacherPhone: '+234 812 345 6789', teacherEmail: 'c.eze@coronaschools.com' },
-        { schoolName: 'Corona Secondary School, Agbara', type: 'teacher', title: 'Mrs. Funke Alade', content: '', date: '2025-08-01', status: null, priority: null, teacherName: 'Mrs. Funke Alade', teacherRole: 'Guidance Counselor', teacherPhone: '+234 813 456 7890', teacherEmail: 'f.alade@coronaschools.com' },
-        { schoolName: 'Corona Secondary School, Agbara', type: 'issue', title: 'Delayed Report Cards', content: 'Report cards for Term 2 were delayed by three weeks. School cited administrative challenges.', date: '2025-08-10', status: 'resolved', priority: 'normal', teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
-        { schoolName: 'Corona Secondary School, Agbara', type: 'event', title: 'Annual Speech and Prize Day', content: 'Both BSF scholars nominated for awards. Adaeze O. won Best in Science.', date: '2025-12-14', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
-        { schoolName: 'Corona Secondary School, Agbara', type: 'event', title: 'Inter-House Sports Competition', content: 'Scholars participated actively. Good opportunity to assess extracurricular engagement.', date: '2025-10-22', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Corona Secondary School, Agbara', type: 'note', title: 'PTA Meeting Attendance', content: 'Attended PTA meeting. Principal expressed satisfaction with scholars progress. Discussed scholarship renewal terms for next academic year.', date: '2025-11-15', status: null, priority: null },
+        { schoolName: 'Corona Secondary School, Agbara', type: 'note', title: 'Facilities Inspection', content: 'Visited school to inspect laboratory and library facilities. Both are well-maintained and suitable for our scholars needs.', date: '2025-09-20', status: null, priority: null },
+        { schoolName: 'Corona Secondary School, Agbara', type: 'issue', title: 'Delayed Report Cards', content: 'Report cards for Term 2 were delayed by three weeks. School cited administrative challenges.', date: '2025-08-10', status: 'resolved', priority: 'normal' },
+        { schoolName: 'Corona Secondary School, Agbara', type: 'event', title: 'Annual Speech and Prize Day', content: 'Both BSF scholars nominated for awards. Adaeze O. won Best in Science.', date: '2025-12-14', status: null, priority: null },
+        { schoolName: 'Corona Secondary School, Agbara', type: 'event', title: 'Inter-House Sports Competition', content: 'Scholars participated actively. Good opportunity to assess extracurricular engagement.', date: '2025-10-22', status: null, priority: null },
 
         // Greensprings School, Lekki
-        { schoolName: 'Greensprings School, Lekki', type: 'note', title: 'Admission Process Review', content: 'Met with admissions team to discuss streamlined enrollment for sponsored scholars. They agreed to waive application fees for BSF referrals.', date: '2025-10-05', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
-        { schoolName: 'Greensprings School, Lekki', type: 'note', title: 'Term 1 Progress Check', content: 'Both scholars settling in well. Tunde showing improvement in reading comprehension.', date: '2025-06-15', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
-        { schoolName: 'Greensprings School, Lekki', type: 'teacher', title: 'Mrs. Abiola Johnson', content: '', date: '2025-08-01', status: null, priority: null, teacherName: 'Mrs. Abiola Johnson', teacherRole: 'Class Teacher (JSS 2)', teacherPhone: '+234 814 567 8901', teacherEmail: 'a.johnson@greensprings.ng' },
-        { schoolName: 'Greensprings School, Lekki', type: 'issue', title: 'Tuition Increase Notice', content: 'School announced 15% tuition increase for next session. Need to review budget allocation.', date: '2025-11-01', status: 'monitoring', priority: 'high', teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
-        { schoolName: 'Greensprings School, Lekki', type: 'event', title: 'Cultural Day Celebration', content: 'Annual cultural day. Ibrahim participated in Yoruba cultural dance performance.', date: '2025-11-28', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Greensprings School, Lekki', type: 'note', title: 'Admission Process Review', content: 'Met with admissions team to discuss streamlined enrollment for sponsored scholars. They agreed to waive application fees for BSF referrals.', date: '2025-10-05', status: null, priority: null },
+        { schoolName: 'Greensprings School, Lekki', type: 'note', title: 'Term 1 Progress Check', content: 'Both scholars settling in well. Tunde showing improvement in reading comprehension.', date: '2025-06-15', status: null, priority: null },
+        { schoolName: 'Greensprings School, Lekki', type: 'issue', title: 'Tuition Increase Notice', content: 'School announced 15% tuition increase for next session. Need to review budget allocation.', date: '2025-11-01', status: 'monitoring', priority: 'high' },
+        { schoolName: 'Greensprings School, Lekki', type: 'event', title: 'Cultural Day Celebration', content: 'Annual cultural day. Ibrahim participated in Yoruba cultural dance performance.', date: '2025-11-28', status: null, priority: null },
 
         // Atlantic Hall, Epe
-        { schoolName: 'Atlantic Hall, Epe', type: 'note', title: 'Boarding Facilities Assessment', content: 'Visited dormitories and dining hall. Conditions are good. Students receive balanced meals three times daily.', date: '2025-07-20', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
-        { schoolName: 'Atlantic Hall, Epe', type: 'note', title: 'Special Needs Accommodations', content: 'Discussed with school administration about enhanced accommodations for Yusuf. School agreed to provide additional support resources.', date: '2025-09-12', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
-        { schoolName: 'Atlantic Hall, Epe', type: 'teacher', title: 'Mr. Babatunde Ojo', content: '', date: '2025-08-01', status: null, priority: null, teacherName: 'Mr. Babatunde Ojo', teacherRole: 'Special Education Coordinator', teacherPhone: '+234 815 678 9012', teacherEmail: 'b.ojo@atlantichall.edu.ng' },
-        { schoolName: 'Atlantic Hall, Epe', type: 'teacher', title: 'Miss Amaka Obi', content: '', date: '2025-08-01', status: null, priority: null, teacherName: 'Miss Amaka Obi', teacherRole: 'Music Teacher', teacherPhone: '+234 816 789 0123', teacherEmail: 'a.obi@atlantichall.edu.ng' },
-        { schoolName: 'Atlantic Hall, Epe', type: 'issue', title: 'Transport Route Change', content: 'School bus route changed, affecting pickup for Ngozi. Temporary arrangement with private transport needed.', date: '2025-10-15', status: 'resolved', priority: 'normal', teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
-        { schoolName: 'Atlantic Hall, Epe', type: 'event', title: 'Founders Day Ceremony', content: 'Annual celebration with parent visitation. Good opportunity to engage with school leadership.', date: '2026-02-10', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Atlantic Hall, Epe', type: 'note', title: 'Boarding Facilities Assessment', content: 'Visited dormitories and dining hall. Conditions are good. Students receive balanced meals three times daily.', date: '2025-07-20', status: null, priority: null },
+        { schoolName: 'Atlantic Hall, Epe', type: 'note', title: 'Special Needs Accommodations', content: 'Discussed with school administration about enhanced accommodations for Yusuf. School agreed to provide additional support resources.', date: '2025-09-12', status: null, priority: null },
+        { schoolName: 'Atlantic Hall, Epe', type: 'issue', title: 'Transport Route Change', content: 'School bus route changed, affecting pickup for Ngozi. Temporary arrangement with private transport needed.', date: '2025-10-15', status: 'resolved', priority: 'normal' },
+        { schoolName: 'Atlantic Hall, Epe', type: 'event', title: 'Founders Day Ceremony', content: 'Annual celebration with parent visitation. Good opportunity to engage with school leadership.', date: '2026-02-10', status: null, priority: null },
 
         // Chrisland College, Ikeja
-        { schoolName: 'Chrisland College, Ikeja', type: 'note', title: 'Academic Review Meeting', content: 'Met with VP Academics. Emeka consistently ranked in top 5 of his class. School recommends him for national science competition.', date: '2025-11-20', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
-        { schoolName: 'Chrisland College, Ikeja', type: 'teacher', title: 'Mr. Kenneth Adebayo', content: '', date: '2025-08-01', status: null, priority: null, teacherName: 'Mr. Kenneth Adebayo', teacherRole: 'Principal', teacherPhone: '+234 817 890 1234', teacherEmail: 'k.adebayo@chrislandcollege.com' },
-        { schoolName: 'Chrisland College, Ikeja', type: 'issue', title: 'Aisha Scholarship Hold', content: 'Aisha placed on hold due to family relocation uncertainty. Need follow-up with guardian.', date: '2025-10-01', status: 'open', priority: 'high', teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
-        { schoolName: 'Chrisland College, Ikeja', type: 'event', title: 'STEM Fair', content: 'Emeka presented robotics project at annual STEM fair. Won second place overall.', date: '2025-11-08', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Chrisland College, Ikeja', type: 'note', title: 'Academic Review Meeting', content: 'Met with VP Academics. Emeka consistently ranked in top 5 of his class. School recommends him for national science competition.', date: '2025-11-20', status: null, priority: null },
+        { schoolName: 'Chrisland College, Ikeja', type: 'issue', title: 'Aisha Scholarship Hold', content: 'Aisha placed on hold due to family relocation uncertainty. Need follow-up with guardian.', date: '2025-10-01', status: 'open', priority: 'high' },
+        { schoolName: 'Chrisland College, Ikeja', type: 'event', title: 'STEM Fair', content: 'Emeka presented robotics project at annual STEM fair. Won second place overall.', date: '2025-11-08', status: null, priority: null },
 
         // Day Waterman College, Abeokuta
-        { schoolName: 'Day Waterman College, Abeokuta', type: 'note', title: 'Initial School Visit', content: 'First visit to assess suitability for Fatima. Excellent pastoral care system and strong emphasis on character development.', date: '2025-04-08', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
-        { schoolName: 'Day Waterman College, Abeokuta', type: 'note', title: 'Meal Program Setup', content: 'Coordinated with school kitchen to ensure Fatima receives proper nutrition. School very accommodating.', date: '2025-05-15', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
-        { schoolName: 'Day Waterman College, Abeokuta', type: 'teacher', title: 'Mrs. Oluwakemi Dada', content: '', date: '2025-08-01', status: null, priority: null, teacherName: 'Mrs. Oluwakemi Dada', teacherRole: 'House Mistress', teacherPhone: '+234 818 901 2345', teacherEmail: 'o.dada@dwc.edu.ng' },
-        { schoolName: 'Day Waterman College, Abeokuta', type: 'issue', title: 'Uniform Sizing Issue', content: 'Initial uniform order was wrong size. Replacement ordered and delivered.', date: '2025-04-20', status: 'resolved', priority: 'low', teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
-        { schoolName: 'Day Waterman College, Abeokuta', type: 'event', title: 'Open Day and Parent Visit', content: 'School open day for prospective and current parents. Good progress reports for Fatima.', date: '2025-09-14', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Day Waterman College, Abeokuta', type: 'note', title: 'Initial School Visit', content: 'First visit to assess suitability for Fatima. Excellent pastoral care system and strong emphasis on character development.', date: '2025-04-08', status: null, priority: null },
+        { schoolName: 'Day Waterman College, Abeokuta', type: 'note', title: 'Meal Program Setup', content: 'Coordinated with school kitchen to ensure Fatima receives proper nutrition. School very accommodating.', date: '2025-05-15', status: null, priority: null },
+        { schoolName: 'Day Waterman College, Abeokuta', type: 'issue', title: 'Uniform Sizing Issue', content: 'Initial uniform order was wrong size. Replacement ordered and delivered.', date: '2025-04-20', status: 'resolved', priority: 'low' },
+        { schoolName: 'Day Waterman College, Abeokuta', type: 'event', title: 'Open Day and Parent Visit', content: 'School open day for prospective and current parents. Good progress reports for Fatima.', date: '2025-09-14', status: null, priority: null },
 
         // Lagoon School, Victoria Island
-        { schoolName: 'Lagoon School, Victoria Island', type: 'note', title: 'Progress Report Review', content: 'Reviewed end-of-term reports for both scholars. Obinna showing remarkable improvement across all subjects. Oluwaseun progressing steadily with therapy support.', date: '2025-12-01', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
-        { schoolName: 'Lagoon School, Victoria Island', type: 'teacher', title: 'Mrs. Ngozi Mbah', content: '', date: '2025-08-01', status: null, priority: null, teacherName: 'Mrs. Ngozi Mbah', teacherRole: 'Class Teacher (Primary 5)', teacherPhone: '+234 819 012 3456', teacherEmail: 'n.mbah@lagoonschool.ng' },
-        { schoolName: 'Lagoon School, Victoria Island', type: 'teacher', title: 'Mr. Segun Alabi', content: '', date: '2025-08-01', status: null, priority: null, teacherName: 'Mr. Segun Alabi', teacherRole: 'Speech Therapist', teacherPhone: '+234 820 123 4567', teacherEmail: 's.alabi@lagoonschool.ng' },
-        { schoolName: 'Lagoon School, Victoria Island', type: 'issue', title: 'Speech Therapy Schedule Conflict', content: 'Speech therapy sessions clash with music class. Working with school to find alternative time slot.', date: '2025-09-25', status: 'monitoring', priority: 'normal', teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
-        { schoolName: 'Lagoon School, Victoria Island', type: 'event', title: 'End of Year Concert', content: 'Both scholars performed in the annual end-of-year concert. Oluwaseun had a drama role.', date: '2025-12-18', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
-        { schoolName: 'Lagoon School, Victoria Island', type: 'event', title: 'Sports Day', content: 'Annual sports day event. Obinna competed in relay race and football.', date: '2025-10-30', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
+        { schoolName: 'Lagoon School, Victoria Island', type: 'note', title: 'Progress Report Review', content: 'Reviewed end-of-term reports for both scholars. Obinna showing remarkable improvement across all subjects. Oluwaseun progressing steadily with therapy support.', date: '2025-12-01', status: null, priority: null },
+        { schoolName: 'Lagoon School, Victoria Island', type: 'issue', title: 'Speech Therapy Schedule Conflict', content: 'Speech therapy sessions clash with music class. Working with school to find alternative time slot.', date: '2025-09-25', status: 'monitoring', priority: 'normal' },
+        { schoolName: 'Lagoon School, Victoria Island', type: 'event', title: 'End of Year Concert', content: 'Both scholars performed in the annual end-of-year concert. Oluwaseun had a drama role.', date: '2025-12-18', status: null, priority: null },
+        { schoolName: 'Lagoon School, Victoria Island', type: 'event', title: 'Sports Day', content: 'Annual sports day event. Obinna competed in relay race and football.', date: '2025-10-30', status: null, priority: null },
 
         // Vivian Fowler Memorial College, Ikorodu
-        { schoolName: 'Vivian Fowler Memorial College, Ikorodu', type: 'note', title: 'Scholarship Renewal Discussion', content: 'Met with bursar to discuss scholarship terms for next year. School willing to offer 10% fee discount for continued partnership.', date: '2025-11-10', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
-        { schoolName: 'Vivian Fowler Memorial College, Ikorodu', type: 'note', title: 'Blessing Performance Update', content: 'Blessing excelling in athletics. Qualified for state-level inter-school track competition.', date: '2025-10-15', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
-        { schoolName: 'Vivian Fowler Memorial College, Ikorodu', type: 'teacher', title: 'Coach Emeka Nwosu', content: '', date: '2025-08-01', status: null, priority: null, teacherName: 'Coach Emeka Nwosu', teacherRole: 'Physical Education / Athletics Coach', teacherPhone: '+234 821 234 5678', teacherEmail: 'e.nwosu@vfmc.edu.ng' },
-        { schoolName: 'Vivian Fowler Memorial College, Ikorodu', type: 'issue', title: 'Lab Equipment Shortage', content: 'Science lab missing some equipment needed for SS2 practicals. School says replacement coming next term.', date: '2025-10-05', status: 'monitoring', priority: 'normal', teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' },
-        { schoolName: 'Vivian Fowler Memorial College, Ikorodu', type: 'event', title: 'Inter-School Athletics Championship', content: 'Blessing qualified and will represent school at state level. Competition at Teslim Balogun Stadium.', date: '2026-01-20', status: null, priority: null, teacherName: '', teacherRole: '', teacherPhone: '', teacherEmail: '' }
+        { schoolName: 'Vivian Fowler Memorial College, Ikorodu', type: 'note', title: 'Scholarship Renewal Discussion', content: 'Met with bursar to discuss scholarship terms for next year. School willing to offer 10% fee discount for continued partnership.', date: '2025-11-10', status: null, priority: null },
+        { schoolName: 'Vivian Fowler Memorial College, Ikorodu', type: 'note', title: 'Blessing Performance Update', content: 'Blessing excelling in athletics. Qualified for state-level inter-school track competition.', date: '2025-10-15', status: null, priority: null },
+        { schoolName: 'Vivian Fowler Memorial College, Ikorodu', type: 'issue', title: 'Lab Equipment Shortage', content: 'Science lab missing some equipment needed for SS2 practicals. School says replacement coming next term.', date: '2025-10-05', status: 'monitoring', priority: 'normal' },
+        { schoolName: 'Vivian Fowler Memorial College, Ikorodu', type: 'event', title: 'Inter-School Athletics Championship', content: 'Blessing qualified and will represent school at state level. Competition at Teslim Balogun Stadium.', date: '2026-01-20', status: null, priority: null }
       ];
 
       function seedSchoolsFirestore() {
@@ -3365,10 +3337,6 @@
             date: n.date ? firebase.firestore.Timestamp.fromDate(new Date(n.date)) : null,
             status: n.status,
             priority: n.priority,
-            teacherName: n.teacherName,
-            teacherRole: n.teacherRole,
-            teacherPhone: n.teacherPhone,
-            teacherEmail: n.teacherEmail,
             createdBy: 'seed',
             createdByName: 'System',
             createdAt: firebase.firestore.FieldValue.serverTimestamp()

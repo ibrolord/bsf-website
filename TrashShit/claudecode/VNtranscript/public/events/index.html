@@ -50,7 +50,7 @@
       font-family: var(--font-sans);
       font-size: clamp(0.7rem, 0.5vw + 0.5rem, 0.85rem);
       font-weight: 600; letter-spacing: 0.12em;
-      text-transform: uppercase; margin-bottom: 1rem;
+      text-transform: uppercase; color: var(--terra); margin-bottom: 1rem;
     }
 
     h1, h2, h3 {
@@ -304,7 +304,7 @@
       display: inline-flex; align-items: center; gap: 0.5rem;
       padding: 0.85rem 1.8rem;
       font-weight: 600; font-size: 0.9rem;
-      border-radius: 6px;
+      border-radius: 100px;
       text-decoration: none;
       transition: all 0.3s var(--ease);
     }
@@ -371,7 +371,7 @@
 
     /* FOOTER */
     .footer {
-      background: var(--green-dark);
+      background: var(--brown);
       color: rgba(255,248,240,0.6);
       padding: 3rem 0;
       font-size: 0.85rem;
@@ -543,7 +543,7 @@
   <!-- ADD EVENT -->
   <section class="section-pad" style="background: rgba(45,94,64,0.04);">
     <div class="container">
-      <div class="add-event" id="addEventForm">
+      <div class="add-event" id="addEventForm" style="display:none">
         <p class="eyebrow" style="color: var(--green);">Add New</p>
         <h2>Create an Event</h2>
         <p>Add outreach webinars, workshops, community gatherings, and more to the calendar.</p>
@@ -832,12 +832,6 @@
                 '<button class="event-card__action-btn event-card__action-btn--share" data-action="share" data-id="' + ev.id + '" title="Share">' +
                   '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>' +
                 '</button>' +
-                '<button class="event-card__action-btn event-card__action-btn--edit" data-action="edit" data-id="' + ev.id + '" title="Edit">' +
-                  '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
-                '</button>' +
-                '<button class="event-card__action-btn event-card__action-btn--delete" data-action="delete" data-id="' + ev.id + '" title="Delete">' +
-                  '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>' +
-                '</button>' +
               '</div>' +
             '</div>' +
           '</article>';
@@ -873,29 +867,8 @@
         var action = btn.dataset.action;
         var id = parseInt(btn.dataset.id, 10);
 
-        if (action === 'delete') {
-          deletingId = id;
-          var ev = events.find(function(e) { return e.id === id; });
-          document.getElementById('confirmText').textContent = 'Delete "' + (ev ? ev.title : 'this event') + '"? This cannot be undone.';
-          document.getElementById('confirmOverlay').classList.add('show');
-        }
-
-        if (action === 'edit') {
-          var ev = events.find(function(e) { return e.id === id; });
-          if (!ev) return;
-          editingId = id;
-          document.getElementById('eventTitle').value = ev.title;
-          document.getElementById('eventType').value = ev.type;
-          document.getElementById('eventDate').value = ev.date;
-          document.getElementById('eventTime').value = ev.time;
-          document.getElementById('eventLocation').value = ev.location || '';
-          document.getElementById('eventCapacity').value = ev.capacity || '';
-          document.getElementById('eventDesc').value = ev.desc || '';
-          document.getElementById('submitBtn').textContent = 'Save Changes';
-          document.getElementById('cancelBtn').textContent = 'Cancel';
-          document.getElementById('editBanner').classList.add('show');
-          document.getElementById('addEventForm').scrollIntoView({ behavior: 'smooth' });
-        }
+        // Edit and delete disabled on public page — use admin panel
+        if (action === 'delete' || action === 'edit') { return; }
 
         if (action === 'share') {
           var ev = events.find(function(e) { return e.id === id; });
