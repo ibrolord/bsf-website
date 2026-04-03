@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donate — Big Sister Foundation</title>
+  <meta name="description" content="Give directly to a child's education, nutrition, or community protection. Every naira is tracked. No overhead mystery.">
+  <meta name="theme-color" content="#2D5E40">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cellipse cx='50' cy='35' rx='35' ry='30' fill='%232D5E40' opacity='0.85'/%3E%3Cellipse cx='30' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cellipse cx='70' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cpath d='M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z' fill='%233A2A1F' opacity='0.8'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #2D5E40;
+      --green-dark: #1E3F2B;
+      --brown: #3A2A1F;
+      --terra: #C2734C;
+      --gold: #D4A96A;
+      --sage: #8BAF8E;
+      --cream: #FFF8F0;
+      --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --section-pad: clamp(48px, 4vw + 20px, 100px);
+      --page-margin: clamp(20px, 4vw, 80px);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.2rem);
+      line-height: 1.7;
+      color: var(--brown);
+      background: var(--cream);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+    button { font: inherit; cursor: pointer; border: none; background: none; }
+
+    .eyebrow {
+      font-family: var(--font-sans);
+      font-size: clamp(0.7rem, 0.5vw + 0.5rem, 0.85rem);
+      font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; margin-bottom: 1rem;
+    }
+
+    h1, h2, h3 {
+      font-family: var(--font-serif);
+      font-weight: 500; line-height: 1.08; letter-spacing: -0.02em;
+    }
+    h1 { font-size: clamp(2.2rem, 4vw + 0.5rem, 4rem); }
+    h2 { font-size: clamp(1.8rem, 2.5vw + 0.5rem, 2.8rem); }
+    h3 { font-size: clamp(1.3rem, 1vw + 0.8rem, 1.7rem); line-height: 1.2; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding-left: var(--page-margin); padding-right: var(--page-margin); }
+    .section-pad { padding-top: var(--section-pad); padding-bottom: var(--section-pad); }
+
+    /* NAV */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem var(--page-margin); background: var(--green-dark);
+    }
+    .nav__logo { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; text-decoration: none; color: var(--cream); }
+    .nav__links { list-style: none; display: flex; gap: 2rem; }
+    .nav__links a { font-size: 0.85rem; font-weight: 500; text-decoration: none; color: rgba(255,248,240,0.7); transition: color 0.3s; }
+    .nav__links a:hover { color: var(--cream); }
+    .nav__links a.is-active { color: var(--gold); }
+    @media (max-width: 768px) { .nav__links { gap: 1rem; } .nav__links a { font-size: 0.75rem; } }
+
+    /* HERO */
+    .donate-hero {
+      padding-top: calc(60px + var(--section-pad));
+      padding-bottom: var(--section-pad);
+      background: var(--green-dark); color: var(--cream);
+      position: relative; overflow: hidden;
+    }
+    .donate-hero::before {
+      content: '';
+      position: absolute; top: -40%; right: -10%; width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(45,94,64,0.3) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .donate-hero .eyebrow { color: var(--gold); }
+    .donate-hero h1 { color: var(--cream); }
+    .donate-hero__sub {
+      max-width: 640px; margin-top: 1.2rem;
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.15rem);
+      line-height: 1.7; color: rgba(255,248,240,0.75);
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.9rem 2rem; border-radius: 100px;
+      font-family: var(--font-sans); font-size: clamp(0.85rem, 0.3vw + 0.75rem, 1rem); font-weight: 600;
+      letter-spacing: 0.02em; text-decoration: none;
+      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), opacity 0.3s;
+      cursor: pointer; border: none;
+    }
+    .btn:hover { transform: scale(1.03); box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
+    .btn--terra { background: var(--terra); color: #fff; }
+    .btn--terra:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn--ghost {
+      background: transparent; color: #fff;
+      border: 1.5px solid rgba(255,255,255,0.5);
+    }
+    .btn--ghost:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
+    .btn--green {
+      background: rgba(45,94,64,0.15); color: var(--cream);
+      border: 1.5px solid rgba(139,175,142,0.3);
+    }
+    .btn--green:hover { background: rgba(45,94,64,0.3); }
+
+    /* ─── DONATION CARD ─── */
+    .donate-section { background: var(--cream); }
+    .donate-card {
+      max-width: 600px; margin: 0 auto;
+      background: #fff;
+      border: 1.5px solid rgba(58,42,31,0.12);
+      border-radius: 20px;
+      padding: clamp(1.5rem, 3vw, 2.5rem);
+      box-shadow: 0 20px 60px rgba(58,42,31,0.10), 0 4px 16px rgba(58,42,31,0.08);
+    }
+
+    /* Currency selector */
+    .currency-selector { margin-bottom: 2rem; }
+    .currency-selector label {
+      display: block; font-size: 0.8rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: rgba(58,42,31,0.5); margin-bottom: 0.5rem;
+    }
+    .currency-selector select {
+      width: 100%; padding: 0.75rem 1rem;
+      border: 1.5px solid rgba(58,42,31,0.15); border-radius: 10px;
+      background: #fff; font-family: var(--font-sans); font-size: 0.95rem;
+      color: var(--brown); outline: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%233A2A1F' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 1rem center;
+      padding-right: 2.5rem;
+      transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+    }
+    .currency-selector select:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(45,94,64,0.1);
+    }
+
+    /* Amount grid */
+    .amount-section { margin-bottom: 2rem; }
+    .amount-section__label {
+      font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.08em; color: rgba(58,42,31,0.5); margin-bottom: 0.75rem;
+    }
+    .amount-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;
+    }
+    .amount-btn {
+      padding: 0.85rem 0.5rem; border-radius: 12px;
+      border: 1.5px solid rgba(58,42,31,0.12);
+      background: #fff; color: var(--brown);
+      font-family: var(--font-sans); font-size: 1rem; font-weight: 600;
+      text-align: center; cursor: pointer;
+      transition: all 0.25s var(--ease);
+    }
+    .amount-btn:hover {
+      border-color: var(--terra);
+      background: rgba(194,115,76,0.04);
+    }
+    .amount-btn.is-active {
+      background: var(--terra); color: #fff;
+      border-color: var(--terra);
+      box-shadow: 0 4px 16px rgba(194,115,76,0.25);
+    }
+    .custom-amount-wrap {
+      display: none; margin-top: 0.75rem;
+      position: relative;
+    }
+    .custom-amount-wrap.is-visible { display: block; }
+    .custom-amount-wrap__prefix {
+      position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+      font-size: 1rem; font-weight: 600; color: rgba(58,42,31,0.4);
+      pointer-events: none;
+    }
+    .custom-amount-wrap input {
+      width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem;
+      border: 1.5px solid rgba(58,42,31,0.15); border-radius: 10px;
+      background: #fff; font-family: var(--font-sans); font-size: 1.1rem;
+      font-weight: 600; color: var(--brown); outline: none;
+      transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+    }
+    .custom-amount-wrap input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(45,94,64,0.1);
+    }
+
+    /* Program allocation */
+    .program-section { margin-bottom: 2rem; }
+    .program-section__label {
+      font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.08em; color: rgba(58,42,31,0.5); margin-bottom: 0.75rem;
+    }
+    .program-pills {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+    }
+    .program-pill {
+      padding: 0.5rem 1.1rem; border-radius: 100px;
+      border: 1.5px solid rgba(58,42,31,0.12);
+      background: #fff; color: var(--brown);
+      font-family: var(--font-sans); font-size: 0.85rem; font-weight: 500;
+      cursor: pointer; transition: all 0.25s var(--ease);
+      white-space: nowrap;
+    }
+    .program-pill:hover {
+      border-color: var(--green);
+      background: rgba(45,94,64,0.04);
+    }
+    .program-pill.is-active {
+      background: var(--green); color: #fff;
+      border-color: var(--green);
+    }
+
+    /* Donor info */
+    .donor-section { margin-bottom: 2rem; }
+    .donor-section__label {
+      font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.08em; color: rgba(58,42,31,0.5); margin-bottom: 0.75rem;
+    }
+    .anon-toggle {
+      display: flex; align-items: center; gap: 0.6rem;
+      margin-bottom: 1rem; cursor: pointer;
+    }
+    .anon-toggle input[type="checkbox"] {
+      width: 18px; height: 18px; accent-color: var(--green); cursor: pointer;
+    }
+    .anon-toggle span {
+      font-size: 0.9rem; font-weight: 500; color: var(--brown);
+    }
+    .donor-fields { display: none; }
+    .donor-fields.is-visible { display: block; }
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    .form-group label {
+      display: block; font-size: 0.9rem; font-weight: 600;
+      color: var(--brown); margin-bottom: 0.4rem;
+    }
+    .form-group label .hint {
+      font-weight: 400; color: rgba(58,42,31,0.45); font-size: 0.8rem;
+    }
+    .form-group input,
+    .form-group textarea {
+      width: 100%; padding: 0.75rem 1rem;
+      border: 1.5px solid rgba(58,42,31,0.15); border-radius: 10px;
+      background: #fff; font-family: var(--font-sans); font-size: 0.95rem;
+      color: var(--brown); outline: none;
+      transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+    }
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(45,94,64,0.1);
+    }
+    .form-group textarea {
+      resize: vertical; min-height: 70px;
+    }
+    .char-counter {
+      text-align: right; font-size: 0.75rem;
+      color: rgba(58,42,31,0.45); margin-top: 0.3rem;
+    }
+    .char-counter.is-near { color: var(--terra); }
+    .char-counter.is-over { color: #c0392b; font-weight: 600; }
+
+    /* Summary bar */
+    .summary-bar {
+      background: rgba(45,94,64,0.04);
+      border: 1.5px solid rgba(45,94,64,0.1);
+      border-radius: 12px; padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+    .summary-bar__row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.85rem; color: rgba(58,42,31,0.7);
+      padding: 0.2rem 0;
+    }
+    .summary-bar__row span:last-child {
+      font-weight: 600; color: var(--brown);
+    }
+    .summary-bar__total {
+      border-top: 1px solid rgba(45,94,64,0.12);
+      margin-top: 0.5rem; padding-top: 0.6rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .summary-bar__total span:first-child {
+      font-size: 0.85rem; font-weight: 600; color: var(--green);
+    }
+    .summary-bar__total span:last-child {
+      font-family: var(--font-serif); font-size: 1.4rem;
+      font-weight: 600; color: var(--green);
+    }
+
+    /* Pay button */
+    .pay-btn {
+      width: 100%; padding: 1rem 2rem; border-radius: 100px;
+      background: var(--terra); color: #fff;
+      font-family: var(--font-sans); font-size: 1.05rem; font-weight: 700;
+      letter-spacing: 0.02em; border: none; cursor: pointer;
+      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), background 0.3s;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .pay-btn:hover:not(:disabled) {
+      transform: scale(1.02);
+      box-shadow: 0 8px 30px rgba(194,115,76,0.3);
+    }
+    .pay-btn:disabled {
+      opacity: 0.6; cursor: not-allowed; transform: none;
+    }
+    .pay-btn .spinner {
+      display: none; width: 18px; height: 18px;
+      border: 2.5px solid rgba(255,255,255,0.3);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-right: 0.5rem;
+    }
+    .pay-btn.is-loading .spinner { display: inline-block; }
+    .pay-btn.is-loading .pay-btn__text { opacity: 0.7; }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes heroFadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── SUCCESS STATE ─── */
+    .success-state {
+      display: none; text-align: center;
+      padding: 2rem 0;
+    }
+    .success-state.is-visible { display: block; }
+    .success-check {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: rgba(45,94,64,0.08);
+      margin: 0 auto 1.5rem; position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .success-check::after {
+      content: '';
+      width: 24px; height: 40px;
+      border-right: 4px solid var(--green);
+      border-bottom: 4px solid var(--green);
+      transform: rotate(45deg) translate(-2px, -2px);
+      display: block;
+    }
+    .success-state h2 {
+      color: var(--green); margin-bottom: 0.75rem;
+    }
+    .success-state__details {
+      max-width: 400px; margin: 0 auto 2rem;
+      background: rgba(45,94,64,0.04);
+      border: 1.5px solid rgba(45,94,64,0.1);
+      border-radius: 12px; padding: 1rem 1.25rem;
+      text-align: left;
+    }
+    .success-detail-row {
+      font-size: 0.85rem; color: rgba(58,42,31,0.7);
+      display: flex; justify-content: space-between;
+      padding: 0.25rem 0;
+    }
+    .success-detail-row .detail-value {
+      font-weight: 600; color: var(--brown);
+    }
+    .success-state__actions {
+      display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+    }
+    .success-state__actions .btn { min-width: 240px; justify-content: center; }
+    .success-state__links {
+      display: flex; gap: 2rem; justify-content: center;
+      margin-top: 1.5rem;
+    }
+    .success-state__links a {
+      font-size: 0.9rem; font-weight: 500; color: var(--green);
+      text-decoration: none; transition: color 0.3s;
+    }
+    .success-state__links a:hover { color: var(--terra); }
+
+    /* ─── TRUST SECTION ─── */
+    .trust-section { background: var(--cream); }
+    .trust-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .trust-card {
+      background: #fff;
+      border: 1.5px solid rgba(58,42,31,0.08);
+      border-radius: 16px; padding: 2rem;
+      text-align: center;
+      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+    }
+    .trust-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(58,42,31,0.06);
+    }
+    .trust-card__icon {
+      width: 56px; height: 56px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.25rem; font-size: 1.5rem;
+    }
+    .trust-card__icon--green { background: rgba(45,94,64,0.1); color: var(--green); }
+    .trust-card__icon--terra { background: rgba(194,115,76,0.1); color: var(--terra); }
+    .trust-card__icon--gold { background: rgba(212,169,106,0.15); color: #b88c3d; }
+    .trust-card h3 {
+      font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--brown);
+    }
+    .trust-card p {
+      font-size: 0.9rem; line-height: 1.6; color: rgba(58,42,31,0.65);
+    }
+    .trust-card a {
+      display: inline-block; margin-top: 0.75rem;
+      font-size: 0.85rem; font-weight: 600; color: var(--terra);
+      text-decoration: none; transition: color 0.3s;
+    }
+    .trust-card a:hover { color: var(--green); }
+
+    /* ─── IMPACT SECTION ─── */
+    .impact-section {
+      background: var(--green-dark); color: var(--cream);
+    }
+    .impact-section .eyebrow { color: var(--gold); }
+    .impact-scroll {
+      display: flex; gap: 1.25rem;
+      overflow-x: auto; scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 0.5rem;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,248,240,0.15) transparent;
+    }
+    .impact-scroll::-webkit-scrollbar { height: 4px; }
+    .impact-scroll::-webkit-scrollbar-track { background: transparent; }
+    .impact-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255,248,240,0.15); border-radius: 4px;
+    }
+    .impact-card {
+      min-width: 300px; flex-shrink: 0;
+      scroll-snap-align: start;
+      background: rgba(255,248,240,0.04);
+      border: 1.5px solid rgba(255,248,240,0.08);
+      border-radius: 16px; padding: 2rem;
+      transition: all 0.35s var(--ease);
+    }
+    .impact-card:hover {
+      background: rgba(255,248,240,0.08);
+      border-color: rgba(194,115,76,0.3);
+    }
+    .impact-card__amount {
+      font-family: var(--font-serif);
+      font-size: 1.8rem; font-weight: 600;
+      color: var(--terra); margin-bottom: 0.75rem;
+    }
+    .impact-card p {
+      font-size: 0.95rem; line-height: 1.6;
+      color: rgba(255,248,240,0.7);
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 200;
+      padding: 1rem 1.5rem; border-radius: 12px;
+      font-size: 0.9rem; font-weight: 500; color: #fff;
+      transform: translateY(120%); opacity: 0;
+      transition: transform 0.4s var(--ease), opacity 0.4s var(--ease);
+      max-width: 400px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    .toast.is-visible { transform: translateY(0); opacity: 1; }
+    .toast--success { background: var(--green); }
+    .toast--error { background: #c0392b; }
+    @media (max-width: 600px) {
+      .toast { left: 1rem; right: 1rem; bottom: 1rem; max-width: none; }
+    }
+
+    /* FOOTER */
+    .footer { background: var(--brown); color: rgba(255,248,240,0.6); padding: 3rem 0; }
+    .footer__layout { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 2rem; }
+    .footer__brand-name { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; color: var(--cream); margin-bottom: 0.25rem; }
+    .footer__tagline { font-size: 0.85rem; color: var(--gold); }
+    .footer__location { font-size: 0.8rem; margin-top: 0.25rem; }
+    .footer__links { list-style: none; display: flex; gap: 1.5rem; margin-bottom: 0.5rem; }
+    .footer__links a { font-size: 0.85rem; text-decoration: none; transition: color 0.3s; }
+    .footer__links a:hover { color: var(--cream); }
+    .footer__copy { font-size: 0.75rem; opacity: 0.5; }
+    .footer__right { text-align: right; }
+    @media (max-width: 600px) { .footer__layout { flex-direction: column; } .footer__right { text-align: left; } }
+
+    /* DIVIDER */
+    .section-divider {
+      height: 1px; background: rgba(58,42,31,0.08); border: none; margin: 0;
+    }
+
+    /* ANIMATIONS — fail-safe: visible by default, hidden only when JS is ready */
+    [data-animate] { opacity: 1; transform: none; }
+    .js-ready [data-animate] {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+    }
+    .js-ready [data-animate].is-visible { opacity: 1; transform: translateY(0); }
+    [data-animate-delay="1"] { transition-delay: 0.1s; }
+    [data-animate-delay="2"] { transition-delay: 0.2s; }
+    [data-animate-delay="3"] { transition-delay: 0.3s; }
+    [data-animate-delay="4"] { transition-delay: 0.4s; }
+    [data-animate-delay="5"] { transition-delay: 0.5s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .js-ready [data-animate] { opacity: 1 !important; transform: none !important; transition: none !important; }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      .amount-grid { grid-template-columns: repeat(2, 1fr); }
+      .program-pills { gap: 0.4rem; }
+      .program-pill { font-size: 0.78rem; padding: 0.45rem 0.85rem; }
+      .success-state__links { flex-direction: column; gap: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="/" class="nav__logo">Big Sister Foundation</a>
+    <ul class="nav__links">
+      <li><a href="/#pathways">Pathways</a></li>
+      <li><a href="/#different">Approach</a></li>
+      <li><a href="/ledger/">Ledger</a></li>
+      <li><a href="/ideas/">Ideas</a></li>
+      <li><a href="/scholars/">Scholars</a></li>
+      <li><a href="/volunteer/">Volunteer</a></li>
+      <li><a href="/forums/">Forums</a></li>
+      <li><a href="/donate/" class="is-active">Donate</a></li>
+      <li><a href="/sponsor/">Sponsor</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="donate-hero">
+    <div class="container">
+      <p class="eyebrow" style="animation: heroFadeUp 0.6s var(--ease) both;">GIVE DIRECTLY</p>
+      <h1 style="animation: heroFadeUp 0.6s var(--ease) 0.15s both;">Every Naira<br>Has a Name</h1>
+      <p class="donate-hero__sub" style="animation: heroFadeUp 0.6s var(--ease) 0.3s both;">Your donation goes directly to a child's education, nutrition, or community protection. No overhead mystery. No middlemen.</p>
+    </div>
+  </section>
+
+  <!-- DONATION FORM -->
+  <section class="donate-section section-pad">
+    <div class="container">
+      <div class="donate-card" data-animate>
+
+        <!-- Form State -->
+        <div id="donate-form">
+
+          <!-- B1: Currency Selector -->
+          <div class="currency-selector">
+            <label for="currency-select">Currency</label>
+            <select id="currency-select">
+              <option value="NGN">&#x1F1F3;&#x1F1EC; NGN &mdash; Nigerian Naira</option>
+              <option value="USD">&#x1F1FA;&#x1F1F8; USD &mdash; US Dollar</option>
+              <option value="GBP">&#x1F1EC;&#x1F1E7; GBP &mdash; British Pound</option>
+              <option value="EUR">&#x1F1EA;&#x1F1FA; EUR &mdash; Euro</option>
+              <option value="CAD">&#x1F1E8;&#x1F1E6; CAD &mdash; Canadian Dollar</option>
+            </select>
+          </div>
+
+          <!-- B2: Amount Selection -->
+          <div class="amount-section">
+            <p class="amount-section__label">Select Amount</p>
+            <div class="amount-grid" id="amount-grid"></div>
+            <div class="custom-amount-wrap" id="custom-wrap">
+              <span class="custom-amount-wrap__prefix" id="custom-prefix"></span>
+              <input type="number" id="custom-amount" placeholder="Enter amount" min="1" step="any">
+            </div>
+          </div>
+
+          <!-- B3: Program Allocation -->
+          <div class="program-section">
+            <p class="program-section__label">Allocate To</p>
+            <div class="program-pills" id="program-pills">
+              <button class="program-pill is-active" data-program="Where it's needed most">Where it's needed most</button>
+              <button class="program-pill" data-program="Education & School Fees">Education &amp; School Fees</button>
+              <button class="program-pill" data-program="Nutrition & Health">Nutrition &amp; Health</button>
+              <button class="program-pill" data-program="Community Protection">Community Protection</button>
+            </div>
+          </div>
+
+          <!-- B4: Donor Information -->
+          <div class="donor-section">
+            <p class="donor-section__label">Your Information</p>
+            <label class="anon-toggle">
+              <input type="checkbox" id="anon-check" checked>
+              <span>Donate anonymously</span>
+            </label>
+
+            <!-- Anonymous: email only for receipt -->
+            <div class="donor-fields" id="anon-fields">
+              <div class="form-group">
+                <label for="field-email-anon">Email <span class="hint">(optional &mdash; for receipt only)</span></label>
+                <input type="email" id="field-email-anon" placeholder="you@example.com" autocomplete="email">
+              </div>
+            </div>
+
+            <!-- Named: name + email -->
+            <div class="donor-fields" id="named-fields">
+              <div class="form-group">
+                <label for="field-name">Full Name</label>
+                <input type="text" id="field-name" placeholder="Your full name" autocomplete="name">
+              </div>
+              <div class="form-group">
+                <label for="field-email">Email</label>
+                <input type="email" id="field-email" placeholder="you@example.com" autocomplete="email" required>
+              </div>
+            </div>
+
+            <!-- Optional message -->
+            <div class="form-group" style="margin-top: 0.5rem;">
+              <label for="field-message">Personal message <span class="hint">(optional)</span></label>
+              <textarea id="field-message" maxlength="200" placeholder="A word of encouragement, a dedication, or just your reason for giving..." style="min-height: 60px;"></textarea>
+              <div class="char-counter" id="msg-counter">0 / 200</div>
+            </div>
+          </div>
+
+          <!-- B5: Summary + Pay -->
+          <div class="summary-bar" id="summary-bar">
+            <div class="summary-bar__row">
+              <span>Amount</span>
+              <span id="summary-amount">&mdash;</span>
+            </div>
+            <div class="summary-bar__row">
+              <span>Program</span>
+              <span id="summary-program">Where it's needed most</span>
+            </div>
+            <div class="summary-bar__row">
+              <span>Donor</span>
+              <span id="summary-donor">Anonymous</span>
+            </div>
+            <div class="summary-bar__total">
+              <span>Total</span>
+              <span id="summary-total">&mdash;</span>
+            </div>
+          </div>
+
+          <button class="pay-btn" id="pay-btn" disabled>
+            <span class="spinner"></span>
+            <span class="pay-btn__text">Select an amount to give</span>
+          </button>
+        </div>
+
+        <!-- Success State -->
+        <div class="success-state" id="success-state">
+          <div class="success-check"></div>
+          <h2>Thank you.</h2>
+          <div class="success-state__details" id="success-details"></div>
+          <div class="success-state__actions">
+            <button class="btn btn--terra" id="download-receipt-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download Receipt
+            </button>
+          </div>
+          <div class="success-state__links">
+            <a href="/sponsor/">Become a Monthly Sponsor &rarr;</a>
+            <a href="/ledger/">See where your donation goes</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- TRUST SECTION -->
+  <section class="trust-section section-pad">
+    <div class="container">
+      <div class="trust-grid">
+        <div class="trust-card" data-animate>
+          <div class="trust-card__icon trust-card__icon--green">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <h3>100% Transparent</h3>
+          <p>Every donation is logged in our public ledger. You can see exactly where your money went, down to the last naira.</p>
+          <a href="/ledger/">View the Ledger &rarr;</a>
+        </div>
+        <div class="trust-card" data-animate data-animate-delay="1">
+          <div class="trust-card__icon trust-card__icon--terra">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          <h3>Direct Impact</h3>
+          <p>Every naira you give is tracked from the moment it arrives to the moment it reaches a child. No administrative mystery.</p>
+        </div>
+        <div class="trust-card" data-animate data-animate-delay="2">
+          <div class="trust-card__icon trust-card__icon--gold">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <h3>Secure Payment</h3>
+          <p>All transactions are processed through Paystack, Africa's leading payment gateway. Your financial data is always protected.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- IMPACT SECTION -->
+  <section class="impact-section section-pad">
+    <div class="container">
+      <p class="eyebrow" data-animate>WHAT YOUR DONATION FUNDS</p>
+      <h2 data-animate data-animate-delay="1" style="color: var(--cream); margin-bottom: 2rem;">Real Numbers,<br>Real Children</h2>
+      <div class="impact-scroll">
+        <div class="impact-card" data-animate data-animate-delay="1">
+          <p class="impact-card__amount">&#x20A6;10,000</p>
+          <p>Covers one child's school supplies for an entire term &mdash; notebooks, pens, uniforms, and a bag to carry it all in.</p>
+        </div>
+        <div class="impact-card" data-animate data-animate-delay="2">
+          <p class="impact-card__amount">&#x20A6;25,000</p>
+          <p>Funds a full month of after-school meals for 5 children &mdash; so they can focus on learning, not hunger.</p>
+        </div>
+        <div class="impact-card" data-animate data-animate-delay="3">
+          <p class="impact-card__amount">&#x20A6;50,000</p>
+          <p>Sponsors a child's complete term school fees &mdash; opening a door that stays open for the rest of their life.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__layout">
+        <div class="footer__left">
+          <p class="footer__brand-name">Big Sister Foundation</p>
+          <p class="footer__tagline">Rooted. Present. Protective.</p>
+          <p class="footer__location">Lagos, Nigeria</p>
+        </div>
+        <div class="footer__right">
+          <ul class="footer__links">
+            <li><a href="/scholars/">Scholars</a></li>
+            <li><a href="/ledger/">Ledger</a></li>
+            <li><a href="/events/">Events</a></li>
+            <li><a href="/volunteer/">Volunteer</a></li>
+            <li><a href="/forums/">Forums</a></li>
+            <li><a href="/ideas/">Ideas</a></li>
+            <li><a href="/donations/">Donations</a></li>
+            <li><a href="/donate/">Give</a></li>
+            <li><a href="/sponsor/">Sponsor</a></li>
+            <li><a href="https://wa.me/2348000000000">WhatsApp</a></li>
+            <li><a href="mailto:princebolajibreeze@gmail.com">Email</a></li>
+          </ul>
+          <p class="footer__copy">&copy; 2026 Big Sister Foundation. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- FIREBASE -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <!-- SHARED BSF LIBS -->
+  <script src="/shared/bsf-store.js"></script>
+  <script src="/shared/bsf-paystack.js"></script>
+  <script src="/shared/bsf-receipt.js"></script>
+  <script src="https://js.paystack.co/v2/inline.js"></script>
+
+  <script>
+    (function() {
+      'use strict';
+
+      /* ── Firebase init ── */
+      if (!firebase.apps.length) {
+        firebase.initializeApp({
+          apiKey: "AIzaSyCwos6XR9-uqAf_Esmh2K_hJoLxq4gnEuU",
+          authDomain: "big-sister-foundation.firebaseapp.com",
+          projectId: "big-sister-foundation",
+          storageBucket: "big-sister-foundation.firebasestorage.app",
+          messagingSenderId: "778723584560",
+          appId: "1:778723584560:web:7499944c30001e7fcf5bf5"
+        });
+      }
+      var db = firebase.firestore();
+
+      /* ── DOM refs ── */
+      var currencySelect = document.getElementById('currency-select');
+      var amountGrid     = document.getElementById('amount-grid');
+      var customWrap     = document.getElementById('custom-wrap');
+      var customPrefix   = document.getElementById('custom-prefix');
+      var customInput    = document.getElementById('custom-amount');
+      var programPills   = document.querySelectorAll('.program-pill');
+      var anonCheck      = document.getElementById('anon-check');
+      var anonFields     = document.getElementById('anon-fields');
+      var namedFields    = document.getElementById('named-fields');
+      var msgField       = document.getElementById('field-message');
+      var msgCounter     = document.getElementById('msg-counter');
+      var summaryAmount  = document.getElementById('summary-amount');
+      var summaryProgram = document.getElementById('summary-program');
+      var summaryDonor   = document.getElementById('summary-donor');
+      var summaryTotal   = document.getElementById('summary-total');
+      var payBtn         = document.getElementById('pay-btn');
+      var donateForm     = document.getElementById('donate-form');
+      var successState   = document.getElementById('success-state');
+      var successDetails = document.getElementById('success-details');
+      var receiptBtn     = document.getElementById('download-receipt-btn');
+      var toastEl        = document.getElementById('toast');
+
+      /* ── State ── */
+      var state = {
+        currency: 'NGN',
+        amount: null,
+        isCustom: false,
+        program: "Where it's needed most",
+        anonymous: true,
+        lastTransaction: null
+      };
+
+      /* ── Toast ── */
+      var toastTimeout;
+      function showToast(msg, type) {
+        clearTimeout(toastTimeout);
+        toastEl.textContent = msg;
+        toastEl.className = 'toast toast--' + (type || 'success');
+        requestAnimationFrame(function() {
+          toastEl.classList.add('is-visible');
+        });
+        toastTimeout = setTimeout(function() {
+          toastEl.classList.remove('is-visible');
+        }, 4000);
+      }
+
+      /* ── Escape text for safe DOM insertion ── */
+      function escapeText(str) {
+        var div = document.createElement('div');
+        div.textContent = str;
+        return div.textContent;
+      }
+
+      /* ── Build amount buttons ── */
+      function buildAmountGrid() {
+        var info = BSFPaystack.getCurrencyInfo(state.currency);
+        var presets = info.presets;
+        var symbol = info.symbol;
+        amountGrid.textContent = '';
+
+        presets.forEach(function(val) {
+          var btn = document.createElement('button');
+          btn.className = 'amount-btn';
+          btn.setAttribute('data-amount', val);
+          btn.textContent = symbol + Number(val).toLocaleString();
+          btn.addEventListener('click', function() { selectAmount(val, false); });
+          amountGrid.appendChild(btn);
+        });
+
+        // Custom button
+        var customBtn = document.createElement('button');
+        customBtn.className = 'amount-btn';
+        customBtn.setAttribute('data-amount', 'custom');
+        customBtn.textContent = 'Custom';
+        customBtn.addEventListener('click', function() { selectAmount(null, true); });
+        amountGrid.appendChild(customBtn);
+
+        // Update custom prefix
+        customPrefix.textContent = symbol;
+
+        // Reset selection
+        state.amount = null;
+        state.isCustom = false;
+        customWrap.classList.remove('is-visible');
+        customInput.value = '';
+        updateSummary();
+      }
+
+      function selectAmount(val, isCustom) {
+        // Update active states
+        var btns = amountGrid.querySelectorAll('.amount-btn');
+        btns.forEach(function(b) { b.classList.remove('is-active'); });
+
+        if (isCustom) {
+          btns[btns.length - 1].classList.add('is-active');
+          customWrap.classList.add('is-visible');
+          customInput.focus();
+          state.isCustom = true;
+          state.amount = parseFloat(customInput.value) || null;
+        } else {
+          var target = amountGrid.querySelector('[data-amount="' + val + '"]');
+          if (target) target.classList.add('is-active');
+          customWrap.classList.remove('is-visible');
+          state.isCustom = false;
+          state.amount = val;
+        }
+        updateSummary();
+      }
+
+      /* ── Currency change ── */
+      currencySelect.addEventListener('change', function() {
+        state.currency = this.value;
+        buildAmountGrid();
+      });
+
+      /* ── Custom input ── */
+      customInput.addEventListener('input', function() {
+        var val = parseFloat(this.value);
+        state.amount = val > 0 ? val : null;
+        updateSummary();
+      });
+
+      /* ── Program pills ── */
+      programPills.forEach(function(pill) {
+        pill.addEventListener('click', function() {
+          programPills.forEach(function(p) { p.classList.remove('is-active'); });
+          pill.classList.add('is-active');
+          state.program = pill.getAttribute('data-program');
+          updateSummary();
+        });
+      });
+
+      /* ── Anonymous toggle ── */
+      function updateDonorFields() {
+        state.anonymous = anonCheck.checked;
+        if (state.anonymous) {
+          anonFields.classList.add('is-visible');
+          namedFields.classList.remove('is-visible');
+        } else {
+          anonFields.classList.remove('is-visible');
+          namedFields.classList.add('is-visible');
+        }
+        updateSummary();
+      }
+      anonCheck.addEventListener('change', updateDonorFields);
+      updateDonorFields(); // init
+
+      /* ── Message counter ── */
+      msgField.addEventListener('input', function() {
+        var len = this.value.length;
+        msgCounter.textContent = len + ' / 200';
+        msgCounter.className = 'char-counter' +
+          (len >= 180 ? ' is-near' : '') +
+          (len >= 200 ? ' is-over' : '');
+      });
+
+      /* ── Update summary ── */
+      function updateSummary() {
+        var info = BSFPaystack.getCurrencyInfo(state.currency);
+        if (state.amount) {
+          var formatted = info.symbol + Number(state.amount).toLocaleString();
+          summaryAmount.textContent = formatted;
+          summaryTotal.textContent = formatted;
+          payBtn.disabled = false;
+          payBtn.querySelector('.pay-btn__text').textContent = 'Give ' + formatted;
+        } else {
+          summaryAmount.textContent = '\u2014';
+          summaryTotal.textContent = '\u2014';
+          payBtn.disabled = true;
+          payBtn.querySelector('.pay-btn__text').textContent = 'Select an amount to give';
+        }
+
+        summaryProgram.textContent = state.program;
+
+        if (state.anonymous) {
+          summaryDonor.textContent = 'Anonymous';
+        } else {
+          var nameVal = document.getElementById('field-name').value.trim();
+          summaryDonor.textContent = nameVal || 'Anonymous';
+        }
+      }
+
+      // Update donor name in summary on input
+      document.getElementById('field-name').addEventListener('input', updateSummary);
+
+      /* ── Pay ── */
+      payBtn.addEventListener('click', function() {
+        if (!state.amount || payBtn.disabled) return;
+
+        // Determine email
+        var email;
+        if (state.anonymous) {
+          var anonEmail = document.getElementById('field-email-anon').value.trim();
+          email = anonEmail || ('anonymous-' + Date.now() + '@bsf-donor.local');
+        } else {
+          email = document.getElementById('field-email').value.trim();
+          var name = document.getElementById('field-name').value.trim();
+          if (!name) {
+            showToast('Please enter your name.', 'error');
+            document.getElementById('field-name').focus();
+            return;
+          }
+          if (!email || !email.includes('@')) {
+            showToast('Please enter a valid email address.', 'error');
+            document.getElementById('field-email').focus();
+            return;
+          }
+        }
+
+        // Loading state
+        payBtn.classList.add('is-loading');
+        payBtn.disabled = true;
+
+        var ref = BSFStore.generateRef();
+        var donorName = state.anonymous ? 'Anonymous' : (document.getElementById('field-name').value.trim() || 'Anonymous');
+        var message = msgField.value.trim();
+
+        BSFPaystack.pay({
+          email: email,
+          amount: state.amount,
+          currency: state.currency,
+          ref: ref,
+          metadata: {
+            program: state.program,
+            donor_name: donorName,
+            anonymous: state.anonymous,
+            message: message || undefined
+          },
+          onSuccess: function(response) {
+            // Build transaction object
+            var txn = {
+              ref: ref,
+              paystackRef: response.reference || response.trxref || ref,
+              amount: state.amount,
+              currency: state.currency,
+              program: state.program,
+              donorName: donorName,
+              donorEmail: email,
+              anonymous: state.anonymous,
+              message: message || '',
+              type: 'donation',
+              status: 'success',
+              date: new Date().toISOString()
+            };
+
+            // Save locally
+            BSFStore.addTransaction(txn);
+
+            // Sync to Firestore
+            BSFStore.syncDonationToFirestore(db, txn).catch(function(e) {
+              console.warn('[Donate] Firestore sync failed:', e);
+            });
+
+            state.lastTransaction = txn;
+
+            // Show success
+            showSuccess(txn);
+            showToast('Donation successful! Thank you.', 'success');
+
+            payBtn.classList.remove('is-loading');
+            payBtn.disabled = false;
+          },
+          onClose: function() {
+            payBtn.classList.remove('is-loading');
+            payBtn.disabled = false;
+            showToast('Payment window closed. No charge was made.', 'error');
+          }
+        });
+      });
+
+      /* ── Show success state (safe DOM construction) ── */
+      function showSuccess(txn) {
+        var info = BSFPaystack.getCurrencyInfo(txn.currency);
+        var formatted = info.symbol + Number(txn.amount).toLocaleString();
+        var dateStr = new Date(txn.date).toLocaleDateString('en-NG', {
+          year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        // Build success details using safe DOM methods
+        successDetails.textContent = '';
+        var rows = [
+          ['Reference', txn.ref],
+          ['Amount', formatted],
+          ['Program', txn.program],
+          ['Date', dateStr]
+        ];
+        rows.forEach(function(row) {
+          var p = document.createElement('p');
+          p.className = 'success-detail-row';
+          var labelSpan = document.createElement('span');
+          labelSpan.textContent = row[0];
+          var valueSpan = document.createElement('span');
+          valueSpan.className = 'detail-value';
+          valueSpan.textContent = row[1];
+          p.appendChild(labelSpan);
+          p.appendChild(valueSpan);
+          successDetails.appendChild(p);
+        });
+
+        donateForm.style.display = 'none';
+        successState.classList.add('is-visible');
+      }
+
+      /* ── Download receipt ── */
+      receiptBtn.addEventListener('click', function() {
+        if (state.lastTransaction && typeof BSFReceipt !== 'undefined') {
+          BSFReceipt.generate(state.lastTransaction);
+        } else {
+          showToast('Receipt generation is not available right now.', 'error');
+        }
+      });
+
+      /* ── Intersection Observer for animations ── */
+      document.documentElement.classList.add('js-ready');
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+      document.querySelectorAll('[data-animate]').forEach(function(el) {
+        observer.observe(el);
+      });
+
+      /* ── Init ── */
+      buildAmountGrid();
+
+    })();
+  </script>
+
+</body>
+</html>
