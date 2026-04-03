@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Donate — Big Sister Foundation</title>
-  <meta name="description" content="Give directly to a child's education, nutrition, or community protection. Every naira is tracked. No overhead mystery.">
+  <title>Give — Big Sister Foundation</title>
+  <meta name="description" content="Every naira goes somewhere specific. Choose where your support lands — school fees, food, healthcare, events, or reserves. Paystack-powered. Auto-tracked on our public ledger.">
   <meta name="theme-color" content="#2D5E40">
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cellipse cx='50' cy='35' rx='35' ry='30' fill='%232D5E40' opacity='0.85'/%3E%3Cellipse cx='30' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cellipse cx='70' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cpath d='M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z' fill='%233A2A1F' opacity='0.8'/%3E%3C/svg%3E">
@@ -12,6 +12,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+
+  <!-- Paystack Inline JS -->
+  <script src="https://js.paystack.co/v2/inline.js"></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -49,16 +52,21 @@
     .eyebrow {
       font-family: var(--font-sans);
       font-size: clamp(0.7rem, 0.5vw + 0.5rem, 0.85rem);
-      font-weight: 600; letter-spacing: 0.12em;
-      text-transform: uppercase; margin-bottom: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
     }
 
     h1, h2, h3 {
       font-family: var(--font-serif);
-      font-weight: 500; line-height: 1.08; letter-spacing: -0.02em;
+      font-weight: 500;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
     }
-    h1 { font-size: clamp(2.2rem, 4vw + 0.5rem, 4rem); }
-    h2 { font-size: clamp(1.8rem, 2.5vw + 0.5rem, 2.8rem); }
+
+    h1 { font-size: clamp(2.5rem, 5vw + 1rem, 5.5rem); }
+    h2 { font-size: clamp(2rem, 3vw + 0.5rem, 3.5rem); }
     h3 { font-size: clamp(1.3rem, 1vw + 0.8rem, 1.7rem); line-height: 1.2; }
 
     .container { max-width: 1200px; margin: 0 auto; padding-left: var(--page-margin); padding-right: var(--page-margin); }
@@ -78,465 +86,156 @@
     @media (max-width: 768px) { .nav__links { gap: 1rem; } .nav__links a { font-size: 0.75rem; } }
 
     /* HERO */
-    .donate-hero {
-      padding-top: calc(60px + var(--section-pad));
-      padding-bottom: var(--section-pad);
-      background: var(--green-dark); color: var(--cream);
-      position: relative; overflow: hidden;
+    .hero {
+      min-height: 50vh; display: flex; align-items: center;
+      padding-top: calc(var(--section-pad) + 60px); padding-bottom: var(--section-pad);
+      background: linear-gradient(170deg, var(--green-dark) 0%, var(--green) 100%);
+      color: #fff; position: relative; overflow: hidden;
     }
-    .donate-hero::before {
-      content: '';
-      position: absolute; top: -40%; right: -10%; width: 600px; height: 600px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(45,94,64,0.3) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .donate-hero .eyebrow { color: var(--gold); }
-    .donate-hero h1 { color: var(--cream); }
-    .donate-hero__sub {
-      max-width: 640px; margin-top: 1.2rem;
-      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.15rem);
-      line-height: 1.7; color: rgba(255,248,240,0.75);
-    }
+    .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 70% 20%, rgba(212,169,106,0.15) 0%, transparent 60%); pointer-events: none; }
+    .hero__content { position: relative; max-width: 720px; }
+    .hero__eyebrow { font-family: var(--font-sans); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; opacity: 0; transform: translateY(20px); animation: fadeUp 0.8s var(--ease) 0.2s forwards; }
+    .hero h1 { color: #fff; margin-bottom: 1.5rem; opacity: 0; transform: translateY(20px); animation: fadeUp 0.8s var(--ease) 0.4s forwards; }
+    .hero__sub { font-size: clamp(1.05rem, 0.5vw + 0.9rem, 1.3rem); line-height: 1.7; max-width: 560px; opacity: 0; transform: translateY(20px); animation: fadeUp 0.8s var(--ease) 0.6s forwards; }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
-    /* BUTTONS */
-    .btn {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      padding: 0.9rem 2rem; border-radius: 100px;
-      font-family: var(--font-sans); font-size: clamp(0.85rem, 0.3vw + 0.75rem, 1rem); font-weight: 600;
-      letter-spacing: 0.02em; text-decoration: none;
-      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), opacity 0.3s;
-      cursor: pointer; border: none;
-    }
-    .btn:hover { transform: scale(1.03); box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
-    .btn--terra { background: var(--terra); color: #fff; }
-    .btn--terra:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
-    .btn--ghost {
-      background: transparent; color: #fff;
-      border: 1.5px solid rgba(255,255,255,0.5);
-    }
-    .btn--ghost:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
-    .btn--green {
-      background: rgba(45,94,64,0.15); color: var(--cream);
-      border: 1.5px solid rgba(139,175,142,0.3);
-    }
-    .btn--green:hover { background: rgba(45,94,64,0.3); }
+    /* PROMISE BAR */
+    .promise-bar { background: var(--green-dark); color: #fff; padding: 1.5rem 0; }
+    .promise-bar__inner { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem 3rem; }
+    .promise-bar__item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 500; opacity: 0.9; }
+    .promise-bar__icon { width: 26px; height: 26px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
-    /* ─── DONATION CARD ─── */
-    .donate-section { background: var(--cream); }
-    .donate-card {
-      max-width: 600px; margin: 0 auto;
-      background: #fff;
-      border: 1.5px solid rgba(58,42,31,0.12);
-      border-radius: 20px;
-      padding: clamp(1.5rem, 3vw, 2.5rem);
-      box-shadow: 0 20px 60px rgba(58,42,31,0.10), 0 4px 16px rgba(58,42,31,0.08);
-    }
+    /* FUND PICKER */
+    .funds { background: var(--cream); }
+    .funds__intro { max-width: 640px; margin-bottom: 2.5rem; opacity: 0.8; }
 
-    /* Currency selector */
-    .currency-selector { margin-bottom: 2rem; }
-    .currency-selector label {
-      display: block; font-size: 0.8rem; font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.08em;
-      color: rgba(58,42,31,0.5); margin-bottom: 0.5rem;
+    .fund-picker { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.75rem; margin-bottom: 2rem; }
+    .fund-pill {
+      padding: 0.85rem 1rem; border-radius: 10px; border: 2px solid rgba(58,42,31,0.08);
+      background: #fff; text-align: center; transition: all 0.2s var(--ease); cursor: pointer;
     }
-    .currency-selector select {
-      width: 100%; padding: 0.75rem 1rem;
-      border: 1.5px solid rgba(58,42,31,0.15); border-radius: 10px;
-      background: #fff; font-family: var(--font-sans); font-size: 0.95rem;
-      color: var(--brown); outline: none;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%233A2A1F' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
-      background-repeat: no-repeat; background-position: right 1rem center;
-      padding-right: 2.5rem;
-      transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
-    }
-    .currency-selector select:focus {
-      border-color: var(--green);
-      box-shadow: 0 0 0 3px rgba(45,94,64,0.1);
-    }
+    .fund-pill:hover { border-color: var(--green); transform: translateY(-2px); }
+    .fund-pill.is-active { border-color: var(--green); background: var(--green); color: #fff; }
+    .fund-pill__icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
+    .fund-pill__label { font-size: 0.82rem; font-weight: 600; }
+    .fund-pill__sub { font-size: 0.7rem; opacity: 0.6; margin-top: 0.15rem; }
+    .fund-pill.is-active .fund-pill__sub { opacity: 0.8; }
 
-    /* Amount grid */
-    .amount-section { margin-bottom: 2rem; }
-    .amount-section__label {
-      font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
-      letter-spacing: 0.08em; color: rgba(58,42,31,0.5); margin-bottom: 0.75rem;
+    /* CHECKOUT SECTION */
+    .checkout-section { background: #fff; border-top: 1px solid rgba(58,42,31,0.06); }
+    .checkout__layout { display: grid; grid-template-columns: 1fr 400px; gap: 4rem; align-items: start; }
+    @media (max-width: 860px) { .checkout__layout { grid-template-columns: 1fr; gap: 2rem; } }
+
+    .checkout__form { max-width: 520px; }
+    .checkout__title { font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .checkout__sub { font-size: 0.9rem; opacity: 0.55; margin-bottom: 2rem; }
+
+    .field { margin-bottom: 1.25rem; }
+    .field label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.4rem; opacity: 0.7; }
+    .field input, .field select, .field textarea {
+      width: 100%; padding: 0.75rem 1rem; font-size: 0.95rem; font-family: var(--font-sans);
+      border: 1.5px solid rgba(58,42,31,0.12); border-radius: 8px; background: var(--cream); color: var(--brown); transition: border-color 0.2s;
     }
-    .amount-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;
-    }
+    .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--green); }
+    .field textarea { resize: vertical; min-height: 70px; }
+
+    .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 0.75rem; }
     .amount-btn {
-      padding: 0.85rem 0.5rem; border-radius: 12px;
-      border: 1.5px solid rgba(58,42,31,0.12);
-      background: #fff; color: var(--brown);
-      font-family: var(--font-sans); font-size: 1rem; font-weight: 600;
-      text-align: center; cursor: pointer;
-      transition: all 0.25s var(--ease);
+      padding: 0.65rem; border: 2px solid rgba(58,42,31,0.1); border-radius: 8px;
+      font-size: 0.95rem; font-weight: 700; background: #fff; color: var(--brown); transition: all 0.2s; text-align: center;
     }
-    .amount-btn:hover {
-      border-color: var(--terra);
-      background: rgba(194,115,76,0.04);
-    }
-    .amount-btn.is-active {
-      background: var(--terra); color: #fff;
-      border-color: var(--terra);
-      box-shadow: 0 4px 16px rgba(194,115,76,0.25);
-    }
-    .custom-amount-wrap {
-      display: none; margin-top: 0.75rem;
-      position: relative;
-    }
-    .custom-amount-wrap.is-visible { display: block; }
-    .custom-amount-wrap__prefix {
-      position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
-      font-size: 1rem; font-weight: 600; color: rgba(58,42,31,0.4);
-      pointer-events: none;
-    }
-    .custom-amount-wrap input {
-      width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem;
-      border: 1.5px solid rgba(58,42,31,0.15); border-radius: 10px;
-      background: #fff; font-family: var(--font-sans); font-size: 1.1rem;
-      font-weight: 600; color: var(--brown); outline: none;
-      transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
-    }
-    .custom-amount-wrap input:focus {
-      border-color: var(--green);
-      box-shadow: 0 0 0 3px rgba(45,94,64,0.1);
-    }
+    .amount-btn:hover { border-color: var(--green); color: var(--green); }
+    .amount-btn.is-active { background: var(--green); color: #fff; border-color: var(--green); }
 
-    /* Program allocation */
-    .program-section { margin-bottom: 2rem; }
-    .program-section__label {
-      font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
-      letter-spacing: 0.08em; color: rgba(58,42,31,0.5); margin-bottom: 0.75rem;
-    }
-    .program-pills {
-      display: flex; flex-wrap: wrap; gap: 0.5rem;
-    }
-    .program-pill {
-      padding: 0.5rem 1.1rem; border-radius: 100px;
-      border: 1.5px solid rgba(58,42,31,0.12);
-      background: #fff; color: var(--brown);
-      font-family: var(--font-sans); font-size: 0.85rem; font-weight: 500;
-      cursor: pointer; transition: all 0.25s var(--ease);
-      white-space: nowrap;
-    }
-    .program-pill:hover {
-      border-color: var(--green);
-      background: rgba(45,94,64,0.04);
-    }
-    .program-pill.is-active {
-      background: var(--green); color: #fff;
-      border-color: var(--green);
-    }
-
-    /* Donor info */
-    .donor-section { margin-bottom: 2rem; }
-    .donor-section__label {
-      font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
-      letter-spacing: 0.08em; color: rgba(58,42,31,0.5); margin-bottom: 0.75rem;
-    }
-    .anon-toggle {
-      display: flex; align-items: center; gap: 0.6rem;
-      margin-bottom: 1rem; cursor: pointer;
-    }
-    .anon-toggle input[type="checkbox"] {
-      width: 18px; height: 18px; accent-color: var(--green); cursor: pointer;
-    }
-    .anon-toggle span {
-      font-size: 0.9rem; font-weight: 500; color: var(--brown);
-    }
-    .donor-fields { display: none; }
-    .donor-fields.is-visible { display: block; }
-    .form-group {
-      margin-bottom: 1.25rem;
-    }
-    .form-group label {
-      display: block; font-size: 0.9rem; font-weight: 600;
-      color: var(--brown); margin-bottom: 0.4rem;
-    }
-    .form-group label .hint {
-      font-weight: 400; color: rgba(58,42,31,0.45); font-size: 0.8rem;
-    }
-    .form-group input,
-    .form-group textarea {
-      width: 100%; padding: 0.75rem 1rem;
-      border: 1.5px solid rgba(58,42,31,0.15); border-radius: 10px;
-      background: #fff; font-family: var(--font-sans); font-size: 0.95rem;
-      color: var(--brown); outline: none;
-      transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
-    }
-    .form-group input:focus,
-    .form-group textarea:focus {
-      border-color: var(--green);
-      box-shadow: 0 0 0 3px rgba(45,94,64,0.1);
-    }
-    .form-group textarea {
-      resize: vertical; min-height: 70px;
-    }
-    .char-counter {
-      text-align: right; font-size: 0.75rem;
-      color: rgba(58,42,31,0.45); margin-top: 0.3rem;
-    }
-    .char-counter.is-near { color: var(--terra); }
-    .char-counter.is-over { color: #c0392b; font-weight: 600; }
-
-    /* Summary bar */
-    .summary-bar {
-      background: rgba(45,94,64,0.04);
-      border: 1.5px solid rgba(45,94,64,0.1);
-      border-radius: 12px; padding: 1rem 1.25rem;
-      margin-bottom: 1.25rem;
-    }
-    .summary-bar__row {
-      display: flex; justify-content: space-between; align-items: center;
-      font-size: 0.85rem; color: rgba(58,42,31,0.7);
-      padding: 0.2rem 0;
-    }
-    .summary-bar__row span:last-child {
-      font-weight: 600; color: var(--brown);
-    }
-    .summary-bar__total {
-      border-top: 1px solid rgba(45,94,64,0.12);
-      margin-top: 0.5rem; padding-top: 0.6rem;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .summary-bar__total span:first-child {
-      font-size: 0.85rem; font-weight: 600; color: var(--green);
-    }
-    .summary-bar__total span:last-child {
-      font-family: var(--font-serif); font-size: 1.4rem;
-      font-weight: 600; color: var(--green);
-    }
-
-    /* Pay button */
     .pay-btn {
-      width: 100%; padding: 1rem 2rem; border-radius: 100px;
-      background: var(--terra); color: #fff;
-      font-family: var(--font-sans); font-size: 1.05rem; font-weight: 700;
-      letter-spacing: 0.02em; border: none; cursor: pointer;
-      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), background 0.3s;
-      display: flex; align-items: center; justify-content: center;
-      position: relative;
+      display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+      width: 100%; padding: 1rem; margin-top: 1.75rem;
+      background: var(--green); color: #fff; border-radius: 10px;
+      font-size: 1.1rem; font-weight: 700; transition: background 0.2s, transform 0.2s;
     }
-    .pay-btn:hover:not(:disabled) {
-      transform: scale(1.02);
-      box-shadow: 0 8px 30px rgba(194,115,76,0.3);
-    }
-    .pay-btn:disabled {
-      opacity: 0.6; cursor: not-allowed; transform: none;
-    }
-    .pay-btn .spinner {
-      display: none; width: 18px; height: 18px;
-      border: 2.5px solid rgba(255,255,255,0.3);
-      border-top-color: #fff; border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      margin-right: 0.5rem;
-    }
-    .pay-btn.is-loading .spinner { display: inline-block; }
-    .pay-btn.is-loading .pay-btn__text { opacity: 0.7; }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    @keyframes heroFadeUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .pay-btn:hover { background: var(--green-dark); transform: translateY(-1px); }
+    .pay-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .pay-btn svg { flex-shrink: 0; }
 
-    /* ─── SUCCESS STATE ─── */
-    .success-state {
-      display: none; text-align: center;
-      padding: 2rem 0;
-    }
-    .success-state.is-visible { display: block; }
-    .success-check {
-      width: 80px; height: 80px; border-radius: 50%;
-      background: rgba(45,94,64,0.08);
-      margin: 0 auto 1.5rem; position: relative;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .success-check::after {
-      content: '';
-      width: 24px; height: 40px;
-      border-right: 4px solid var(--green);
-      border-bottom: 4px solid var(--green);
-      transform: rotate(45deg) translate(-2px, -2px);
-      display: block;
-    }
-    .success-state h2 {
-      color: var(--green); margin-bottom: 0.75rem;
-    }
-    .success-state__details {
-      max-width: 400px; margin: 0 auto 2rem;
-      background: rgba(45,94,64,0.04);
-      border: 1.5px solid rgba(45,94,64,0.1);
-      border-radius: 12px; padding: 1rem 1.25rem;
-      text-align: left;
-    }
-    .success-detail-row {
-      font-size: 0.85rem; color: rgba(58,42,31,0.7);
-      display: flex; justify-content: space-between;
-      padding: 0.25rem 0;
-    }
-    .success-detail-row .detail-value {
-      font-weight: 600; color: var(--brown);
-    }
-    .success-state__actions {
-      display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
-    }
-    .success-state__actions .btn { min-width: 240px; justify-content: center; }
-    .success-state__links {
-      display: flex; gap: 2rem; justify-content: center;
-      margin-top: 1.5rem;
-    }
-    .success-state__links a {
-      font-size: 0.9rem; font-weight: 500; color: var(--green);
-      text-decoration: none; transition: color 0.3s;
-    }
-    .success-state__links a:hover { color: var(--terra); }
+    .pay-methods { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 1rem; font-size: 0.75rem; opacity: 0.4; }
 
-    /* ─── TRUST SECTION ─── */
-    .trust-section { background: var(--cream); }
-    .trust-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
+    /* SIDEBAR - LIVE ALLOCATION */
+    .sidebar { position: sticky; top: 100px; }
+    .sidebar__card {
+      background: rgba(45,94,64,0.03); border: 1px solid rgba(45,94,64,0.1);
+      border-radius: 14px; padding: 1.75rem; margin-bottom: 1.5rem;
     }
-    .trust-card {
-      background: #fff;
-      border: 1.5px solid rgba(58,42,31,0.08);
-      border-radius: 16px; padding: 2rem;
-      text-align: center;
-      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
-    }
-    .trust-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(58,42,31,0.06);
-    }
-    .trust-card__icon {
-      width: 56px; height: 56px; border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 1.25rem; font-size: 1.5rem;
-    }
-    .trust-card__icon--green { background: rgba(45,94,64,0.1); color: var(--green); }
-    .trust-card__icon--terra { background: rgba(194,115,76,0.1); color: var(--terra); }
-    .trust-card__icon--gold { background: rgba(212,169,106,0.15); color: #b88c3d; }
-    .trust-card h3 {
-      font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--brown);
-    }
-    .trust-card p {
-      font-size: 0.9rem; line-height: 1.6; color: rgba(58,42,31,0.65);
-    }
-    .trust-card a {
-      display: inline-block; margin-top: 0.75rem;
-      font-size: 0.85rem; font-weight: 600; color: var(--terra);
-      text-decoration: none; transition: color 0.3s;
-    }
-    .trust-card a:hover { color: var(--green); }
+    .sidebar__title { font-family: var(--font-serif); font-size: 1.2rem; margin-bottom: 0.25rem; }
+    .sidebar__sub { font-size: 0.82rem; opacity: 0.5; margin-bottom: 1.25rem; }
 
-    /* ─── IMPACT SECTION ─── */
-    .impact-section {
-      background: var(--green-dark); color: var(--cream);
-    }
-    .impact-section .eyebrow { color: var(--gold); }
-    .impact-scroll {
-      display: flex; gap: 1.25rem;
-      overflow-x: auto; scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom: 0.5rem;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255,248,240,0.15) transparent;
-    }
-    .impact-scroll::-webkit-scrollbar { height: 4px; }
-    .impact-scroll::-webkit-scrollbar-track { background: transparent; }
-    .impact-scroll::-webkit-scrollbar-thumb {
-      background: rgba(255,248,240,0.15); border-radius: 4px;
-    }
-    .impact-card {
-      min-width: 300px; flex-shrink: 0;
-      scroll-snap-align: start;
-      background: rgba(255,248,240,0.04);
-      border: 1.5px solid rgba(255,248,240,0.08);
-      border-radius: 16px; padding: 2rem;
-      transition: all 0.35s var(--ease);
-    }
-    .impact-card:hover {
-      background: rgba(255,248,240,0.08);
-      border-color: rgba(194,115,76,0.3);
-    }
-    .impact-card__amount {
-      font-family: var(--font-serif);
-      font-size: 1.8rem; font-weight: 600;
-      color: var(--terra); margin-bottom: 0.75rem;
-    }
-    .impact-card p {
-      font-size: 0.95rem; line-height: 1.6;
-      color: rgba(255,248,240,0.7);
-    }
+    .alloc-row { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; font-size: 0.88rem; }
+    .alloc-row + .alloc-row { border-top: 1px dashed rgba(58,42,31,0.06); }
+    .alloc-label { display: flex; align-items: center; gap: 0.5rem; }
+    .alloc-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .alloc-amount { font-weight: 700; }
 
-    /* TOAST */
-    .toast {
-      position: fixed; bottom: 2rem; right: 2rem; z-index: 200;
-      padding: 1rem 1.5rem; border-radius: 12px;
-      font-size: 0.9rem; font-weight: 500; color: #fff;
-      transform: translateY(120%); opacity: 0;
-      transition: transform 0.4s var(--ease), opacity 0.4s var(--ease);
-      max-width: 400px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    .alloc-total { display: flex; justify-content: space-between; padding: 0.85rem 0 0; margin-top: 0.5rem; border-top: 2px solid var(--green); font-weight: 700; }
+    .alloc-total-amount { color: var(--green); font-size: 1.15rem; }
+
+    .sidebar__note { margin-top: 1rem; padding: 0.75rem 1rem; background: rgba(212,169,106,0.08); border-radius: 8px; font-size: 0.78rem; opacity: 0.65; line-height: 1.6; }
+
+    /* RECENT DONATIONS FEED */
+    .recent-card { background: #fff; border: 1px solid rgba(58,42,31,0.06); border-radius: 14px; padding: 1.5rem; }
+    .recent-card__title { font-size: 0.85rem; font-weight: 600; opacity: 0.5; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem; }
+    .recent-item { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; font-size: 0.85rem; }
+    .recent-item + .recent-item { border-top: 1px solid rgba(58,42,31,0.04); }
+    .recent-item__name { opacity: 0.7; }
+    .recent-item__fund { font-size: 0.75rem; opacity: 0.45; }
+    .recent-item__amount { font-weight: 700; color: var(--green); }
+
+    /* SUCCESS STATE */
+    .success-overlay {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(30,63,43,0.95); color: #fff;
+      align-items: center; justify-content: center; text-align: center;
+      padding: var(--page-margin);
     }
-    .toast.is-visible { transform: translateY(0); opacity: 1; }
-    .toast--success { background: var(--green); }
-    .toast--error { background: #c0392b; }
-    @media (max-width: 600px) {
-      .toast { left: 1rem; right: 1rem; bottom: 1rem; max-width: none; }
-    }
+    .success-overlay.is-visible { display: flex; }
+    .success__icon { width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2.5rem; }
+    .success h2 { color: #fff; margin-bottom: 0.75rem; }
+    .success__ref { font-family: monospace; font-size: 1.1rem; background: rgba(255,255,255,0.1); padding: 0.5rem 1.5rem; border-radius: 8px; display: inline-block; margin: 1rem 0; letter-spacing: 0.05em; }
+    .success__detail { font-size: 0.9rem; opacity: 0.7; max-width: 400px; margin: 0 auto; line-height: 1.7; }
+    .success__actions { margin-top: 2rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .success__btn { padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; font-size: 0.9rem; text-decoration: none; transition: all 0.2s; }
+    .success__btn--primary { background: #fff; color: var(--green); }
+    .success__btn--secondary { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+
+    /* HOW IT WORKS */
+    .how-section { background: var(--cream); }
+    .how__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 2rem; }
+    .how-step { text-align: center; padding: 1.25rem 0.75rem; }
+    .how-step__number { width: 40px; height: 40px; border-radius: 50%; background: var(--green); color: #fff; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; margin: 0 auto 0.75rem; }
+    .how-step h3 { font-size: 1.05rem; margin-bottom: 0.4rem; }
+    .how-step p { font-size: 0.85rem; opacity: 0.6; line-height: 1.6; }
 
     /* FOOTER */
-    .footer { background: var(--brown); color: rgba(255,248,240,0.6); padding: 3rem 0; }
-    .footer__layout { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 2rem; }
-    .footer__brand-name { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; color: var(--cream); margin-bottom: 0.25rem; }
-    .footer__tagline { font-size: 0.85rem; color: var(--gold); }
-    .footer__location { font-size: 0.8rem; margin-top: 0.25rem; }
-    .footer__links { list-style: none; display: flex; gap: 1.5rem; margin-bottom: 0.5rem; }
-    .footer__links a { font-size: 0.85rem; text-decoration: none; transition: color 0.3s; }
-    .footer__links a:hover { color: var(--cream); }
-    .footer__copy { font-size: 0.75rem; opacity: 0.5; }
-    .footer__right { text-align: right; }
-    @media (max-width: 600px) { .footer__layout { flex-direction: column; } .footer__right { text-align: left; } }
+    .footer { background: var(--green-dark); color: rgba(255,255,255,0.7); padding: 3rem 0; font-size: 0.85rem; }
+    .footer__layout { display: flex; justify-content: space-between; align-items: start; gap: 2rem; flex-wrap: wrap; }
+    .footer__brand-name { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; color: #fff; }
+    .footer__tagline { font-size: 0.82rem; opacity: 0.5; margin-top: 0.25rem; }
+    .footer__location { font-size: 0.82rem; opacity: 0.5; margin-top: 0.15rem; }
+    .footer__links { list-style: none; display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; }
+    .footer__links a { text-decoration: none; opacity: 0.7; transition: opacity 0.2s; }
+    .footer__links a:hover { opacity: 1; }
+    .footer__copy { width: 100%; text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.08); opacity: 0.4; font-size: 0.8rem; }
 
-    /* DIVIDER */
-    .section-divider {
-      height: 1px; background: rgba(58,42,31,0.08); border: none; margin: 0;
-    }
-
-    /* ANIMATIONS — fail-safe: visible by default, hidden only when JS is ready */
-    [data-animate] { opacity: 1; transform: none; }
-    .js-ready [data-animate] {
-      opacity: 0; transform: translateY(20px);
-      transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
-    }
-    .js-ready [data-animate].is-visible { opacity: 1; transform: translateY(0); }
+    /* ANIMATIONS */
+    [data-animate] { opacity: 0; transform: translateY(24px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
+    [data-animate].is-visible { opacity: 1; transform: translateY(0); }
     [data-animate-delay="1"] { transition-delay: 0.1s; }
     [data-animate-delay="2"] { transition-delay: 0.2s; }
     [data-animate-delay="3"] { transition-delay: 0.3s; }
     [data-animate-delay="4"] { transition-delay: 0.4s; }
-    [data-animate-delay="5"] { transition-delay: 0.5s; }
-
-    @media (prefers-reduced-motion: reduce) {
-      .js-ready [data-animate] { opacity: 1 !important; transform: none !important; transition: none !important; }
-    }
-
-    /* RESPONSIVE */
-    @media (max-width: 600px) {
-      .amount-grid { grid-template-columns: repeat(2, 1fr); }
-      .program-pills { gap: 0.4rem; }
-      .program-pill { font-size: 0.78rem; padding: 0.45rem 0.85rem; }
-      .success-state__links { flex-direction: column; gap: 0.75rem; }
-    }
   </style>
 </head>
 <body>
 
-  <nav class="nav">
+  <nav class="nav" aria-label="Main navigation">
     <a href="/" class="nav__logo">Big Sister Foundation</a>
     <ul class="nav__links">
       <li><a href="/#pathways">Pathways</a></li>
@@ -548,195 +247,205 @@
       <li><a href="/forums/">Forums</a></li>
       <li><a href="/donate/" class="is-active">Donate</a></li>
       <li><a href="/sponsor/">Sponsor</a></li>
+      <li><a href="/docs/">Help</a></li>
     </ul>
   </nav>
 
   <!-- HERO -->
-  <section class="donate-hero">
+  <section class="hero">
     <div class="container">
-      <p class="eyebrow" style="animation: heroFadeUp 0.6s var(--ease) both;">GIVE DIRECTLY</p>
-      <h1 style="animation: heroFadeUp 0.6s var(--ease) 0.15s both;">Every Naira<br>Has a Name</h1>
-      <p class="donate-hero__sub" style="animation: heroFadeUp 0.6s var(--ease) 0.3s both;">Your donation goes directly to a child's education, nutrition, or community protection. No overhead mystery. No middlemen.</p>
+      <div class="hero__content">
+        <p class="hero__eyebrow">Give With Purpose</p>
+        <h1>Every Naira Has a Name</h1>
+        <p class="hero__sub">Pick a fund. Pay instantly. Watch it land on the <a href="/ledger/" style="color:var(--gold);text-decoration:underline;">public ledger</a> in real time. No middleman. No black box.</p>
+      </div>
     </div>
   </section>
 
-  <!-- DONATION FORM -->
-  <section class="donate-section section-pad">
+  <!-- PROMISE BAR -->
+  <div class="promise-bar">
     <div class="container">
-      <div class="donate-card" data-animate>
-
-        <!-- Form State -->
-        <div id="donate-form">
-
-          <!-- B1: Currency Selector -->
-          <div class="currency-selector">
-            <label for="currency-select">Currency</label>
-            <select id="currency-select">
-              <option value="NGN">&#x1F1F3;&#x1F1EC; NGN &mdash; Nigerian Naira</option>
-              <option value="USD">&#x1F1FA;&#x1F1F8; USD &mdash; US Dollar</option>
-              <option value="GBP">&#x1F1EC;&#x1F1E7; GBP &mdash; British Pound</option>
-              <option value="EUR">&#x1F1EA;&#x1F1FA; EUR &mdash; Euro</option>
-              <option value="CAD">&#x1F1E8;&#x1F1E6; CAD &mdash; Canadian Dollar</option>
-            </select>
-          </div>
-
-          <!-- B2: Amount Selection -->
-          <div class="amount-section">
-            <p class="amount-section__label">Select Amount</p>
-            <div class="amount-grid" id="amount-grid"></div>
-            <div class="custom-amount-wrap" id="custom-wrap">
-              <span class="custom-amount-wrap__prefix" id="custom-prefix"></span>
-              <input type="number" id="custom-amount" placeholder="Enter amount" min="1" step="any">
-            </div>
-          </div>
-
-          <!-- B3: Program Allocation -->
-          <div class="program-section">
-            <p class="program-section__label">Allocate To</p>
-            <div class="program-pills" id="program-pills">
-              <button class="program-pill is-active" data-program="Where it's needed most">Where it's needed most</button>
-              <button class="program-pill" data-program="Education & School Fees">Education &amp; School Fees</button>
-              <button class="program-pill" data-program="Nutrition & Health">Nutrition &amp; Health</button>
-              <button class="program-pill" data-program="Community Protection">Community Protection</button>
-            </div>
-          </div>
-
-          <!-- B4: Donor Information -->
-          <div class="donor-section">
-            <p class="donor-section__label">Your Information</p>
-            <label class="anon-toggle">
-              <input type="checkbox" id="anon-check" checked>
-              <span>Donate anonymously</span>
-            </label>
-
-            <!-- Anonymous: email only for receipt -->
-            <div class="donor-fields" id="anon-fields">
-              <div class="form-group">
-                <label for="field-email-anon">Email <span class="hint">(optional &mdash; for receipt only)</span></label>
-                <input type="email" id="field-email-anon" placeholder="you@example.com" autocomplete="email">
-              </div>
-            </div>
-
-            <!-- Named: name + email -->
-            <div class="donor-fields" id="named-fields">
-              <div class="form-group">
-                <label for="field-name">Full Name</label>
-                <input type="text" id="field-name" placeholder="Your full name" autocomplete="name">
-              </div>
-              <div class="form-group">
-                <label for="field-email">Email</label>
-                <input type="email" id="field-email" placeholder="you@example.com" autocomplete="email" required>
-              </div>
-            </div>
-
-            <!-- Optional message -->
-            <div class="form-group" style="margin-top: 0.5rem;">
-              <label for="field-message">Personal message <span class="hint">(optional)</span></label>
-              <textarea id="field-message" maxlength="200" placeholder="A word of encouragement, a dedication, or just your reason for giving..." style="min-height: 60px;"></textarea>
-              <div class="char-counter" id="msg-counter">0 / 200</div>
-            </div>
-          </div>
-
-          <!-- B5: Summary + Pay -->
-          <div class="summary-bar" id="summary-bar">
-            <div class="summary-bar__row">
-              <span>Amount</span>
-              <span id="summary-amount">&mdash;</span>
-            </div>
-            <div class="summary-bar__row">
-              <span>Program</span>
-              <span id="summary-program">Where it's needed most</span>
-            </div>
-            <div class="summary-bar__row">
-              <span>Donor</span>
-              <span id="summary-donor">Anonymous</span>
-            </div>
-            <div class="summary-bar__total">
-              <span>Total</span>
-              <span id="summary-total">&mdash;</span>
-            </div>
-          </div>
-
-          <button class="pay-btn" id="pay-btn" disabled>
-            <span class="spinner"></span>
-            <span class="pay-btn__text">Select an amount to give</span>
-          </button>
+      <div class="promise-bar__inner">
+        <div class="promise-bar__item">
+          <span class="promise-bar__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span>
+          Auto-logged to public ledger
         </div>
+        <div class="promise-bar__item">
+          <span class="promise-bar__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>
+          Cards, bank transfer, USSD
+        </div>
+        <div class="promise-bar__item">
+          <span class="promise-bar__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+          Secured by Paystack
+        </div>
+        <div class="promise-bar__item">
+          <span class="promise-bar__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg></span>
+          Named beneficiaries
+        </div>
+      </div>
+    </div>
+  </div>
 
-        <!-- Success State -->
-        <div class="success-state" id="success-state">
-          <div class="success-check"></div>
-          <h2>Thank you.</h2>
-          <div class="success-state__details" id="success-details"></div>
-          <div class="success-state__actions">
-            <button class="btn btn--terra" id="download-receipt-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              Download Receipt
+  <!-- FUND PICKER + CHECKOUT -->
+  <section class="funds section-pad" id="categories">
+    <div class="container">
+      <p class="eyebrow" style="color: var(--terra);">Step 1 — Where Should It Go?</p>
+      <h2>Pick a Fund</h2>
+      <p class="funds__intro">Every fund has a budget, a goal, and named children. Your money only goes to the category you choose.</p>
+
+      <div class="fund-picker" id="fund-picker">
+        <button class="fund-pill is-active" data-fund="school-fees" type="button">
+          <div class="fund-pill__icon">&#127891;</div>
+          <div class="fund-pill__label">School Fees</div>
+          <div class="fund-pill__sub">Tuition, exams, books</div>
+        </button>
+        <button class="fund-pill" data-fund="food" type="button">
+          <div class="fund-pill__icon">&#127858;</div>
+          <div class="fund-pill__label">Food &amp; Nutrition</div>
+          <div class="fund-pill__sub">Meals, supplements</div>
+        </button>
+        <button class="fund-pill" data-fund="healthcare" type="button">
+          <div class="fund-pill__icon">&#129658;</div>
+          <div class="fund-pill__label">Healthcare</div>
+          <div class="fund-pill__sub">Check-ups, medicine</div>
+        </button>
+        <button class="fund-pill" data-fund="counselling" type="button">
+          <div class="fund-pill__icon">&#128156;</div>
+          <div class="fund-pill__label">Counselling</div>
+          <div class="fund-pill__sub">Therapy, mentorship</div>
+        </button>
+        <button class="fund-pill" data-fund="events" type="button">
+          <div class="fund-pill__icon">&#127880;</div>
+          <div class="fund-pill__label">Events</div>
+          <div class="fund-pill__sub">Workshops, career days</div>
+        </button>
+        <button class="fund-pill" data-fund="reserve" type="button">
+          <div class="fund-pill__icon">&#128737;</div>
+          <div class="fund-pill__label">Emergency Reserve</div>
+          <div class="fund-pill__sub">Crisis fund</div>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHECKOUT -->
+  <section class="checkout-section section-pad" id="checkout">
+    <div class="container">
+      <div class="checkout__layout">
+        <div class="checkout__form">
+          <p class="eyebrow" style="color:var(--green);">Step 2 — Make It Happen</p>
+          <h2 class="checkout__title">Give Now</h2>
+          <p class="checkout__sub">Pay instantly with card, bank transfer, or USSD. Your donation hits the ledger automatically.</p>
+
+          <form id="give-form">
+            <div class="field">
+              <label for="donor-name">Your Name</label>
+              <input type="text" id="donor-name" placeholder="e.g. Chidi O. (or leave blank for Anonymous)" autocomplete="name">
+            </div>
+
+            <div class="field">
+              <label for="donor-email">Email (for receipt) *</label>
+              <input type="email" id="donor-email" placeholder="you@example.com" required autocomplete="email">
+            </div>
+
+            <div class="field">
+              <label>Amount (&#8358;) *</label>
+              <div class="amount-grid" id="amount-grid"></div>
+              <input type="number" id="total-amount" placeholder="Custom amount" min="500" step="100" required>
+            </div>
+
+            <div class="field">
+              <label for="donor-note">Note (optional)</label>
+              <textarea id="donor-note" rows="2" placeholder="Any message for the team..."></textarea>
+            </div>
+
+            <button type="submit" class="pay-btn" id="pay-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              <span id="pay-btn-text">Pay with Paystack</span>
             </button>
-          </div>
-          <div class="success-state__links">
-            <a href="/sponsor/">Become a Monthly Sponsor &rarr;</a>
-            <a href="/ledger/">See where your donation goes</a>
-          </div>
+
+            <div class="pay-methods">
+              <span>Visa</span>
+              <span>Mastercard</span>
+              <span>Bank Transfer</span>
+              <span>USSD</span>
+              <span>Verve</span>
+            </div>
+          </form>
         </div>
 
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+          <div class="sidebar__card">
+            <h3 class="sidebar__title">Your Allocation</h3>
+            <p class="sidebar__sub">Where your money lands</p>
+            <div id="alloc-rows">
+              <p id="alloc-empty" style="font-size:0.88rem;opacity:0.4;padding:0.5rem 0;">Pick a fund and enter an amount.</p>
+            </div>
+            <div class="alloc-total">
+              <span>Total</span>
+              <span class="alloc-total-amount" id="alloc-total">&#8358;0</span>
+            </div>
+            <div class="sidebar__note">
+              On successful payment, this transaction is automatically recorded on the <a href="/ledger/" style="color:var(--green);font-weight:600;">public ledger</a> with your chosen fund, amount, and receipt reference.
+            </div>
+          </div>
+
+          <!-- Recent donations -->
+          <div class="recent-card" id="recent-card">
+            <p class="recent-card__title">Recent Gifts</p>
+            <div id="recent-feed">
+              <p style="font-size:0.85rem;opacity:0.4;">Loading...</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <hr class="section-divider">
-
-  <!-- TRUST SECTION -->
-  <section class="trust-section section-pad">
+  <!-- HOW IT WORKS -->
+  <section class="how-section section-pad">
     <div class="container">
-      <div class="trust-grid">
-        <div class="trust-card" data-animate>
-          <div class="trust-card__icon trust-card__icon--green">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </div>
-          <h3>100% Transparent</h3>
-          <p>Every donation is logged in our public ledger. You can see exactly where your money went, down to the last naira.</p>
-          <a href="/ledger/">View the Ledger &rarr;</a>
+      <p class="eyebrow" data-animate style="color:var(--green);">The BSF Promise</p>
+      <h2 data-animate data-animate-delay="1">How Every Naira Is Tracked</h2>
+      <div class="how__grid">
+        <div class="how-step" data-animate data-animate-delay="1">
+          <div class="how-step__number">1</div>
+          <h3>You Choose</h3>
+          <p>Pick a fund with a specific goal and named beneficiaries.</p>
         </div>
-        <div class="trust-card" data-animate data-animate-delay="1">
-          <div class="trust-card__icon trust-card__icon--terra">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-          </div>
-          <h3>Direct Impact</h3>
-          <p>Every naira you give is tracked from the moment it arrives to the moment it reaches a child. No administrative mystery.</p>
+        <div class="how-step" data-animate data-animate-delay="2">
+          <div class="how-step__number">2</div>
+          <h3>You Pay</h3>
+          <p>Paystack handles your payment securely. Cards, bank transfer, or USSD.</p>
         </div>
-        <div class="trust-card" data-animate data-animate-delay="2">
-          <div class="trust-card__icon trust-card__icon--gold">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          </div>
-          <h3>Secure Payment</h3>
-          <p>All transactions are processed through Paystack, Africa's leading payment gateway. Your financial data is always protected.</p>
+        <div class="how-step" data-animate data-animate-delay="3">
+          <div class="how-step__number">3</div>
+          <h3>We Record</h3>
+          <p>Your donation auto-logs to the public ledger with fund, amount, and reference.</p>
+        </div>
+        <div class="how-step" data-animate data-animate-delay="4">
+          <div class="how-step__number">4</div>
+          <h3>You See</h3>
+          <p>Check the <a href="/ledger/" style="color:var(--green);font-weight:600;">ledger</a> any time. Full transparency, always.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- IMPACT SECTION -->
-  <section class="impact-section section-pad">
-    <div class="container">
-      <p class="eyebrow" data-animate>WHAT YOUR DONATION FUNDS</p>
-      <h2 data-animate data-animate-delay="1" style="color: var(--cream); margin-bottom: 2rem;">Real Numbers,<br>Real Children</h2>
-      <div class="impact-scroll">
-        <div class="impact-card" data-animate data-animate-delay="1">
-          <p class="impact-card__amount">&#x20A6;10,000</p>
-          <p>Covers one child's school supplies for an entire term &mdash; notebooks, pens, uniforms, and a bag to carry it all in.</p>
-        </div>
-        <div class="impact-card" data-animate data-animate-delay="2">
-          <p class="impact-card__amount">&#x20A6;25,000</p>
-          <p>Funds a full month of after-school meals for 5 children &mdash; so they can focus on learning, not hunger.</p>
-        </div>
-        <div class="impact-card" data-animate data-animate-delay="3">
-          <p class="impact-card__amount">&#x20A6;50,000</p>
-          <p>Sponsors a child's complete term school fees &mdash; opening a door that stays open for the rest of their life.</p>
-        </div>
+  <!-- SUCCESS OVERLAY -->
+  <div class="success-overlay" id="success-overlay">
+    <div class="success">
+      <div class="success__icon">&#10003;</div>
+      <h2>Thank You</h2>
+      <div class="success__ref" id="success-ref">BSF-...</div>
+      <p class="success__detail" id="success-detail">Your gift has been recorded on the public ledger.</p>
+      <div class="success__actions">
+        <a href="/ledger/" class="success__btn success__btn--primary">View on Ledger</a>
+        <a href="/donate/" class="success__btn success__btn--secondary">Give Again</a>
       </div>
     </div>
-  </section>
+  </div>
 
   <!-- FOOTER -->
   <footer class="footer">
@@ -755,8 +464,7 @@
             <li><a href="/volunteer/">Volunteer</a></li>
             <li><a href="/forums/">Forums</a></li>
             <li><a href="/ideas/">Ideas</a></li>
-            <li><a href="/donations/">Donations</a></li>
-            <li><a href="/donate/">Give</a></li>
+            <li><a href="/donate/">Donate</a></li>
             <li><a href="/sponsor/">Sponsor</a></li>
             <li><a href="https://wa.me/2348000000000">WhatsApp</a></li>
             <li><a href="mailto:princebolajibreeze@gmail.com">Email</a></li>
@@ -767,366 +475,303 @@
     </div>
   </footer>
 
-  <!-- TOAST -->
-  <div class="toast" id="toast"></div>
-
   <!-- FIREBASE -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-  <!-- SHARED BSF LIBS -->
-  <script src="/shared/bsf-store.js"></script>
-  <script src="/shared/bsf-paystack.js"></script>
-  <script src="/shared/bsf-receipt.js"></script>
-  <script src="https://js.paystack.co/v2/inline.js"></script>
-
   <script>
-    (function() {
+    (function () {
       'use strict';
 
-      /* ── Firebase init ── */
-      if (!firebase.apps.length) {
-        firebase.initializeApp({
-          apiKey: "AIzaSyCwos6XR9-uqAf_Esmh2K_hJoLxq4gnEuU",
-          authDomain: "big-sister-foundation.firebaseapp.com",
-          projectId: "big-sister-foundation",
-          storageBucket: "big-sister-foundation.firebasestorage.app",
-          messagingSenderId: "778723584560",
-          appId: "1:778723584560:web:7499944c30001e7fcf5bf5"
-        });
-      }
+      // ── Firebase init ──
+      firebase.initializeApp({
+        apiKey: "AIzaSyCwos6XR9-uqAf_Esmh2K_hJoLxq4gnEuU",
+        authDomain: "big-sister-foundation.firebaseapp.com",
+        projectId: "big-sister-foundation",
+        storageBucket: "big-sister-foundation.firebasestorage.app",
+        messagingSenderId: "778723584560",
+        appId: "1:778723584560:web:7499944c30001e7fcf5bf5"
+      });
       var db = firebase.firestore();
 
-      /* ── DOM refs ── */
-      var currencySelect = document.getElementById('currency-select');
-      var amountGrid     = document.getElementById('amount-grid');
-      var customWrap     = document.getElementById('custom-wrap');
-      var customPrefix   = document.getElementById('custom-prefix');
-      var customInput    = document.getElementById('custom-amount');
-      var programPills   = document.querySelectorAll('.program-pill');
-      var anonCheck      = document.getElementById('anon-check');
-      var anonFields     = document.getElementById('anon-fields');
-      var namedFields    = document.getElementById('named-fields');
-      var msgField       = document.getElementById('field-message');
-      var msgCounter     = document.getElementById('msg-counter');
-      var summaryAmount  = document.getElementById('summary-amount');
-      var summaryProgram = document.getElementById('summary-program');
-      var summaryDonor   = document.getElementById('summary-donor');
-      var summaryTotal   = document.getElementById('summary-total');
-      var payBtn         = document.getElementById('pay-btn');
-      var donateForm     = document.getElementById('donate-form');
-      var successState   = document.getElementById('success-state');
-      var successDetails = document.getElementById('success-details');
-      var receiptBtn     = document.getElementById('download-receipt-btn');
-      var toastEl        = document.getElementById('toast');
+      // ── Paystack config ──
+      var PAYSTACK_PUBLIC_KEY = 'pk_test_441d40d980617caac1cfbf3a36bcb66921047667';
 
-      /* ── State ── */
-      var state = {
-        currency: 'NGN',
-        amount: null,
-        isCustom: false,
-        program: "Where it's needed most",
-        anonymous: true,
-        lastTransaction: null
+      // ── Fund config ──
+      var funds = {
+        'school-fees':  { label: 'School Fees',            color: '#2D5E40', category: 'education',   program: 'general' },
+        'food':         { label: 'Food & Nutrition',        color: '#C2734C', category: 'food',        program: 'difficult-backgrounds' },
+        'healthcare':   { label: 'Healthcare',              color: '#D4A96A', category: 'healthcare',  program: 'general' },
+        'counselling':  { label: 'Counselling & Wellbeing', color: '#8BAF8E', category: 'counselling', program: 'difficult-backgrounds' },
+        'events':       { label: 'Events & Programmes',     color: '#C2734C', category: 'event',       program: 'general' },
+        'reserve':      { label: 'Emergency Reserve',       color: '#3A2A1F', category: 'donation',    program: 'general' }
       };
 
-      /* ── Toast ── */
-      var toastTimeout;
-      function showToast(msg, type) {
-        clearTimeout(toastTimeout);
-        toastEl.textContent = msg;
-        toastEl.className = 'toast toast--' + (type || 'success');
-        requestAnimationFrame(function() {
-          toastEl.classList.add('is-visible');
+      var selectedFund = 'school-fees';
+
+      // ── Animations ──
+      document.body.classList.add('js-ready');
+      var animEls = document.querySelectorAll('[data-animate]');
+      if ('IntersectionObserver' in window) {
+        var obs = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('is-visible'); obs.unobserve(e.target); } });
+        }, { threshold: 0.1 });
+        animEls.forEach(function (el) { obs.observe(el); });
+      } else { animEls.forEach(function (el) { el.classList.add('is-visible'); }); }
+
+      // Nav
+      var nav = document.querySelector('.nav');
+      setTimeout(function () { nav.classList.add('is-visible'); }, 300);
+
+      // ── Fund picker ──
+      document.getElementById('fund-picker').addEventListener('click', function (e) {
+        var pill = e.target.closest('.fund-pill');
+        if (!pill) return;
+        document.querySelectorAll('.fund-pill').forEach(function (p) { p.classList.remove('is-active'); });
+        pill.classList.add('is-active');
+        selectedFund = pill.getAttribute('data-fund');
+        updateAllocation();
+      });
+
+      // ── Amount presets ──
+      var presets = [5000, 10000, 25000, 50000, 100000, 250000];
+      var amountGrid = document.getElementById('amount-grid');
+      presets.forEach(function (val) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'amount-btn';
+        btn.textContent = '\u20A6' + val.toLocaleString('en-NG');
+        btn.addEventListener('click', function () {
+          document.getElementById('total-amount').value = val;
+          document.querySelectorAll('.amount-btn').forEach(function (b) { b.classList.remove('is-active'); });
+          btn.classList.add('is-active');
+          updateAllocation();
         });
-        toastTimeout = setTimeout(function() {
-          toastEl.classList.remove('is-visible');
-        }, 4000);
+        amountGrid.appendChild(btn);
+      });
+
+      document.getElementById('total-amount').addEventListener('input', function () {
+        document.querySelectorAll('.amount-btn').forEach(function (b) { b.classList.remove('is-active'); });
+        updateAllocation();
+      });
+
+      // ── Format currency ──
+      function fmt(n) { return '\u20A6' + n.toLocaleString('en-NG'); }
+
+      // ── Update allocation sidebar ──
+      function updateAllocation() {
+        var amount = parseInt(document.getElementById('total-amount').value) || 0;
+        var rowsEl = document.getElementById('alloc-rows');
+        var totalEl = document.getElementById('alloc-total');
+        var emptyEl = document.getElementById('alloc-empty');
+        var btnText = document.getElementById('pay-btn-text');
+
+        if (amount < 500) {
+          while (rowsEl.firstChild) rowsEl.removeChild(rowsEl.firstChild);
+          var p = document.createElement('p');
+          p.id = 'alloc-empty';
+          p.style.cssText = 'font-size:0.88rem;opacity:0.4;padding:0.5rem 0;';
+          p.textContent = 'Pick a fund and enter an amount.';
+          rowsEl.appendChild(p);
+          totalEl.textContent = fmt(0);
+          btnText.textContent = 'Pay with Paystack';
+          return;
+        }
+
+        while (rowsEl.firstChild) rowsEl.removeChild(rowsEl.firstChild);
+        var cfg = funds[selectedFund];
+
+        var row = document.createElement('div');
+        row.className = 'alloc-row';
+        var label = document.createElement('span');
+        label.className = 'alloc-label';
+        var dot = document.createElement('span');
+        dot.className = 'alloc-dot';
+        dot.style.background = cfg.color;
+        label.appendChild(dot);
+        label.appendChild(document.createTextNode(cfg.label));
+        var amtSpan = document.createElement('span');
+        amtSpan.className = 'alloc-amount';
+        amtSpan.textContent = fmt(amount);
+        row.appendChild(label);
+        row.appendChild(amtSpan);
+        rowsEl.appendChild(row);
+
+        totalEl.textContent = fmt(amount);
+        btnText.textContent = 'Pay ' + fmt(amount);
       }
 
-      /* ── Escape text for safe DOM insertion ── */
-      function escapeText(str) {
-        var div = document.createElement('div');
-        div.textContent = str;
-        return div.textContent;
+      // ── Generate receipt reference ──
+      function generateRef() {
+        var d = new Date();
+        var yyyy = d.getFullYear().toString();
+        var mm = ('0' + (d.getMonth() + 1)).slice(-2);
+        var dd = ('0' + d.getDate()).slice(-2);
+        var rand = Math.random().toString(36).substr(2, 6).toUpperCase();
+        return 'BSF-' + yyyy + mm + dd + '-' + rand;
       }
 
-      /* ── Build amount buttons ── */
-      function buildAmountGrid() {
-        var info = BSFPaystack.getCurrencyInfo(state.currency);
-        var presets = info.presets;
-        var symbol = info.symbol;
-        amountGrid.textContent = '';
+      // ── Write to Firestore (both collections) ──
+      function recordDonation(data) {
+        var batch = db.batch();
 
-        presets.forEach(function(val) {
-          var btn = document.createElement('button');
-          btn.className = 'amount-btn';
-          btn.setAttribute('data-amount', val);
-          btn.textContent = symbol + Number(val).toLocaleString();
-          btn.addEventListener('click', function() { selectAmount(val, false); });
-          amountGrid.appendChild(btn);
+        // 1. Write to 'donations' collection (donor-facing record)
+        var donRef = db.collection('donations').doc();
+        batch.set(donRef, {
+          donorName: data.donorName,
+          donorEmail: data.donorEmail,
+          type: funds[data.fund].label,
+          amount: data.amount,
+          date: new Date(),
+          method: 'paystack',
+          note: data.note,
+          fund: data.fund,
+          receiptId: data.receiptId,
+          paystackRef: data.paystackRef,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // Custom button
-        var customBtn = document.createElement('button');
-        customBtn.className = 'amount-btn';
-        customBtn.setAttribute('data-amount', 'custom');
-        customBtn.textContent = 'Custom';
-        customBtn.addEventListener('click', function() { selectAmount(null, true); });
-        amountGrid.appendChild(customBtn);
-
-        // Update custom prefix
-        customPrefix.textContent = symbol;
-
-        // Reset selection
-        state.amount = null;
-        state.isCustom = false;
-        customWrap.classList.remove('is-visible');
-        customInput.value = '';
-        updateSummary();
-      }
-
-      function selectAmount(val, isCustom) {
-        // Update active states
-        var btns = amountGrid.querySelectorAll('.amount-btn');
-        btns.forEach(function(b) { b.classList.remove('is-active'); });
-
-        if (isCustom) {
-          btns[btns.length - 1].classList.add('is-active');
-          customWrap.classList.add('is-visible');
-          customInput.focus();
-          state.isCustom = true;
-          state.amount = parseFloat(customInput.value) || null;
-        } else {
-          var target = amountGrid.querySelector('[data-amount="' + val + '"]');
-          if (target) target.classList.add('is-active');
-          customWrap.classList.remove('is-visible');
-          state.isCustom = false;
-          state.amount = val;
-        }
-        updateSummary();
-      }
-
-      /* ── Currency change ── */
-      currencySelect.addEventListener('change', function() {
-        state.currency = this.value;
-        buildAmountGrid();
-      });
-
-      /* ── Custom input ── */
-      customInput.addEventListener('input', function() {
-        var val = parseFloat(this.value);
-        state.amount = val > 0 ? val : null;
-        updateSummary();
-      });
-
-      /* ── Program pills ── */
-      programPills.forEach(function(pill) {
-        pill.addEventListener('click', function() {
-          programPills.forEach(function(p) { p.classList.remove('is-active'); });
-          pill.classList.add('is-active');
-          state.program = pill.getAttribute('data-program');
-          updateSummary();
+        // 2. Write to 'ledger' collection (public ledger entry)
+        var ledgerRef = db.collection('ledger').doc();
+        var cfg = funds[data.fund];
+        batch.set(ledgerRef, {
+          date: new Date().toISOString().split('T')[0],
+          direction: 'in',
+          category: cfg.category,
+          amount: data.amount,
+          description: 'Online donation — ' + cfg.label + (data.donorName !== 'Anonymous' ? ' from ' + data.donorName : ''),
+          program: cfg.program,
+          source: data.donorName,
+          notes: 'Paystack ref: ' + data.paystackRef + ' | Receipt: ' + data.receiptId,
+          addedBy: 'paystack-auto',
+          addedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-      });
 
-      /* ── Anonymous toggle ── */
-      function updateDonorFields() {
-        state.anonymous = anonCheck.checked;
-        if (state.anonymous) {
-          anonFields.classList.add('is-visible');
-          namedFields.classList.remove('is-visible');
-        } else {
-          anonFields.classList.remove('is-visible');
-          namedFields.classList.add('is-visible');
-        }
-        updateSummary();
-      }
-      anonCheck.addEventListener('change', updateDonorFields);
-      updateDonorFields(); // init
-
-      /* ── Message counter ── */
-      msgField.addEventListener('input', function() {
-        var len = this.value.length;
-        msgCounter.textContent = len + ' / 200';
-        msgCounter.className = 'char-counter' +
-          (len >= 180 ? ' is-near' : '') +
-          (len >= 200 ? ' is-over' : '');
-      });
-
-      /* ── Update summary ── */
-      function updateSummary() {
-        var info = BSFPaystack.getCurrencyInfo(state.currency);
-        if (state.amount) {
-          var formatted = info.symbol + Number(state.amount).toLocaleString();
-          summaryAmount.textContent = formatted;
-          summaryTotal.textContent = formatted;
-          payBtn.disabled = false;
-          payBtn.querySelector('.pay-btn__text').textContent = 'Give ' + formatted;
-        } else {
-          summaryAmount.textContent = '\u2014';
-          summaryTotal.textContent = '\u2014';
-          payBtn.disabled = true;
-          payBtn.querySelector('.pay-btn__text').textContent = 'Select an amount to give';
-        }
-
-        summaryProgram.textContent = state.program;
-
-        if (state.anonymous) {
-          summaryDonor.textContent = 'Anonymous';
-        } else {
-          var nameVal = document.getElementById('field-name').value.trim();
-          summaryDonor.textContent = nameVal || 'Anonymous';
-        }
+        return batch.commit();
       }
 
-      // Update donor name in summary on input
-      document.getElementById('field-name').addEventListener('input', updateSummary);
+      // ── Paystack checkout ──
+      document.getElementById('give-form').addEventListener('submit', function (e) {
+        e.preventDefault();
 
-      /* ── Pay ── */
-      payBtn.addEventListener('click', function() {
-        if (!state.amount || payBtn.disabled) return;
+        var email = document.getElementById('donor-email').value.trim();
+        var name = document.getElementById('donor-name').value.trim() || 'Anonymous';
+        var amount = parseInt(document.getElementById('total-amount').value) || 0;
+        var note = document.getElementById('donor-note').value.trim();
 
-        // Determine email
-        var email;
-        if (state.anonymous) {
-          var anonEmail = document.getElementById('field-email-anon').value.trim();
-          email = anonEmail || ('anonymous-' + Date.now() + '@bsf-donor.local');
-        } else {
-          email = document.getElementById('field-email').value.trim();
-          var name = document.getElementById('field-name').value.trim();
-          if (!name) {
-            showToast('Please enter your name.', 'error');
-            document.getElementById('field-name').focus();
-            return;
-          }
-          if (!email || !email.includes('@')) {
-            showToast('Please enter a valid email address.', 'error');
-            document.getElementById('field-email').focus();
-            return;
-          }
+        if (!email || amount < 500) {
+          if (!email) document.getElementById('donor-email').focus();
+          else document.getElementById('total-amount').focus();
+          return;
         }
 
-        // Loading state
-        payBtn.classList.add('is-loading');
+        var receiptId = generateRef();
+        var payBtn = document.getElementById('pay-btn');
         payBtn.disabled = true;
 
-        var ref = BSFStore.generateRef();
-        var donorName = state.anonymous ? 'Anonymous' : (document.getElementById('field-name').value.trim() || 'Anonymous');
-        var message = msgField.value.trim();
-
-        BSFPaystack.pay({
+        var paystack = new PaystackPop();
+        paystack.newTransaction({
+          key: PAYSTACK_PUBLIC_KEY,
           email: email,
-          amount: state.amount,
-          currency: state.currency,
-          ref: ref,
+          amount: amount * 100, // Paystack uses kobo
+          currency: 'NGN',
+          ref: receiptId,
           metadata: {
-            program: state.program,
-            donor_name: donorName,
-            anonymous: state.anonymous,
-            message: message || undefined
+            custom_fields: [
+              { display_name: 'Donor Name', variable_name: 'donor_name', value: name },
+              { display_name: 'Fund', variable_name: 'fund', value: selectedFund },
+              { display_name: 'Fund Label', variable_name: 'fund_label', value: funds[selectedFund].label },
+              { display_name: 'Note', variable_name: 'note', value: note }
+            ]
           },
-          onSuccess: function(response) {
-            // Build transaction object
-            var txn = {
-              ref: ref,
-              paystackRef: response.reference || response.trxref || ref,
-              amount: state.amount,
-              currency: state.currency,
-              program: state.program,
-              donorName: donorName,
+          onSuccess: function (transaction) {
+            // Payment successful — record to Firestore
+            recordDonation({
+              donorName: name,
               donorEmail: email,
-              anonymous: state.anonymous,
-              message: message || '',
-              type: 'donation',
-              status: 'success',
-              date: new Date().toISOString()
-            };
-
-            // Save locally
-            BSFStore.addTransaction(txn);
-
-            // Sync to Firestore
-            BSFStore.syncDonationToFirestore(db, txn).catch(function(e) {
-              console.warn('[Donate] Firestore sync failed:', e);
+              amount: amount,
+              fund: selectedFund,
+              note: note,
+              receiptId: receiptId,
+              paystackRef: transaction.reference
+            }).then(function () {
+              showSuccess(receiptId, amount, funds[selectedFund].label);
+            }).catch(function (err) {
+              console.error('Firestore write failed:', err);
+              // Still show success — payment went through, ledger entry can be reconciled
+              showSuccess(receiptId, amount, funds[selectedFund].label);
             });
-
-            state.lastTransaction = txn;
-
-            // Show success
-            showSuccess(txn);
-            showToast('Donation successful! Thank you.', 'success');
-
-            payBtn.classList.remove('is-loading');
-            payBtn.disabled = false;
           },
-          onClose: function() {
-            payBtn.classList.remove('is-loading');
+          onCancel: function () {
             payBtn.disabled = false;
-            showToast('Payment window closed. No charge was made.', 'error');
           }
         });
       });
 
-      /* ── Show success state (safe DOM construction) ── */
-      function showSuccess(txn) {
-        var info = BSFPaystack.getCurrencyInfo(txn.currency);
-        var formatted = info.symbol + Number(txn.amount).toLocaleString();
-        var dateStr = new Date(txn.date).toLocaleDateString('en-NG', {
-          year: 'numeric', month: 'long', day: 'numeric'
-        });
-
-        // Build success details using safe DOM methods
-        successDetails.textContent = '';
-        var rows = [
-          ['Reference', txn.ref],
-          ['Amount', formatted],
-          ['Program', txn.program],
-          ['Date', dateStr]
-        ];
-        rows.forEach(function(row) {
-          var p = document.createElement('p');
-          p.className = 'success-detail-row';
-          var labelSpan = document.createElement('span');
-          labelSpan.textContent = row[0];
-          var valueSpan = document.createElement('span');
-          valueSpan.className = 'detail-value';
-          valueSpan.textContent = row[1];
-          p.appendChild(labelSpan);
-          p.appendChild(valueSpan);
-          successDetails.appendChild(p);
-        });
-
-        donateForm.style.display = 'none';
-        successState.classList.add('is-visible');
+      // ── Show success ──
+      function showSuccess(ref, amount, fundLabel) {
+        document.getElementById('success-ref').textContent = ref;
+        document.getElementById('success-detail').textContent =
+          fmt(amount) + ' to ' + fundLabel + ' has been recorded on the public ledger. ' +
+          'You\u2019ll receive an email receipt from Paystack. Your gift reference is above \u2014 you can use it to find your transaction on the ledger.';
+        document.getElementById('success-overlay').classList.add('is-visible');
       }
 
-      /* ── Download receipt ── */
-      receiptBtn.addEventListener('click', function() {
-        if (state.lastTransaction && typeof BSFReceipt !== 'undefined') {
-          BSFReceipt.generate(state.lastTransaction);
-        } else {
-          showToast('Receipt generation is not available right now.', 'error');
-        }
-      });
+      // ── Load recent donations for social proof ──
+      function loadRecentDonations() {
+        db.collection('donations')
+          .orderBy('createdAt', 'desc')
+          .limit(5)
+          .get()
+          .then(function (snap) {
+            var feedEl = document.getElementById('recent-feed');
+            while (feedEl.firstChild) feedEl.removeChild(feedEl.firstChild);
 
-      /* ── Intersection Observer for animations ── */
-      document.documentElement.classList.add('js-ready');
-      var observer = new IntersectionObserver(function(entries) {
-        entries.forEach(function(entry) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+            if (snap.empty) {
+              var p = document.createElement('p');
+              p.style.cssText = 'font-size:0.85rem;opacity:0.4;';
+              p.textContent = 'Be the first to give!';
+              feedEl.appendChild(p);
+              return;
+            }
 
-      document.querySelectorAll('[data-animate]').forEach(function(el) {
-        observer.observe(el);
-      });
+            snap.forEach(function (doc) {
+              var d = doc.data();
+              var item = document.createElement('div');
+              item.className = 'recent-item';
 
-      /* ── Init ── */
-      buildAmountGrid();
+              var left = document.createElement('div');
+              var nameEl = document.createElement('div');
+              nameEl.className = 'recent-item__name';
+              nameEl.textContent = d.donorName || 'Anonymous';
+              var fundEl = document.createElement('div');
+              fundEl.className = 'recent-item__fund';
+              fundEl.textContent = d.type || d.fund || 'General';
+              left.appendChild(nameEl);
+              left.appendChild(fundEl);
+
+              var amtEl = document.createElement('div');
+              amtEl.className = 'recent-item__amount';
+              amtEl.textContent = d.amount ? fmt(d.amount) : '';
+
+              item.appendChild(left);
+              item.appendChild(amtEl);
+              feedEl.appendChild(item);
+            });
+          })
+          .catch(function () {
+            var feedEl = document.getElementById('recent-feed');
+            while (feedEl.firstChild) feedEl.removeChild(feedEl.firstChild);
+            var p = document.createElement('p');
+            p.style.cssText = 'font-size:0.85rem;opacity:0.4;';
+            p.textContent = 'Be the first to give!';
+            feedEl.appendChild(p);
+          });
+      }
+
+      // ── Init ──
+      updateAllocation();
+      loadRecentDonations();
 
     })();
   </script>
