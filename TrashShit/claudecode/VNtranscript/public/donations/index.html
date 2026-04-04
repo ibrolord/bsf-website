@@ -750,8 +750,11 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
+  <script src="/shared/bsf-antispam.js"></script>
   <script>
     (function() {
+      BSFAntiSpam.protect('donation-form');
+
       firebase.initializeApp({
         apiKey: "AIzaSyCwos6XR9-uqAf_Esmh2K_hJoLxq4gnEuU",
         authDomain: "big-sister-foundation.firebaseapp.com",
@@ -822,6 +825,7 @@
       /* ── Submit donation ── */
       form.addEventListener('submit', function(e) {
         e.preventDefault();
+        if (!BSFAntiSpam.check('donation-form')) return;
         submitBtn.disabled = true;
         submitText.textContent = 'Recording...';
 

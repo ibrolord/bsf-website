@@ -950,9 +950,12 @@
   <script src="/shared/bsf-paystack.js"></script>
   <script src="https://js.paystack.co/v2/inline.js"></script>
 
+  <script src="/shared/bsf-antispam.js"></script>
   <script>
     (function() {
       'use strict';
+
+      BSFAntiSpam.protect('sponsor-form');
 
       /* ── Firebase init ── */
       firebase.initializeApp({
@@ -1159,6 +1162,7 @@
       /* ── Submit ── */
       submitBtn.addEventListener('click', function() {
         if (isSubmitting) return;
+        if (!BSFAntiSpam.check('sponsor-form')) return;
         if (!validate()) {
           showToast('Please fill in all required fields.', 'error');
           return;

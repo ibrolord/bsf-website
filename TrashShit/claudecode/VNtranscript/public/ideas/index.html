@@ -873,6 +873,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
+  <script src="/shared/bsf-antispam.js"></script>
   <script>
     (function () {
       'use strict';
@@ -928,6 +929,9 @@
       var modalPromote = document.getElementById('modal-promote');
       var ideaForm = document.getElementById('idea-form');
       var promoteForm = document.getElementById('promote-form');
+
+      BSFAntiSpam.protect('idea-form');
+      BSFAntiSpam.protect('promote-form');
       var toastEl = document.getElementById('toast');
       var tabIdeasBtn = document.getElementById('tab-ideas-btn');
       var tabGoalsBtn = document.getElementById('tab-goals-btn');
@@ -1309,6 +1313,7 @@
 
       promoteForm.addEventListener('submit', function (e) {
         e.preventDefault();
+        if (!BSFAntiSpam.check('promote-form')) return;
         if (!user || !promotingIdea) { showToast('Please sign in to create a goal', 'error'); return; }
         var goalData = {
           title: promotingIdea.title, description: promotingIdea.description,
@@ -1421,6 +1426,7 @@
 
       ideaForm.addEventListener('submit', function (e) {
         e.preventDefault();
+        if (!BSFAntiSpam.check('idea-form')) return;
         if (!user) { showToast('Please sign in to submit an idea', 'error'); modalIdea.classList.remove('is-open'); modalLogin.classList.add('is-open'); return; }
         var pathwayVal = document.getElementById('idea-pathway').value;
         if (!pathwayVal) { showToast('Please select a pathway', 'error'); return; }

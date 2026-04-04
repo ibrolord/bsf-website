@@ -813,9 +813,12 @@
 
   <div class="toast" id="toast"></div>
 
+  <script src="/shared/bsf-antispam.js"></script>
   <script>
     (function () {
       'use strict';
+
+      BSFAntiSpam.protect('eventForm');
 
       // ── Event data (persisted in localStorage) ──
       const STORAGE_KEY = 'bsf_events';
@@ -1088,6 +1091,7 @@
       // ── Add / Update event form ──
       document.getElementById('eventForm').addEventListener('submit', function(e) {
         e.preventDefault();
+        if (!BSFAntiSpam.check('eventForm')) return;
 
         var eventData = {
           title: document.getElementById('eventTitle').value.trim(),
