@@ -281,15 +281,8 @@
 
   /* ── Firebase configs — must match destination pages exactly so auth
         session (stored per apiKey + [DEFAULT] app name) carries over ── */
-  var VOL_CONFIG = {
-    apiKey: "AIzaSyBm-d9DPG4iKbmhEA71E6cBxAHmcVgrdTs",
-    authDomain: "big-sister-foundation.firebaseapp.com",
-    projectId: "big-sister-foundation",
-    storageBucket: "big-sister-foundation.appspot.com",
-    messagingSenderId: "374538996840",
-    appId: "1:374538996840:web:8e2d02ada8ccba9b69ba1f"
-  };
-  var SP_CONFIG = {
+  /* Single Firebase config — the project only has one registered web app */
+  var FB_CONFIG = {
     apiKey: "AIzaSyCwos6XR9-uqAf_Esmh2K_hJoLxq4gnEuU",
     authDomain: "big-sister-foundation.firebaseapp.com",
     projectId: "big-sister-foundation",
@@ -303,21 +296,15 @@
   var db = null;
   var spMode = 'in';
 
-  /* Lazy-init: only create the default Firebase app when the user picks a role.
-     This ensures the auth session is stored under the SAME key the destination
-     page will look for (apiKey + [DEFAULT] app name). */
+  /* Init Firebase on first role pick — same config for both roles since
+     the project only has one web app. Auth session carries to any page. */
   function initFor(role) {
-    if (activeRole === role) return; // already set
-    if (firebase.apps.length) {
-      // Different role chosen — reload for clean slate
-      window.location.reload();
-      return;
-    }
     activeRole = role;
-    var cfg = role === 'sp' ? SP_CONFIG : VOL_CONFIG;
-    firebase.initializeApp(cfg);
-    auth = firebase.auth();
-    db = firebase.firestore();
+    if (!firebase.apps.length) {
+      firebase.initializeApp(FB_CONFIG);
+      auth = firebase.auth();
+      db = firebase.firestore();
+    }
   }
 
   /* ── Helpers ── */
@@ -375,9 +362,15 @@
     setTimeout(function(){document.getElementById('sp-name').focus();},40);
   });
 
-  /* ── Back buttons — reload to get clean Firebase state ── */
-  document.getElementById('vol-back').addEventListener('click',function(){ window.location.href='/signin/'; });
-  document.getElementById('sp-back').addEventListener('click',function(){ window.location.href='/signin/'; });
+  /* ── Back buttons ── */
+  document.getElementById('vol-back').addEventListener('click',function(){
+    clrMsg('vol-msg'); document.getElementById('vol-nudge').classList.remove('on');
+    document.getElementById('hdr-sub').textContent='Choose your account type to continue'; show('step-pick');
+  });
+  document.getElementById('sp-back').addEventListener('click',function(){
+    clrMsg('sp-msg');
+    document.getElementById('hdr-sub').textContent='Choose your account type to continue'; show('step-pick');
+  });
 
   /* ── Sponsor tab toggle ── */
   window.spTab = function(mode){
