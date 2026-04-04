@@ -9,465 +9,265 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
-
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --green:#2D5E40;--green-dark:#1E3F2B;--brown:#3A2A1F;
+      --cream:#FFF8F0;--gold:#D4A96A;
+      --font-serif:'EB Garamond',Georgia,serif;
+      --font-sans:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    }
+    body{font-family:var(--font-sans);font-size:.95rem;line-height:1.6;color:var(--brown);
+      background:var(--green-dark);min-height:100vh;display:flex;align-items:center;
+      justify-content:center;padding:2rem 1rem;-webkit-font-smoothing:antialiased}
+    a{color:inherit;text-decoration:none}
+    button{font:inherit;cursor:pointer;border:none;background:none}
 
-    :root {
-      --green: #2D5E40;
-      --green-dark: #1E3F2B;
-      --brown: #3A2A1F;
-      --gold: #D4A96A;
-      --cream: #FFF8F0;
-      --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
-      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-    }
+    /* card */
+    .card{background:var(--cream);border-radius:20px;width:100%;max-width:460px;
+      overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.4)}
 
-    body {
-      font-family: var(--font-sans);
-      font-size: 0.95rem;
-      line-height: 1.65;
-      color: var(--brown);
-      background: var(--green-dark);
-      -webkit-font-smoothing: antialiased;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem 1.25rem;
-    }
+    /* header */
+    .hdr{background:var(--green);padding:1.75rem 2rem 1.5rem;text-align:center}
+    .logo{display:inline-flex;align-items:center;gap:.55rem;margin-bottom:.9rem;
+      color:#fff;opacity:.75;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+    .logo svg{width:24px;height:24px}
+    .logo:hover{opacity:1}
+    .hdr h1{font-family:var(--font-serif);font-size:1.75rem;font-weight:500;color:#fff;line-height:1.15}
+    .hdr p{margin-top:.3rem;color:rgba(255,255,255,.6);font-size:.85rem}
 
-    a { color: inherit; text-decoration: none; }
-    button { font: inherit; cursor: pointer; border: none; background: none; }
+    /* steps */
+    .step{display:none}.step.on{display:block}
 
-    /* ── Card ── */
-    .card {
-      background: var(--cream);
-      border-radius: 20px;
-      width: 100%;
-      max-width: 440px;
-      overflow: hidden;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.35);
-    }
+    /* ── STEP 1: role cards ── */
+    .picker{padding:1.5rem 1.75rem 1.75rem}
+    .picker-eyebrow{text-align:center;font-size:.75rem;font-weight:700;letter-spacing:.1em;
+      text-transform:uppercase;color:#9c8f84;margin-bottom:1rem}
 
-    /* ── Header ── */
-    .card-header {
-      background: var(--green);
-      padding: 2rem 2.5rem 1.75rem;
-      text-align: center;
-    }
-    .logo-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.6rem;
-      margin-bottom: 1rem;
-      color: #fff;
-      opacity: 0.8;
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
-    .logo-link svg { width: 26px; height: 26px; }
-    .logo-link:hover { opacity: 1; }
-    .card-header h1 {
-      font-family: var(--font-serif);
-      font-size: clamp(1.4rem, 4vw, 1.8rem);
-      font-weight: 500;
-      color: #fff;
-      line-height: 1.2;
-    }
-    .card-header p {
-      margin-top: 0.35rem;
-      color: rgba(255,255,255,0.65);
-      font-size: 0.86rem;
-    }
+    .rcard{background:#fff;border:2px solid #e2d9d0;border-radius:14px;
+      padding:1.1rem 1.2rem;margin-bottom:.75rem;transition:border-color .15s}
+    .rcard:last-child{margin-bottom:0}
+    .rcard:hover{border-color:var(--green)}
 
-    /* ── Steps ── */
-    .step { display: none; }
-    .step.active { display: block; }
+    .rcard-top{display:flex;align-items:center;gap:.9rem;margin-bottom:.9rem}
+    .rcard-icon{width:44px;height:44px;border-radius:10px;display:flex;
+      align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+    .rcard.vol .rcard-icon{background:#E8F5EE}
+    .rcard.sp  .rcard-icon{background:#FDF6E8}
+    .rcard-info{flex:1}
+    .rcard-info strong{display:block;font-size:.98rem;font-weight:700}
+    .rcard-info span{font-size:.82rem;color:#9c8f84}
 
-    /* ── Step 1: Role picker ── */
-    .role-picker { padding: 1.75rem 2rem 2rem; }
-    .role-picker-label {
-      text-align: center;
-      font-size: 0.82rem;
-      font-weight: 600;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: #9c8f84;
-      margin-bottom: 1.1rem;
-    }
-    .role-cards { display: flex; flex-direction: column; gap: 0.75rem; }
-    .role-card {
-      display: flex;
-      align-items: center;
-      gap: 1.1rem;
-      padding: 1.1rem 1.25rem;
-      border: 2px solid #e0d8d0;
-      border-radius: 14px;
-      cursor: pointer;
-      transition: border-color 0.18s, background 0.18s, transform 0.12s;
-      text-align: left;
-      width: 100%;
-      background: #fff;
-    }
-    .role-card:hover {
-      border-color: var(--green);
-      background: #f7faf8;
-      transform: translateY(-1px);
-    }
-    .role-card:active { transform: scale(0.98); }
-    .role-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      flex-shrink: 0;
-    }
-    .role-card.volunteer .role-icon { background: #E8F5EE; }
-    .role-card.sponsor .role-icon { background: #FDF6E8; }
-    .role-card-text { flex: 1; }
-    .role-card-text strong {
-      display: block;
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--brown);
-    }
-    .role-card-text span {
-      font-size: 0.82rem;
-      color: #9c8f84;
-    }
-    .role-arrow {
-      color: #c5bbb4;
-      font-size: 1.1rem;
-      flex-shrink: 0;
-    }
-    .role-card:hover .role-arrow { color: var(--green); }
+    .rcard-btns{display:flex;gap:.6rem}
+    .rbtn{flex:1;padding:.55rem .5rem;border-radius:9px;font-size:.84rem;font-weight:600;
+      text-align:center;transition:background .15s,color .15s,border-color .15s;cursor:pointer}
+    .rbtn-outline{border:1.5px solid #d1c8bc;color:var(--brown);background:#fff}
+    .rbtn-outline:hover{border-color:var(--green);color:var(--green)}
+    .rbtn-solid{background:var(--green);color:#fff;border:1.5px solid var(--green)}
+    .rbtn-solid:hover{background:var(--green-dark);border-color:var(--green-dark)}
 
-    .picker-footer {
-      text-align: center;
-      margin-top: 1.25rem;
-      font-size: 0.84rem;
-      color: #9c8f84;
-    }
-    .picker-footer a { color: var(--green); font-weight: 600; }
+    .picker-back{text-align:center;margin-top:1.1rem;font-size:.83rem;color:#9c8f84}
+    .picker-back a{color:var(--green);font-weight:600}
 
-    /* ── Step 2: Sign in / up form ── */
-    .form-wrap { padding: 0 2rem 2rem; }
+    /* ── STEP 2: form ── */
+    .fwrap{padding:0 1.75rem 1.75rem}
 
-    /* back + tab row */
-    .form-nav {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 1.25rem 0 1.1rem;
-      border-bottom: 1.5px solid #ede7df;
-      margin-bottom: 1.25rem;
-    }
-    .back-btn {
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: #9c8f84;
-      padding: 0.3rem 0.5rem;
-      border-radius: 6px;
-      transition: color 0.15s, background 0.15s;
-      margin-right: auto;
-    }
-    .back-btn:hover { color: var(--green); background: #f0ede8; }
-    .tabs { display: flex; gap: 0.25rem; }
-    .tab-btn {
-      font-size: 0.82rem;
-      font-weight: 600;
-      padding: 0.35rem 0.8rem;
-      border-radius: 8px;
-      color: #9c8f84;
-      transition: color 0.15s, background 0.15s;
-    }
-    .tab-btn.active { background: var(--green); color: #fff; }
-    .tab-btn:hover:not(.active) { background: #ede7df; color: var(--brown); }
+    .fnav{display:flex;align-items:center;padding:1.1rem 0 1rem;
+      border-bottom:1.5px solid #ede7df;margin-bottom:1.1rem}
+    .fback{display:flex;align-items:center;gap:.3rem;font-size:.82rem;font-weight:600;
+      color:#9c8f84;padding:.25rem .5rem;border-radius:6px;transition:all .15s;margin-right:auto}
+    .fback:hover{color:var(--green);background:#f0ede8}
 
-    /* role badge shown in form header */
-    .role-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 0.25rem 0.7rem;
-      border-radius: 100px;
-      margin-bottom: 1rem;
-    }
-    .role-badge.volunteer { background: #E8F5EE; color: #1A5C32; }
-    .role-badge.sponsor { background: #FDF6E8; color: #7A5000; }
+    .badge{display:inline-flex;align-items:center;gap:.35rem;font-size:.75rem;
+      font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+      padding:.22rem .7rem;border-radius:100px;margin-bottom:.9rem}
+    .badge.vol{background:#E8F5EE;color:#1A5C32}
+    .badge.sp{background:#FDF6E8;color:#7A5000}
+
+    /* mode tabs (sign in / create) */
+    .ftabs{display:flex;gap:.25rem}
+    .ftab{font-size:.8rem;font-weight:600;padding:.3rem .75rem;border-radius:7px;
+      color:#9c8f84;transition:all .15s}
+    .ftab.on{background:var(--green);color:#fff}
+    .ftab:hover:not(.on){background:#ede7df;color:var(--brown)}
 
     /* fields */
-    .field { margin-bottom: 1rem; }
-    .field label {
-      display: block;
-      font-size: 0.8rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--green-dark);
-      margin-bottom: 0.35rem;
-    }
-    .field input {
-      width: 100%;
-      padding: 0.7rem 1rem;
-      border: 1.5px solid #d1c8bc;
-      border-radius: 10px;
-      font: inherit;
-      font-size: 0.95rem;
-      color: var(--brown);
-      background: #fff;
-      outline: none;
-      transition: border-color 0.18s;
-    }
-    .field input:focus { border-color: var(--green); }
-    .field input::placeholder { color: #b8afa5; }
+    .field{margin-bottom:.9rem}
+    .field label{display:block;font-size:.78rem;font-weight:700;letter-spacing:.05em;
+      text-transform:uppercase;color:var(--green-dark);margin-bottom:.3rem}
+    .field input{width:100%;padding:.68rem .95rem;border:1.5px solid #d1c8bc;border-radius:9px;
+      font:inherit;font-size:.95rem;color:var(--brown);background:#fff;outline:none;
+      transition:border-color .15s}
+    .field input:focus{border-color:var(--green)}
+    .field input::placeholder{color:#b8afa5}
+    .pwrap{position:relative}
+    .pshow{position:absolute;right:.85rem;top:50%;transform:translateY(-50%);
+      font-size:.75rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+      color:#9c9185;cursor:pointer;user-select:none}
+    .pshow:hover{color:var(--green)}
 
-    .pw-wrap { position: relative; }
-    .pw-toggle {
-      position: absolute;
-      right: 0.9rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #9c9185;
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      cursor: pointer;
-      user-select: none;
-    }
-    .pw-toggle:hover { color: var(--green); }
+    /* msg */
+    .msg{display:none;font-size:.84rem;border-radius:8px;padding:.55rem .85rem;
+      margin-bottom:.85rem;border:1.5px solid transparent}
+    .msg.on{display:block}
+    .msg.err{background:#FEF2F2;border-color:#FECACA;color:#B91C1C}
+    .msg.ok{background:#F0FDF4;border-color:#BBF7D0;color:#15803D}
+    .msg.info{background:#EFF6FF;border-color:#BFDBFE;color:#1D4ED8}
 
-    /* message */
-    .msg {
-      display: none;
-      font-size: 0.85rem;
-      border-radius: 8px;
-      padding: 0.55rem 0.85rem;
-      margin-bottom: 0.9rem;
-      border: 1.5px solid transparent;
-    }
-    .msg.visible { display: block; }
-    .msg.error { background: #FEF2F2; border-color: #FECACA; color: #B91C1C; }
-    .msg.success { background: #F0FDF4; border-color: #BBF7D0; color: #15803D; }
-    .msg.info { background: #EFF6FF; border-color: #BFDBFE; color: #1D4ED8; }
+    /* submit */
+    .submit{width:100%;padding:.78rem 1.5rem;background:var(--green);color:#fff;
+      border-radius:9px;font-size:.95rem;font-weight:600;letter-spacing:.02em;
+      transition:background .15s,transform .1s;margin-top:.15rem}
+    .submit:hover:not(:disabled){background:var(--green-dark)}
+    .submit:active:not(:disabled){transform:scale(.98)}
+    .submit:disabled{opacity:.55;cursor:not-allowed}
 
-    /* primary button */
-    .btn-submit {
-      width: 100%;
-      padding: 0.8rem 1.5rem;
-      background: var(--green);
-      color: #fff;
-      border-radius: 10px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      transition: background 0.18s, transform 0.1s;
-      margin-top: 0.2rem;
-    }
-    .btn-submit:hover:not(:disabled) { background: var(--green-dark); }
-    .btn-submit:active:not(:disabled) { transform: scale(0.98); }
-    .btn-submit:disabled { opacity: 0.55; cursor: not-allowed; }
+    /* bottom links */
+    .flinks{margin-top:.9rem;text-align:center;font-size:.83rem;color:#9c8f84}
+    .flinks button,.flinks a{color:var(--green);font-weight:600}
+    .flinks button:hover,.flinks a:hover{text-decoration:underline}
 
-    /* extra footer row */
-    .form-footer {
-      margin-top: 1.1rem;
-      text-align: center;
-      font-size: 0.84rem;
-      color: #9c8f84;
-    }
-    .form-footer button, .form-footer a {
-      color: var(--green);
-      font-weight: 600;
-    }
-    .form-footer button:hover, .form-footer a:hover { text-decoration: underline; }
+    /* nudge for volunteers with no account */
+    .nudge{display:none;margin-top:.85rem;padding:.8rem .95rem;background:#f4f9f5;
+      border:1.5px solid #c6e0cf;border-radius:9px;font-size:.83rem;text-align:center}
+    .nudge.on{display:block}
+    .nudge a{color:var(--green);font-weight:700}
 
-    /* volunteer "no account" nudge */
-    .apply-nudge {
-      margin-top: 1rem;
-      padding: 0.85rem 1rem;
-      background: #f4f9f5;
-      border: 1.5px solid #c6e0cf;
-      border-radius: 10px;
-      font-size: 0.84rem;
-      color: var(--brown);
-      text-align: center;
-      display: none;
-    }
-    .apply-nudge.visible { display: block; }
-    .apply-nudge a { color: var(--green); font-weight: 700; }
-
-    /* ── Redirecting state ── */
-    .redirecting {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
-      padding: 2.5rem 2rem;
-      text-align: center;
-    }
-    .redirecting.visible { display: flex; }
-    .spinner {
-      width: 36px; height: 36px;
-      border: 3px solid #ddd;
-      border-top-color: var(--green);
-      border-radius: 50%;
-      animation: spin 0.75s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .redirecting p { color: var(--brown); font-size: 0.95rem; }
-    .redirecting strong { color: var(--green); }
+    /* redirect splash */
+    .splash{display:none;flex-direction:column;align-items:center;gap:.9rem;
+      padding:2.5rem 2rem;text-align:center}
+    .splash.on{display:flex}
+    .spinner{width:34px;height:34px;border:3px solid #ddd;border-top-color:var(--green);
+      border-radius:50%;animation:spin .75s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .splash p{color:var(--brown);font-size:.95rem}
+    .splash strong{color:var(--green)}
   </style>
 </head>
 <body>
-
 <div class="card">
 
-  <div class="card-header">
-    <a class="logo-link" href="/">
-      <svg viewBox="0 0 100 130" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ellipse cx="50" cy="35" rx="35" ry="30" fill="#fff" opacity="0.9"/>
-        <ellipse cx="30" cy="45" rx="28" ry="24" fill="#fff" opacity="0.7"/>
-        <ellipse cx="70" cy="45" rx="28" ry="24" fill="#fff" opacity="0.7"/>
-        <path d="M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z" fill="#fff" opacity="0.85"/>
-      </svg>
+  <div class="hdr">
+    <a class="logo" href="/">
+      <svg viewBox="0 0 100 130" fill="none"><ellipse cx="50" cy="35" rx="35" ry="30" fill="#fff" opacity=".9"/><ellipse cx="30" cy="45" rx="28" ry="24" fill="#fff" opacity=".7"/><ellipse cx="70" cy="45" rx="28" ry="24" fill="#fff" opacity=".7"/><path d="M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z" fill="#fff" opacity=".85"/></svg>
       Big Sister Foundation
     </a>
-    <h1 id="header-title">Welcome back</h1>
-    <p id="header-sub">Who are you signing in as?</p>
+    <h1 id="hdr-title">Welcome back</h1>
+    <p id="hdr-sub">Choose your account type to continue</p>
   </div>
 
-  <!-- Step 1: Role picker -->
-  <div class="step active" id="step-pick">
-    <div class="role-picker">
-      <div class="role-picker-label">I am a…</div>
-      <div class="role-cards">
+  <!-- STEP 1: role picker -->
+  <div class="step on" id="step-pick">
+    <div class="picker">
+      <div class="picker-eyebrow">I am a…</div>
 
-        <button class="role-card volunteer" id="pick-volunteer">
-          <div class="role-icon">🌱</div>
-          <div class="role-card-text">
+      <!-- Volunteer card -->
+      <div class="rcard vol">
+        <div class="rcard-top">
+          <div class="rcard-icon">🌱</div>
+          <div class="rcard-info">
             <strong>Volunteer</strong>
-            <span>Access your team dashboard, events &amp; forum</span>
+            <span>Team dashboard, events &amp; forum</span>
           </div>
-          <span class="role-arrow">›</span>
-        </button>
-
-        <button class="role-card sponsor" id="pick-sponsor">
-          <div class="role-icon">💛</div>
-          <div class="role-card-text">
-            <strong>Sponsor</strong>
-            <span>View your giving history, impact &amp; receipts</span>
-          </div>
-          <span class="role-arrow">›</span>
-        </button>
-
-      </div>
-      <div class="picker-footer">
-        <a href="/">← Back to site</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- Step 2: Volunteer sign in -->
-  <div class="step" id="step-volunteer">
-    <div class="form-wrap">
-      <div class="form-nav">
-        <button class="back-btn" id="back-from-volunteer">← Back</button>
-        <div class="tabs">
-          <button class="tab-btn active">Sign In</button>
+        </div>
+        <div class="rcard-btns">
+          <button class="rbtn rbtn-outline" id="vol-signin-card">Sign In</button>
+          <button class="rbtn rbtn-solid" id="vol-apply-card">Apply to Join →</button>
         </div>
       </div>
 
-      <span class="role-badge volunteer">🌱 Volunteer</span>
+      <!-- Sponsor card -->
+      <div class="rcard sp">
+        <div class="rcard-top">
+          <div class="rcard-icon">💛</div>
+          <div class="rcard-info">
+            <strong>Sponsor</strong>
+            <span>Giving history, impact &amp; receipts</span>
+          </div>
+        </div>
+        <div class="rcard-btns">
+          <button class="rbtn rbtn-outline" id="sp-signin-card">Sign In</button>
+          <button class="rbtn rbtn-solid" id="sp-signup-card">Create Account</button>
+        </div>
+      </div>
 
+      <div class="picker-back"><a href="/">← Back to site</a></div>
+    </div>
+  </div>
+
+  <!-- STEP 2A: volunteer form (sign in only) -->
+  <div class="step" id="step-vol">
+    <div class="fwrap">
+      <div class="fnav">
+        <button class="fback" id="vol-back">← Back</button>
+        <div class="ftabs">
+          <span class="ftab on">Sign In</span>
+        </div>
+      </div>
+      <span class="badge vol">🌱 Volunteer</span>
       <div class="msg" id="vol-msg"></div>
-
       <div class="field">
         <label for="vol-email">Email</label>
         <input type="email" id="vol-email" placeholder="you@example.com" autocomplete="email">
       </div>
       <div class="field">
         <label for="vol-pw">Password</label>
-        <div class="pw-wrap">
+        <div class="pwrap">
           <input type="password" id="vol-pw" placeholder="Your password" autocomplete="current-password">
-          <span class="pw-toggle" data-target="vol-pw">Show</span>
+          <span class="pshow" data-for="vol-pw">Show</span>
         </div>
       </div>
-
-      <button class="btn-submit" id="vol-signin-btn">Sign In to Volunteer Portal</button>
-
-      <div class="form-footer">
+      <button class="submit" id="vol-btn">Sign In to Volunteer Portal</button>
+      <div class="flinks">
         <button id="vol-forgot">Forgot password?</button>
       </div>
-
-      <div class="apply-nudge" id="vol-nudge">
-        Don't have an account yet?
-        <a href="/volunteer/">Apply to volunteer →</a><br>
-        <span style="font-size:0.8rem;color:#9c8f84">Your account is created after your application is approved.</span>
+      <div class="nudge" id="vol-nudge">
+        No account yet? <a href="/volunteer/">Apply to volunteer →</a><br>
+        <span style="color:#9c8f84;font-size:.78rem">Accounts are created after your application is approved.</span>
       </div>
     </div>
   </div>
 
-  <!-- Step 2: Sponsor sign in / sign up -->
-  <div class="step" id="step-sponsor">
-    <div class="form-wrap">
-      <div class="form-nav">
-        <button class="back-btn" id="back-from-sponsor">← Back</button>
-        <div class="tabs">
-          <button class="tab-btn active" id="sp-tab-in" onclick="setSponsorTab('signin')">Sign In</button>
-          <button class="tab-btn" id="sp-tab-up" onclick="setSponsorTab('signup')">Create Account</button>
+  <!-- STEP 2B: sponsor form (sign in + create account) -->
+  <div class="step" id="step-sp">
+    <div class="fwrap">
+      <div class="fnav">
+        <button class="fback" id="sp-back">← Back</button>
+        <div class="ftabs">
+          <button class="ftab on" id="sp-tab-in" onclick="spTab('in')">Sign In</button>
+          <button class="ftab" id="sp-tab-up" onclick="spTab('up')">Create Account</button>
         </div>
       </div>
-
-      <span class="role-badge sponsor">💛 Sponsor</span>
-
+      <span class="badge sp">💛 Sponsor</span>
       <div class="msg" id="sp-msg"></div>
-
-      <!-- Sign up only: name field -->
       <div class="field" id="sp-name-row" style="display:none">
         <label for="sp-name">Full name</label>
         <input type="text" id="sp-name" placeholder="Your name" autocomplete="name">
       </div>
-
       <div class="field">
         <label for="sp-email">Email</label>
         <input type="email" id="sp-email" placeholder="you@example.com" autocomplete="email">
       </div>
       <div class="field">
         <label for="sp-pw">Password</label>
-        <div class="pw-wrap">
+        <div class="pwrap">
           <input type="password" id="sp-pw" placeholder="Your password" autocomplete="current-password">
-          <span class="pw-toggle" data-target="sp-pw">Show</span>
+          <span class="pshow" data-for="sp-pw">Show</span>
         </div>
       </div>
-
-      <button class="btn-submit" id="sp-submit-btn">Sign In to Sponsor Dashboard</button>
-
-      <div class="form-footer">
+      <button class="submit" id="sp-btn">Sign In to Sponsor Dashboard</button>
+      <div class="flinks">
         <button id="sp-forgot">Forgot password?</button>
-        <span style="margin:0 0.4rem;color:#c9bdb2">·</span>
-        <a href="/sponsor/">Learn about sponsoring →</a>
+        <span style="margin:0 .4rem;color:#c9bdb2">·</span>
+        <a href="/sponsor/">About sponsoring</a>
       </div>
     </div>
   </div>
 
   <!-- Redirecting -->
-  <div class="redirecting" id="redirecting">
+  <div class="splash" id="splash">
     <div class="spinner"></div>
-    <p>Taking you to your dashboard…<br><strong id="redir-name"></strong></p>
+    <p>Opening your dashboard…<br><strong id="splash-name"></strong></p>
   </div>
 
 </div>
@@ -475,228 +275,176 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
 <script>
-(function() {
+(function(){
   'use strict';
 
-  firebase.initializeApp({
+  /* ── Two Firebase apps — one per destination so auth sessions are stored
+        under the correct API key and the destination page sees them ── */
+  var volApp = firebase.initializeApp({
     apiKey: "AIzaSyBm-d9DPG4iKbmhEA71E6cBxAHmcVgrdTs",
     authDomain: "big-sister-foundation.firebaseapp.com",
     projectId: "big-sister-foundation",
     storageBucket: "big-sister-foundation.appspot.com",
     messagingSenderId: "374538996840",
     appId: "1:374538996840:web:8e2d02ada8ccba9b69ba1f"
-  });
-  var auth = firebase.auth();
-  var db = firebase.firestore();
+  }, 'vol');
 
-  /* ── State ── */
-  var currentRole = null; // 'volunteer' | 'sponsor'
-  var sponsorTab = 'signin';
+  var spApp = firebase.initializeApp({
+    apiKey: "AIzaSyCwos6XR9-uqAf_Esmh2K_hJoLxq4gnEuU",
+    authDomain: "big-sister-foundation.firebaseapp.com",
+    projectId: "big-sister-foundation",
+    storageBucket: "big-sister-foundation.firebasestorage.app",
+    messagingSenderId: "778723584560",
+    appId: "1:778723584560:web:7499944c30001e7fcf5bf5"
+  }, 'sp');
+
+  var volAuth = volApp.auth();
+  var spAuth  = spApp.auth();
+  var spDb    = spApp.firestore();
+
+  var spMode = 'in'; // 'in' | 'up'
 
   /* ── Helpers ── */
-  function showStep(id) {
-    document.querySelectorAll('.step').forEach(function(s) { s.classList.remove('active'); });
-    var el = document.getElementById(id);
-    if (el) el.classList.add('active');
-  }
+  function show(id){ document.querySelectorAll('.step').forEach(function(s){s.classList.remove('on');}); document.getElementById(id).classList.add('on'); }
+  function msg(id,txt,type){ var el=document.getElementById(id); el.textContent=txt; el.className='msg on '+(type||'err'); }
+  function clrMsg(id){ document.getElementById(id).className='msg'; }
+  function dis(id,v,t){ var b=document.getElementById(id); b.disabled=v; if(t)b.textContent=t; }
+  function splash(name){ document.querySelectorAll('.step').forEach(function(s){s.classList.remove('on');}); var s=document.getElementById('splash'); s.classList.add('on'); document.getElementById('splash-name').textContent=name||''; }
 
-  function showMsg(id, text, type) {
-    var el = document.getElementById(id);
-    el.textContent = text;
-    el.className = 'msg visible ' + (type || 'error');
-  }
-  function clearMsg(id) {
-    document.getElementById(id).className = 'msg';
-  }
-
-  function setDisabled(btnId, disabled, text) {
-    var btn = document.getElementById(btnId);
-    btn.disabled = disabled;
-    if (text) btn.textContent = text;
-  }
-
-  /* ── Password toggles ── */
-  document.querySelectorAll('.pw-toggle').forEach(function(toggle) {
-    toggle.addEventListener('click', function() {
-      var inp = document.getElementById(toggle.getAttribute('data-target'));
-      var isText = inp.type === 'text';
-      inp.type = isText ? 'password' : 'text';
-      toggle.textContent = isText ? 'Show' : 'Hide';
+  /* ── Password show/hide ── */
+  document.querySelectorAll('.pshow').forEach(function(el){
+    el.addEventListener('click',function(){
+      var inp=document.getElementById(el.getAttribute('data-for'));
+      var txt=inp.type==='text';
+      inp.type=txt?'password':'text';
+      el.textContent=txt?'Show':'Hide';
     });
   });
 
-  /* ── Role picker ── */
-  document.getElementById('pick-volunteer').addEventListener('click', function() {
-    currentRole = 'volunteer';
-    document.getElementById('header-sub').textContent = 'Volunteer portal';
-    showStep('step-volunteer');
-    setTimeout(function() { document.getElementById('vol-email').focus(); }, 50);
+  /* ── Role card buttons ── */
+  document.getElementById('vol-signin-card').addEventListener('click',function(){
+    show('step-vol');
+    document.getElementById('hdr-sub').textContent='Volunteer portal';
+    setTimeout(function(){document.getElementById('vol-email').focus();},40);
   });
-
-  document.getElementById('pick-sponsor').addEventListener('click', function() {
-    currentRole = 'sponsor';
-    document.getElementById('header-sub').textContent = 'Sponsor dashboard';
-    showStep('step-sponsor');
-    setTimeout(function() { document.getElementById('sp-email').focus(); }, 50);
+  document.getElementById('vol-apply-card').addEventListener('click',function(){
+    window.location.href='/volunteer/';
+  });
+  document.getElementById('sp-signin-card').addEventListener('click',function(){
+    spTab('in');
+    show('step-sp');
+    document.getElementById('hdr-sub').textContent='Sponsor dashboard';
+    setTimeout(function(){document.getElementById('sp-email').focus();},40);
+  });
+  document.getElementById('sp-signup-card').addEventListener('click',function(){
+    spTab('up');
+    show('step-sp');
+    document.getElementById('hdr-sub').textContent='Sponsor dashboard';
+    setTimeout(function(){document.getElementById('sp-name').focus();},40);
   });
 
   /* ── Back buttons ── */
-  document.getElementById('back-from-volunteer').addEventListener('click', function() {
-    currentRole = null;
-    document.getElementById('header-sub').textContent = 'Who are you signing in as?';
-    clearMsg('vol-msg');
-    document.getElementById('vol-nudge').classList.remove('visible');
-    showStep('step-pick');
+  document.getElementById('vol-back').addEventListener('click',function(){
+    clrMsg('vol-msg');
+    document.getElementById('vol-nudge').classList.remove('on');
+    document.getElementById('hdr-sub').textContent='Choose your account type to continue';
+    show('step-pick');
   });
-  document.getElementById('back-from-sponsor').addEventListener('click', function() {
-    currentRole = null;
-    document.getElementById('header-sub').textContent = 'Who are you signing in as?';
-    clearMsg('sp-msg');
-    showStep('step-pick');
+  document.getElementById('sp-back').addEventListener('click',function(){
+    clrMsg('sp-msg');
+    document.getElementById('hdr-sub').textContent='Choose your account type to continue';
+    show('step-pick');
   });
 
   /* ── Sponsor tab toggle ── */
-  window.setSponsorTab = function(tab) {
-    sponsorTab = tab;
-    var isSignup = tab === 'signup';
-    document.getElementById('sp-name-row').style.display = isSignup ? '' : 'none';
-    document.getElementById('sp-tab-in').classList.toggle('active', !isSignup);
-    document.getElementById('sp-tab-up').classList.toggle('active', isSignup);
-    document.getElementById('sp-submit-btn').textContent = isSignup ? 'Create Sponsor Account' : 'Sign In to Sponsor Dashboard';
-    clearMsg('sp-msg');
+  window.spTab = function(mode){
+    spMode=mode;
+    var isUp=mode==='up';
+    document.getElementById('sp-name-row').style.display=isUp?'':'none';
+    document.getElementById('sp-tab-in').classList.toggle('on',!isUp);
+    document.getElementById('sp-tab-up').classList.toggle('on',isUp);
+    document.getElementById('sp-btn').textContent=isUp?'Create Sponsor Account':'Sign In to Sponsor Dashboard';
+    clrMsg('sp-msg');
   };
 
-  /* ── Redirect after auth ── */
-  function redirectTo(path, name) {
-    document.querySelectorAll('.step').forEach(function(s) { s.classList.remove('active'); });
-    var r = document.getElementById('redirecting');
-    r.classList.add('visible');
-    document.getElementById('redir-name').textContent = name || '';
-    window.location.href = path;
-  }
-
-  /* ── Auth state — handles already-logged-in case ── */
-  var authHandled = false;
-  auth.onAuthStateChanged(function(user) {
-    if (user && currentRole && !authHandled) {
-      authHandled = true;
-      var dest = currentRole === 'volunteer' ? '/volunteer/portal/' : '/sponsor/dashboard.html';
-      redirectTo(dest, user.displayName || user.email);
-    }
-  });
-
-  /* ── Volunteer: sign in ── */
-  function doVolSignin() {
-    clearMsg('vol-msg');
-    document.getElementById('vol-nudge').classList.remove('visible');
-    var email = document.getElementById('vol-email').value.trim();
-    var pw = document.getElementById('vol-pw').value;
-    if (!email || !pw) { showMsg('vol-msg', 'Please enter your email and password.'); return; }
-    setDisabled('vol-signin-btn', true, 'Signing in…');
-    authHandled = false;
-    auth.signInWithEmailAndPassword(email, pw)
-      .then(function(cred) {
-        authHandled = true;
-        redirectTo('/volunteer/portal/', cred.user.displayName || cred.user.email);
+  /* ── Volunteer sign in ── */
+  function doVolSignin(){
+    clrMsg('vol-msg');
+    document.getElementById('vol-nudge').classList.remove('on');
+    var em=document.getElementById('vol-email').value.trim();
+    var pw=document.getElementById('vol-pw').value;
+    if(!em||!pw){msg('vol-msg','Enter your email and password.');return;}
+    dis('vol-btn',true,'Signing in…');
+    volAuth.signInWithEmailAndPassword(em,pw)
+      .then(function(c){
+        splash(c.user.displayName||c.user.email);
+        window.location.href='/volunteer/portal/';
       })
-      .catch(function(err) {
-        setDisabled('vol-signin-btn', false, 'Sign In to Volunteer Portal');
-        var map = {
-          'auth/user-not-found': 'No account found. Have you applied yet?',
-          'auth/wrong-password': 'Incorrect password.',
-          'auth/invalid-credential': 'Email or password is incorrect.',
-          'auth/invalid-email': 'That doesn\'t look like a valid email.',
-          'auth/too-many-requests': 'Too many attempts. Try again in a few minutes.'
-        };
-        showMsg('vol-msg', map[err.code] || 'Sign in failed. Check your details.');
-        if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
-          document.getElementById('vol-nudge').classList.add('visible');
-        }
+      .catch(function(err){
+        dis('vol-btn',false,'Sign In to Volunteer Portal');
+        var m={'auth/user-not-found':'No account found. Have you applied yet?','auth/wrong-password':'Incorrect password.','auth/invalid-credential':'Email or password is incorrect.','auth/invalid-email':'That doesn\'t look like a valid email.','auth/too-many-requests':'Too many attempts — wait a few minutes.'};
+        msg('vol-msg',m[err.code]||'Sign in failed. Check your details.');
+        if(err.code==='auth/user-not-found'||err.code==='auth/invalid-credential')document.getElementById('vol-nudge').classList.add('on');
       });
   }
-
-  document.getElementById('vol-signin-btn').addEventListener('click', doVolSignin);
-  ['vol-email','vol-pw'].forEach(function(id) {
-    document.getElementById(id).addEventListener('keydown', function(e) { if (e.key === 'Enter') doVolSignin(); });
+  document.getElementById('vol-btn').addEventListener('click',doVolSignin);
+  ['vol-email','vol-pw'].forEach(function(id){
+    document.getElementById(id).addEventListener('keydown',function(e){if(e.key==='Enter')doVolSignin();});
+  });
+  document.getElementById('vol-forgot').addEventListener('click',function(){
+    var em=document.getElementById('vol-email').value.trim();
+    if(!em){msg('vol-msg','Enter your email above first.');return;}
+    volAuth.sendPasswordResetEmail(em).then(function(){msg('vol-msg','Reset email sent — check your inbox.','ok');}).catch(function(){msg('vol-msg','Could not send reset email.');});
   });
 
-  document.getElementById('vol-forgot').addEventListener('click', function() {
-    var email = document.getElementById('vol-email').value.trim();
-    if (!email) { showMsg('vol-msg', 'Enter your email above first.'); return; }
-    auth.sendPasswordResetEmail(email)
-      .then(function() { showMsg('vol-msg', 'Password reset email sent — check your inbox.', 'success'); })
-      .catch(function() { showMsg('vol-msg', 'Could not send reset email. Check the address.'); });
-  });
-
-  /* ── Sponsor: sign in or create account ── */
-  function doSponsorSubmit() {
-    clearMsg('sp-msg');
-    var email = document.getElementById('sp-email').value.trim();
-    var pw = document.getElementById('sp-pw').value;
-    if (!email || !pw) { showMsg('sp-msg', 'Please enter your email and password.'); return; }
-    var label = sponsorTab === 'signup' ? 'Creating account…' : 'Signing in…';
-    setDisabled('sp-submit-btn', true, label);
-    authHandled = false;
+  /* ── Sponsor sign in / create ── */
+  function doSpSubmit(){
+    clrMsg('sp-msg');
+    var em=document.getElementById('sp-email').value.trim();
+    var pw=document.getElementById('sp-pw').value;
+    if(!em||!pw){msg('sp-msg','Enter your email and password.');return;}
+    var lbl=spMode==='up'?'Creating account…':'Signing in…';
+    dis('sp-btn',true,lbl);
 
     var promise;
-    if (sponsorTab === 'signup') {
-      var name = document.getElementById('sp-name').value.trim();
-      promise = auth.createUserWithEmailAndPassword(email, pw)
-        .then(function(cred) {
-          if (name) return cred.user.updateProfile({ displayName: name }).then(function() { return cred; });
-          return cred;
-        })
-        .then(function(cred) {
-          // Create stub sponsor doc so the dashboard loads
-          return db.collection('sponsors').doc(email).set({
-            email: email,
-            name: name || email.split('@')[0],
-            status: 'active',
-            tier: 'seedling',
-            totalDonated: 0,
-            recurringAmount: 0,
-            joinedAt: firebase.firestore.FieldValue.serverTimestamp()
-          }, { merge: true }).then(function() { return cred; });
+    if(spMode==='up'){
+      var nm=(document.getElementById('sp-name').value||'').trim();
+      promise=spAuth.createUserWithEmailAndPassword(em,pw)
+        .then(function(c){
+          var upd=nm?c.user.updateProfile({displayName:nm}):Promise.resolve();
+          return upd.then(function(){
+            return spDb.collection('sponsors').doc(em).set({
+              email:em,name:nm||em.split('@')[0],
+              status:'active',tier:'seedling',
+              totalDonated:0,recurringAmount:0,
+              joinedAt:firebase.firestore.FieldValue.serverTimestamp()
+            },{merge:true});
+          }).then(function(){return c;});
         });
     } else {
-      promise = auth.signInWithEmailAndPassword(email, pw);
+      promise=spAuth.signInWithEmailAndPassword(em,pw);
     }
 
-    promise
-      .then(function(cred) {
-        authHandled = true;
-        redirectTo('/sponsor/dashboard.html', cred.user.displayName || cred.user.email);
-      })
-      .catch(function(err) {
-        var restoreText = sponsorTab === 'signup' ? 'Create Sponsor Account' : 'Sign In to Sponsor Dashboard';
-        setDisabled('sp-submit-btn', false, restoreText);
-        var map = {
-          'auth/user-not-found': 'No account found with that email.',
-          'auth/wrong-password': 'Incorrect password.',
-          'auth/invalid-credential': 'Email or password is incorrect.',
-          'auth/invalid-email': 'That doesn\'t look like a valid email.',
-          'auth/email-already-in-use': 'An account with this email already exists. Sign in instead.',
-          'auth/weak-password': 'Password should be at least 6 characters.',
-          'auth/too-many-requests': 'Too many attempts. Try again in a few minutes.'
-        };
-        showMsg('sp-msg', map[err.code] || 'Something went wrong. Please try again.');
-        if (err.code === 'auth/email-already-in-use') setSponsorTab('signin');
-      });
+    promise.then(function(c){
+      splash(c.user.displayName||c.user.email);
+      window.location.href='/sponsor/dashboard.html';
+    }).catch(function(err){
+      var restoreTxt=spMode==='up'?'Create Sponsor Account':'Sign In to Sponsor Dashboard';
+      dis('sp-btn',false,restoreTxt);
+      var m={'auth/user-not-found':'No account found with that email.','auth/wrong-password':'Incorrect password.','auth/invalid-credential':'Email or password is incorrect.','auth/invalid-email':'That doesn\'t look like a valid email.','auth/email-already-in-use':'An account with this email already exists — sign in instead.','auth/weak-password':'Password must be at least 6 characters.','auth/too-many-requests':'Too many attempts — wait a few minutes.'};
+      msg('sp-msg',m[err.code]||'Something went wrong. Please try again.');
+      if(err.code==='auth/email-already-in-use')spTab('in');
+    });
   }
-
-  document.getElementById('sp-submit-btn').addEventListener('click', doSponsorSubmit);
-  ['sp-email','sp-pw'].forEach(function(id) {
-    document.getElementById(id).addEventListener('keydown', function(e) { if (e.key === 'Enter') doSponsorSubmit(); });
+  document.getElementById('sp-btn').addEventListener('click',doSpSubmit);
+  ['sp-email','sp-pw'].forEach(function(id){
+    document.getElementById(id).addEventListener('keydown',function(e){if(e.key==='Enter')doSpSubmit();});
   });
-
-  document.getElementById('sp-forgot').addEventListener('click', function() {
-    var email = document.getElementById('sp-email').value.trim();
-    if (!email) { showMsg('sp-msg', 'Enter your email above first.'); return; }
-    auth.sendPasswordResetEmail(email)
-      .then(function() { showMsg('sp-msg', 'Password reset email sent — check your inbox.', 'success'); })
-      .catch(function() { showMsg('sp-msg', 'Could not send reset email. Check the address.'); });
+  document.getElementById('sp-forgot').addEventListener('click',function(){
+    var em=document.getElementById('sp-email').value.trim();
+    if(!em){msg('sp-msg','Enter your email above first.');return;}
+    spAuth.sendPasswordResetEmail(em).then(function(){msg('sp-msg','Reset email sent — check your inbox.','ok');}).catch(function(){msg('sp-msg','Could not send reset email.');});
   });
 
 })();
