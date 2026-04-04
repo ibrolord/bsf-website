@@ -788,7 +788,6 @@
 
             <li><a href="/forums/">Forums</a></li>
             <li><a href="/ideas/">Ideas</a></li>
-            <li><a href="/donations/">Donations</a></li>
             <li><a href="/donate/">Give</a></li>
             <li><a href="/sponsor/">Sponsor</a></li>
             <li><a href="mailto:hello@thebigsisterfoundation.org">Email</a></li>
@@ -813,91 +812,55 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="/shared/bsf-antispam.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script>
     (function () {
       'use strict';
 
-      BSFAntiSpam.protect('eventForm');
+      // ── Firebase ──
+      const firebaseConfig = {
+        apiKey: "AIzaSyBm-d9DPG4iKbmhEA71E6cBxAHmcVgrdTs",
+        authDomain: "big-sister-foundation.firebaseapp.com",
+        projectId: "big-sister-foundation",
+        storageBucket: "big-sister-foundation.appspot.com",
+        messagingSenderId: "374538996840",
+        appId: "1:374538996840:web:8e2d02ada8ccba9b69ba1f"
+      };
+      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
 
-      // ── Event data (persisted in localStorage) ──
-      const STORAGE_KEY = 'bsf_events';
+      // ── Placeholder until Firestore loads ──
+      const STORAGE_KEY = 'bsf_events_unused';
 
-      const defaultEvents = [
-        {
-          id: 1,
-          title: 'Outreach Webinar: Child Safety in Lagos Communities',
-          type: 'webinar',
-          date: '2026-04-12',
-          time: '14:00',
-          location: 'Zoom (link sent on registration)',
-          capacity: 100,
-          desc: 'Join our monthly outreach webinar on practical child safety strategies for communities across Lagos. Open to volunteers, parents, and educators.'
-        },
-        {
-          id: 2,
-          title: 'Weekend Outreach — Makoko Waterfront',
-          type: 'outreach',
-          date: '2026-04-19',
-          time: '09:00',
-          location: 'Makoko, Lagos',
-          capacity: 30,
-          desc: 'On-the-ground outreach visiting families and children in the Makoko waterfront community. Volunteers needed for supplies distribution and mentoring.'
-        },
-        {
-          id: 3,
-          title: 'Creative Arts Workshop for Scholars',
-          type: 'workshop',
-          date: '2026-04-26',
-          time: '10:00',
-          location: 'BSF Community Center, Surulere',
-          capacity: 25,
-          desc: 'A hands-on creative arts session for our scholarship recipients. Painting, music, and storytelling — helping children express themselves.'
-        },
-        {
-          id: 4,
-          title: 'Volunteer Meet & Greet',
-          type: 'community',
-          date: '2026-05-03',
-          time: '16:00',
-          location: 'Terra Kulture, Victoria Island',
-          capacity: 50,
-          desc: 'Informal gathering for new and existing volunteers to connect, share stories, and plan upcoming activities together.'
-        },
-        {
-          id: 5,
-          title: 'Webinar: Education Access for Vulnerable Children',
-          type: 'webinar',
-          date: '2026-05-10',
-          time: '15:00',
-          location: 'Google Meet',
-          capacity: 80,
-          desc: 'A panel discussion with educators and child advocates on expanding education access for at-risk youth in Lagos State.'
-        },
-        {
-          id: 6,
-          title: 'Back-to-School Supply Drive',
-          type: 'outreach',
-          date: '2026-05-17',
-          time: '08:00',
-          location: 'Multiple locations across Lagos',
-          capacity: null,
-          desc: 'Annual supply drive distributing school materials, uniforms, and books to children entering the new academic term.'
+      // ── Normalise a Firestore event doc to the shape renderEvents() expects ──
+      function normaliseEvent(id, data) {
+        var dateStr = '';
+        var timeStr = '';
+        if (data.date) {
+          var d = data.date.toDate ? data.date.toDate() : new Date(data.date);
+          dateStr = d.getFullYear() + '-' +
+            String(d.getMonth() + 1).padStart(2, '0') + '-' +
+            String(d.getDate()).padStart(2, '0');
+          // Extract time if not midnight
+          if (d.getUTCHours() || d.getUTCMinutes()) {
+            timeStr = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+          }
         }
-      ];
-
-      function loadEvents() {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) return JSON.parse(stored);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultEvents));
-        return defaultEvents;
+        return {
+          id: id,
+          title: data.title || '',
+          type: data.type || 'community',
+          date: dateStr,
+          time: timeStr,
+          location: data.location || '',
+          capacity: data.capacity || null,
+          desc: data.description || data.desc || '',
+          status: data.status || 'upcoming'
+        };
       }
 
-      function saveEvents(events) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-      }
-
-      let events = loadEvents();
+      let events = [];
       let currentMonth = new Date().getMonth();
       let currentYear = new Date().getFullYear();
       let activeFilter = 'all';
@@ -1054,13 +1017,7 @@
 
       // ── Confirm delete ──
       document.getElementById('confirmDelete').addEventListener('click', function() {
-        if (deletingId === null) return;
-        events = events.filter(function(e) { return e.id !== deletingId; });
-        saveEvents(events);
-        renderCalendar();
-        renderEvents();
         document.getElementById('confirmOverlay').classList.remove('show');
-        showToast('Event deleted');
         deletingId = null;
       });
 
@@ -1076,55 +1033,7 @@
         }
       });
 
-      // ── Cancel edit ──
-      function resetForm() {
-        editingId = null;
-        document.getElementById('eventForm').reset();
-        document.getElementById('submitBtn').textContent = 'Add Event';
-        document.getElementById('cancelBtn').textContent = 'Clear';
-        document.getElementById('editBanner').classList.remove('show');
-      }
-
-      document.getElementById('cancelEdit').addEventListener('click', resetForm);
-      document.getElementById('cancelBtn').addEventListener('click', resetForm);
-
-      // ── Add / Update event form ──
-      document.getElementById('eventForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        if (!BSFAntiSpam.check('eventForm')) return;
-
-        var eventData = {
-          title: document.getElementById('eventTitle').value.trim(),
-          type: document.getElementById('eventType').value,
-          date: document.getElementById('eventDate').value,
-          time: document.getElementById('eventTime').value,
-          location: document.getElementById('eventLocation').value.trim(),
-          capacity: document.getElementById('eventCapacity').value ? parseInt(document.getElementById('eventCapacity').value, 10) : null,
-          desc: document.getElementById('eventDesc').value.trim()
-        };
-
-        if (editingId !== null) {
-          events = events.map(function(ev) {
-            if (ev.id === editingId) {
-              return Object.assign({}, ev, eventData);
-            }
-            return ev;
-          });
-          saveEvents(events);
-          renderCalendar();
-          renderEvents();
-          showToast('Event updated');
-          resetForm();
-        } else {
-          eventData.id = Date.now();
-          events.push(eventData);
-          saveEvents(events);
-          renderCalendar();
-          renderEvents();
-          e.target.reset();
-          showToast('Event added to the calendar');
-        }
-      });
+      // Form is read-only on public page — all editing via admin panel
 
       // ── Share ──
       function showShareMenu(ev, anchorEl) {
@@ -1211,9 +1120,28 @@
         setTimeout(function() { toast.classList.remove('show'); }, 3000);
       }
 
-      // ── Init ──
+      // ── Init: load from Firestore ──
       renderCalendar();
-      renderEvents();
+      renderEvents(); // renders empty/loading state first
+
+      document.getElementById('eventsList').innerHTML =
+        '<div class="empty-state" style="min-height:180px"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:0.5rem;opacity:0.3"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><p style="font-size:0.85rem;color:rgba(58,42,31,0.4)">Loading events…</p></div>';
+
+      db.collection('events').get()
+        .then(function(snap) {
+          events = [];
+          snap.forEach(function(doc) {
+            var ev = normaliseEvent(doc.id, doc.data());
+            if (ev.date) events.push(ev);
+          });
+          renderCalendar();
+          renderEvents();
+        })
+        .catch(function(err) {
+          console.error('Events Firestore error:', err);
+          document.getElementById('eventsList').innerHTML =
+            '<div class="empty-state"><p>Could not load events. Please refresh the page.</p></div>';
+        });
 
     })();
   </script>
