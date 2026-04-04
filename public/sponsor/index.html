@@ -1163,7 +1163,19 @@
           var name = card.querySelector('.tc-name-field input');
           var nameVal = name ? name.value.trim() : '';
           auth.createUserWithEmailAndPassword(email, password).then(function(cred) {
-            if (nameVal) return cred.user.updateProfile({ displayName: nameVal });
+            var upd = nameVal ? cred.user.updateProfile({ displayName: nameVal }) : Promise.resolve();
+            return upd.then(function() {
+              // Create stub sponsor doc so dashboard works immediately
+              return db.collection('sponsors').doc(email).set({
+                email: email,
+                name: nameVal || email.split('@')[0],
+                status: 'active',
+                tier: 'seedling',
+                totalDonated: 0,
+                recurringAmount: 0,
+                joinedAt: firebase.firestore.FieldValue.serverTimestamp()
+              }, { merge: true });
+            });
           }).catch(function(err) { errEl.textContent = err.message; });
         } else {
           auth.signInWithEmailAndPassword(email, password).catch(function(err) {
@@ -1443,8 +1455,21 @@
       /* ── Google auth (used by inline card auth) ── */
       window.doSponsorGoogle = function() {
         var provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).catch(function(err) {
-          // Show error on the active card if any
+        auth.signInWithPopup(provider).then(function(result) {
+          // For new Google users, create stub sponsor doc
+          if (result.additionalUserInfo && result.additionalUserInfo.isNewUser && db) {
+            var u = result.user;
+            db.collection('sponsors').doc(u.email).set({
+              email: u.email,
+              name: u.displayName || u.email.split('@')[0],
+              status: 'active',
+              tier: 'seedling',
+              totalDonated: 0,
+              recurringAmount: 0,
+              joinedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true }).catch(function() {});
+          }
+        }).catch(function(err) {
           if (activeAuthCard) {
             var errEl = activeAuthCard.querySelector('.tc-error');
             if (errEl) errEl.textContent = err.message;
