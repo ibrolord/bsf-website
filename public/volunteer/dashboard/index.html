@@ -126,6 +126,15 @@ tbody tr:hover{background:var(--gray-50)}
 .badge-pending{background:#fef3c7;color:#92400e}
 .badge-approved,.badge-active{background:var(--green-light);color:var(--green-dark)}
 .badge-rejected{background:var(--red-light);color:var(--red)}
+.badge-important{background:var(--red-light);color:var(--red)}
+.badge-update{background:#e0f2fe;color:#0369a1}
+.badge-reminder{background:#fef3c7;color:#92400e}
+.announcement-card{padding:16px 0;border-bottom:1px solid var(--gray-100)}
+.announcement-card:last-child{border-bottom:none}
+.announcement-card__header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px;flex-wrap:wrap}
+.announcement-card__title{font-size:14px;font-weight:700;color:var(--gray-900)}
+.announcement-card__meta{font-size:12px;color:var(--gray-500)}
+.announcement-card__body{font-size:13px;color:var(--gray-600);line-height:1.5;margin-top:4px}
 .badge-seedling{background:rgba(139,175,142,.2);color:#8BAF8E}
 .badge-grower{background:rgba(45,94,64,.15);color:#2D5E40}
 .badge-elder{background:rgba(212,169,106,.15);color:#D4A96A}
@@ -422,6 +431,14 @@ tbody tr:hover{background:var(--gray-50)}
         <div class="stat-card"><div class="label">Ideas Assigned</div><div class="value blue" id="dash-ideas">--</div></div>
         <div class="stat-card"><div class="label">Hours This Month</div><div class="value gold" id="dash-hours">--</div></div>
         <div class="stat-card"><div class="label">Completion Rate</div><div class="value terra" id="dash-rate">--</div></div>
+      </div>
+      <!-- Announcements Panel -->
+      <div class="panel" id="dash-announcements-panel" style="display:none">
+        <div class="panel-header"><h2>Announcements</h2></div>
+        <div class="panel-body padded">
+          <div id="dash-announcements-loading" class="loading-wrap"><div class="spinner"></div> Loading...</div>
+          <div id="dash-announcements-list"></div>
+        </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
         <div class="panel"><div class="panel-header"><h2>Recent Activity</h2></div><div class="panel-body padded"><div id="dash-activity-loading" class="loading-wrap"><div class="spinner"></div> Loading...</div><ul class="activity-feed" id="dash-activity"></ul></div></div>
@@ -1141,8 +1158,53 @@ function loadDashboard() {
   // Tier system
   initTierSystem();
 
+  // Announcements
+  loadAnnouncements();
+
   // Shoutouts (real-time listener for dashboard preview)
   startShoutoutsListener();
+}
+
+function loadAnnouncements() {
+  var panel = document.getElementById('dash-announcements-panel');
+  var loading = document.getElementById('dash-announcements-loading');
+  var list = document.getElementById('dash-announcements-list');
+
+  db.collection('announcements').orderBy('createdAt', 'desc').limit(5).get()
+    .then(function(snap) {
+      loading.style.display = 'none';
+      if (snap.empty) {
+        panel.style.display = 'none';
+        return;
+      }
+      panel.style.display = '';
+      var html = '';
+      snap.forEach(function(doc) {
+        var a = doc.data();
+        var title = escapeHtml(a.title || 'Announcement');
+        var body = a.content || a.body || '';
+        var truncated = body.length > 150 ? body.substring(0, 150) + '...' : body;
+        var date = formatDate(a.createdAt);
+        var author = a.author || a.authorName || '';
+        var type = a.type || '';
+        var typeBadge = type ? '<span class="badge badge-' + escapeHtml(type.toLowerCase().replace(/\s+/g, '_')) + '">' + escapeHtml(type) + '</span>' : '';
+
+        html += '<div class="announcement-card">' +
+          '<div class="announcement-card__header">' +
+            '<span class="announcement-card__title">' + title + '</span>' +
+            typeBadge +
+          '</div>' +
+          '<div class="announcement-card__body">' + escapeHtml(truncated) + '</div>' +
+          '<div class="announcement-card__meta">' + date + (author ? ' &middot; ' + escapeHtml(author) : '') + '</div>' +
+        '</div>';
+      });
+      list.innerHTML = html;
+    })
+    .catch(function(err) {
+      console.error('Announcements error:', err);
+      loading.style.display = 'none';
+      panel.style.display = 'none';
+    });
 }
 
 function loadRecentActivity() {

@@ -31,7 +31,6 @@
 | `/volunteer/` | `volunteer/index.html` | None | Volunteer pitch/landing page |
 | `/volunteer/register/` | `volunteer/register/index.html` | None | Application form (with invite link support) |
 | `/volunteer/dashboard/` | `volunteer/dashboard/index.html` | Volunteer | Stats, assignments, activity feed |
-| `/volunteer/portal/` | `volunteer/portal/index.html` | Volunteer | Authenticated portal hub |
 | `/sponsor/` | `sponsor/index.html` | None | Sponsor program pitch page |
 | `/sponsor/dashboard.html` | `sponsor/dashboard.html` | Sponsor | Sponsor portal (scholars, donations, messages) |
 | `/signin/` | `signin/index.html` | None | Multi-role sign-in (Volunteer vs Sponsor) |
@@ -65,7 +64,7 @@ The site runs **two independent Firebase projects** with different credentials:
 
 | Role | Firebase API Key | Auth Flow | Post-Login Redirect |
 |------|-----------------|-----------|---------------------|
-| Volunteer | `AIzaSyBm-d9DPG4iKbmhEA71E6cBxAHmcVgrdTs` | Email/password sign-in only (no sign-up — must be approved first) | `/volunteer/portal/` |
+| Volunteer | `AIzaSyBm-d9DPG4iKbmhEA71E6cBxAHmcVgrdTs` | Email/password sign-in only (no sign-up — must be approved first) | `/volunteer/dashboard/` |
 | Sponsor | `AIzaSyCwos6XR9-uqAf_Esmh2K_hJoLxq4gnEuU` | Email/password sign-in OR create account | `/sponsor/dashboard.html` |
 
 **Volunteer onboarding flow:**
@@ -250,7 +249,7 @@ Cream (bg):     #FFF8F0 / #FAF7F2
 /volunteer/ (pitch) → /volunteer/register/ (apply) → Admin reviews at /admin/
   → Approved: EmailJS sends approval email with invite link
   → Invite link → /volunteer/register/?invite={id} (pre-fills email)
-  → /signin/ (volunteer tab) → /volunteer/portal/ → /volunteer/dashboard/
+  → /signin/ (volunteer tab) → /volunteer/dashboard/
 ```
 
 ### Sponsor Onboarding

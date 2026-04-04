@@ -1666,7 +1666,10 @@ function submitLedgerRequest(){
     reason:reason,
     status:'pending',
     requestedBy:currentUser?currentUser.email:'',
-    requestedAt:FieldValue.serverTimestamp()
+    requestedAt:FieldValue.serverTimestamp(),
+    votes:[],
+    approveCount:0,
+    rejectCount:0
   };
   if(type!=='delete'){
     var dt=document.getElementById('lr-date').value;
@@ -1684,6 +1687,7 @@ function submitLedgerRequest(){
   }
   db.collection('ledger_requests').add(reqData).then(function(ref){
     writeAudit('create','ledger_requests',ref.id,'Requested '+type+(entryId?' on entry '+entryId:''));
+    notifyVolunteersFromAdmin('new_request', reqData);
     showToast('Change request submitted for admin review.');
     closeModal('modal-ledger-request');
     if(hasPermission('ledger.approve'))loadLedgerRequests();
@@ -1724,10 +1728,11 @@ function loadLedgerRequests(){
 function approveLedgerRequest(reqId){
   var req=allLedgerRequests.find(function(r){return r._id===reqId;});
   if(!req)return;
-  showConfirm('Approve Request','Apply this '+req.type+' request from '+req.requestedBy+'?',function(){
+  showConfirm('Admin Override — Approve Request','Admin Override: Apply this '+req.type+' request from '+req.requestedBy+'? This bypasses the 3-vote system.',function(){
     var done=function(){
-      db.collection('ledger_requests').doc(reqId).update({status:'approved',reviewedBy:currentUser?currentUser.email:'',reviewedAt:FieldValue.serverTimestamp()}).then(function(){
-        writeAudit('update','ledger_requests',reqId,'Approved '+req.type+' request from '+req.requestedBy);
+      db.collection('ledger_requests').doc(reqId).update({status:'approved',reviewedBy:currentUser?currentUser.email:'',reviewedAt:FieldValue.serverTimestamp(),resolvedBy:'admin_override'}).then(function(){
+        writeAudit('update','ledger_requests',reqId,'Approved '+req.type+' request from '+req.requestedBy+' (admin override)');
+        notifyVolunteersFromAdmin('approved', req);
         showToast('Request approved and applied.');
         loadLedger();loadLedgerRequests();loadDashboard();
       });
@@ -1749,12 +1754,36 @@ function approveLedgerRequest(reqId){
 
 function rejectLedgerRequest(reqId){
   var req=allLedgerRequests.find(function(r){return r._id===reqId;});
-  showConfirm('Reject Request','Reject this request from '+(req?req.requestedBy:'')+'?',function(){
-    db.collection('ledger_requests').doc(reqId).update({status:'rejected',reviewedBy:currentUser?currentUser.email:'',reviewedAt:FieldValue.serverTimestamp()}).then(function(){
-      writeAudit('update','ledger_requests',reqId,'Rejected request from '+(req?req.requestedBy:''));
+  showConfirm('Admin Override — Reject Request','Admin Override: Reject this request from '+(req?req.requestedBy:'')+'? This bypasses the 3-vote system.',function(){
+    db.collection('ledger_requests').doc(reqId).update({status:'rejected',reviewedBy:currentUser?currentUser.email:'',reviewedAt:FieldValue.serverTimestamp(),resolvedBy:'admin_override'}).then(function(){
+      writeAudit('update','ledger_requests',reqId,'Rejected request from '+(req?req.requestedBy:'')+' (admin override)');
+      notifyVolunteersFromAdmin('rejected', req);
       showToast('Request rejected.');
       loadLedgerRequests();
     }).catch(function(e){showToast(e.message,'error');});
+  });
+}
+
+function notifyVolunteersFromAdmin(eventType, requestData) {
+  if (typeof emailjs === 'undefined') return;
+  var templateId = eventType === 'new_request' ? 'template_ledger_new' : eventType === 'approved' ? 'template_ledger_approved' : 'template_ledger_rejected';
+  db.collection('volunteers').where('status', '==', 'active').get().then(function(snap) {
+    snap.forEach(function(doc) {
+      var vol = doc.data();
+      if (!vol.email) return;
+      emailjs.send('service_mx5iaor', templateId, {
+        to_name: vol.firstName || vol.name || 'Volunteer',
+        to_email: vol.email,
+        request_type: requestData.type || 'ledger change',
+        description: requestData.proposedData ? requestData.proposedData.description || '' : '(deletion)',
+        amount: requestData.proposedData ? formatCurrency(requestData.proposedData.amount || 0) : '--',
+        requested_by: requestData.requestedBy || (currentUser ? currentUser.email : ''),
+        reason: requestData.reason || '',
+        dashboard_link: window.location.origin + '/volunteer/dashboard/',
+        resolved_by: 'Admin Override',
+        voter_summary: (requestData.votes || []).map(function(v) { return (v.name || v.email) + ' (' + v.action + ')'; }).join(', ') || 'N/A'
+      }).catch(function(err) { console.error('Email failed:', err); });
+    });
   });
 }
 
