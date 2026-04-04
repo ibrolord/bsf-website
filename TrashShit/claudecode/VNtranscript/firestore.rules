@@ -6,19 +6,27 @@ service cloud.firestore {
     function isAuth() {
       return request.auth != null;
     }
+    function userDocExists() {
+      return isAuth() && exists(/databases/$(database)/documents/users/$(request.auth.token.email));
+    }
     function getUserDoc() {
       return get(/databases/$(database)/documents/users/$(request.auth.token.email)).data;
     }
+    // Supports both legacy `role` (string) and new `roles` (array) fields
     function hasRole(role) {
-      return isAuth() && exists(/databases/$(database)/documents/users/$(request.auth.token.email))
-        && role in getUserDoc().roles;
+      return userDocExists() && (
+        ('roles' in getUserDoc() && role in getUserDoc().roles) ||
+        ('role' in getUserDoc() && getUserDoc().role == role)
+      );
     }
     function isAdmin() {
-      return hasRole('admin');
+      return hasRole('admin') || isSuperAdmin();
     }
     function hasAnyRole() {
-      return isAuth() && exists(/databases/$(database)/documents/users/$(request.auth.token.email))
-        && getUserDoc().roles.size() > 0;
+      return userDocExists() && (
+        ('roles' in getUserDoc() && getUserDoc().roles.size() > 0) ||
+        ('role' in getUserDoc() && getUserDoc().role != null && getUserDoc().role != '')
+      );
     }
     function isSuperAdmin() {
       return isAuth() && request.auth.token.email == 'admin@bigsisterfoundation.org';
