@@ -119,6 +119,15 @@ service cloud.firestore {
     }
 
     // ── Sponsor dashboard ──
+    match /sponsors/{docId} {
+      // Anyone can create a sponsor profile (sign-up flow)
+      allow create: if true;
+      // Sponsors can read their own doc, admins can read all
+      allow read: if isAuth() || hasAnyRole();
+      // Sponsors can update their own profile, admins can update/delete
+      allow update: if (isAuth() && resource.data.email == request.auth.token.email) || isAdmin();
+      allow delete: if isAdmin();
+    }
     match /sponsor_notes/{docId} {
       allow read: if true;
       allow write: if hasAnyRole();
