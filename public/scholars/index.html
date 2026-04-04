@@ -1118,6 +1118,32 @@
         </div>
       </div>
 
+      <!-- VIEW TOGGLE -->
+      <div style="display:flex;gap:0;border-radius:100px;background:rgba(58,42,31,0.05);padding:3px;margin-bottom:2rem;max-width:360px;" id="view-toggle">
+        <button class="view-tab is-active" data-view="scholars" style="padding:0.55rem 1.3rem;border-radius:100px;font-size:0.85rem;font-weight:600;color:var(--cream);background:var(--green);border:none;cursor:pointer;transition:all 0.3s;">Scholars</button>
+        <button class="view-tab" data-view="communities" style="padding:0.55rem 1.3rem;border-radius:100px;font-size:0.85rem;font-weight:600;color:rgba(58,42,31,0.5);background:none;border:none;cursor:pointer;transition:all 0.3s;">Communities</button>
+      </div>
+
+      <!-- COMMUNITIES VIEW (hidden by default) -->
+      <div id="communities-view" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
+          <div style="display:flex;align-items:center;gap:0.5rem;background:#fff;border:1.5px solid rgba(58,42,31,0.12);border-radius:100px;padding:0.5rem 1.25rem;flex:1;max-width:360px;">
+            <span style="font-size:0.9rem;color:rgba(58,42,31,0.35);">&#128269;</span>
+            <input type="text" id="community-search" placeholder="Search communities, schools, trades..." style="border:none;background:none;outline:none;width:100%;font-family:var(--font-sans);font-size:0.88rem;color:var(--brown);">
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:0.4rem;" id="community-filters">
+            <button class="comm-filter is-active" data-area="all" style="padding:0.4rem 1rem;border-radius:100px;font-size:0.78rem;font-weight:600;background:var(--green);color:var(--cream);border:none;cursor:pointer;">All</button>
+            <button class="comm-filter" data-area="mainland" style="padding:0.4rem 1rem;border-radius:100px;font-size:0.78rem;font-weight:600;background:rgba(58,42,31,0.04);color:rgba(58,42,31,0.6);border:1.5px solid transparent;cursor:pointer;">Mainland</button>
+            <button class="comm-filter" data-area="island" style="padding:0.4rem 1rem;border-radius:100px;font-size:0.78rem;font-weight:600;background:rgba(58,42,31,0.04);color:rgba(58,42,31,0.6);border:1.5px solid transparent;cursor:pointer;">Island</button>
+            <button class="comm-filter" data-area="suburban" style="padding:0.4rem 1rem;border-radius:100px;font-size:0.78rem;font-weight:600;background:rgba(58,42,31,0.04);color:rgba(58,42,31,0.6);border:1.5px solid transparent;cursor:pointer;">Suburban</button>
+          </div>
+        </div>
+        <div id="communities-grid"></div>
+      </div>
+
+      <!-- SCHOLARS VIEW -->
+      <div id="scholars-view">
+
       <!-- SCHOOL OVERVIEW -->
       <div class="school-overview" id="school-overview">
         <div class="school-overview__header">
@@ -1212,6 +1238,9 @@
           <button class="btn btn--ghost-dark" id="btn-login">Volunteer Sign In</button>
         </div>
       </div>
+
+      </div><!-- /scholars-view -->
+
     </div>
   </section>
 
