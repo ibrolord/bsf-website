@@ -86,7 +86,23 @@
     .nav__links a { font-size: 0.85rem; font-weight: 500; text-decoration: none; color: rgba(255,248,240,0.7); transition: color 0.3s; }
     .nav__links a:hover { color: var(--cream); }
     .nav__links a.is-active { color: var(--gold); }
-    
+    .nav__portal-link {
+      padding: 0.3rem 0.8rem !important;
+      background: rgba(212,169,106,0.15) !important;
+      border: 1px solid rgba(212,169,106,0.3) !important;
+      border-radius: 100px !important;
+      color: var(--gold) !important;
+      font-size: 0.78rem !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.04em !important;
+      transition: background 0.2s, border-color 0.2s !important;
+    }
+    .nav__portal-link:hover {
+      background: rgba(212,169,106,0.25) !important;
+      border-color: rgba(212,169,106,0.5) !important;
+      color: var(--gold) !important;
+    }
+
 
     /* HERO */
     .volunteer-hero {
@@ -680,6 +696,7 @@
       <li><a href="/events/">Events</a></li>
       <li><a href="/volunteer/" class="is-active">Volunteer</a></li>
       <li><a href="/donate/">Give</a></li>
+      <li><a href="/volunteer/portal/" class="nav__portal-link">Sign In →</a></li>
     </ul>
   </nav>
 
@@ -689,10 +706,15 @@
       <p class="eyebrow" data-animate>JOIN US</p>
       <h1 data-animate data-animate-delay="1">This Is Not<br>Casual Work</h1>
       <p class="volunteer-hero__sub" data-animate data-animate-delay="2">We don't need people who want to feel good about themselves for a weekend. We need people who will stay when it gets hard, show up when no one's watching, and mean it when they say they care.</p>
-      <a href="#manifesto" class="volunteer-hero__scroll" data-animate data-animate-delay="3">
-        Read the manifesto
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v10M3 8l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
+      <div style="display:flex;align-items:center;gap:1.5rem;margin-top:2rem;flex-wrap:wrap;" data-animate data-animate-delay="3">
+        <a href="#manifesto" class="volunteer-hero__scroll">
+          Read the manifesto
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v10M3 8l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a href="/volunteer/portal/" style="font-size:0.82rem;font-weight:600;color:rgba(255,248,240,0.45);text-decoration:none;border:1px solid rgba(255,248,240,0.15);padding:0.35rem 0.875rem;border-radius:100px;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='rgba(255,248,240,0.8)';this.style.borderColor='rgba(255,248,240,0.3)'" onmouseout="this.style.color='rgba(255,248,240,0.45)';this.style.borderColor='rgba(255,248,240,0.15)'">
+          Already a volunteer? Sign in
+        </a>
+      </div>
     </div>
   </section>
 
@@ -991,7 +1013,6 @@
 
             <li><a href="/forums/">Forums</a></li>
             <li><a href="/ideas/">Ideas</a></li>
-            <li><a href="/donations/">Donations</a></li>
             <li><a href="/donate/">Give</a></li>
             <li><a href="/sponsor/">Sponsor</a></li>
             <li><a href="mailto:hello@thebigsisterfoundation.org">Email</a></li>
