@@ -1881,28 +1881,187 @@ function loadApprovals() {
 function loadLedgerRequests() {
   var el = document.getElementById('approvals-ledger-list');
   var empty = document.getElementById('approvals-ledger-empty');
+  var email = currentUser ? currentUser.email.toLowerCase() : '';
 
   db.collection('ledger_requests').where('status', '==', 'pending').get()
     .then(function(snap) {
-      if (snap.empty) { empty.style.display = 'block'; return; }
+      if (snap.empty) { empty.style.display = 'block'; el.innerHTML = ''; return; }
       empty.style.display = 'none';
       var html = '';
       snap.forEach(function(d) {
         var data = d.data();
+        var votes = data.votes || [];
+        var ac = data.approveCount || 0;
+        var rc = data.rejectCount || 0;
+        var myVote = votes.find(function(v) { return v.email === email; });
+        var isRequester = (data.requestedBy || '').toLowerCase() === email;
+
+        var progressHtml =
+          '<div class="vote-progress">' +
+            '<div class="vote-bar"><div class="vote-bar-fill vote-bar-approve" style="width:' + Math.min(ac / 3 * 100, 100) + '%"></div></div>' +
+            '<span class="vote-label">' + ac + '/3 approvals' + (rc > 0 ? ', ' + rc + '/3 rejections' : '') + '</span>' +
+          '</div>';
+
+        var voterHtml = '';
+        if (votes.length > 0) {
+          voterHtml = '<div class="voter-list"><strong>Votes:</strong> ';
+          votes.forEach(function(v) {
+            var icon = v.action === 'approve' ? '&#10003;' : '&#10007;';
+            var cls = v.action === 'approve' ? 'voter-approve' : 'voter-reject';
+            voterHtml += '<span class="voter-chip ' + cls + '">' + icon + ' ' + escapeHtml(v.name || v.email.split('@')[0]) + '</span> ';
+          });
+          voterHtml += '</div>';
+        }
+
+        var actionsHtml;
+        if (myVote) {
+          actionsHtml = '<div class="approval-actions"><span class="vote-status-badge vote-status-badge--voted">You voted: ' + myVote.action + '</span></div>';
+        } else if (isRequester) {
+          actionsHtml = '<div class="approval-actions"><span class="vote-status-badge vote-status-badge--self">Your request \u2014 cannot vote</span></div>';
+        } else {
+          actionsHtml =
+            '<div class="approval-actions">' +
+              '<button class="btn btn-primary btn-xs" onclick="castLedgerVote(\'' + d.id + '\',\'approve\')">Approve</button>' +
+              '<button class="btn btn-danger btn-xs" onclick="castLedgerVote(\'' + d.id + '\',\'reject\')">Reject</button>' +
+            '</div>';
+        }
+
+        var desc = data.proposedData ? escapeHtml(data.proposedData.description || '') : '(deletion)';
+        var amt = data.proposedData ? (data.proposedData.amount || 0).toLocaleString() : '--';
+        var typeBadge = data.type === 'add' ? '<span class="badge badge-approved">Add</span>' : data.type === 'edit' ? '<span class="badge badge-pending">Edit</span>' : '<span class="badge badge-rejected">Delete</span>';
+
         html += '<div class="approval-card">' +
-          '<div class="approval-card-header"><div class="approval-card-title">' + escapeHtml(data.type || 'Ledger Request') + '</div>' + statusBadge('pending') + '</div>' +
-          '<div class="approval-card-body"><strong>Amount:</strong> $' + (data.amount || 0).toLocaleString() + '<br>' +
-          '<strong>Description:</strong> ' + escapeHtml(data.description || '') + '<br>' +
-          '<strong>Requested by:</strong> ' + escapeHtml(data.requestedBy || '') + '</div>' +
-          '<div class="approval-actions">' +
-          '<button class="btn btn-primary btn-xs" onclick="handleApproval(\'ledger_requests\',\'' + d.id + '\',\'approved\')">Approve</button>' +
-          '<button class="btn btn-danger btn-xs" onclick="handleApproval(\'ledger_requests\',\'' + d.id + '\',\'rejected\')">Reject</button>' +
-          '</div></div>';
+          '<div class="approval-card-header">' + typeBadge + ' <span style="font-size:12px;color:var(--gray-400);">by ' + escapeHtml(data.requestedBy || '') + '</span></div>' +
+          '<div class="approval-card-body">' +
+            '<strong>Description:</strong> ' + desc + '<br>' +
+            '<strong>Amount:</strong> &#8358;' + amt + '<br>' +
+            (data.reason ? '<strong>Reason:</strong> ' + escapeHtml(data.reason) : '') +
+          '</div>' +
+          progressHtml +
+          voterHtml +
+          actionsHtml +
+        '</div>';
       });
       el.innerHTML = html;
     })
-    .catch(function() {
+    .catch(function(err) {
+      console.error('Ledger requests error:', err);
       empty.style.display = 'block';
+    });
+}
+
+function castLedgerVote(requestId, action) {
+  var email = currentUser.email.toLowerCase();
+  var volunteerName = (volunteerDoc && (volunteerDoc.firstName || volunteerDoc.name)) || email.split('@')[0];
+  var docRef = db.collection('ledger_requests').doc(requestId);
+  var THRESHOLD = 3;
+
+  db.runTransaction(function(transaction) {
+    return transaction.get(docRef).then(function(snap) {
+      if (!snap.exists) throw new Error('Request not found');
+      var data = snap.data();
+
+      if (data.status !== 'pending') throw new Error('Request already ' + data.status);
+
+      var votes = data.votes || [];
+      if (votes.some(function(v) { return v.email === email; })) throw new Error('You already voted');
+      if ((data.requestedBy || '').toLowerCase() === email) throw new Error('Cannot vote on your own request');
+
+      var vote = { email: email, name: volunteerName, action: action, votedAt: new Date().toISOString() };
+      var newAC = (data.approveCount || 0) + (action === 'approve' ? 1 : 0);
+      var newRC = (data.rejectCount || 0) + (action === 'reject' ? 1 : 0);
+
+      var update = {
+        votes: firebase.firestore.FieldValue.arrayUnion(vote),
+        approveCount: newAC,
+        rejectCount: newRC
+      };
+
+      if (newAC >= THRESHOLD) {
+        update.status = 'approved';
+        update.resolvedBy = 'consensus';
+        update.reviewedBy = email;
+        update.reviewedAt = firebase.firestore.FieldValue.serverTimestamp();
+      } else if (newRC >= THRESHOLD) {
+        update.status = 'rejected';
+        update.resolvedBy = 'consensus';
+        update.reviewedBy = email;
+        update.reviewedAt = firebase.firestore.FieldValue.serverTimestamp();
+      }
+
+      transaction.update(docRef, update);
+      return { newStatus: newAC >= THRESHOLD ? 'approved' : newRC >= THRESHOLD ? 'rejected' : 'pending', data: data, newAC: newAC, newRC: newRC };
+    });
+  }).then(function(result) {
+    // Audit log
+    db.collection('audit_log').add({
+      action: 'vote', collection: 'ledger_requests', documentId: requestId,
+      changes: 'Voted ' + action + ' (' + (action === 'approve' ? result.newAC : result.newRC) + '/' + THRESHOLD + ')',
+      userId: currentUser ? currentUser.uid : '', userEmail: email,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    if (result.newStatus === 'approved') {
+      applyLedgerChange(requestId, result.data);
+      notifyVolunteers('approved', result.data);
+    } else if (result.newStatus === 'rejected') {
+      notifyVolunteers('rejected', result.data);
+    }
+
+    showToast(action === 'approve' ? 'Approval recorded' : 'Rejection recorded');
+    if (result.newStatus !== 'pending') showToast('Request ' + result.newStatus + ' by consensus!');
+    loadLedgerRequests();
+  }).catch(function(err) {
+    showToast(err.message, 'error');
+  });
+}
+
+function applyLedgerChange(requestId, reqData) {
+  var FieldValue = firebase.firestore.FieldValue;
+  if (reqData.type === 'add' && reqData.proposedData) {
+    var data = Object.assign({}, reqData.proposedData);
+    data.createdAt = FieldValue.serverTimestamp();
+    data.lastEditedAt = FieldValue.serverTimestamp();
+    data.notes = 'Added via 3-vote consensus. Requested by ' + reqData.requestedBy;
+    db.collection('ledger').add(data).then(function(ref) {
+      db.collection('audit_log').add({ action: 'create', collection: 'ledger', documentId: ref.id, changes: 'Via consensus: ' + (data.description || ''), userId: 'system', userEmail: 'system', timestamp: FieldValue.serverTimestamp() });
+    });
+  } else if (reqData.type === 'edit' && reqData.entryId && reqData.proposedData) {
+    var data = Object.assign({}, reqData.proposedData);
+    data.lastEditedAt = FieldValue.serverTimestamp();
+    data.notes = (data.notes || '') + ' Updated via 3-vote consensus. Requested by ' + reqData.requestedBy;
+    db.collection('ledger').doc(reqData.entryId).update(data).then(function() {
+      db.collection('audit_log').add({ action: 'update', collection: 'ledger', documentId: reqData.entryId, changes: 'Via consensus', userId: 'system', userEmail: 'system', timestamp: FieldValue.serverTimestamp() });
+    });
+  } else if (reqData.type === 'delete' && reqData.entryId) {
+    db.collection('ledger').doc(reqData.entryId).delete().then(function() {
+      db.collection('audit_log').add({ action: 'delete', collection: 'ledger', documentId: reqData.entryId, changes: 'Via consensus. Requested by ' + reqData.requestedBy, userId: 'system', userEmail: 'system', timestamp: FieldValue.serverTimestamp() });
+    });
+  }
+}
+
+function notifyVolunteers(eventType, requestData) {
+  if (typeof emailjs === 'undefined') return;
+  var templateId = eventType === 'new_request' ? 'template_ledger_new' : eventType === 'approved' ? 'template_ledger_approved' : 'template_ledger_rejected';
+
+  db.collection('volunteers').where('status', '==', 'active').get()
+    .then(function(snap) {
+      snap.forEach(function(doc) {
+        var vol = doc.data();
+        if (!vol.email) return;
+        emailjs.send(EMAILJS_SERVICE, templateId, {
+          to_name: vol.firstName || vol.name || 'Volunteer',
+          to_email: vol.email,
+          request_type: requestData.type || 'ledger change',
+          description: requestData.proposedData ? requestData.proposedData.description || '' : '(deletion)',
+          amount: requestData.proposedData ? (requestData.proposedData.amount || 0).toLocaleString() : '--',
+          requested_by: requestData.requestedBy || '',
+          reason: requestData.reason || '',
+          dashboard_link: window.location.origin + '/volunteer/dashboard/',
+          resolved_by: requestData.resolvedBy === 'admin_override' ? 'Admin Override' : '3-Vote Consensus',
+          voter_summary: (requestData.votes || []).map(function(v) { return (v.name || v.email) + ' (' + v.action + ')'; }).join(', ')
+        }).catch(function(err) { console.error('Email failed for ' + vol.email, err); });
+      });
     });
 }
 
