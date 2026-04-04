@@ -137,7 +137,7 @@
       display: flex; align-items: center; gap: 0.5rem;
       background: #fff; border: 1.5px solid rgba(58,42,31,0.12);
       border-radius: 100px; padding: 0.4rem 1rem;
-      flex: 1; max-width: 320px; transition: border-color 0.3s;
+      flex: 1; max-width: min(320px, 100%); transition: border-color 0.3s;
     }
     .search-bar:focus-within { border-color: var(--green); }
     .search-bar__icon { font-size: 0.9rem; color: rgba(58,42,31,0.35); flex-shrink: 0; }
@@ -712,7 +712,6 @@
 
             <li><a href="/forums/">Forums</a></li>
             <li><a href="/ideas/">Ideas</a></li>
-            <li><a href="/donations/">Donations</a></li>
             <li><a href="/donate/">Give</a></li>
             <li><a href="/sponsor/">Sponsor</a></li>
             <li><a href="mailto:hello@thebigsisterfoundation.org">Email</a></li>

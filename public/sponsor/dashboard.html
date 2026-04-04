@@ -407,6 +407,88 @@
       .badges-grid { grid-template-columns: 1fr; }
     }
 
+    /* ── ANNUAL CERTIFICATE ── */
+    .cert-preview-wrap { position: relative; }
+    .cert-preview {
+      border: 2px solid var(--gold); border-radius: 12px;
+      padding: 2.5rem 2.5rem 2rem; background: #fffdf8;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .cert-preview::before {
+      content: ''; position: absolute; inset: 8px;
+      border: 1px solid rgba(212,169,106,0.3); border-radius: 8px; pointer-events: none;
+    }
+    .cert-tree {
+      font-size: 2rem; margin-bottom: 0.5rem; line-height: 1;
+    }
+    .cert-org {
+      font-family: var(--font-serif); font-size: 0.9rem; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--green);
+      margin-bottom: 1rem;
+    }
+    .cert-divider {
+      width: 60px; height: 2px; background: var(--gold);
+      margin: 0 auto 1.25rem;
+    }
+    .cert-heading {
+      font-family: var(--font-serif); font-size: 1.6rem; font-weight: 500;
+      color: var(--brown); letter-spacing: -0.01em; margin-bottom: 1.5rem;
+    }
+    .cert-body {
+      font-size: 0.88rem; color: rgba(58,42,31,0.6); margin-bottom: 0.5rem; line-height: 1.6;
+    }
+    .cert-name {
+      font-family: var(--font-serif); font-size: 2rem; font-weight: 500;
+      color: var(--green); margin: 0.25rem 0 0.75rem; line-height: 1.1;
+    }
+    .cert-tier-line {
+      font-size: 0.85rem; color: rgba(58,42,31,0.5); margin-bottom: 1.5rem;
+    }
+    .cert-stats {
+      display: flex; justify-content: center; gap: 2.5rem;
+      margin: 1.5rem 0; padding: 1.25rem; background: rgba(45,94,64,0.04);
+      border-radius: 8px;
+    }
+    .cert-stat__value {
+      font-family: var(--font-serif); font-size: 1.4rem; font-weight: 600;
+      color: var(--green);
+    }
+    .cert-stat__label {
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em;
+      color: rgba(58,42,31,0.4); margin-top: 0.15rem;
+    }
+    .cert-footer {
+      margin-top: 1.5rem; padding-top: 1.25rem;
+      border-top: 1px solid rgba(212,169,106,0.3);
+      font-size: 0.78rem; color: rgba(58,42,31,0.35); letter-spacing: 0.04em;
+    }
+    .cert-actions {
+      display: flex; gap: 0.75rem; margin-top: 1.25rem; justify-content: center; flex-wrap: wrap;
+    }
+    /* Locked state */
+    .cert-locked-overlay {
+      position: absolute; inset: 0; border-radius: 10px;
+      background: rgba(255,253,248,0.88); backdrop-filter: blur(3px);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 0.5rem; z-index: 2;
+    }
+    .cert-locked-overlay__icon { font-size: 1.75rem; }
+    .cert-locked-overlay__title {
+      font-family: var(--font-serif); font-size: 1.1rem; color: var(--brown);
+    }
+    .cert-locked-overlay__sub {
+      font-size: 0.82rem; color: rgba(58,42,31,0.45); text-align: center; max-width: 260px;
+    }
+    .cert-locked-overlay__tiers {
+      display: flex; gap: 0.5rem; margin-top: 0.25rem;
+    }
+    .cert-locked-overlay__tier {
+      font-size: 0.72rem; font-weight: 700; padding: 0.25rem 0.75rem;
+      border-radius: 100px; letter-spacing: 0.04em;
+    }
+    .cert-locked-overlay__tier--elder { background:rgba(212,169,106,0.15); color:var(--gold); }
+    .cert-locked-overlay__tier--baobab { background:rgba(194,115,76,0.12); color:var(--terra); }
+
     /* ── PROFILE MANAGEMENT ── */
     .profile-grid {
       display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
@@ -706,16 +788,35 @@
 <body>
 
   <!-- AUTH OVERLAY -->
-  <div id="auth-overlay" style="display:flex;position:fixed;inset:0;z-index:9999;background:var(--cream);align-items:center;justify-content:center">
-    <div style="background:white;padding:48px 40px;border-radius:12px;width:380px;max-width:92vw;box-shadow:0 4px 12px rgba(0,0,0,.12);text-align:center">
-      <div style="font-size:13px;text-transform:uppercase;letter-spacing:2px;color:var(--green);font-weight:600;margin-bottom:20px">Sponsor Dashboard</div>
-      <h1 style="font-family:var(--font-serif);font-size:28px;color:var(--green);margin-bottom:4px">Welcome Back</h1>
-      <p style="color:#6b7280;font-size:14px;margin-bottom:28px">Sign in to view your dashboard</p>
-      <div style="margin-bottom:16px;text-align:left"><label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:4px">Email</label><input type="email" id="auth-email" placeholder="you@example.com" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px"></div>
-      <div style="margin-bottom:16px;text-align:left"><label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:4px">Password</label><input type="password" id="auth-password" placeholder="Your password" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px" onkeydown="if(event.key==='Enter')sponsorLogin()"></div>
-      <button onclick="sponsorLogin()" style="width:100%;padding:12px;background:var(--green);color:white;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer">Sign In</button>
-      <div id="auth-error" style="color:#dc2626;font-size:13px;margin-top:8px;min-height:20px"></div>
-      <p style="margin-top:16px;font-size:13px;color:#9ca3af">New sponsor? <a href="/sponsor/" style="color:var(--green)">Register here</a></p>
+  <div id="auth-overlay" style="display:flex;position:fixed;inset:0;z-index:9999;background:var(--cream);align-items:center;justify-content:center;padding:1rem">
+    <div style="background:white;padding:2.5rem 2rem 2rem;border-radius:16px;width:400px;max-width:100%;box-shadow:0 8px 40px rgba(0,0,0,.12);text-align:center">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--green);font-weight:700;margin-bottom:16px">Sponsor Dashboard</div>
+      <h1 id="dash-auth-title" style="font-family:var(--font-serif);font-size:1.75rem;color:var(--brown);margin-bottom:6px;line-height:1.1">Welcome Back</h1>
+      <p style="color:#6b7280;font-size:13px;margin-bottom:24px">Sign in to view your sponsorship dashboard</p>
+      <!-- Google -->
+      <button onclick="sponsorGoogleLogin()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:11px;border:1.5px solid #e5e7eb;border-radius:8px;background:#fff;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:20px;font-family:inherit;transition:border-color 0.2s" onmouseover="this.style.borderColor='#9ca3af'" onmouseout="this.style.borderColor='#e5e7eb'">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908C18.22 11.838 17.64 9.2 17.64 9.2Z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332Z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58Z"/></svg>
+        Continue with Google
+      </button>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+        <div style="flex:1;height:1px;background:#f3f4f6"></div>
+        <span style="font-size:12px;color:#9ca3af">or</span>
+        <div style="flex:1;height:1px;background:#f3f4f6"></div>
+      </div>
+      <!-- Tab toggle -->
+      <div style="display:flex;background:#f3f4f6;border-radius:8px;padding:3px;margin-bottom:18px">
+        <button id="dash-tab-signin" onclick="setDashAuthMode('signin')" style="flex:1;padding:7px;border-radius:6px;background:var(--green);color:#fff;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:background 0.2s,color 0.2s">Sign In</button>
+        <button id="dash-tab-create" onclick="setDashAuthMode('create')" style="flex:1;padding:7px;border-radius:6px;background:none;color:#9ca3af;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:background 0.2s,color 0.2s">Create Account</button>
+      </div>
+      <div id="dash-auth-name-row" style="display:none;margin-bottom:14px;text-align:left">
+        <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:4px">Full Name</label>
+        <input type="text" id="auth-name" placeholder="Your full name" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;font-family:inherit;outline:none">
+      </div>
+      <div style="margin-bottom:14px;text-align:left"><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:4px">Email</label><input type="email" id="auth-email" placeholder="you@example.com" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;outline:none"></div>
+      <div style="margin-bottom:14px;text-align:left"><label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:4px">Password</label><input type="password" id="auth-password" placeholder="Your password" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;outline:none" onkeydown="if(event.key==='Enter')sponsorLogin()"></div>
+      <button id="dash-auth-submit" onclick="sponsorLogin()" style="width:100%;padding:12px;background:var(--green);color:white;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit">Sign In</button>
+      <div id="auth-error" style="color:#dc2626;font-size:13px;margin-top:10px;min-height:20px"></div>
+      <p style="margin-top:16px;font-size:13px;color:#9ca3af">Not a sponsor yet? <a href="/sponsor/" style="color:var(--green);font-weight:600">Become one</a></p>
     </div>
   </div>
 
@@ -746,7 +847,7 @@
       </div>
       <h2>Welcome, Future Sponsor</h2>
       <p>You haven't registered as a sponsor yet. Join our community of givers and track your impact on children's lives in Lagos.</p>
-      <a href="/donate/" class="btn btn--terra">Become a Sponsor</a>
+      <a href="/sponsor/" class="btn btn--terra">Become a Sponsor</a>
     </div>
   </section>
 
@@ -886,7 +987,21 @@
         <div class="badges-grid" id="badges-grid"></div>
       </div>
 
-      <!-- E. PROFILE MANAGEMENT -->
+      <!-- E. ANNUAL CERTIFICATE -->
+      <div class="dash-section" id="cert-section">
+        <div class="dash-section__header">
+          <div class="dash-section__header-left">
+            <div class="dash-section__icon" style="background:rgba(212,169,106,0.12);">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--gold)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"/></svg>
+            </div>
+            <span class="dash-section__title">Annual Impact Certificate</span>
+          </div>
+          <span id="cert-tier-label" style="font-size:0.75rem;font-weight:600;color:rgba(58,42,31,0.35);letter-spacing:0.05em;text-transform:uppercase">Elder &amp; Baobab</span>
+        </div>
+        <div id="cert-wrap"></div>
+      </div>
+
+      <!-- F. PROFILE MANAGEMENT -->
       <div class="dash-section">
         <div class="dash-section__header">
           <div class="dash-section__header-left">
@@ -1070,7 +1185,6 @@
             <li><a href="/volunteer/">Volunteer</a></li>
             <li><a href="/forums/">Forums</a></li>
             <li><a href="/ideas/">Ideas</a></li>
-            <li><a href="/donations/">Donations</a></li>
             <li><a href="/donate/">Give</a></li>
             <li><a href="/sponsor/">Sponsor</a></li>
             <li><a href="mailto:hello@thebigsisterfoundation.org">Email</a></li>
@@ -1117,14 +1231,48 @@
     /* ================================================================
        AUTH
     ================================================================ */
+    var dashAuthMode = 'signin';
+
+    window.setDashAuthMode = function(mode) {
+      dashAuthMode = mode;
+      var isCreate = (mode === 'create');
+      var nameRow = document.getElementById('dash-auth-name-row');
+      var title = document.getElementById('dash-auth-title');
+      var sub = document.getElementById('dash-auth-submit');
+      var tabIn = document.getElementById('dash-tab-signin');
+      var tabCr = document.getElementById('dash-tab-create');
+      nameRow.style.display = isCreate ? '' : 'none';
+      title.textContent = isCreate ? 'Create Account' : 'Welcome Back';
+      sub.textContent = isCreate ? 'Create Account' : 'Sign In';
+      tabIn.style.background = isCreate ? 'none' : 'var(--green)';
+      tabIn.style.color = isCreate ? '#9ca3af' : '#fff';
+      tabCr.style.background = isCreate ? 'var(--green)' : 'none';
+      tabCr.style.color = isCreate ? '#fff' : '#9ca3af';
+      document.getElementById('auth-error').textContent = '';
+    };
+
+    window.sponsorGoogleLogin = function() {
+      var provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider).catch(function(err) {
+        document.getElementById('auth-error').textContent = err.message;
+      });
+    };
+
     window.sponsorLogin = function() {
       var em = document.getElementById('auth-email').value.trim();
       var pw = document.getElementById('auth-password').value;
       document.getElementById('auth-error').textContent = '';
       if (!em || !pw) { document.getElementById('auth-error').textContent = 'Please enter email and password.'; return; }
-      firebase.auth().signInWithEmailAndPassword(em, pw).catch(function(err) {
-        document.getElementById('auth-error').textContent = err.message;
-      });
+      if (dashAuthMode === 'create') {
+        var name = (document.getElementById('auth-name').value || '').trim();
+        firebase.auth().createUserWithEmailAndPassword(em, pw).then(function(cred) {
+          if (name) return cred.user.updateProfile({ displayName: name });
+        }).catch(function(err) { document.getElementById('auth-error').textContent = err.message; });
+      } else {
+        firebase.auth().signInWithEmailAndPassword(em, pw).catch(function(err) {
+          document.getElementById('auth-error').textContent = err.message;
+        });
+      }
     };
     window.sponsorSignOut = function() {
       firebase.auth().signOut().then(function() {
@@ -1236,6 +1384,7 @@
       renderImpact();
       renderTransactions();
       renderBadges();
+      renderCertificate();
       populateProfile();
       bindEvents();
 
@@ -1604,7 +1753,149 @@
     }
 
     /* ================================================================
-       E. PROFILE MANAGEMENT
+       E. ANNUAL CERTIFICATE
+    ================================================================ */
+    function renderCertificate() {
+      var wrap = document.getElementById('cert-wrap');
+      if (!wrap) return;
+
+      var tierName = resolveTier(sponsor);
+      var eligible = (tierName === 'Elder' || tierName === 'Baobab');
+      var year = new Date().getFullYear();
+      var sponsorName = sponsor.name || sponsor.fullName || 'Valued Sponsor';
+      var currency = sponsor.recurringCurrency || sponsor.currency || 'NGN';
+      var info = (typeof BSFPaystack !== 'undefined') ? BSFPaystack.getCurrencyInfo(currency) : { symbol: '₦' };
+      var totalFormatted = info.symbol + Number(totalDonated / 100).toLocaleString();
+      var months = monthsAsSponsor || 1;
+
+      // Build impact lines
+      var rates = { NGN: 1, USD: 1500, GBP: 1900, EUR: 1700, CAD: 1100 };
+      var ngnTotal = (totalDonated / 100) * (rates[currency] || 1);
+      var schoolMonths = Math.floor(ngnTotal / 5000);
+      var meals = Math.floor(ngnTotal / 800);
+      var impactLines = [];
+      if (schoolMonths > 0) impactLines.push('~' + schoolMonths + ' month' + (schoolMonths !== 1 ? 's' : '') + ' of school fees');
+      if (meals > 0) impactLines.push('~' + meals + ' meal' + (meals !== 1 ? 's' : '') + ' provided');
+
+      var tierIcon = tierName === 'Baobab' ? '🌳' : tierName === 'Elder' ? '🌲' : tierName === 'Grower' ? '🌱' : '🌿';
+
+      wrap.innerHTML = '';
+      var previewWrap = document.createElement('div');
+      previewWrap.className = 'cert-preview-wrap';
+
+      // Certificate card
+      var preview = document.createElement('div');
+      preview.className = 'cert-preview' + (!eligible ? ' cert-preview--dimmed' : '');
+      preview.style.opacity = eligible ? '1' : '0.45';
+      preview.style.filter = eligible ? 'none' : 'grayscale(0.4)';
+      preview.style.userSelect = eligible ? 'auto' : 'none';
+      preview.style.pointerEvents = eligible ? 'auto' : 'none';
+
+      preview.innerHTML =
+        '<div class="cert-tree">' + tierIcon + '</div>' +
+        '<div class="cert-org">Big Sister Foundation</div>' +
+        '<div class="cert-divider"></div>' +
+        '<div class="cert-heading">Annual Impact Certificate</div>' +
+        '<p class="cert-body">This certificate is presented to</p>' +
+        '<div class="cert-name">' + escapeHTML(sponsorName) + '</div>' +
+        '<p class="cert-tier-line">in recognition of their commitment as a <strong>' + tierName + ' Sponsor</strong></p>' +
+        '<div class="cert-stats">' +
+          '<div><div class="cert-stat__value">' + totalFormatted + '</div><div class="cert-stat__label">Total Given</div></div>' +
+          '<div><div class="cert-stat__value">' + months + '</div><div class="cert-stat__label">Month' + (months !== 1 ? 's' : '') + '</div></div>' +
+        '</div>' +
+        (impactLines.length ? '<p class="cert-body" style="margin-bottom:0">' + impactLines.join(' &middot; ') + '</p>' : '') +
+        '<div class="cert-footer">Issued by Big Sister Foundation &middot; Lagos, Nigeria &middot; ' + year + '</div>';
+
+      previewWrap.appendChild(preview);
+
+      // Locked overlay for ineligible tiers
+      if (!eligible) {
+        var overlay = document.createElement('div');
+        overlay.className = 'cert-locked-overlay';
+        overlay.innerHTML =
+          '<div class="cert-locked-overlay__icon">🔒</div>' +
+          '<div class="cert-locked-overlay__title">Certificate Locked</div>' +
+          '<div class="cert-locked-overlay__sub">Annual impact certificates are available for Elder and Baobab sponsors.</div>' +
+          '<div class="cert-locked-overlay__tiers">' +
+            '<span class="cert-locked-overlay__tier cert-locked-overlay__tier--elder">🌲 Elder</span>' +
+            '<span class="cert-locked-overlay__tier cert-locked-overlay__tier--baobab">🌳 Baobab</span>' +
+          '</div>';
+        previewWrap.appendChild(overlay);
+      }
+
+      wrap.appendChild(previewWrap);
+
+      // Action buttons (only for eligible)
+      if (eligible) {
+        var actions = document.createElement('div');
+        actions.className = 'cert-actions';
+
+        var printBtn = document.createElement('button');
+        printBtn.className = 'btn btn--outline btn--small';
+        printBtn.innerHTML = '<svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.056 48.056 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z"/></svg> Print / Save PDF';
+        printBtn.addEventListener('click', function() { printCertificate(sponsorName, tierName, totalFormatted, months, year, impactLines, tierIcon); });
+
+        actions.appendChild(printBtn);
+        wrap.appendChild(actions);
+      }
+    }
+
+    function printCertificate(name, tier, total, months, year, impactLines, icon) {
+      var tierColors = {
+        'Baobab': { accent: '#C2734C', bg: '#fff8f4' },
+        'Elder':  { accent: '#D4A96A', bg: '#fffdf5' }
+      };
+      var tc = tierColors[tier] || { accent: '#2D5E40', bg: '#f8fdf9' };
+
+      var html = '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
+        '<title>BSF Impact Certificate ' + year + '</title>' +
+        '<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">' +
+        '<style>' +
+          'body{margin:0;padding:0;background:#fff;font-family:system-ui,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
+          '.page{width:210mm;min-height:148mm;margin:0 auto;padding:14mm 16mm;box-sizing:border-box;display:flex;align-items:center;justify-content:center}' +
+          '.cert{border:2.5px solid ' + tc.accent + ';border-radius:12px;padding:40px 48px;background:' + tc.bg + ';text-align:center;position:relative;width:100%;max-width:600px}' +
+          '.cert::before{content:"";position:absolute;inset:9px;border:1px solid rgba(0,0,0,0.1);border-radius:8px;pointer-events:none}' +
+          '.tree{font-size:2.5rem;margin-bottom:6px}' +
+          '.org{font-family:"EB Garamond",serif;font-size:0.85rem;letter-spacing:0.2em;text-transform:uppercase;color:#2D5E40;margin-bottom:12px}' +
+          '.div{width:50px;height:2px;background:' + tc.accent + ';margin:0 auto 14px}' +
+          '.heading{font-family:"EB Garamond",serif;font-size:1.75rem;font-weight:500;color:#3A2A1F;letter-spacing:-0.01em;margin-bottom:18px}' +
+          '.body{font-size:0.85rem;color:rgba(58,42,31,0.55);margin-bottom:4px}' +
+          '.name{font-family:"EB Garamond",serif;font-size:2.2rem;font-weight:500;color:#2D5E40;margin:4px 0 8px}' +
+          '.tier-line{font-size:0.83rem;color:rgba(58,42,31,0.5);margin-bottom:18px}' +
+          '.stats{display:flex;justify-content:center;gap:32px;padding:14px 20px;background:rgba(45,94,64,0.05);border-radius:8px;margin:0 0 14px}' +
+          '.stat-val{font-family:"EB Garamond",serif;font-size:1.5rem;font-weight:600;color:#2D5E40}' +
+          '.stat-lbl{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:rgba(58,42,31,0.4);margin-top:2px}' +
+          '.impact{font-size:0.82rem;color:rgba(58,42,31,0.5);margin-bottom:18px}' +
+          '.footer{padding-top:14px;border-top:1px solid rgba(0,0,0,0.1);font-size:0.72rem;color:rgba(58,42,31,0.3);letter-spacing:0.04em}' +
+          '@media print{body{background:#fff}@page{size:A5 landscape;margin:8mm}}' +
+        '</style></head><body>' +
+        '<div class="page"><div class="cert">' +
+          '<div class="tree">' + icon + '</div>' +
+          '<div class="org">Big Sister Foundation</div>' +
+          '<div class="div"></div>' +
+          '<div class="heading">Annual Impact Certificate</div>' +
+          '<p class="body">This certificate is presented to</p>' +
+          '<div class="name">' + name + '</div>' +
+          '<p class="tier-line">in recognition of their commitment as a <strong>' + tier + ' Sponsor</strong></p>' +
+          '<div class="stats">' +
+            '<div><div class="stat-val">' + total + '</div><div class="stat-lbl">Total Given</div></div>' +
+            '<div><div class="stat-val">' + months + '</div><div class="stat-lbl">Month' + (months !== 1 ? 's' : '') + '</div></div>' +
+          '</div>' +
+          (impactLines.length ? '<p class="impact">' + impactLines.join(' · ') + '</p>' : '') +
+          '<div class="footer">Issued by Big Sister Foundation · Lagos, Nigeria · ' + year + '</div>' +
+        '</div></div>' +
+        '<script>window.onload=function(){window.print();}<\/script>' +
+        '</body></html>';
+
+      var win = window.open('', '_blank', 'width=800,height=600');
+      if (win) {
+        win.document.write(html);
+        win.document.close();
+      }
+    }
+
+    /* ================================================================
+       F. PROFILE MANAGEMENT
     ================================================================ */
     function populateProfile() {
       document.getElementById('prof-name').value = sponsor.name || sponsor.fullName || '';
@@ -1693,6 +1984,7 @@
           renderImpact();
           renderTransactions();
           renderBadges();
+          renderCertificate();
           document.getElementById('qd-amount').value = '';
           showToast('Thank you! Your gift of ' + BSFPaystack.formatDisplayAmount(amount, currency) + ' has been received.', 'success');
         },

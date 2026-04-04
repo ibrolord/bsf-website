@@ -652,7 +652,6 @@
             <li><a href="/volunteer/">Volunteer</a></li>
             <li><a href="/forums/">Forums</a></li>
             <li><a href="/ideas/">Ideas</a></li>
-            <li><a href="/donations/">Donations</a></li>
             <li><a href="/donate/">Give</a></li>
             <li><a href="/sponsor/">Sponsor</a></li>
             <li><a href="mailto:hello@thebigsisterfoundation.org">Email</a></li>
@@ -836,8 +835,8 @@
       var activeFilter = 'all';
       var searchQuery = '';
 
-      // Fetch AI-generated posts from API and merge
-      (function fetchAIPosts() {
+      // Fetch AI-generated posts from API and approved Firestore posts, then merge
+      (function fetchAllPosts() {
         // Try cached AI posts first
         var cached = localStorage.getItem(AI_POSTS_KEY);
         if (cached) {
@@ -861,6 +860,37 @@
             }
           })
           .catch(function() { /* API not available, use local posts only */ });
+
+        // Fetch approved user-submitted posts from Firestore
+        blogDb.collection('blog_posts')
+          .where('status', '==', 'approved')
+          .get()
+          .then(function(snapshot) {
+            var firestorePosts = [];
+            snapshot.forEach(function(doc) {
+              var data = doc.data();
+              firestorePosts.push({
+                id: doc.id,
+                title: data.title || '',
+                category: data.category || 'story',
+                author: data.author || 'Anonymous',
+                date: data.date || '',
+                excerpt: data.excerpt || '',
+                body: data.body || '',
+                readTime: data.readTime || 3,
+                aiGenerated: data.aiGenerated || false,
+                status: data.status
+              });
+            });
+            if (firestorePosts.length) {
+              posts = mergeAndDedupe(posts, firestorePosts);
+              renderFeatured();
+              renderGrid();
+            }
+          })
+          .catch(function(err) {
+            console.log('Could not fetch Firestore blog posts:', err);
+          });
       })();
 
       // ── Helpers ──
@@ -1072,7 +1102,10 @@
       document.getElementById('blogGrid').addEventListener('click', function(e) {
         var card = e.target.closest('.post-card');
         if (!card) return;
-        showPost(parseInt(card.dataset.id, 10));
+        var cardId = card.dataset.id;
+        // Support both numeric IDs (localStorage posts) and string IDs (Firestore posts)
+        var numId = parseInt(cardId, 10);
+        showPost(isNaN(numId) || String(numId) !== cardId ? cardId : numId);
       });
 
       // ── Filters ──
@@ -1148,7 +1181,8 @@
         var params = new URLSearchParams(window.location.search);
         var postId = params.get('post');
         if (postId) {
-          showPost(parseInt(postId, 10));
+          var numPid = parseInt(postId, 10);
+          showPost(isNaN(numPid) || String(numPid) !== postId ? postId : numPid);
         } else {
           document.getElementById('postDetail').classList.add('hidden');
           document.getElementById('blogListing').classList.remove('hidden');
@@ -1184,7 +1218,8 @@
       if (postParam) {
         renderFeatured();
         renderGrid();
-        showPost(parseInt(postParam, 10));
+        var numPp = parseInt(postParam, 10);
+        showPost(isNaN(numPp) || String(numPp) !== postParam ? postParam : numPp);
       } else {
         renderFeatured();
         renderGrid();
