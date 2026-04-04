@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q4EYY24EDZ"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-Q4EYY24EDZ');</script>
+  <title>Events — Big Sister Foundation</title>
+  <meta name="description" content="Upcoming outreach webinars, community events, and workshops from Big Sister Foundation. See what's happening and join us.">
+  <meta property="og:title" content="Events — Big Sister Foundation">
+  <meta property="og:description" content="Upcoming outreach webinars, community events, and workshops from Big Sister Foundation. See what's happening and join us.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/og-image.svg">
+  <meta name="theme-color" content="#2D5E40">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cellipse cx='50' cy='35' rx='35' ry='30' fill='%232D5E40' opacity='0.85'/%3E%3Cellipse cx='30' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cellipse cx='70' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cpath d='M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z' fill='%233A2A1F' opacity='0.8'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #2D5E40;
+      --green-dark: #1E3F2B;
+      --brown: #3A2A1F;
+      --terra: #C2734C;
+      --gold: #D4A96A;
+      --sage: #8BAF8E;
+      --cream: #FFF8F0;
+      --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --section-pad: clamp(48px, 4vw + 20px, 100px);
+      --page-margin: clamp(20px, 4vw, 80px);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.2rem);
+      line-height: 1.7;
+      color: var(--brown);
+      background: var(--cream);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+    button { font: inherit; cursor: pointer; border: none; background: none; }
+
+    .eyebrow {
+      font-family: var(--font-sans);
+      font-size: clamp(0.7rem, 0.5vw + 0.5rem, 0.85rem);
+      font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--terra); margin-bottom: 1rem;
+    }
+
+    h1, h2, h3 {
+      font-family: var(--font-serif);
+      font-weight: 500; line-height: 1.08; letter-spacing: -0.02em;
+    }
+    h1 { font-size: clamp(2.2rem, 4vw + 0.5rem, 4rem); }
+    h2 { font-size: clamp(1.8rem, 2.5vw + 0.5rem, 2.8rem); }
+    h3 { font-size: clamp(1.3rem, 1vw + 0.8rem, 1.7rem); line-height: 1.2; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding-left: var(--page-margin); padding-right: var(--page-margin); }
+    .section-pad { padding-top: var(--section-pad); padding-bottom: var(--section-pad); }
+
+    /* NAV */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem var(--page-margin); background: var(--green-dark);
+    }
+    .nav__logo { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; text-decoration: none; color: var(--cream); }
+    .nav__links { list-style: none; display: flex; gap: 2rem; }
+    .nav__links a { font-size: 0.85rem; font-weight: 500; text-decoration: none; color: rgba(255,248,240,0.7); transition: color 0.3s; }
+    .nav__links a:hover { color: var(--cream); }
+    .nav__links a.is-active { color: var(--gold); }
+    
+
+    /* HERO */
+    .hero {
+      padding-top: calc(60px + var(--section-pad));
+      padding-bottom: var(--section-pad);
+      background: var(--green-dark);
+      color: var(--cream);
+      text-align: center;
+    }
+    .hero .eyebrow { color: var(--gold); }
+    .hero h1 { margin-bottom: 1rem; }
+    .hero p { max-width: 600px; margin: 0 auto; opacity: 0.8; font-size: 1.1rem; }
+
+    /* CALENDAR */
+    .calendar {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+
+    .calendar__header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      background: var(--green);
+      color: var(--cream);
+    }
+
+    .calendar__header h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+
+    .calendar__nav-btn {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      color: var(--cream);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .calendar__nav-btn:hover { background: rgba(255,255,255,0.25); }
+
+    .calendar__weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      background: var(--green-dark);
+      color: rgba(255,248,240,0.7);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .calendar__weekdays span {
+      padding: 0.6rem;
+      text-align: center;
+    }
+
+    .calendar__grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+    }
+
+    .calendar__day {
+      min-height: 80px;
+      padding: 0.4rem;
+      border: 1px solid rgba(0,0,0,0.05);
+      position: relative;
+      cursor: default;
+      transition: background 0.2s;
+    }
+    .calendar__day:hover { background: rgba(45,94,64,0.03); }
+    .calendar__day--other { opacity: 0.3; }
+    .calendar__day--today .calendar__date {
+      background: var(--terra);
+      color: white;
+      border-radius: 50%;
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .calendar__date {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--brown);
+      margin-bottom: 0.25rem;
+    }
+
+    .calendar__event-dot {
+      display: inline-block;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+      cursor: pointer;
+      margin-bottom: 2px;
+    }
+    .calendar__event-dot--webinar { background: rgba(45,94,64,0.15); color: var(--green-dark); }
+    .calendar__event-dot--outreach { background: rgba(194,115,76,0.15); color: var(--terra); }
+    .calendar__event-dot--workshop { background: rgba(212,169,106,0.2); color: #8B6914; }
+    .calendar__event-dot--community { background: rgba(139,175,142,0.25); color: var(--green-dark); }
+    .calendar__event-dot--fundraiser { background: rgba(212,169,106,0.2); color: #8B6914; }
+    .calendar__event-dot--meeting { background: rgba(45,94,64,0.12); color: var(--green); }
+
+    /* EVENT LIST */
+    .events-list { display: flex; flex-direction: column; gap: 1.5rem; }
+
+    .event-card {
+      display: grid;
+      grid-template-columns: 80px 1fr auto;
+      gap: 1.5rem;
+      align-items: start;
+      padding: 1.5rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      transition: box-shadow 0.3s var(--ease);
+    }
+    .event-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+
+    .event-card__date-block {
+      text-align: center;
+      padding: 0.75rem;
+      background: var(--green);
+      border-radius: 8px;
+      color: var(--cream);
+    }
+    .event-card__month {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.8;
+    }
+    .event-card__day {
+      font-family: var(--font-serif);
+      font-size: 1.8rem;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .event-card__info h3 { margin-bottom: 0.35rem; }
+    .event-card__meta {
+      display: flex; flex-wrap: wrap; gap: 1rem;
+      font-size: 0.85rem;
+      opacity: 0.7;
+      margin-bottom: 0.5rem;
+    }
+    .event-card__meta span { display: flex; align-items: center; gap: 0.3rem; }
+    .event-card__desc { font-size: 0.95rem; opacity: 0.8; }
+
+    .event-card__tag {
+      display: inline-block;
+      padding: 0.3rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .event-card__tag--webinar { background: rgba(45,94,64,0.12); color: var(--green-dark); }
+    .event-card__tag--outreach { background: rgba(194,115,76,0.12); color: var(--terra); }
+    .event-card__tag--workshop { background: rgba(212,169,106,0.15); color: #8B6914; }
+    .event-card__tag--community { background: rgba(139,175,142,0.2); color: var(--green-dark); }
+    .event-card__tag--fundraiser { background: rgba(212,169,106,0.18); color: #8B6914; }
+    .event-card__tag--meeting { background: rgba(45,94,64,0.10); color: var(--green); }
+
+    @media (max-width: 600px) {
+      .event-card { grid-template-columns: 1fr; gap: 1rem; }
+      .event-card__date-block { display: flex; gap: 0.5rem; align-items: center; justify-content: center; border-radius: 8px; padding: 0.5rem 1rem; }
+      .event-card__day { font-size: 1.3rem; }
+    }
+
+    /* ADD EVENT FORM */
+    .add-event {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+    }
+
+    .add-event h2 { margin-bottom: 0.5rem; }
+    .add-event > p { opacity: 0.7; margin-bottom: 1.5rem; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+
+    .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+    .form-group--full { grid-column: 1 / -1; }
+
+    .form-group label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--brown);
+      opacity: 0.7;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      padding: 0.7rem 0.9rem;
+      border: 1.5px solid rgba(0,0,0,0.12);
+      border-radius: 8px;
+      background: var(--cream);
+      color: var(--brown);
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--green);
+    }
+
+    .form-group textarea { resize: vertical; min-height: 80px; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.85rem 1.8rem;
+      font-weight: 600; font-size: 0.9rem;
+      border-radius: 100px;
+      text-decoration: none;
+      transition: all 0.3s var(--ease);
+    }
+    .btn--primary {
+      background: var(--green);
+      color: var(--cream);
+    }
+    .btn--primary:hover { background: var(--green-dark); }
+    .btn--outline {
+      border: 2px solid var(--green);
+      color: var(--green);
+      background: transparent;
+    }
+    .btn--outline:hover { background: var(--green); color: var(--cream); }
+
+    .form-actions {
+      display: flex; gap: 1rem; margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* FILTER TABS */
+    .filter-tabs {
+      display: flex; gap: 0.5rem; flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    .filter-tab {
+      padding: 0.45rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border: 1.5px solid rgba(0,0,0,0.12);
+      background: transparent;
+      color: var(--brown);
+      transition: all 0.2s;
+    }
+    .filter-tab:hover { border-color: var(--green); color: var(--green); }
+    .filter-tab.active { background: var(--green); color: var(--cream); border-color: var(--green); }
+
+    /* SECTION HEADING */
+    .section-heading {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 2rem; left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--green-dark);
+      color: var(--cream);
+      padding: 0.85rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      z-index: 200;
+      opacity: 0;
+      transition: all 0.4s var(--ease);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* FOOTER */
+    .footer {
+      background: var(--brown);
+      color: rgba(255,248,240,0.6);
+      padding: 3rem 0;
+      font-size: 0.85rem;
+    }
+    .footer__layout { display: flex; justify-content: space-between; gap: 2rem; flex-wrap: wrap; }
+    .footer__brand-name { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; color: var(--cream); margin-bottom: 0.3rem; }
+    .footer__tagline { font-style: italic; margin-bottom: 0.2rem; }
+    .footer__location { font-size: 0.8rem; }
+    .footer__links { list-style: none; display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
+    .footer__links a { text-decoration: none; transition: color 0.3s; }
+    .footer__links a:hover { color: var(--cream); }
+    .footer__copy { font-size: 0.75rem; opacity: 0.5; }
+    .footer__right { text-align: right; }
+    @media (max-width: 768px) {
+      .footer__right { text-align: left; }
+      .footer__links { flex-direction: column; gap: 0.8rem; }
+    }
+
+    /* EVENT ACTIONS */
+    .event-card__actions {
+      display: flex;
+      gap: 0.4rem;
+      align-self: start;
+      margin-left: auto;
+    }
+    .event-card__action-btn {
+      width: 32px; height: 32px;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+      color: var(--brown);
+      opacity: 0.4;
+    }
+    .event-card__action-btn:hover { opacity: 1; }
+    .event-card__action-btn--share:hover { background: rgba(45,94,64,0.1); color: var(--green); }
+    .event-card__action-btn--edit:hover { background: rgba(45,94,64,0.1); color: var(--green); }
+    .event-card__action-btn--delete:hover { background: rgba(200,50,50,0.1); color: #c33; }
+
+    .event-card__right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.75rem;
+    }
+
+    /* CONFIRM DELETE OVERLAY */
+    .confirm-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 300;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+    .confirm-overlay.show { opacity: 1; pointer-events: all; }
+    .confirm-box {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+    }
+    .confirm-box h3 { margin-bottom: 0.5rem; }
+    .confirm-box p { opacity: 0.7; margin-bottom: 1.5rem; font-size: 0.95rem; }
+    .confirm-box__actions { display: flex; gap: 0.75rem; justify-content: center; }
+    .btn--danger { background: #c33; color: white; }
+    .btn--danger:hover { background: #a22; }
+
+    /* EDIT MODE INDICATOR */
+    .form-edit-banner {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: rgba(212,169,106,0.15);
+      border: 1.5px solid var(--gold);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--brown);
+    }
+    .form-edit-banner.show { display: flex; }
+    .form-edit-banner button {
+      font-size: 0.8rem;
+      color: var(--terra);
+      text-decoration: underline;
+    }
+
+    /* RSVP */
+    .event-card__signup-info {
+      font-size: 0.8rem;
+      color: var(--green);
+      font-weight: 600;
+      display: flex; align-items: center; gap: 0.3rem;
+    }
+    .event-card__owner {
+      font-size: 0.8rem;
+      opacity: 0.6;
+      font-style: italic;
+    }
+    .btn--rsvp {
+      padding: 0.5rem 1.2rem;
+      font-size: 0.8rem;
+      background: var(--terra);
+      color: white;
+      border-radius: 100px;
+      font-weight: 600;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+    .btn--rsvp:hover { background: #a85a35; }
+    .btn--rsvp:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn--rsvp-done {
+      padding: 0.5rem 1.2rem;
+      font-size: 0.8rem;
+      background: rgba(45,94,64,0.1);
+      color: var(--green);
+      border-radius: 100px;
+      font-weight: 600;
+      border: none;
+      cursor: default;
+    }
+
+    /* RSVP MODAL */
+    .rsvp-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 300;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+    .rsvp-overlay.show { opacity: 1; pointer-events: all; }
+    .rsvp-box {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 420px;
+      width: 90%;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+    }
+    .rsvp-box h3 { margin-bottom: 0.3rem; }
+    .rsvp-box .rsvp-event-title { opacity: 0.6; margin-bottom: 1.25rem; font-size: 0.9rem; }
+    .rsvp-box .form-group { margin-bottom: 0.75rem; }
+    .rsvp-box .form-actions { margin-top: 1rem; }
+
+    /* LOADING SPINNER */
+    .loading-state {
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+    .loading-spinner {
+      width: 36px; height: 36px;
+      border: 3px solid rgba(45,94,64,0.15);
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* PAST EVENTS */
+    .event-card--past { opacity: 0.6; }
+    .event-card--past .event-card__date-block { background: var(--brown); opacity: 0.7; }
+
+    /* EMPTY STATE */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      opacity: 0.5;
+    }
+    .empty-state svg { margin-bottom: 1rem; }
+      /* =============================================
+       MOBILE HAMBURGER MENU
+    ============================================= */
+    .nav__hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 200;
+    }
+    .nav__hamburger span {
+      display: block;
+      width: 100%;
+      height: 2px;
+      background: var(--cream);
+      border-radius: 2px;
+      transition: transform 0.35s var(--ease), opacity 0.25s ease;
+      transform-origin: center;
+    }
+    .nav__hamburger.active span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+    .nav__hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+    .nav__hamburger.active span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+    .nav__backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(30, 63, 43, 0.5);
+      z-index: 90;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .nav__backdrop.visible {
+      opacity: 1;
+    }
+    @media (max-width: 768px) {
+      .nav__hamburger { display: flex; }
+      .nav__links {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: min(300px, 80vw);
+        flex-direction: column;
+        gap: 0 !important;
+        background: var(--green-dark);
+        padding: 5rem 2rem 2rem;
+        transform: translateX(100%);
+        transition: transform 0.4s var(--ease);
+        z-index: 95;
+        box-shadow: -4px 0 24px rgba(0,0,0,0.2);
+        overflow-y: auto;
+      }
+      .nav__links.open {
+        transform: translateX(0);
+      }
+      .nav__links li {
+        border-bottom: 1px solid rgba(255,248,240,0.08);
+      }
+      .nav__links a {
+        display: block;
+        padding: 0.9rem 0;
+        font-size: 1rem !important;
+        color: rgba(255,248,240,0.7);
+      }
+      .nav__links a:hover,
+      .nav__links a.active {
+        color: var(--gold) !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav" aria-label="Main navigation">
+    <a href="/" class="nav__logo">Big Sister Foundation</a>
+    <button class="nav__hamburger" id="nav-hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav__links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/scholars/">Scholars</a></li>
+      <li><a href="/ledger/">Ledger</a></li>
+      <li><a href="/events/" class="is-active">Events</a></li>
+      <li><a href="/volunteer/">Volunteer</a></li>
+      <li><a href="/donate/">Give</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <p class="eyebrow">Events &amp; Calendar</p>
+      <h1>What's Happening</h1>
+      <p>Outreach webinars, community workshops, and gatherings that bring us closer to the children and communities we serve.</p>
+    </div>
+  </section>
+
+  <!-- CALENDAR SECTION -->
+  <section class="section-pad">
+    <div class="container">
+      <div class="calendar" id="calendar">
+        <div class="calendar__header">
+          <button class="calendar__nav-btn" id="prevMonth" aria-label="Previous month">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <h3 id="calendarTitle"></h3>
+          <button class="calendar__nav-btn" id="nextMonth" aria-label="Next month">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+        <div class="calendar__weekdays">
+          <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+        </div>
+        <div class="calendar__grid" id="calendarGrid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- UPCOMING EVENTS -->
+  <section class="section-pad" style="padding-top: 0;">
+    <div class="container">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow" style="color: var(--terra);">Upcoming</p>
+          <h2>Events</h2>
+        </div>
+      </div>
+
+      <div class="filter-tabs" id="filterTabs">
+        <button class="filter-tab active" data-filter="all">All</button>
+        <button class="filter-tab" data-filter="outreach">Outreach</button>
+        <button class="filter-tab" data-filter="fundraiser">Fundraiser</button>
+        <button class="filter-tab" data-filter="workshop">Workshop</button>
+        <button class="filter-tab" data-filter="meeting">Meeting</button>
+      </div>
+
+      <div class="events-list" id="eventsList"></div>
+    </div>
+  </section>
+
+  <!-- ADD EVENT -->
+  <section class="section-pad" style="background: rgba(45,94,64,0.04);">
+    <div class="container">
+      <div class="add-event" id="addEventForm" style="display:none">
+        <p class="eyebrow" style="color: var(--green);">Add New</p>
+        <h2>Create an Event</h2>
+        <p>Add outreach webinars, workshops, community gatherings, and more to the calendar.</p>
+
+        <div class="form-edit-banner" id="editBanner">
+          <span>Editing event — make your changes and save.</span>
+          <button type="button" id="cancelEdit">Cancel edit</button>
+        </div>
+        <form id="eventForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="eventTitle">Event Title</label>
+              <input type="text" id="eventTitle" placeholder="e.g. Outreach Webinar: Child Safety" required>
+            </div>
+            <div class="form-group">
+              <label for="eventType">Type</label>
+              <select id="eventType" required>
+                <option value="webinar">Webinar</option>
+                <option value="outreach">Outreach</option>
+                <option value="workshop">Workshop</option>
+                <option value="community">Community</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="eventDate">Date</label>
+              <input type="date" id="eventDate" required>
+            </div>
+            <div class="form-group">
+              <label for="eventTime">Time</label>
+              <input type="time" id="eventTime" required>
+            </div>
+            <div class="form-group">
+              <label for="eventLocation">Location / Link</label>
+              <input type="text" id="eventLocation" placeholder="e.g. Zoom, Lagos Community Center">
+            </div>
+            <div class="form-group">
+              <label for="eventCapacity">Capacity (optional)</label>
+              <input type="number" id="eventCapacity" placeholder="e.g. 50" min="1">
+            </div>
+            <div class="form-group form-group--full">
+              <label for="eventDesc">Description</label>
+              <textarea id="eventDesc" placeholder="What is this event about?"></textarea>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn--primary" id="submitBtn">Add Event</button>
+            <button type="button" class="btn btn--outline" id="cancelBtn">Clear</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__layout">
+        <div class="footer__left">
+          <p class="footer__brand-name">Big Sister Foundation</p>
+          <p class="footer__tagline">Rooted. Present. Protective.</p>
+          <p class="footer__location">Lagos, Nigeria</p>
+        </div>
+        <div class="footer__right">
+          <ul class="footer__links">
+            <li><a href="/scholars/">Scholars</a></li>
+            <li><a href="/ledger/">Ledger</a></li>
+            <li><a href="/events/">Events</a></li>
+            <li><a href="/volunteer/">Volunteer</a></li>
+
+            <li><a href="/forums/">Forums</a></li>
+            <li><a href="/ideas/">Ideas</a></li>
+            <li><a href="/donations/">Donations</a></li>
+            <li><a href="/donate/">Give</a></li>
+            <li><a href="/sponsor/">Sponsor</a></li>
+            <li><a href="mailto:hello@thebigsisterfoundation.org">Email</a></li>
+          </ul>
+          <p class="footer__copy">&copy; 2026 Big Sister Foundation. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- CONFIRM DELETE -->
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-box">
+      <h3>Delete Event?</h3>
+      <p id="confirmText">This event will be permanently removed.</p>
+      <div class="confirm-box__actions">
+        <button class="btn btn--outline" id="confirmCancel">Keep it</button>
+        <button class="btn btn--danger" id="confirmDelete">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/shared/bsf-antispam.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      BSFAntiSpam.protect('eventForm');
+
+      // ── Event data (persisted in localStorage) ──
+      const STORAGE_KEY = 'bsf_events';
+
+      const defaultEvents = [
+        {
+          id: 1,
+          title: 'Outreach Webinar: Child Safety in Lagos Communities',
+          type: 'webinar',
+          date: '2026-04-12',
+          time: '14:00',
+          location: 'Zoom (link sent on registration)',
+          capacity: 100,
+          desc: 'Join our monthly outreach webinar on practical child safety strategies for communities across Lagos. Open to volunteers, parents, and educators.'
+        },
+        {
+          id: 2,
+          title: 'Weekend Outreach — Makoko Waterfront',
+          type: 'outreach',
+          date: '2026-04-19',
+          time: '09:00',
+          location: 'Makoko, Lagos',
+          capacity: 30,
+          desc: 'On-the-ground outreach visiting families and children in the Makoko waterfront community. Volunteers needed for supplies distribution and mentoring.'
+        },
+        {
+          id: 3,
+          title: 'Creative Arts Workshop for Scholars',
+          type: 'workshop',
+          date: '2026-04-26',
+          time: '10:00',
+          location: 'BSF Community Center, Surulere',
+          capacity: 25,
+          desc: 'A hands-on creative arts session for our scholarship recipients. Painting, music, and storytelling — helping children express themselves.'
+        },
+        {
+          id: 4,
+          title: 'Volunteer Meet & Greet',
+          type: 'community',
+          date: '2026-05-03',
+          time: '16:00',
+          location: 'Terra Kulture, Victoria Island',
+          capacity: 50,
+          desc: 'Informal gathering for new and existing volunteers to connect, share stories, and plan upcoming activities together.'
+        },
+        {
+          id: 5,
+          title: 'Webinar: Education Access for Vulnerable Children',
+          type: 'webinar',
+          date: '2026-05-10',
+          time: '15:00',
+          location: 'Google Meet',
+          capacity: 80,
+          desc: 'A panel discussion with educators and child advocates on expanding education access for at-risk youth in Lagos State.'
+        },
+        {
+          id: 6,
+          title: 'Back-to-School Supply Drive',
+          type: 'outreach',
+          date: '2026-05-17',
+          time: '08:00',
+          location: 'Multiple locations across Lagos',
+          capacity: null,
+          desc: 'Annual supply drive distributing school materials, uniforms, and books to children entering the new academic term.'
+        }
+      ];
+
+      function loadEvents() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) return JSON.parse(stored);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultEvents));
+        return defaultEvents;
+      }
+
+      function saveEvents(events) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+      }
+
+      let events = loadEvents();
+      let currentMonth = new Date().getMonth();
+      let currentYear = new Date().getFullYear();
+      let activeFilter = 'all';
+
+      // ── Calendar ──
+      const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+      function renderCalendar() {
+        const title = document.getElementById('calendarTitle');
+        const grid = document.getElementById('calendarGrid');
+        title.textContent = months[currentMonth] + ' ' + currentYear;
+
+        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        const prevDays = new Date(currentYear, currentMonth, 0).getDate();
+
+        const today = new Date();
+        let html = '';
+
+        // Previous month trailing days
+        for (let i = firstDay - 1; i >= 0; i--) {
+          html += '<div class="calendar__day calendar__day--other"><span class="calendar__date">' + (prevDays - i) + '</span></div>';
+        }
+
+        // Current month
+        for (let d = 1; d <= daysInMonth; d++) {
+          const dateStr = currentYear + '-' + String(currentMonth + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+          const isToday = today.getFullYear() === currentYear && today.getMonth() === currentMonth && today.getDate() === d;
+          const dayEvents = events.filter(function(e) { return e.date === dateStr; });
+
+          html += '<div class="calendar__day' + (isToday ? ' calendar__day--today' : '') + '">';
+          html += '<span class="calendar__date">' + d + '</span>';
+          dayEvents.forEach(function(ev) {
+            html += '<div class="calendar__event-dot calendar__event-dot--' + ev.type + '" title="' + ev.title.replace(/"/g, '&quot;') + '">' + ev.title.split(':')[0] + '</div>';
+          });
+          html += '</div>';
+        }
+
+        // Next month leading days
+        const totalCells = firstDay + daysInMonth;
+        const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+        for (let i = 1; i <= remaining; i++) {
+          html += '<div class="calendar__day calendar__day--other"><span class="calendar__date">' + i + '</span></div>';
+        }
+
+        grid.innerHTML = html;
+      }
+
+      document.getElementById('prevMonth').addEventListener('click', function() {
+        currentMonth--;
+        if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+        renderCalendar();
+      });
+
+      document.getElementById('nextMonth').addEventListener('click', function() {
+        currentMonth++;
+        if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+        renderCalendar();
+      });
+
+      // ── Event list ──
+      function renderEvents() {
+        const list = document.getElementById('eventsList');
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+
+        let filtered = events
+          .filter(function(e) {
+            return new Date(e.date) >= now;
+          })
+          .sort(function(a, b) {
+            return new Date(a.date) - new Date(b.date);
+          });
+
+        if (activeFilter !== 'all') {
+          filtered = filtered.filter(function(e) { return e.type === activeFilter; });
+        }
+
+        if (filtered.length === 0) {
+          list.innerHTML = '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><p>No upcoming events in this category.</p></div>';
+          return;
+        }
+
+        list.innerHTML = filtered.map(function(ev) {
+          var d = new Date(ev.date + 'T00:00:00');
+          var monthName = months[d.getMonth()].substring(0, 3).toUpperCase();
+          var day = d.getDate();
+          var timeStr = ev.time ? formatTime(ev.time) : '';
+
+          return '<article class="event-card" data-type="' + ev.type + '" data-id="' + ev.id + '">' +
+            '<div class="event-card__date-block">' +
+              '<span class="event-card__month">' + monthName + '</span>' +
+              '<span class="event-card__day">' + day + '</span>' +
+            '</div>' +
+            '<div class="event-card__info">' +
+              '<h3>' + ev.title + '</h3>' +
+              '<div class="event-card__meta">' +
+                (timeStr ? '<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' + timeStr + '</span>' : '') +
+                (ev.location ? '<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>' + ev.location + '</span>' : '') +
+                (ev.capacity ? '<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>' + ev.capacity + ' spots</span>' : '') +
+              '</div>' +
+              (ev.desc ? '<p class="event-card__desc">' + ev.desc + '</p>' : '') +
+            '</div>' +
+            '<div class="event-card__right">' +
+              '<span class="event-card__tag event-card__tag--' + ev.type + '">' + ev.type.charAt(0).toUpperCase() + ev.type.slice(1) + '</span>' +
+              '<div class="event-card__actions">' +
+                '<button class="event-card__action-btn event-card__action-btn--share" data-action="share" data-id="' + ev.id + '" title="Share">' +
+                  '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>' +
+                '</button>' +
+              '</div>' +
+            '</div>' +
+          '</article>';
+        }).join('');
+      }
+
+      function formatTime(t) {
+        var parts = t.split(':');
+        var h = parseInt(parts[0], 10);
+        var m = parts[1];
+        var ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12 || 12;
+        return h + ':' + m + ' ' + ampm;
+      }
+
+      // ── Filter tabs ──
+      document.getElementById('filterTabs').addEventListener('click', function(e) {
+        if (!e.target.classList.contains('filter-tab')) return;
+        document.querySelectorAll('.filter-tab').forEach(function(t) { t.classList.remove('active'); });
+        e.target.classList.add('active');
+        activeFilter = e.target.dataset.filter;
+        renderEvents();
+      });
+
+      // ── Edit / Delete / Share state ──
+      var editingId = null;
+      var deletingId = null;
+
+      // ── Event card actions (delegated) ──
+      document.getElementById('eventsList').addEventListener('click', function(e) {
+        var btn = e.target.closest('[data-action]');
+        if (!btn) return;
+        var action = btn.dataset.action;
+        var id = parseInt(btn.dataset.id, 10);
+
+        // Edit and delete disabled on public page — use admin panel
+        if (action === 'delete' || action === 'edit') { return; }
+
+        if (action === 'share') {
+          var ev = events.find(function(e) { return e.id === id; });
+          if (!ev) return;
+          showShareMenu(ev, btn);
+        }
+      });
+
+      // ── Confirm delete ──
+      document.getElementById('confirmDelete').addEventListener('click', function() {
+        if (deletingId === null) return;
+        events = events.filter(function(e) { return e.id !== deletingId; });
+        saveEvents(events);
+        renderCalendar();
+        renderEvents();
+        document.getElementById('confirmOverlay').classList.remove('show');
+        showToast('Event deleted');
+        deletingId = null;
+      });
+
+      document.getElementById('confirmCancel').addEventListener('click', function() {
+        document.getElementById('confirmOverlay').classList.remove('show');
+        deletingId = null;
+      });
+
+      document.getElementById('confirmOverlay').addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.remove('show');
+          deletingId = null;
+        }
+      });
+
+      // ── Cancel edit ──
+      function resetForm() {
+        editingId = null;
+        document.getElementById('eventForm').reset();
+        document.getElementById('submitBtn').textContent = 'Add Event';
+        document.getElementById('cancelBtn').textContent = 'Clear';
+        document.getElementById('editBanner').classList.remove('show');
+      }
+
+      document.getElementById('cancelEdit').addEventListener('click', resetForm);
+      document.getElementById('cancelBtn').addEventListener('click', resetForm);
+
+      // ── Add / Update event form ──
+      document.getElementById('eventForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (!BSFAntiSpam.check('eventForm')) return;
+
+        var eventData = {
+          title: document.getElementById('eventTitle').value.trim(),
+          type: document.getElementById('eventType').value,
+          date: document.getElementById('eventDate').value,
+          time: document.getElementById('eventTime').value,
+          location: document.getElementById('eventLocation').value.trim(),
+          capacity: document.getElementById('eventCapacity').value ? parseInt(document.getElementById('eventCapacity').value, 10) : null,
+          desc: document.getElementById('eventDesc').value.trim()
+        };
+
+        if (editingId !== null) {
+          events = events.map(function(ev) {
+            if (ev.id === editingId) {
+              return Object.assign({}, ev, eventData);
+            }
+            return ev;
+          });
+          saveEvents(events);
+          renderCalendar();
+          renderEvents();
+          showToast('Event updated');
+          resetForm();
+        } else {
+          eventData.id = Date.now();
+          events.push(eventData);
+          saveEvents(events);
+          renderCalendar();
+          renderEvents();
+          e.target.reset();
+          showToast('Event added to the calendar');
+        }
+      });
+
+      // ── Share ──
+      function showShareMenu(ev, anchorEl) {
+        var d = new Date(ev.date + 'T00:00:00');
+        var dateStr = months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+        var timeStr = ev.time ? formatTime(ev.time) : '';
+        var text = ev.title + ' — ' + dateStr + (timeStr ? ' at ' + timeStr : '') + (ev.location ? ' | ' + ev.location : '');
+        var pageUrl = window.location.origin + '/events/?event=' + ev.id;
+
+        // Try native share first (mobile)
+        if (navigator.share) {
+          navigator.share({
+            title: ev.title,
+            text: text,
+            url: pageUrl
+          }).catch(function() {});
+          return;
+        }
+
+        // Desktop: remove existing share menu
+        var existing = document.querySelector('.share-popup');
+        if (existing) existing.remove();
+
+        var popup = document.createElement('div');
+        popup.className = 'share-popup';
+        popup.style.cssText = 'position:absolute;right:0;top:100%;margin-top:4px;background:white;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.12);padding:0.5rem;z-index:150;min-width:180px;';
+
+        var options = [
+          { label: 'Copy link', icon: 'link', action: function() { copyToClipboard(pageUrl); showToast('Link copied!'); } },
+          { label: 'Share on X', icon: 'x', action: function() { window.open('https://x.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(pageUrl), '_blank'); } },
+          { label: 'Share via Email', icon: 'email', action: function() { window.open('mailto:?subject=' + encodeURIComponent(text) + '&body=' + encodeURIComponent(text + ' ' + pageUrl)); } },
+          { label: 'Share on LinkedIn', icon: 'li', action: function() { window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(pageUrl), '_blank'); } },
+          { label: 'Share on Facebook', icon: 'fb', action: function() { window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(pageUrl), '_blank'); } }
+        ];
+
+        options.forEach(function(opt) {
+          var btn = document.createElement('button');
+          btn.style.cssText = 'display:flex;align-items:center;gap:0.6rem;width:100%;padding:0.5rem 0.75rem;border:none;background:none;font-size:0.85rem;color:#3A2A1F;border-radius:6px;cursor:pointer;text-align:left;';
+          btn.textContent = opt.label;
+          btn.addEventListener('mouseenter', function() { this.style.background = 'rgba(45,94,64,0.06)'; });
+          btn.addEventListener('mouseleave', function() { this.style.background = 'none'; });
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            opt.action();
+            popup.remove();
+          });
+          popup.appendChild(btn);
+        });
+
+        // Position relative to the card
+        var card = anchorEl.closest('.event-card');
+        card.style.position = 'relative';
+        card.appendChild(popup);
+
+        // Close on outside click
+        setTimeout(function() {
+          document.addEventListener('click', function closePopup() {
+            popup.remove();
+            document.removeEventListener('click', closePopup);
+          }, { once: true });
+        }, 10);
+      }
+
+      function copyToClipboard(text) {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(text);
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+      }
+
+      // ── Toast ──
+      function showToast(msg) {
+        var toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(function() { toast.classList.remove('show'); }, 3000);
+      }
+
+      // ── Init ──
+      renderCalendar();
+      renderEvents();
+
+    })();
+  </script>
+<div class="nav__backdrop" id="nav-backdrop"></div>
+<script>
+(function() {
+  var hamburger = document.getElementById("nav-hamburger");
+  var navLinks = document.querySelector(".nav__links");
+  var backdrop = document.getElementById("nav-backdrop");
+  if (!hamburger || !navLinks || !backdrop) return;
+  function openMenu() {
+    hamburger.classList.add("active");
+    navLinks.classList.add("open");
+    backdrop.style.display = "block";
+    requestAnimationFrame(function() { backdrop.classList.add("visible"); });
+    document.body.style.overflow = "hidden";
+  }
+  function closeMenu() {
+    hamburger.classList.remove("active");
+    navLinks.classList.remove("open");
+    backdrop.classList.remove("visible");
+    document.body.style.overflow = "";
+    setTimeout(function() { backdrop.style.display = "none"; }, 350);
+  }
+  hamburger.addEventListener("click", function() {
+    if (navLinks.classList.contains("open")) { closeMenu(); } else { openMenu(); }
+  });
+  backdrop.addEventListener("click", closeMenu);
+  navLinks.querySelectorAll("a").forEach(function(link) {
+    link.addEventListener("click", closeMenu);
+  });
+  var currentPath = window.location.pathname;
+  navLinks.querySelectorAll("a").forEach(function(link) {
+    var href = link.getAttribute("href");
+    if (href === currentPath || (href !== "/" && currentPath.startsWith(href))) {
+      link.classList.add("active");
+      link.style.color = "var(--gold)";
+    } else if (href === "/" && currentPath === "/") {
+      link.classList.add("active");
+      link.style.color = "var(--gold)";
+    }
+  });
+})();
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,2046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q4EYY24EDZ"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-Q4EYY24EDZ');</script>
+  <title>Sponsor Dashboard — Big Sister Foundation</title>
+  <meta name="description" content="Your personal sponsor dashboard. Track your giving, view impact, manage your profile, and download receipts.">
+  <meta property="og:title" content="Sponsor Dashboard — Big Sister Foundation">
+  <meta property="og:description" content="Your personal sponsor dashboard. Track your giving, view impact, manage your profile, and download receipts.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/og-image.svg">
+  <meta name="theme-color" content="#2D5E40">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cellipse cx='50' cy='35' rx='35' ry='30' fill='%232D5E40' opacity='0.85'/%3E%3Cellipse cx='30' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cellipse cx='70' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cpath d='M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z' fill='%233A2A1F' opacity='0.8'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #2D5E40;
+      --green-dark: #1E3F2B;
+      --brown: #3A2A1F;
+      --terra: #C2734C;
+      --gold: #D4A96A;
+      --sage: #8BAF8E;
+      --cream: #FFF8F0;
+      --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --section-pad: clamp(48px, 4vw + 20px, 100px);
+      --page-margin: clamp(20px, 4vw, 80px);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.2rem);
+      line-height: 1.7;
+      color: var(--brown);
+      background: var(--cream);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+    button { font: inherit; cursor: pointer; border: none; background: none; }
+
+    .eyebrow {
+      font-family: var(--font-sans);
+      font-size: clamp(0.7rem, 0.5vw + 0.5rem, 0.85rem);
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--terra);
+      margin-bottom: 1rem;
+    }
+
+    h1, h2, h3 {
+      font-family: var(--font-serif);
+      font-weight: 500;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+    }
+    h1 { font-size: clamp(2.2rem, 4vw + 0.5rem, 4rem); }
+    h2 { font-size: clamp(1.8rem, 2.5vw + 0.5rem, 2.8rem); }
+    h3 { font-size: clamp(1.3rem, 1vw + 0.8rem, 1.7rem); line-height: 1.2; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding-left: var(--page-margin); padding-right: var(--page-margin); }
+    .section-pad { padding-top: var(--section-pad); padding-bottom: var(--section-pad); }
+
+    /* ── NAV ── */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem var(--page-margin); background: var(--green-dark);
+    }
+    .nav__logo {
+      font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600;
+      text-decoration: none; color: var(--cream);
+    }
+    .nav__links { list-style: none; display: flex; gap: 2rem; }
+    .nav__links a {
+      font-size: 0.85rem; font-weight: 500; text-decoration: none;
+      color: rgba(255,248,240,0.7); transition: color 0.3s;
+    }
+    .nav__links a:hover { color: var(--cream); }
+    .nav__links a.is-active { color: var(--gold); }
+    
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 1.5rem; border-radius: 100px;
+      font-family: var(--font-sans); font-size: 0.9rem; font-weight: 600;
+      letter-spacing: 0.02em; text-decoration: none;
+      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), background 0.3s;
+      will-change: transform;
+    }
+    .btn:hover { transform: scale(1.03); box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+    .btn--terra { background: var(--terra); color: #fff; }
+    .btn--terra:hover { background: #a85f3d; }
+    .btn--green { background: var(--green); color: #fff; }
+    .btn--green:hover { background: var(--green-dark); }
+    .btn--outline {
+      background: transparent; color: var(--green);
+      border: 1.5px solid var(--green); padding: 0.65rem 1.3rem;
+    }
+    .btn--outline:hover { background: var(--green); color: #fff; }
+    .btn--small { padding: 0.5rem 1rem; font-size: 0.8rem; }
+    .btn--ghost-dark {
+      background: rgba(255,255,255,0.08); color: var(--cream);
+      border: 1.5px solid rgba(255,255,255,0.2);
+    }
+    .btn--ghost-dark:hover { background: rgba(255,255,255,0.15); }
+
+    /* ── NOT REGISTERED STATE ── */
+    .not-registered { /* compact height so community sections show below */
+      min-height: auto; display: flex; align-items: center; justify-content: center;
+      padding: 80px 0 40px; text-align: center;
+    }
+    .not-registered__inner { max-width: 520px; }
+    .not-registered__icon {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--sage), var(--green));
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.5rem; font-size: 2rem;
+    }
+    .not-registered p {
+      color: rgba(58,42,31,0.65); margin: 1rem 0 2rem;
+      font-size: clamp(0.95rem, 0.3vw + 0.85rem, 1.05rem);
+    }
+
+    /* ── DASHBOARD LAYOUT ── */
+    .dash-hero {
+      padding-top: calc(60px + var(--section-pad));
+      padding-bottom: calc(var(--section-pad) * 0.6);
+      background: var(--green-dark); color: var(--cream);
+      position: relative; overflow: hidden;
+    }
+    .dash-hero::before {
+      content: '';
+      position: absolute; top: -40%; right: -10%; width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(45,94,64,0.3) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .dash-hero__top {
+      display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap;
+      margin-bottom: 0.5rem;
+    }
+    .dash-hero__greeting { position: relative; z-index: 1; }
+    .dash-hero__greeting h1 { margin-bottom: 0.15rem; }
+    .dash-hero__meta { font-size: 0.9rem; color: rgba(255,248,240,0.55); }
+
+    .tier-badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.35rem 1rem; border-radius: 100px;
+      font-size: 0.8rem; font-weight: 700; letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    /* ── STATS ROW ── */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+      margin-top: 1.5rem; position: relative; z-index: 1;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,248,240,0.1);
+      border-radius: 12px; padding: 1.25rem 1.5rem;
+      transition: background 0.3s, transform 0.3s var(--ease);
+    }
+    .stat-card:hover { background: rgba(255,255,255,0.12); transform: translateY(-2px); }
+    .stat-card__label {
+      font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.08em; color: rgba(255,248,240,0.5); margin-bottom: 0.3rem;
+    }
+    .stat-card__value {
+      font-family: var(--font-serif); font-size: clamp(1.6rem, 2vw + 0.5rem, 2.2rem);
+      font-weight: 600; color: var(--cream); line-height: 1.1;
+    }
+    .stat-card__sub { font-size: 0.78rem; color: rgba(255,248,240,0.4); margin-top: 0.2rem; }
+
+    @media (max-width: 640px) {
+      .stats-row { grid-template-columns: 1fr; }
+    }
+
+    /* ── SECTION CARDS ── */
+    .dash-section {
+      background: #fff; border-radius: 16px; padding: clamp(1.5rem, 3vw, 2.5rem);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 4px 20px rgba(0,0,0,0.03);
+      border: 1px solid rgba(58,42,31,0.06); margin-bottom: 1.5rem;
+      transition: box-shadow 0.3s;
+    }
+    .dash-section:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 8px 30px rgba(0,0,0,0.05); }
+    .dash-section__header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.75rem;
+    }
+    .dash-section__title {
+      font-family: var(--font-serif); font-size: clamp(1.3rem, 1.5vw + 0.3rem, 1.7rem);
+      font-weight: 500; color: var(--brown);
+    }
+    .dash-section__icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; margin-right: 0.6rem; flex-shrink: 0;
+    }
+    .dash-section__header-left {
+      display: flex; align-items: center;
+    }
+
+    /* ── IMPACT VISUALIZATION ── */
+    .impact-bar-wrap {
+      background: rgba(45,94,64,0.06); border-radius: 12px;
+      padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;
+    }
+    .impact-bar-label {
+      font-size: 0.78rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.06em; color: rgba(58,42,31,0.45); margin-bottom: 0.6rem;
+    }
+    .impact-bar-track {
+      height: 10px; background: rgba(45,94,64,0.1); border-radius: 100px;
+      overflow: hidden; position: relative;
+    }
+    .impact-bar-fill {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--sage), var(--green), var(--terra));
+      transition: width 1.2s var(--ease);
+      position: relative;
+    }
+    .impact-bar-fill::after {
+      content: ''; position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+      width: 16px; height: 16px; border-radius: 50%; background: var(--terra);
+      border: 3px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .impact-bar-markers {
+      display: flex; justify-content: space-between; margin-top: 0.4rem;
+      font-size: 0.7rem; color: rgba(58,42,31,0.35);
+    }
+
+    .impact-equiv {
+      background: var(--cream); border-radius: 12px; padding: 1.5rem;
+      border: 1px solid rgba(212,169,106,0.2);
+    }
+    .impact-equiv__title {
+      font-size: 0.95rem; color: var(--brown); margin-bottom: 1rem; line-height: 1.4;
+    }
+    .impact-equiv__title strong { color: var(--green); }
+    .impact-row {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.6rem 0; border-bottom: 1px solid rgba(58,42,31,0.06);
+    }
+    .impact-row:last-child { border-bottom: none; }
+    .impact-row__icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0;
+    }
+    .impact-row__number {
+      font-family: var(--font-serif); font-size: 1.4rem; font-weight: 600;
+      color: var(--green-dark); min-width: 40px;
+    }
+    .impact-row__label { font-size: 0.88rem; color: rgba(58,42,31,0.65); }
+
+    /* ── TRANSACTION HISTORY ── */
+    .filter-pills {
+      display: flex; gap: 0.5rem; margin-bottom: 1.25rem; flex-wrap: wrap;
+    }
+    .filter-pill {
+      padding: 0.4rem 1rem; border-radius: 100px; font-size: 0.8rem; font-weight: 600;
+      background: rgba(45,94,64,0.06); color: rgba(58,42,31,0.55);
+      border: 1px solid transparent; cursor: pointer;
+      transition: all 0.25s var(--ease);
+    }
+    .filter-pill:hover { background: rgba(45,94,64,0.1); color: var(--brown); }
+    .filter-pill.active {
+      background: var(--green); color: #fff; border-color: var(--green);
+    }
+
+    .txn-table { width: 100%; border-collapse: collapse; }
+    .txn-table thead th {
+      text-align: left; padding: 0.75rem 1rem; font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: rgba(58,42,31,0.4); background: rgba(45,94,64,0.03);
+      border-bottom: 2px solid rgba(45,94,64,0.08);
+    }
+    .txn-table tbody td {
+      padding: 0.85rem 1rem; font-size: 0.88rem; color: var(--brown);
+      border-bottom: 1px solid rgba(58,42,31,0.06); vertical-align: middle;
+    }
+    .txn-table tbody tr { transition: background 0.2s; }
+    .txn-table tbody tr:hover { background: rgba(45,94,64,0.02); }
+    .txn-table tbody tr:nth-child(even) { background: rgba(255,248,240,0.5); }
+    .txn-table tbody tr:nth-child(even):hover { background: rgba(45,94,64,0.04); }
+
+    .txn-status {
+      display: inline-block; padding: 0.2rem 0.6rem; border-radius: 100px;
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .txn-status--success { background: rgba(45,94,64,0.1); color: var(--green); }
+    .txn-status--pending { background: rgba(212,169,106,0.2); color: #92400e; }
+    .txn-status--failed { background: rgba(194,115,76,0.15); color: var(--terra); }
+
+    .txn-type {
+      display: inline-block; padding: 0.15rem 0.5rem; border-radius: 6px;
+      font-size: 0.72rem; font-weight: 600; text-transform: capitalize;
+    }
+    .txn-type--one-time { background: rgba(139,175,142,0.15); color: var(--green); }
+    .txn-type--recurring { background: rgba(212,169,106,0.15); color: #92400e; }
+
+    .txn-receipt-btn {
+      padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600;
+      background: rgba(45,94,64,0.08); color: var(--green); cursor: pointer;
+      transition: all 0.2s;
+    }
+    .txn-receipt-btn:hover { background: var(--green); color: #fff; }
+
+    .txn-empty {
+      text-align: center; padding: 3rem 1rem; color: rgba(58,42,31,0.4);
+    }
+    .txn-empty__icon { font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.4; }
+    .txn-empty p { font-size: 0.95rem; margin-bottom: 1rem; }
+
+    .show-more-wrap { text-align: center; padding-top: 1rem; }
+
+    /* Mobile card layout for transactions */
+    .txn-cards { display: none; }
+    .txn-card {
+      background: rgba(255,248,240,0.5); border: 1px solid rgba(58,42,31,0.06);
+      border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 0.75rem;
+      transition: background 0.2s;
+    }
+    .txn-card:hover { background: rgba(45,94,64,0.03); }
+    .txn-card__top {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .txn-card__amount {
+      font-family: var(--font-serif); font-size: 1.2rem; font-weight: 600;
+      color: var(--green-dark);
+    }
+    .txn-card__row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.82rem; color: rgba(58,42,31,0.55); margin-bottom: 0.3rem;
+    }
+    .txn-card__actions { margin-top: 0.5rem; }
+
+    @media (max-width: 700px) {
+      .txn-table-wrap { display: none; }
+      .txn-cards { display: block; }
+    }
+
+    /* ── BADGES ── */
+    .badges-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+    }
+    .badge-card {
+      text-align: center; padding: 1.5rem 1rem; border-radius: 14px;
+      border: 1px solid rgba(58,42,31,0.06);
+      background: #fff; transition: transform 0.3s var(--ease), box-shadow 0.3s;
+    }
+    .badge-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
+    .badge-card.locked {
+      background: rgba(0,0,0,0.015); border-color: rgba(0,0,0,0.04);
+    }
+    .badge-card.locked .badge-card__icon { filter: grayscale(1); opacity: 0.35; }
+    .badge-card.locked .badge-card__name { color: rgba(58,42,31,0.35); }
+    .badge-card.locked .badge-card__desc { color: rgba(58,42,31,0.25); }
+    .badge-card__icon {
+      width: 56px; height: 56px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; margin: 0 auto 0.75rem;
+      transition: transform 0.3s var(--ease);
+    }
+    .badge-card:not(.locked):hover .badge-card__icon { transform: scale(1.1); }
+    .badge-card__name {
+      font-family: var(--font-serif); font-size: 1rem; font-weight: 600;
+      color: var(--brown); margin-bottom: 0.2rem;
+    }
+    .badge-card__desc { font-size: 0.78rem; color: rgba(58,42,31,0.5); margin-bottom: 0.4rem; }
+    .badge-card__date {
+      font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .badge-card__date--earned { color: var(--green); }
+    .badge-card__date--locked { color: rgba(58,42,31,0.25); }
+    .badge-card__lock-icon {
+      display: inline-block; font-size: 0.85rem; margin-right: 0.2rem; opacity: 0.5;
+    }
+    .badge-card__coming-soon {
+      display: inline-block; padding: 0.15rem 0.5rem; border-radius: 6px;
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+      background: rgba(212,169,106,0.15); color: var(--gold); margin-top: 0.25rem;
+    }
+
+    @media (max-width: 640px) {
+      .badges-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 400px) {
+      .badges-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── PROFILE MANAGEMENT ── */
+    .profile-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+    }
+    .profile-group { margin-bottom: 0; }
+    .profile-group label {
+      display: block; font-size: 0.78rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      color: rgba(58,42,31,0.45); margin-bottom: 0.35rem;
+    }
+    .profile-group input,
+    .profile-group select {
+      width: 100%; padding: 0.7rem 0.9rem; border: 1.5px solid rgba(58,42,31,0.12);
+      border-radius: 10px; font-size: 0.9rem; font-family: var(--font-sans);
+      background: #fff; color: var(--brown); transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .profile-group input:focus,
+    .profile-group select:focus {
+      outline: none; border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(45,94,64,0.1);
+    }
+    .profile-group.full-width { grid-column: 1 / -1; }
+
+    .toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 0; border-top: 1px solid rgba(58,42,31,0.06);
+      margin-top: 0.5rem;
+    }
+    .toggle-row__text { font-size: 0.9rem; color: var(--brown); }
+    .toggle-row__sub { font-size: 0.78rem; color: rgba(58,42,31,0.45); }
+    .toggle-switch {
+      position: relative; width: 44px; height: 24px;
+      background: rgba(58,42,31,0.15); border-radius: 100px;
+      cursor: pointer; transition: background 0.3s; flex-shrink: 0;
+    }
+    .toggle-switch.active { background: var(--green); }
+    .toggle-switch__knob {
+      position: absolute; top: 2px; left: 2px;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      transition: transform 0.3s var(--ease);
+    }
+    .toggle-switch.active .toggle-switch__knob { transform: translateX(20px); }
+
+    .profile-actions {
+      display: flex; gap: 0.75rem; flex-wrap: wrap;
+      margin-top: 1.25rem; padding-top: 1.25rem;
+      border-top: 1px solid rgba(58,42,31,0.06);
+    }
+
+    @media (max-width: 640px) {
+      .profile-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── QUICK DONATE ── */
+    .quick-donate {
+      background: linear-gradient(135deg, var(--green-dark), var(--green));
+      border-radius: 16px; padding: clamp(1.5rem, 3vw, 2.5rem); color: var(--cream);
+      margin-bottom: 1.5rem; position: relative; overflow: hidden;
+    }
+    .quick-donate::before {
+      content: ''; position: absolute; top: -30%; right: -10%;
+      width: 300px; height: 300px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .quick-donate h3 {
+      font-family: var(--font-serif); color: var(--cream);
+      margin-bottom: 0.3rem; position: relative; z-index: 1;
+    }
+    .quick-donate__sub {
+      font-size: 0.88rem; color: rgba(255,248,240,0.55);
+      margin-bottom: 1.25rem; position: relative; z-index: 1;
+    }
+    .quick-donate__form {
+      display: flex; gap: 0.75rem; flex-wrap: wrap;
+      align-items: flex-end; position: relative; z-index: 1;
+    }
+    .quick-donate__input-wrap { flex: 1; min-width: 160px; }
+    .quick-donate__input-wrap label {
+      display: block; font-size: 0.72rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: rgba(255,248,240,0.45); margin-bottom: 0.3rem;
+    }
+    .quick-donate__input-wrap input,
+    .quick-donate__input-wrap select {
+      width: 100%; padding: 0.7rem 0.9rem;
+      border: 1.5px solid rgba(255,255,255,0.2); border-radius: 10px;
+      font-size: 0.9rem; font-family: var(--font-sans);
+      background: rgba(255,255,255,0.08); color: var(--cream);
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .quick-donate__input-wrap input::placeholder { color: rgba(255,248,240,0.35); }
+    .quick-donate__input-wrap input:focus,
+    .quick-donate__input-wrap select:focus {
+      outline: none; border-color: rgba(255,255,255,0.5);
+      background: rgba(255,255,255,0.12);
+    }
+    .quick-donate__input-wrap select option { color: var(--brown); background: #fff; }
+
+    /* ── FOOTER ── */
+    .footer { background: var(--brown); color: rgba(255,248,240,0.6); padding: 3rem 0; }
+    .footer__layout {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      flex-wrap: wrap; gap: 2rem;
+    }
+    .footer__brand-name {
+      font-family: var(--font-serif); font-size: 1.15rem;
+      font-weight: 600; color: var(--cream); margin-bottom: 0.25rem;
+    }
+    .footer__tagline { font-size: 0.85rem; color: var(--gold); }
+    .footer__location { font-size: 0.8rem; margin-top: 0.25rem; }
+    .footer__links { list-style: none; display: flex; gap: 1.5rem; margin-bottom: 0.5rem; }
+    .footer__links a { font-size: 0.85rem; text-decoration: none; transition: color 0.3s; }
+    .footer__links a:hover { color: var(--cream); }
+    .footer__copy { font-size: 0.75rem; opacity: 0.5; }
+    .footer__right { text-align: right; }
+    @media (max-width: 600px) {
+      .footer__layout { flex-direction: column; }
+      .footer__right { text-align: left; }
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 500;
+      padding: 0.85rem 1.5rem; border-radius: 12px;
+      font-size: 0.88rem; font-weight: 600; color: #fff;
+      transform: translateY(120%); opacity: 0;
+      transition: transform 0.4s var(--ease), opacity 0.4s;
+      pointer-events: none;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .toast--success { background: var(--green); }
+    .toast--error { background: var(--terra); }
+
+    /* ── WELCOME MODAL ── */
+    .welcome-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(30,63,43,0.85); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.5s var(--ease);
+    }
+    .welcome-overlay.active { opacity: 1; pointer-events: auto; }
+    .welcome-modal {
+      background: #fff; border-radius: 20px; padding: clamp(2rem, 4vw, 3rem);
+      max-width: 480px; width: 92vw; text-align: center; position: relative;
+      transform: scale(0.9); transition: transform 0.5s var(--ease);
+    }
+    .welcome-overlay.active .welcome-modal { transform: scale(1); }
+    .welcome-modal h2 { color: var(--green-dark); margin-bottom: 0.5rem; }
+    .welcome-modal p { color: rgba(58,42,31,0.6); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6; }
+    .welcome-modal .tier-badge { font-size: 1rem; padding: 0.5rem 1.5rem; margin-bottom: 1.25rem; }
+
+    /* Confetti dots */
+    .confetti-wrap {
+      position: absolute; inset: 0; overflow: hidden; pointer-events: none; border-radius: 20px;
+    }
+    .confetti-dot {
+      position: absolute; width: 8px; height: 8px; border-radius: 50%;
+      animation: confettiFall 3s ease-in-out infinite;
+    }
+    @keyframes confettiFall {
+      0% { transform: translateY(-20px) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(400px) rotate(720deg); opacity: 0; }
+    }
+
+    /* ── REDUCED MOTION ── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+    /* IDEA CARDS */
+    .idea-card {
+      background: #fff; border: 1.5px solid rgba(58,42,31,0.08); border-radius: 12px;
+      padding: 1.25rem; transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+    }
+    .idea-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(58,42,31,0.06); }
+    .idea-card__title { font-family: var(--font-serif); font-size: 1.05rem; font-weight: 600; color: var(--brown); margin-bottom: 0.35rem; }
+    .idea-card__desc { font-size: 0.85rem; line-height: 1.6; color: rgba(58,42,31,0.55); margin-bottom: 0.75rem; }
+    .idea-card__meta { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; }
+    .idea-card__cost { font-size: 0.8rem; font-weight: 600; color: var(--green); }
+    .idea-card__votes { font-size: 0.75rem; color: rgba(58,42,31,0.4); }
+    .idea-card__tag { display: inline-block; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;
+      padding: 0.2rem 0.5rem; border-radius: 100px; background: rgba(212,169,106,0.12); color: var(--gold); }
+    .idea-card__btn { margin-top: 0.75rem; display: inline-flex; align-items: center; gap: 0.35rem;
+      font-size: 0.8rem; font-weight: 600; color: var(--terra); cursor: pointer; background: none; border: none; padding: 0; }
+    .idea-card__btn:hover { text-decoration: underline; }
+
+    /* GOAL CARDS */
+    .goal-card {
+      background: #fff; border: 1.5px solid rgba(58,42,31,0.08); border-radius: 12px;
+      padding: 1.5rem; transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+    }
+    .goal-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(58,42,31,0.06); }
+    .goal-card__title { font-family: var(--font-serif); font-size: 1.1rem; font-weight: 600; color: var(--brown); margin-bottom: 0.25rem; }
+    .goal-card__desc { font-size: 0.85rem; line-height: 1.6; color: rgba(58,42,31,0.55); margin-bottom: 1rem; }
+    .goal-card__progress { margin-bottom: 0.5rem; }
+    .goal-card__bar-track { width: 100%; height: 8px; border-radius: 4px; background: rgba(58,42,31,0.06); overflow: hidden; }
+    .goal-card__bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--green), var(--sage)); transition: width 0.6s var(--ease); }
+    .goal-card__amounts { display: flex; justify-content: space-between; margin-top: 0.4rem; font-size: 0.75rem; color: rgba(58,42,31,0.45); }
+    .goal-card__amounts strong { color: var(--green); font-weight: 600; }
+    .goal-card__btn { margin-top: 1rem; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.6rem 1.25rem;
+      border-radius: 100px; font-size: 0.8rem; font-weight: 600; background: var(--terra); color: #fff; border: none; cursor: pointer;
+      transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease); }
+    .goal-card__btn:hover { transform: scale(1.03); box-shadow: 0 6px 20px rgba(194,115,76,0.2); }
+
+    /* NOTES */
+    #notes-textarea:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(45,94,64,0.08); }
+      /* =============================================
+       MOBILE HAMBURGER MENU
+    ============================================= */
+    .nav__hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 200;
+    }
+    .nav__hamburger span {
+      display: block;
+      width: 100%;
+      height: 2px;
+      background: var(--cream);
+      border-radius: 2px;
+      transition: transform 0.35s var(--ease), opacity 0.25s ease;
+      transform-origin: center;
+    }
+    .nav__hamburger.active span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+    .nav__hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+    .nav__hamburger.active span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+    .nav__backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(30, 63, 43, 0.5);
+      z-index: 90;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .nav__backdrop.visible {
+      opacity: 1;
+    }
+    @media (max-width: 768px) {
+      .nav__hamburger { display: flex; }
+      .nav__links {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: min(300px, 80vw);
+        flex-direction: column;
+        gap: 0 !important;
+        background: var(--green-dark);
+        padding: 5rem 2rem 2rem;
+        transform: translateX(100%);
+        transition: transform 0.4s var(--ease);
+        z-index: 95;
+        box-shadow: -4px 0 24px rgba(0,0,0,0.2);
+        overflow-y: auto;
+      }
+      .nav__links.open {
+        transform: translateX(0);
+      }
+      .nav__links li {
+        border-bottom: 1px solid rgba(255,248,240,0.08);
+      }
+      .nav__links a {
+        display: block;
+        padding: 0.9rem 0;
+        font-size: 1rem !important;
+        color: rgba(255,248,240,0.7);
+      }
+      .nav__links a:hover,
+      .nav__links a.active {
+        color: var(--gold) !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- AUTH OVERLAY -->
+  <div id="auth-overlay" style="display:flex;position:fixed;inset:0;z-index:9999;background:var(--cream);align-items:center;justify-content:center">
+    <div style="background:white;padding:48px 40px;border-radius:12px;width:380px;max-width:92vw;box-shadow:0 4px 12px rgba(0,0,0,.12);text-align:center">
+      <div style="font-size:13px;text-transform:uppercase;letter-spacing:2px;color:var(--green);font-weight:600;margin-bottom:20px">Sponsor Dashboard</div>
+      <h1 style="font-family:var(--font-serif);font-size:28px;color:var(--green);margin-bottom:4px">Welcome Back</h1>
+      <p style="color:#6b7280;font-size:14px;margin-bottom:28px">Sign in to view your dashboard</p>
+      <div style="margin-bottom:16px;text-align:left"><label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:4px">Email</label><input type="email" id="auth-email" placeholder="you@example.com" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px"></div>
+      <div style="margin-bottom:16px;text-align:left"><label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:4px">Password</label><input type="password" id="auth-password" placeholder="Your password" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px" onkeydown="if(event.key==='Enter')sponsorLogin()"></div>
+      <button onclick="sponsorLogin()" style="width:100%;padding:12px;background:var(--green);color:white;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer">Sign In</button>
+      <div id="auth-error" style="color:#dc2626;font-size:13px;margin-top:8px;min-height:20px"></div>
+      <p style="margin-top:16px;font-size:13px;color:#9ca3af">New sponsor? <a href="/sponsor/" style="color:var(--green)">Register here</a></p>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav class="nav" aria-label="Main navigation">
+    <a href="/" class="nav__logo">Big Sister Foundation</a>
+    <button class="nav__hamburger" id="nav-hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav__links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/scholars/">Scholars</a></li>
+      <li><a href="/ledger/">Ledger</a></li>
+      <li><a href="/events/">Events</a></li>
+      <li><a href="/volunteer/">Volunteer</a></li>
+      <li><a href="/donate/">Give</a></li>
+      <li id="nav-signout" style="display:none"><a href="#" onclick="sponsorSignOut();return false" style="color:var(--gold)">Sign Out</a></li>
+    </ul>
+  </nav>
+
+  <!-- NOT REGISTERED STATE -->
+  <section class="not-registered" id="not-registered" style="display:none;">
+    <div class="not-registered__inner">
+      <div class="not-registered__icon">
+        <svg width="36" height="36" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" style="color:var(--cream)">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/>
+        </svg>
+      </div>
+      <h2>Welcome, Future Sponsor</h2>
+      <p>You haven't registered as a sponsor yet. Join our community of givers and track your impact on children's lives in Lagos.</p>
+      <a href="/donate/" class="btn btn--terra">Become a Sponsor</a>
+    </div>
+  </section>
+
+  <!-- DASHBOARD (shown when registered) -->
+  <div id="dashboard" style="display:none;">
+
+    <!-- A. HEADER -->
+    <section class="dash-hero">
+      <div class="container">
+        <div class="dash-hero__greeting">
+          <div class="dash-hero__top">
+            <h1 id="greeting-name">Welcome back</h1>
+            <span class="tier-badge" id="tier-badge"></span>
+          </div>
+          <p class="dash-hero__meta" id="member-since"></p>
+        </div>
+        <div class="stats-row" id="stats-row">
+          <div class="stat-card">
+            <div class="stat-card__label">Total Donated</div>
+            <div class="stat-card__value" id="stat-total">--</div>
+            <div class="stat-card__sub" id="stat-total-sub"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__label">Donations</div>
+            <div class="stat-card__value" id="stat-count">0</div>
+            <div class="stat-card__sub">successful gifts</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__label">Months as Sponsor</div>
+            <div class="stat-card__value" id="stat-months">1</div>
+            <div class="stat-card__sub" id="stat-months-sub">and counting</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="container section-pad" style="padding-top: clamp(24px, 2vw + 10px, 40px);">
+
+      <!-- B. IMPACT VISUALIZATION -->
+      <div class="dash-section" id="impact-section">
+        <div class="dash-section__header">
+          <div class="dash-section__header-left">
+            <div class="dash-section__icon" style="background:rgba(45,94,64,0.08);">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--green)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5"/></svg>
+            </div>
+            <span class="dash-section__title">Your Impact</span>
+          </div>
+        </div>
+
+        <div class="impact-bar-wrap">
+          <div class="impact-bar-label">Giving Journey</div>
+          <div class="impact-bar-track">
+            <div class="impact-bar-fill" id="impact-bar-fill" style="width:0%"></div>
+          </div>
+          <div class="impact-bar-markers">
+            <span>Start</span>
+            <span id="impact-bar-amount"></span>
+            <span>Goal</span>
+          </div>
+        </div>
+
+        <div class="impact-equiv">
+          <p class="impact-equiv__title" id="impact-equiv-title">Your giving has funded approximately:</p>
+          <div id="impact-equiv-rows"></div>
+        </div>
+      </div>
+
+      <!-- C. TRANSACTION HISTORY -->
+      <div class="dash-section">
+        <div class="dash-section__header">
+          <div class="dash-section__header-left">
+            <div class="dash-section__icon" style="background:rgba(212,169,106,0.1);">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--gold)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+            </div>
+            <span class="dash-section__title">Transaction History</span>
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <button class="btn btn--outline btn--small" id="btn-csv">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+              Export CSV
+            </button>
+            <button class="btn btn--outline btn--small" id="btn-all-receipts">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+              All Receipts
+            </button>
+          </div>
+        </div>
+
+        <div class="filter-pills" id="filter-pills">
+          <button class="filter-pill active" data-filter="all">All</button>
+          <button class="filter-pill" data-filter="one-time">One-time</button>
+          <button class="filter-pill" data-filter="recurring">Recurring</button>
+        </div>
+
+        <!-- Desktop table -->
+        <div class="txn-table-wrap">
+          <table class="txn-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Receipt</th>
+              </tr>
+            </thead>
+            <tbody id="txn-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- Mobile cards -->
+        <div class="txn-cards" id="txn-cards"></div>
+
+        <div class="txn-empty" id="txn-empty" style="display:none;">
+          <div class="txn-empty__icon">
+            <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"/></svg>
+          </div>
+          <p>No transactions yet. Make your first donation!</p>
+          <a href="/donate/" class="btn btn--terra btn--small">Give Now</a>
+        </div>
+
+        <div class="show-more-wrap" id="show-more-wrap" style="display:none;">
+          <button class="btn btn--outline btn--small" id="show-more-btn">Show More</button>
+        </div>
+      </div>
+
+      <!-- D. BADGES -->
+      <div class="dash-section">
+        <div class="dash-section__header">
+          <div class="dash-section__header-left">
+            <div class="dash-section__icon" style="background:rgba(194,115,76,0.1);">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--terra)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M18.75 4.236c.982.143 1.954.317 2.916.52A6.003 6.003 0 0016.27 9.728M18.75 4.236V4.5c0 2.108-.966 3.99-2.48 5.228m0 0a6.023 6.023 0 01-2.77.853m0 0v4.169M12 10.581a6.023 6.023 0 01-2.77-.853"/></svg>
+            </div>
+            <span class="dash-section__title">Your Badges</span>
+          </div>
+        </div>
+        <div class="badges-grid" id="badges-grid"></div>
+      </div>
+
+      <!-- E. PROFILE MANAGEMENT -->
+      <div class="dash-section">
+        <div class="dash-section__header">
+          <div class="dash-section__header-left">
+            <div class="dash-section__icon" style="background:rgba(139,175,142,0.15);">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--sage)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+            </div>
+            <span class="dash-section__title">Profile Settings</span>
+          </div>
+        </div>
+
+        <form id="profile-form">
+          <div class="profile-grid">
+            <div class="profile-group">
+              <label for="prof-name">Full Name</label>
+              <input type="text" id="prof-name" placeholder="Your name">
+            </div>
+            <div class="profile-group">
+              <label for="prof-email">Email Address</label>
+              <input type="email" id="prof-email" placeholder="you@example.com">
+            </div>
+            <div class="profile-group">
+              <label for="prof-phone">Phone Number</label>
+              <input type="tel" id="prof-phone" placeholder="+234...">
+            </div>
+            <div class="profile-group">
+              <label for="prof-recurring">Recurring Amount</label>
+              <input type="number" id="prof-recurring" placeholder="5000" min="0">
+            </div>
+            <div class="profile-group">
+              <label for="prof-currency">Currency</label>
+              <select id="prof-currency">
+                <option value="NGN">NGN - Nigerian Naira</option>
+                <option value="USD">USD - US Dollar</option>
+                <option value="GBP">GBP - British Pound</option>
+                <option value="EUR">EUR - Euro</option>
+                <option value="CAD">CAD - Canadian Dollar</option>
+              </select>
+            </div>
+            <div class="profile-group">
+              <label for="prof-program">Preferred Program</label>
+              <select id="prof-program">
+                <option value="">Where most needed</option>
+                <option value="education">Education</option>
+                <option value="feeding">Feeding</option>
+                <option value="healthcare">Healthcare</option>
+                <option value="events">Events</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-row__text">Show on Public Ledger</div>
+              <div class="toggle-row__sub">Display your name on the transparency ledger</div>
+            </div>
+            <div class="toggle-switch" id="ledger-toggle">
+              <div class="toggle-switch__knob"></div>
+            </div>
+          </div>
+
+          <div class="profile-actions">
+            <button type="submit" class="btn btn--green">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- F. QUICK DONATE -->
+      <div class="quick-donate">
+        <h3>Make an additional gift</h3>
+        <p class="quick-donate__sub">Every contribution reaches a child directly. No pooled funds.</p>
+        <div class="quick-donate__form" id="quick-donate-form">
+          <div class="quick-donate__input-wrap" style="flex:2;">
+            <label for="qd-amount">Amount</label>
+            <input type="number" id="qd-amount" placeholder="5,000" min="1">
+          </div>
+          <div class="quick-donate__input-wrap" style="flex:1;">
+            <label for="qd-currency">Currency</label>
+            <select id="qd-currency">
+              <option value="NGN">NGN</option>
+              <option value="USD">USD</option>
+              <option value="GBP">GBP</option>
+              <option value="EUR">EUR</option>
+              <option value="CAD">CAD</option>
+            </select>
+          </div>
+          <button type="button" class="btn btn--ghost-dark" id="btn-quick-donate" style="white-space:nowrap;">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+            Give Now
+          </button>
+        </div>
+      </div>
+
+    </div><!-- .container -->
+  </div><!-- #dashboard -->
+
+  <!-- COMMUNITY SECTIONS (always visible) -->
+  <div class="container" style="padding-top:0;padding-bottom:clamp(24px, 2vw + 10px, 40px);">
+      <!-- F. SPONSOR AN IDEA -->
+      <div class="dash-section" id="ideas-section">
+        <div class="dash-section__header">
+          <div class="dash-section__header-left">
+            <div class="dash-section__icon" style="background:rgba(212,169,106,0.1);">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--gold)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <span class="dash-section__title">Sponsor an Idea</span>
+          </div>
+          <a href="/ideas/" style="font-size:0.85rem;font-weight:600;color:var(--terra);text-decoration:none;">View All Ideas</a>
+        </div>
+        <p style="font-size:0.9rem;color:rgba(58,42,31,0.55);margin-bottom:1.25rem;">Fund ideas proposed by the community. Your sponsorship makes them happen.</p>
+        <div id="ideas-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;"></div>
+        <div id="ideas-empty" style="display:none;text-align:center;padding:2rem;color:rgba(58,42,31,0.4);font-size:0.9rem;">No ideas awaiting sponsorship right now. <a href="/ideas/" style="color:var(--terra);font-weight:600;text-decoration:none;">Propose one</a></div>
+      </div>
+
+      <!-- G. PENDING GOALS -->
+      <div class="dash-section" id="goals-section">
+        <div class="dash-section__header">
+          <div class="dash-section__header-left">
+            <div class="dash-section__icon" style="background:rgba(45,94,64,0.08);">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--green)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v1.5M3 21v-6m0 0l2.77-.693a9 9 0 016.208.682l.108.054a9 9 0 006.086.71l3.114-.732a48.524 48.524 0 01-.005-10.499l-3.11.732a9 9 0 01-6.085-.711l-.108-.054a9 9 0 00-6.208-.682L3 4.5M3 15V4.5"/></svg>
+            </div>
+            <span class="dash-section__title">Foundation Goals</span>
+          </div>
+        </div>
+        <p style="font-size:0.9rem;color:rgba(58,42,31,0.55);margin-bottom:1.25rem;">Active goals that need funding. Pick one and help us reach the target.</p>
+        <div id="goals-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;"></div>
+        <div id="goals-empty" style="display:none;text-align:center;padding:2rem;color:rgba(58,42,31,0.4);font-size:0.9rem;">No active goals right now. Check back soon.</div>
+      </div>
+
+      <!-- H. MY NOTES -->
+      <div class="dash-section" id="notes-section">
+        <div class="dash-section__header">
+          <div class="dash-section__header-left">
+            <div class="dash-section__icon" style="background:rgba(139,175,142,0.15);">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--sage)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
+            </div>
+            <span class="dash-section__title">My Notes</span>
+          </div>
+          <div id="notes-save-status" style="font-size:0.75rem;color:var(--sage);font-weight:600;opacity:0;transition:opacity 0.3s;"></div>
+        </div>
+        <p style="font-size:0.9rem;color:rgba(58,42,31,0.55);margin-bottom:1rem;">Your private space. Jot down thoughts, reminders, or reflections. Only you can see this.</p>
+        <textarea id="notes-textarea" style="width:100%;min-height:160px;padding:1rem;border:1.5px solid rgba(58,42,31,0.1);border-radius:12px;font-family:var(--font-sans);font-size:0.95rem;color:var(--brown);background:#fff;resize:vertical;outline:none;transition:border-color 0.3s,box-shadow 0.3s;line-height:1.7;" placeholder="Why I chose to give... thoughts after today's session... ideas for next time..."></textarea>
+        <p style="font-size:0.75rem;color:rgba(58,42,31,0.35);margin-top:0.5rem;">Auto-saved as you type</p>
+      </div>
+
+  </div>
+
+
+  <!-- WELCOME MODAL -->
+  <div class="welcome-overlay" id="welcome-overlay" style="display:none;">
+    <div class="welcome-modal">
+      <div class="confetti-wrap" id="confetti-wrap"></div>
+      <h2 id="welcome-name">Welcome to the family!</h2>
+      <div style="margin-bottom:1rem;">
+        <span class="tier-badge" id="welcome-tier-badge"></span>
+      </div>
+      <p id="welcome-message">Your first payment has been processed. You're making a difference.</p>
+      <button class="btn btn--green" id="btn-close-welcome">Explore Your Dashboard</button>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__layout">
+        <div class="footer__left">
+          <p class="footer__brand-name">Big Sister Foundation</p>
+          <p class="footer__tagline">Rooted. Present. Protective.</p>
+          <p class="footer__location">Lagos, Nigeria</p>
+        </div>
+        <div class="footer__right">
+          <ul class="footer__links">
+            <li><a href="/scholars/">Scholars</a></li>
+            <li><a href="/ledger/">Ledger</a></li>
+            <li><a href="/events/">Events</a></li>
+            <li><a href="/volunteer/">Volunteer</a></li>
+            <li><a href="/forums/">Forums</a></li>
+            <li><a href="/ideas/">Ideas</a></li>
+            <li><a href="/donations/">Donations</a></li>
+            <li><a href="/donate/">Give</a></li>
+            <li><a href="/sponsor/">Sponsor</a></li>
+            <li><a href="mailto:hello@thebigsisterfoundation.org">Email</a></li>
+          </ul>
+          <p class="footer__copy">&copy; 2026 Big Sister Foundation. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script src="/shared/bsf-store.js"></script>
+  <script src="/shared/bsf-paystack.js"></script>
+  <script src="/shared/bsf-receipt.js"></script>
+  <script src="https://js.paystack.co/v2/inline.js"></script>
+
+  <!-- FIREBASE -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script>
+  (function() {
+    'use strict';
+
+    /* ================================================================
+       FIREBASE INIT
+    ================================================================ */
+    var db = null;
+    try {
+      firebase.initializeApp({
+        apiKey: "AIzaSyCwos6XR9-uqAf_Esmh2K_hJoLxq4gnEuU",
+        authDomain: "big-sister-foundation.firebaseapp.com",
+        projectId: "big-sister-foundation",
+        storageBucket: "big-sister-foundation.firebasestorage.app",
+        messagingSenderId: "778723584560",
+        appId: "1:778723584560:web:7499944c30001e7fcf5bf5"
+      });
+      db = firebase.firestore();
+    } catch (e) {
+      console.warn('[Dashboard] Firebase init failed, running offline:', e);
+    }
+
+    /* ================================================================
+       AUTH
+    ================================================================ */
+    window.sponsorLogin = function() {
+      var em = document.getElementById('auth-email').value.trim();
+      var pw = document.getElementById('auth-password').value;
+      document.getElementById('auth-error').textContent = '';
+      if (!em || !pw) { document.getElementById('auth-error').textContent = 'Please enter email and password.'; return; }
+      firebase.auth().signInWithEmailAndPassword(em, pw).catch(function(err) {
+        document.getElementById('auth-error').textContent = err.message;
+      });
+    };
+    window.sponsorSignOut = function() {
+      firebase.auth().signOut().then(function() {
+        localStorage.removeItem('bsf_sponsor');
+        localStorage.removeItem('bsf_sponsor_txns');
+        window.location.reload();
+      });
+    };
+    firebase.auth().onAuthStateChanged(function(user) {
+      var overlay = document.getElementById('auth-overlay');
+      var signoutBtn = document.getElementById('nav-signout');
+      if (user) {
+        overlay.style.display = 'none';
+        if (signoutBtn) signoutBtn.style.display = '';
+        // If we have Firestore, try to load sponsor data by email
+        if (db && user.email) {
+          db.collection('sponsors').where('email', '==', user.email).limit(1).get().then(function(snap) {
+            if (!snap.empty) {
+              var sData = snap.docs[0].data();
+              sData._id = snap.docs[0].id;
+              // Cache to localStorage for existing flow
+              localStorage.setItem('bsf_sponsor', JSON.stringify(sData));
+            }
+          }).catch(function() {});
+        }
+      } else {
+        // Check if localStorage has sponsor data (fallback for existing flow)
+        var stored = localStorage.getItem('bsf_sponsor');
+        if (stored) {
+          overlay.style.display = 'none';
+          if (signoutBtn) signoutBtn.style.display = '';
+        } else {
+          overlay.style.display = 'flex';
+          if (signoutBtn) signoutBtn.style.display = 'none';
+        }
+      }
+    });
+
+    /* ================================================================
+       STATE
+    ================================================================ */
+    var sponsor = null;
+    var txns = [];
+    var successTxns = [];
+    var totalDonated = 0;
+    var donationCount = 0;
+    var monthsAsSponsor = 1;
+    var currentFilter = 'all';
+    var txnPage = 1;
+    var TXN_PER_PAGE = 10;
+
+    /* ================================================================
+       HELPERS
+    ================================================================ */
+    var TIER_COLORS = {
+      'Baobab':   { bg: 'rgba(194,115,76,0.15)', color: '#C2734C', icon: '\uD83C\uDF33' },
+      'Elder':    { bg: 'rgba(212,169,106,0.15)', color: '#D4A96A', icon: '\uD83C\uDF32' },
+      'Grower':   { bg: 'rgba(45,94,64,0.15)',    color: '#2D5E40', icon: '\uD83C\uDF31' },
+      'Seedling': { bg: 'rgba(139,175,142,0.2)',   color: '#8BAF8E', icon: '\uD83C\uDF30' }
+    };
+
+    var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+    function resolveTier(s) {
+      var tier = s.tier || BSFPaystack.getTier(s.recurringAmount || 0, s.currency || 'NGN');
+      return typeof tier === 'string' ? tier : (tier.name || 'Seedling');
+    }
+
+    function escapeHTML(str) {
+      var div = document.createElement('div');
+      div.appendChild(document.createTextNode(str));
+      return div.textContent;
+    }
+
+    /* ================================================================
+       TOAST
+    ================================================================ */
+    var toastTimer = null;
+    function showToast(message, type) {
+      var toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast toast--' + (type || 'success') + ' show';
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function() {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+
+    /* ================================================================
+       BOOT
+    ================================================================ */
+    function boot() {
+      if (!BSFStore.isRegisteredSponsor()) {
+        document.getElementById('not-registered').style.display = 'flex';
+        return;
+      }
+
+      sponsor = BSFStore.getSponsor();
+      txns = BSFStore.getTransactions();
+      successTxns = txns.filter(function(t) { return t.status === 'success'; });
+      totalDonated = successTxns.reduce(function(sum, t) { return sum + (Number(t.amount) || 0); }, 0);
+      donationCount = successTxns.length;
+      monthsAsSponsor = Math.max(1, Math.ceil((Date.now() - new Date(sponsor.createdAt).getTime()) / (30 * 24 * 60 * 60 * 1000)));
+
+      document.getElementById('dashboard').style.display = 'block';
+
+      renderHeader();
+      renderStats();
+      renderImpact();
+      renderTransactions();
+      renderBadges();
+      populateProfile();
+      bindEvents();
+
+      // Check for welcome param
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('welcome') === '1') {
+        showWelcome();
+      }
+
+      // Attempt Firestore sync (graceful degradation)
+      if (db && sponsor) {
+        BSFStore.syncSponsorToFirestore(db, sponsor).catch(function(e) {
+          console.warn('[Dashboard] Firestore sponsor sync failed:', e);
+        });
+      }
+    }
+
+    /* ================================================================
+       A. HEADER
+    ================================================================ */
+    function renderHeader() {
+      var name = sponsor.name || sponsor.fullName || 'Sponsor';
+      var firstName = name.split(' ')[0];
+      document.getElementById('greeting-name').textContent = 'Welcome back, ' + firstName;
+
+      var tierName = resolveTier(sponsor);
+      var tc = TIER_COLORS[tierName] || TIER_COLORS['Seedling'];
+      var badge = document.getElementById('tier-badge');
+      badge.textContent = tc.icon + ' ' + tierName;
+      badge.style.background = tc.bg;
+      badge.style.color = tc.color;
+
+      if (sponsor.createdAt) {
+        var d = new Date(sponsor.createdAt);
+        document.getElementById('member-since').textContent = 'Member since ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+      }
+    }
+
+    /* ================================================================
+       STATS
+    ================================================================ */
+    function renderStats() {
+      var currency = sponsor.currency || 'NGN';
+      document.getElementById('stat-total').textContent = BSFPaystack.formatAmount(totalDonated, currency);
+      document.getElementById('stat-total-sub').textContent = 'in ' + currency;
+      document.getElementById('stat-count').textContent = donationCount.toLocaleString();
+      document.getElementById('stat-months').textContent = monthsAsSponsor;
+    }
+
+    /* ================================================================
+       B. IMPACT VISUALIZATION
+    ================================================================ */
+    function renderImpact() {
+      var currency = sponsor.currency || 'NGN';
+
+      // Progress bar: goal = 1,000,000 in smallest units (10,000 in display)
+      var goalSmallest = 100000000; // 1,000,000 * 100
+      var pct = Math.min(100, Math.round((totalDonated / goalSmallest) * 100));
+      var bar = document.getElementById('impact-bar-fill');
+      setTimeout(function() { bar.style.width = pct + '%'; }, 100);
+      document.getElementById('impact-bar-amount').textContent = BSFPaystack.formatAmount(totalDonated, currency);
+
+      // Impact equivalents (amounts in smallest units, kobo/cents)
+      var schoolFees = Math.floor(totalDonated / 5000000);   // 50,000 * 100
+      var meals      = Math.floor(totalDonated / 50000);     // 500 * 100
+      var kits       = Math.floor(totalDonated / 1000000);   // 10,000 * 100
+
+      var titleEl = document.getElementById('impact-equiv-title');
+      titleEl.textContent = '';
+      titleEl.appendChild(document.createTextNode('Your '));
+      var strong = document.createElement('strong');
+      strong.textContent = BSFPaystack.formatAmount(totalDonated, currency);
+      titleEl.appendChild(strong);
+      titleEl.appendChild(document.createTextNode(' has funded approximately:'));
+
+      var container = document.getElementById('impact-equiv-rows');
+      container.textContent = '';
+
+      var impacts = [
+        { icon: '\uD83C\uDF93', bg: 'rgba(45,94,64,0.08)',    num: schoolFees, label: 'months of school fees' },
+        { icon: '\uD83C\uDF5A', bg: 'rgba(194,115,76,0.08)',  num: meals,      label: 'meals for children' },
+        { icon: '\uD83C\uDF92', bg: 'rgba(212,169,106,0.1)',  num: kits,       label: 'school supply kits' }
+      ];
+
+      impacts.forEach(function(item) {
+        var row = document.createElement('div');
+        row.className = 'impact-row';
+
+        var iconDiv = document.createElement('div');
+        iconDiv.className = 'impact-row__icon';
+        iconDiv.style.background = item.bg;
+        iconDiv.textContent = item.icon;
+
+        var numDiv = document.createElement('div');
+        numDiv.className = 'impact-row__number';
+        numDiv.textContent = item.num.toLocaleString();
+
+        var labelDiv = document.createElement('div');
+        labelDiv.className = 'impact-row__label';
+        labelDiv.textContent = item.label;
+
+        row.appendChild(iconDiv);
+        row.appendChild(numDiv);
+        row.appendChild(labelDiv);
+        container.appendChild(row);
+      });
+    }
+
+    /* ================================================================
+       C. TRANSACTION HISTORY
+    ================================================================ */
+    function getFilteredTxns() {
+      if (currentFilter === 'all') return txns;
+      return txns.filter(function(t) { return t.type === currentFilter; });
+    }
+
+    function renderTransactions() {
+      var filtered = getFilteredTxns();
+      var visible = filtered.slice(0, txnPage * TXN_PER_PAGE);
+      var currency = sponsor.currency || 'NGN';
+
+      if (filtered.length === 0) {
+        document.getElementById('txn-tbody').textContent = '';
+        document.getElementById('txn-cards').textContent = '';
+        document.getElementById('txn-empty').style.display = 'block';
+        document.getElementById('show-more-wrap').style.display = 'none';
+        return;
+      }
+
+      document.getElementById('txn-empty').style.display = 'none';
+
+      // Desktop table
+      var tbody = document.getElementById('txn-tbody');
+      tbody.textContent = '';
+      visible.forEach(function(t, i) {
+        var tr = document.createElement('tr');
+
+        var tdDate = document.createElement('td');
+        tdDate.textContent = new Date(t.date || t.createdAt).toLocaleDateString('en-NG', { year: 'numeric', month: 'short', day: 'numeric' });
+
+        var tdAmount = document.createElement('td');
+        tdAmount.style.fontWeight = '600';
+        tdAmount.textContent = BSFPaystack.formatAmount(t.amount, t.currency || currency);
+
+        var tdType = document.createElement('td');
+        var typeSpan = document.createElement('span');
+        typeSpan.className = 'txn-type txn-type--' + (t.type === 'recurring' ? 'recurring' : 'one-time');
+        typeSpan.textContent = t.type || 'one-time';
+        tdType.appendChild(typeSpan);
+
+        var tdStatus = document.createElement('td');
+        var statusSpan = document.createElement('span');
+        statusSpan.className = 'txn-status txn-status--' + (t.status || 'pending');
+        statusSpan.textContent = t.status || 'pending';
+        tdStatus.appendChild(statusSpan);
+
+        var tdReceipt = document.createElement('td');
+        var receiptBtn = document.createElement('button');
+        receiptBtn.className = 'txn-receipt-btn';
+        receiptBtn.textContent = 'Download';
+        receiptBtn.setAttribute('data-txn-index', i);
+        tdReceipt.appendChild(receiptBtn);
+
+        tr.appendChild(tdDate);
+        tr.appendChild(tdAmount);
+        tr.appendChild(tdType);
+        tr.appendChild(tdStatus);
+        tr.appendChild(tdReceipt);
+        tbody.appendChild(tr);
+      });
+
+      // Mobile cards
+      var cardsContainer = document.getElementById('txn-cards');
+      cardsContainer.textContent = '';
+      visible.forEach(function(t, i) {
+        var card = document.createElement('div');
+        card.className = 'txn-card';
+
+        var top = document.createElement('div');
+        top.className = 'txn-card__top';
+
+        var amtSpan = document.createElement('span');
+        amtSpan.className = 'txn-card__amount';
+        amtSpan.textContent = BSFPaystack.formatAmount(t.amount, t.currency || currency);
+
+        var statusSpan = document.createElement('span');
+        statusSpan.className = 'txn-status txn-status--' + (t.status || 'pending');
+        statusSpan.textContent = t.status || 'pending';
+
+        top.appendChild(amtSpan);
+        top.appendChild(statusSpan);
+
+        var row = document.createElement('div');
+        row.className = 'txn-card__row';
+        var dateSpan = document.createElement('span');
+        dateSpan.textContent = new Date(t.date || t.createdAt).toLocaleDateString('en-NG', { year: 'numeric', month: 'short', day: 'numeric' });
+        var typeSpan2 = document.createElement('span');
+        typeSpan2.textContent = t.type || 'one-time';
+        row.appendChild(dateSpan);
+        row.appendChild(typeSpan2);
+
+        var actions = document.createElement('div');
+        actions.className = 'txn-card__actions';
+        var receiptBtn = document.createElement('button');
+        receiptBtn.className = 'txn-receipt-btn';
+        receiptBtn.textContent = 'Download Receipt';
+        receiptBtn.setAttribute('data-txn-index', i);
+        actions.appendChild(receiptBtn);
+
+        card.appendChild(top);
+        card.appendChild(row);
+        card.appendChild(actions);
+        cardsContainer.appendChild(card);
+      });
+
+      // Show more
+      document.getElementById('show-more-wrap').style.display =
+        (filtered.length > txnPage * TXN_PER_PAGE) ? 'block' : 'none';
+    }
+
+    function handleReceiptClick(e) {
+      var btn = e.target.closest('[data-txn-index]');
+      if (!btn) return;
+      var idx = parseInt(btn.getAttribute('data-txn-index'), 10);
+      var filtered = getFilteredTxns();
+      var txn = filtered[idx];
+      if (!txn) return;
+      if (typeof BSFReceipt !== 'undefined' && BSFReceipt.generate) {
+        BSFReceipt.generate(txn);
+      } else {
+        showToast('Receipt generator not available', 'error');
+      }
+    }
+
+    /* ================================================================
+       CSV EXPORT
+    ================================================================ */
+    function exportCSV() {
+      var allTxns = BSFStore.getTransactions();
+      if (allTxns.length === 0) {
+        showToast('No transactions to export', 'error');
+        return;
+      }
+      var csv = 'Date,Amount,Currency,Type,Status,Reference\n';
+      allTxns.forEach(function(t) {
+        csv += new Date(t.date || t.createdAt).toLocaleDateString() + ',' +
+          BSFPaystack.toDisplayAmount(t.amount, t.currency) + ',' +
+          (t.currency || 'NGN') + ',' +
+          (t.type || 'one-time') + ',' +
+          (t.status || 'pending') + ',' +
+          (t.ref || t.id || '') + '\n';
+      });
+      var blob = new Blob([csv], { type: 'text/csv' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'bsf-donations-' + (sponsor ? sponsor.id : 'export') + '.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast('CSV downloaded', 'success');
+    }
+
+    function downloadAllReceipts() {
+      var stxns = txns.filter(function(t) { return t.status === 'success'; });
+      if (stxns.length === 0) {
+        showToast('No successful transactions to generate receipts for', 'error');
+        return;
+      }
+      if (typeof BSFReceipt !== 'undefined' && BSFReceipt.generate) {
+        stxns.forEach(function(t) { BSFReceipt.generate(t); });
+        showToast('Generating ' + stxns.length + ' receipt(s)...', 'success');
+      } else {
+        showToast('Receipt generator not available', 'error');
+      }
+    }
+
+    /* ================================================================
+       D. BADGES
+    ================================================================ */
+    function renderBadges() {
+      var tierName = resolveTier(sponsor);
+
+      var badges = [
+        {
+          id: 'first-gift', name: 'First Gift', desc: 'Made your first donation',
+          icon: '\uD83C\uDF81', bg: 'rgba(194,115,76,0.1)',
+          earned: donationCount >= 1
+        },
+        {
+          id: 'consistent', name: 'Consistent', desc: '3+ months of giving',
+          icon: '\uD83D\uDD04', bg: 'rgba(45,94,64,0.08)',
+          earned: monthsAsSponsor >= 3 && donationCount >= 3
+        },
+        {
+          id: 'big-heart', name: 'Big Heart', desc: 'Donated over \u20A6100,000',
+          icon: '\u2764\uFE0F', bg: 'rgba(194,115,76,0.08)',
+          earned: totalDonated >= 10000000
+        },
+        {
+          id: 'founding', name: 'Founding Sponsor', desc: 'Joined before Dec 2026',
+          icon: '\u2B50', bg: 'rgba(212,169,106,0.1)',
+          earned: new Date(sponsor.createdAt) < new Date('2027-01-01')
+        },
+        {
+          id: 'tier', name: tierName, desc: 'Your current tier',
+          icon: (tierName === 'Baobab' ? '\uD83C\uDF33' : tierName === 'Elder' ? '\uD83C\uDF32' : tierName === 'Grower' ? '\uD83C\uDF31' : '\uD83C\uDF30'),
+          bg: 'rgba(45,94,64,0.08)',
+          earned: true
+        },
+        {
+          id: 'ambassador', name: 'Ambassador', desc: 'Refer a friend',
+          icon: '\uD83C\uDF1F', bg: 'rgba(212,169,106,0.08)',
+          earned: false, locked: true, comingSoon: true
+        }
+      ];
+
+      var grid = document.getElementById('badges-grid');
+      grid.textContent = '';
+
+      badges.forEach(function(b) {
+        var isLocked = !b.earned;
+        var card = document.createElement('div');
+        card.className = 'badge-card' + (isLocked ? ' locked' : '');
+
+        var iconDiv = document.createElement('div');
+        iconDiv.className = 'badge-card__icon';
+        iconDiv.style.background = b.bg;
+        iconDiv.textContent = b.icon;
+
+        var nameDiv = document.createElement('div');
+        nameDiv.className = 'badge-card__name';
+        nameDiv.textContent = b.name;
+
+        var descDiv = document.createElement('div');
+        descDiv.className = 'badge-card__desc';
+        descDiv.textContent = b.desc;
+
+        card.appendChild(iconDiv);
+        card.appendChild(nameDiv);
+        card.appendChild(descDiv);
+
+        if (b.comingSoon) {
+          var csSpan = document.createElement('span');
+          csSpan.className = 'badge-card__coming-soon';
+          csSpan.textContent = 'Coming soon';
+          card.appendChild(csSpan);
+        } else if (b.earned) {
+          var dateDiv = document.createElement('div');
+          dateDiv.className = 'badge-card__date badge-card__date--earned';
+          var earnDate = sponsor.createdAt ? new Date(sponsor.createdAt).toLocaleDateString('en-NG', { month: 'short', year: 'numeric' }) : '';
+          dateDiv.textContent = 'Earned' + (earnDate ? ' ' + earnDate : '');
+          card.appendChild(dateDiv);
+        } else {
+          var lockDiv = document.createElement('div');
+          lockDiv.className = 'badge-card__date badge-card__date--locked';
+          var lockIcon = document.createElement('span');
+          lockIcon.className = 'badge-card__lock-icon';
+          lockIcon.textContent = '\uD83D\uDD12';
+          lockDiv.appendChild(lockIcon);
+          lockDiv.appendChild(document.createTextNode('Locked'));
+          card.appendChild(lockDiv);
+        }
+
+        grid.appendChild(card);
+      });
+    }
+
+    /* ================================================================
+       E. PROFILE MANAGEMENT
+    ================================================================ */
+    function populateProfile() {
+      document.getElementById('prof-name').value = sponsor.name || sponsor.fullName || '';
+      document.getElementById('prof-email').value = sponsor.email || '';
+      document.getElementById('prof-phone').value = sponsor.phone || '';
+      document.getElementById('prof-recurring').value = sponsor.recurringAmount || '';
+      document.getElementById('prof-currency').value = sponsor.currency || 'NGN';
+      document.getElementById('prof-program').value = sponsor.program || '';
+
+      if (sponsor.showOnLedger !== false) {
+        document.getElementById('ledger-toggle').classList.add('active');
+      }
+
+      document.getElementById('qd-currency').value = sponsor.currency || 'NGN';
+    }
+
+    function saveProfile(e) {
+      e.preventDefault();
+      var updates = {
+        name: document.getElementById('prof-name').value.trim(),
+        fullName: document.getElementById('prof-name').value.trim(),
+        email: document.getElementById('prof-email').value.trim(),
+        phone: document.getElementById('prof-phone').value.trim(),
+        recurringAmount: Number(document.getElementById('prof-recurring').value) || 0,
+        currency: document.getElementById('prof-currency').value,
+        program: document.getElementById('prof-program').value,
+        showOnLedger: document.getElementById('ledger-toggle').classList.contains('active')
+      };
+
+      sponsor = BSFStore.updateSponsor(updates);
+
+      if (db && sponsor) {
+        BSFStore.syncSponsorToFirestore(db, sponsor).catch(function() {});
+      }
+
+      showToast('Profile updated successfully', 'success');
+      renderHeader();
+      return false;
+    }
+
+    /* ================================================================
+       F. QUICK DONATE
+    ================================================================ */
+    function quickDonate() {
+      var amount = Number(document.getElementById('qd-amount').value);
+      var currency = document.getElementById('qd-currency').value;
+
+      if (!amount || amount <= 0) {
+        showToast('Please enter a valid amount', 'error');
+        return;
+      }
+
+      BSFPaystack.pay({
+        email: sponsor.email,
+        amount: amount,
+        currency: currency,
+        metadata: {
+          sponsorId: sponsor.id,
+          program: sponsor.program || 'general',
+          type: 'one-time',
+          source: 'dashboard-quick-donate'
+        },
+        onSuccess: function(response) {
+          var txn = {
+            amount: BSFPaystack.toSmallestUnit(amount, currency),
+            currency: currency,
+            type: 'one-time',
+            status: 'success',
+            ref: response.reference || BSFStore.generateRef(),
+            date: new Date().toISOString(),
+            sponsorId: sponsor.id
+          };
+          BSFStore.addTransaction(txn);
+
+          if (db) {
+            BSFStore.syncDonationToFirestore(db, txn).catch(function() {});
+          }
+
+          // Refresh state
+          txns = BSFStore.getTransactions();
+          successTxns = txns.filter(function(t) { return t.status === 'success'; });
+          totalDonated = successTxns.reduce(function(sum, t) { return sum + (Number(t.amount) || 0); }, 0);
+          donationCount = successTxns.length;
+
+          renderStats();
+          renderImpact();
+          renderTransactions();
+          renderBadges();
+          document.getElementById('qd-amount').value = '';
+          showToast('Thank you! Your gift of ' + BSFPaystack.formatDisplayAmount(amount, currency) + ' has been received.', 'success');
+        },
+        onClose: function() {
+          showToast('Payment window closed', 'error');
+        }
+      });
+    }
+
+    /* ================================================================
+       WELCOME MODAL
+    ================================================================ */
+    function showWelcome() {
+      if (!sponsor) return;
+      var name = sponsor.name || sponsor.fullName || 'Sponsor';
+      var tierName = resolveTier(sponsor);
+      var tc = TIER_COLORS[tierName] || TIER_COLORS['Seedling'];
+
+      document.getElementById('welcome-name').textContent = 'Welcome to the family, ' + name.split(' ')[0] + '!';
+      var wb = document.getElementById('welcome-tier-badge');
+      wb.textContent = tc.icon + ' ' + tierName + ' Sponsor';
+      wb.style.background = tc.bg;
+      wb.style.color = tc.color;
+      document.getElementById('welcome-message').textContent =
+        'Your first payment has been processed. You\'re now a ' + tierName + ' sponsor. Thank you for investing in children\'s futures.';
+
+      // Generate confetti dots (CSS-only animation)
+      var confettiWrap = document.getElementById('confetti-wrap');
+      confettiWrap.textContent = '';
+      var colors = ['#C2734C', '#D4A96A', '#8BAF8E', '#2D5E40', '#FFF8F0'];
+      for (var i = 0; i < 30; i++) {
+        var dot = document.createElement('div');
+        dot.className = 'confetti-dot';
+        dot.style.left = Math.random() * 100 + '%';
+        dot.style.top = '-10px';
+        dot.style.background = colors[Math.floor(Math.random() * colors.length)];
+        dot.style.animationDelay = (Math.random() * 2) + 's';
+        dot.style.animationDuration = (2 + Math.random() * 2) + 's';
+        var size = (6 + Math.random() * 6) + 'px';
+        dot.style.width = size;
+        dot.style.height = size;
+        confettiWrap.appendChild(dot);
+      }
+
+      document.getElementById('welcome-overlay').classList.add('active');
+
+      // Clean URL param
+      if (window.history && window.history.replaceState) {
+        var url = new URL(window.location);
+        url.searchParams.delete('welcome');
+        window.history.replaceState({}, '', url);
+      }
+    }
+
+    function closeWelcome() {
+      document.getElementById('welcome-overlay').classList.remove('active');
+    }
+
+    /* ================================================================
+       EVENT BINDING
+    ================================================================ */
+    function bindEvents() {
+      // Filter pills
+      var pills = document.querySelectorAll('.filter-pill');
+      pills.forEach(function(pill) {
+        pill.addEventListener('click', function() {
+          pills.forEach(function(p) { p.classList.remove('active'); });
+          pill.classList.add('active');
+          currentFilter = pill.getAttribute('data-filter');
+          txnPage = 1;
+          renderTransactions();
+        });
+      });
+
+      // Show more
+      document.getElementById('show-more-btn').addEventListener('click', function() {
+        txnPage++;
+        renderTransactions();
+      });
+
+      // Receipt buttons (event delegation)
+      document.getElementById('txn-tbody').addEventListener('click', handleReceiptClick);
+      document.getElementById('txn-cards').addEventListener('click', handleReceiptClick);
+
+      // CSV and All Receipts
+      document.getElementById('btn-csv').addEventListener('click', exportCSV);
+      document.getElementById('btn-all-receipts').addEventListener('click', downloadAllReceipts);
+
+      // Profile form
+      document.getElementById('profile-form').addEventListener('submit', saveProfile);
+
+      // Ledger toggle
+      document.getElementById('ledger-toggle').addEventListener('click', function() {
+        this.classList.toggle('active');
+      });
+
+      // Quick donate
+      document.getElementById('btn-quick-donate').addEventListener('click', quickDonate);
+
+      // Welcome close
+      document.getElementById('btn-close-welcome').addEventListener('click', closeWelcome);
+    }
+
+    /* ================================================================
+       INIT
+    ================================================================ */
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', boot);
+    } else {
+      boot();
+    }
+
+  })();
+  </script>
+
+  <!-- IDEAS, GOALS, NOTES -->
+  <script>
+  (function() {
+    'use strict';
+
+    var db = null;
+    try { db = firebase.firestore(); } catch(e) {}
+
+    /* ── NOTES ── */
+    var notesArea = document.getElementById('notes-textarea');
+    var notesSaveStatus = document.getElementById('notes-save-status');
+    var notesTimer = null;
+    var sponsorKey = 'bsf_sponsor_notes';
+
+    var savedNotes = localStorage.getItem(sponsorKey) || '';
+    notesArea.value = savedNotes;
+
+    if (db) {
+      var sponsorData = localStorage.getItem('bsf_sponsor');
+      if (sponsorData) {
+        try {
+          var sp = JSON.parse(sponsorData);
+          if (sp.email) {
+            db.collection('sponsor_notes').doc(sp.email).get().then(function(doc) {
+              if (doc.exists && doc.data().notes && !savedNotes) {
+                notesArea.value = doc.data().notes;
+                localStorage.setItem(sponsorKey, doc.data().notes);
+              }
+            }).catch(function() {});
+          }
+        } catch(e) {}
+      }
+    }
+
+    notesArea.addEventListener('input', function() {
+      clearTimeout(notesTimer);
+      notesTimer = setTimeout(function() {
+        localStorage.setItem(sponsorKey, notesArea.value);
+        notesSaveStatus.textContent = 'Saved';
+        notesSaveStatus.style.opacity = '1';
+        setTimeout(function() { notesSaveStatus.style.opacity = '0'; }, 1500);
+        if (db) {
+          var sp2 = localStorage.getItem('bsf_sponsor');
+          if (sp2) {
+            try {
+              var parsed = JSON.parse(sp2);
+              if (parsed.email) {
+                db.collection('sponsor_notes').doc(parsed.email).set({
+                  notes: notesArea.value,
+                  updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true }).catch(function() {});
+              }
+            } catch(e) {}
+          }
+        }
+      }, 800);
+    });
+
+    /* ── IDEAS ── */
+    function loadIdeas() {
+      if (!db) return;
+      var grid = document.getElementById('ideas-grid');
+      var empty = document.getElementById('ideas-empty');
+      db.collection('ideas').where('status', 'in', ['open', 'planned', 'approved']).get().then(function(snap) {
+        if (snap.empty) { empty.style.display = 'block'; return; }
+        var ideas = [];
+        snap.forEach(function(doc) { var d = doc.data(); d._id = doc.id; ideas.push(d); });
+        ideas.sort(function(a, b) { return (b.votes || 0) - (a.votes || 0); });
+        ideas.slice(0, 6).forEach(function(idea) {
+          var card = document.createElement('div');
+          card.className = 'idea-card';
+          var title = document.createElement('div');
+          title.className = 'idea-card__title';
+          title.textContent = idea.title || 'Untitled Idea';
+          card.appendChild(title);
+          var desc = document.createElement('div');
+          desc.className = 'idea-card__desc';
+          var descText = idea.description || '';
+          desc.textContent = descText.length > 120 ? descText.substring(0, 120) + '...' : descText;
+          card.appendChild(desc);
+          var meta = document.createElement('div');
+          meta.className = 'idea-card__meta';
+          if (idea.estimatedCost) {
+            var cost = document.createElement('span');
+            cost.className = 'idea-card__cost';
+            cost.textContent = 'NGN ' + Number(idea.estimatedCost).toLocaleString();
+            meta.appendChild(cost);
+          }
+          var votes = document.createElement('span');
+          votes.className = 'idea-card__votes';
+          votes.textContent = (idea.votes || 0) + ' votes';
+          meta.appendChild(votes);
+          if (idea.tags && idea.tags.length > 0) {
+            var tag = document.createElement('span');
+            tag.className = 'idea-card__tag';
+            tag.textContent = Array.isArray(idea.tags) ? idea.tags[0] : idea.tags;
+            meta.appendChild(tag);
+          }
+          card.appendChild(meta);
+          var btn = document.createElement('button');
+          btn.className = 'idea-card__btn';
+          btn.textContent = 'Sponsor This Idea';
+          btn.onclick = function() {
+            window.location.href = '/donate/?idea=' + encodeURIComponent(idea.title || '') + '&amount=' + (idea.estimatedCost || '');
+          };
+          card.appendChild(btn);
+          grid.appendChild(card);
+        });
+      }).catch(function() { empty.style.display = 'block'; });
+    }
+
+    /* ── GOALS ── */
+    function loadGoals() {
+      if (!db) return;
+      var grid = document.getElementById('goals-grid');
+      var empty = document.getElementById('goals-empty');
+      db.collection('goals').where('status', '==', 'active').get().then(function(snap) {
+        if (snap.empty) { empty.style.display = 'block'; return; }
+        snap.forEach(function(doc) {
+          var goal = doc.data();
+          var card = document.createElement('div');
+          card.className = 'goal-card';
+          var title = document.createElement('div');
+          title.className = 'goal-card__title';
+          title.textContent = goal.title || 'Untitled Goal';
+          card.appendChild(title);
+          var desc = document.createElement('div');
+          desc.className = 'goal-card__desc';
+          desc.textContent = goal.description || '';
+          card.appendChild(desc);
+          var isNonFinancial = goal.goalType && goal.goalType !== 'financial';
+          var target = isNonFinancial ? (goal.targetCapacity || 0) : (goal.targetAmount || 0);
+          var raised = isNonFinancial ? (goal.raisedCapacity || 0) : (goal.raisedAmount || 0);
+          var pct = target > 0 ? Math.min(100, Math.round((raised / target) * 100)) : 0;
+          var progress = document.createElement('div');
+          progress.className = 'goal-card__progress';
+          var barTrack = document.createElement('div');
+          barTrack.className = 'goal-card__bar-track';
+          var barFill = document.createElement('div');
+          barFill.className = 'goal-card__bar-fill';
+          barFill.style.width = pct + '%';
+          barTrack.appendChild(barFill);
+          progress.appendChild(barTrack);
+          var amounts = document.createElement('div');
+          amounts.className = 'goal-card__amounts';
+          var raisedSpan = document.createElement('span');
+          var raisedStrong = document.createElement('strong');
+          if (isNonFinancial) {
+            var unitLabels = { 'volunteer': 'volunteers signed up', 'outreach': (goal.unit || 'people') + ' reached', 'mentoring': 'mentors enrolled' };
+            raisedStrong.textContent = raised;
+            raisedSpan.appendChild(raisedStrong);
+            raisedSpan.appendChild(document.createTextNode(' ' + (unitLabels[goal.goalType] || (goal.unit || 'units') + ' pledged')));
+          } else {
+            raisedStrong.textContent = 'NGN ' + Number(raised).toLocaleString();
+            raisedSpan.appendChild(raisedStrong);
+            raisedSpan.appendChild(document.createTextNode(' raised'));
+          }
+          amounts.appendChild(raisedSpan);
+          var targetSpan = document.createElement('span');
+          if (isNonFinancial) {
+            targetSpan.textContent = 'Goal: ' + target + ' ' + (goal.unit || 'units');
+          } else {
+            targetSpan.textContent = 'Goal: NGN ' + Number(target).toLocaleString();
+          }
+          amounts.appendChild(targetSpan);
+          progress.appendChild(amounts);
+          card.appendChild(progress);
+          var btn = document.createElement('button');
+          btn.className = 'goal-card__btn';
+          if (isNonFinancial) {
+            btn.textContent = 'Pledge for This Goal';
+            btn.onclick = function() {
+              window.location.href = '/volunteer/?goal=' + encodeURIComponent(goal.id || goal.title || '');
+            };
+          } else {
+            btn.textContent = 'Contribute to This Goal';
+            btn.onclick = function() {
+              var remaining = target - raised;
+              window.location.href = '/donate/?goal=' + encodeURIComponent(goal.title || '') + '&amount=' + Math.max(0, remaining);
+            };
+          }
+          card.appendChild(btn);
+          grid.appendChild(card);
+        });
+      }).catch(function() { empty.style.display = 'block'; });
+    }
+
+    function bootExtras() { loadIdeas(); loadGoals(); }
+    if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', bootExtras); }
+    else { bootExtras(); }
+  })();
+  </script>
+<div class="nav__backdrop" id="nav-backdrop"></div>
+<script>
+(function() {
+  var hamburger = document.getElementById("nav-hamburger");
+  var navLinks = document.querySelector(".nav__links");
+  var backdrop = document.getElementById("nav-backdrop");
+  if (!hamburger || !navLinks || !backdrop) return;
+  function openMenu() {
+    hamburger.classList.add("active");
+    navLinks.classList.add("open");
+    backdrop.style.display = "block";
+    requestAnimationFrame(function() { backdrop.classList.add("visible"); });
+    document.body.style.overflow = "hidden";
+  }
+  function closeMenu() {
+    hamburger.classList.remove("active");
+    navLinks.classList.remove("open");
+    backdrop.classList.remove("visible");
+    document.body.style.overflow = "";
+    setTimeout(function() { backdrop.style.display = "none"; }, 350);
+  }
+  hamburger.addEventListener("click", function() {
+    if (navLinks.classList.contains("open")) { closeMenu(); } else { openMenu(); }
+  });
+  backdrop.addEventListener("click", closeMenu);
+  navLinks.querySelectorAll("a").forEach(function(link) {
+    link.addEventListener("click", closeMenu);
+  });
+  var currentPath = window.location.pathname;
+  navLinks.querySelectorAll("a").forEach(function(link) {
+    var href = link.getAttribute("href");
+    if (href === currentPath || (href !== "/" && currentPath.startsWith(href))) {
+      link.classList.add("active");
+      link.style.color = "var(--gold)";
+    } else if (href === "/" && currentPath === "/") {
+      link.classList.add("active");
+      link.style.color = "var(--gold)";
+    }
+  });
+})();
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

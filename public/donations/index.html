@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q4EYY24EDZ"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-Q4EYY24EDZ');</script>
+  <title>Donations — Big Sister Foundation</title>
+  <meta name="description" content="Track volunteer donations and generate receipts. Every contribution to Big Sister Foundation is recorded and receipted.">
+  <meta property="og:title" content="Donations — Big Sister Foundation">
+  <meta property="og:description" content="Track volunteer donations and generate receipts. Every contribution to Big Sister Foundation is recorded and receipted.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/og-image.svg">
+  <meta name="theme-color" content="#2D5E40">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cellipse cx='50' cy='35' rx='35' ry='30' fill='%232D5E40' opacity='0.85'/%3E%3Cellipse cx='30' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cellipse cx='70' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cpath d='M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z' fill='%233A2A1F' opacity='0.8'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #2D5E40;
+      --green-dark: #1E3F2B;
+      --brown: #3A2A1F;
+      --terra: #C2734C;
+      --gold: #D4A96A;
+      --sage: #8BAF8E;
+      --cream: #FFF8F0;
+      --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --section-pad: clamp(48px, 4vw + 20px, 100px);
+      --page-margin: clamp(20px, 4vw, 80px);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.2rem);
+      line-height: 1.7;
+      color: var(--brown);
+      background: var(--cream);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+    button { font: inherit; cursor: pointer; border: none; background: none; }
+
+    .eyebrow {
+      font-family: var(--font-sans);
+      font-size: clamp(0.7rem, 0.5vw + 0.5rem, 0.85rem);
+      font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--terra); margin-bottom: 1rem;
+    }
+
+    h1, h2, h3 {
+      font-family: var(--font-serif);
+      font-weight: 500; line-height: 1.08; letter-spacing: -0.02em;
+    }
+    h1 { font-size: clamp(2.2rem, 4vw + 0.5rem, 4rem); }
+    h2 { font-size: clamp(1.8rem, 2.5vw + 0.5rem, 2.8rem); }
+    h3 { font-size: clamp(1.3rem, 1vw + 0.8rem, 1.7rem); line-height: 1.2; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding-left: var(--page-margin); padding-right: var(--page-margin); }
+    .section-pad { padding-top: var(--section-pad); padding-bottom: var(--section-pad); }
+
+    /* NAV */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem var(--page-margin); background: var(--green-dark);
+    }
+    .nav__logo { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; text-decoration: none; color: var(--cream); }
+    .nav__links { list-style: none; display: flex; gap: 2rem; }
+    .nav__links a { font-size: 0.85rem; font-weight: 500; text-decoration: none; color: rgba(255,248,240,0.7); transition: color 0.3s; }
+    .nav__links a:hover { color: var(--cream); }
+    .nav__links a.is-active { color: var(--gold); }
+    
+
+    /* HERO */
+    .donate-hero {
+      padding-top: calc(60px + var(--section-pad));
+      padding-bottom: var(--section-pad);
+      background: var(--green-dark); color: var(--cream);
+      position: relative; overflow: hidden;
+    }
+    .donate-hero::before {
+      content: '';
+      position: absolute; top: -40%; right: -10%; width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(212,169,106,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .donate-hero .eyebrow { color: var(--gold); }
+    .donate-hero__sub {
+      max-width: 640px; margin-top: 1.2rem;
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.15rem);
+      line-height: 1.7; color: rgba(255,248,240,0.75);
+    }
+
+    /* DASHBOARD STRIP */
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: -40px;
+      position: relative; z-index: 10;
+    }
+    .dash-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+    .dash-card__label {
+      font-size: 0.75rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: rgba(58,42,31,0.5); margin-bottom: 0.3rem;
+    }
+    .dash-card__value {
+      font-family: var(--font-serif);
+      font-size: clamp(1.6rem, 2vw + 0.3rem, 2.2rem);
+      font-weight: 500; line-height: 1.1;
+    }
+    .dash-card__value--green { color: var(--green); }
+    .dash-card__value--terra { color: var(--terra); }
+    .dash-card__value--gold { color: #8a6d2f; }
+
+    /* DONATION FORM */
+    .form-section {
+      background: #fff;
+      border-radius: 16px;
+      padding: clamp(1.5rem, 3vw, 2.5rem);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+      margin-top: 2.5rem;
+    }
+    .form-section__title {
+      font-family: var(--font-serif);
+      font-size: clamp(1.2rem, 1.5vw + 0.3rem, 1.6rem);
+      font-weight: 500; margin-bottom: 1.5rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+    }
+    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+
+    .form-group { display: flex; flex-direction: column; }
+    .form-group--full { grid-column: 1 / -1; }
+
+    .form-group label {
+      font-size: 0.8rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      color: rgba(58,42,31,0.6); margin-bottom: 0.4rem;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 0.7rem 1rem;
+      border: 1.5px solid rgba(58,42,31,0.12);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: var(--font-sans);
+      color: var(--brown);
+      background: var(--cream);
+      transition: border-color 0.3s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--green);
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.85rem 2rem;
+      background: var(--green); color: var(--cream);
+      border-radius: 100px; font-size: 0.9rem; font-weight: 600;
+      letter-spacing: 0.02em;
+      transition: background 0.3s var(--ease), transform 0.2s;
+      margin-top: 0.5rem;
+    }
+    .btn-primary:hover { background: var(--green-dark); transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.6rem 1.4rem;
+      background: transparent; color: var(--green);
+      border: 1.5px solid var(--green);
+      border-radius: 100px; font-size: 0.82rem; font-weight: 600;
+      transition: all 0.3s var(--ease);
+    }
+    .btn-outline:hover { background: var(--green); color: var(--cream); }
+
+    /* SUCCESS MESSAGE */
+    .success-msg {
+      display: none;
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+    .success-msg.is-visible { display: block; }
+    .success-msg__icon {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: rgba(45,94,64,0.1);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; margin-bottom: 1rem;
+    }
+    .success-msg__heading {
+      font-family: var(--font-serif);
+      font-size: 1.5rem; font-weight: 500; margin-bottom: 0.5rem;
+    }
+    .success-msg__text { color: rgba(58,42,31,0.6); max-width: 400px; margin: 0 auto 1.5rem; }
+
+    /* DONATIONS TABLE */
+    .table-section {
+      background: #fff;
+      border-radius: 16px;
+      padding: clamp(1.5rem, 3vw, 2.5rem);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+      margin-top: 2rem;
+    }
+    .table-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.75rem;
+    }
+    .table-header__title {
+      font-family: var(--font-serif);
+      font-size: clamp(1.2rem, 1.5vw + 0.3rem, 1.6rem);
+      font-weight: 500;
+    }
+
+    .filter-bar {
+      display: flex; gap: 0.5rem; flex-wrap: wrap;
+    }
+    .filter-bar select {
+      padding: 0.4rem 0.8rem;
+      border: 1.5px solid rgba(58,42,31,0.12);
+      border-radius: 100px;
+      font-size: 0.8rem; font-weight: 500;
+      color: var(--brown); background: var(--cream);
+      cursor: pointer;
+    }
+
+    .donation-list { display: flex; flex-direction: column; }
+
+    .donation-row {
+      display: grid;
+      grid-template-columns: 100px 1fr 120px 110px 80px;
+      gap: 0.75rem; align-items: center;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid rgba(58,42,31,0.06);
+    }
+    .donation-row:last-child { border-bottom: none; }
+    .donation-row--header {
+      border-bottom: 2px solid rgba(58,42,31,0.1);
+      padding-bottom: 0.6rem;
+    }
+    .donation-row--header span {
+      font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: rgba(58,42,31,0.4);
+    }
+
+    @media (max-width: 700px) {
+      .donation-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.3rem 0.75rem;
+        padding: 0.75rem 0;
+      }
+      .donation-row--header { display: none; }
+      .donation-row .don-date { grid-column: 1 / -1; }
+    }
+
+    .don-date { font-size: 0.78rem; color: rgba(58,42,31,0.45); font-variant-numeric: tabular-nums; }
+    .don-name { font-weight: 600; font-size: 0.92rem; }
+    .don-amount { font-family: var(--font-serif); font-weight: 500; color: var(--green); font-variant-numeric: tabular-nums; }
+    .don-type {
+      font-size: 0.75rem; font-weight: 600;
+      padding: 0.2rem 0.6rem; border-radius: 100px;
+      display: inline-block; width: fit-content;
+    }
+    .don-type--monetary { background: rgba(45,94,64,0.1); color: var(--green); }
+    .don-type--goods { background: rgba(194,115,76,0.12); color: var(--terra); }
+    .don-type--service { background: rgba(212,169,106,0.2); color: #8a6d2f; }
+
+    .don-receipt { text-align: center; }
+    .don-receipt button {
+      font-size: 0.78rem; font-weight: 600;
+      color: var(--green); text-decoration: underline;
+      text-underline-offset: 2px;
+      transition: color 0.2s;
+    }
+    .don-receipt button:hover { color: var(--green-dark); }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: rgba(58,42,31,0.4);
+    }
+    .empty-state__icon { font-size: 2rem; margin-bottom: 0.5rem; }
+
+    .loading-spinner {
+      display: flex; justify-content: center; padding: 2rem;
+    }
+    .loading-spinner::after {
+      content: '';
+      width: 28px; height: 28px;
+      border: 3px solid rgba(58,42,31,0.1);
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* RECEIPT MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(30,63,43,0.5);
+      backdrop-filter: blur(4px);
+      align-items: center; justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.is-visible { display: flex; }
+
+    .modal {
+      background: #fff;
+      border-radius: 16px;
+      max-width: 560px; width: 100%;
+      max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+    }
+    .modal__header {
+      padding: 1.5rem 2rem 0;
+      display: flex; justify-content: space-between; align-items: flex-start;
+    }
+    .modal__close {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(58,42,31,0.06);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; color: rgba(58,42,31,0.4);
+      transition: background 0.2s;
+    }
+    .modal__close:hover { background: rgba(58,42,31,0.12); }
+
+    .receipt {
+      padding: 2rem;
+    }
+    .receipt__org {
+      text-align: center; margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 2px dashed rgba(58,42,31,0.12);
+    }
+    .receipt__org-name {
+      font-family: var(--font-serif);
+      font-size: 1.4rem; font-weight: 600;
+      color: var(--green-dark);
+    }
+    .receipt__org-tagline {
+      font-size: 0.8rem; color: rgba(58,42,31,0.5);
+      margin-top: 0.2rem;
+    }
+    .receipt__badge {
+      display: inline-block;
+      margin-top: 0.6rem;
+      padding: 0.25rem 0.8rem;
+      background: rgba(45,94,64,0.08);
+      border-radius: 100px;
+      font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--green);
+    }
+
+    .receipt__row {
+      display: flex; justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(58,42,31,0.05);
+    }
+    .receipt__row:last-child { border-bottom: none; }
+    .receipt__label {
+      font-size: 0.8rem; font-weight: 600;
+      color: rgba(58,42,31,0.5);
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .receipt__value { font-weight: 500; text-align: right; }
+
+    .receipt__total {
+      margin-top: 1rem; padding-top: 1rem;
+      border-top: 2px solid var(--green);
+      display: flex; justify-content: space-between; align-items: baseline;
+    }
+    .receipt__total-label {
+      font-size: 0.85rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .receipt__total-value {
+      font-family: var(--font-serif);
+      font-size: 1.5rem; font-weight: 600;
+      color: var(--green);
+    }
+
+    .receipt__footer {
+      text-align: center;
+      margin-top: 1.5rem; padding-top: 1rem;
+      border-top: 2px dashed rgba(58,42,31,0.12);
+      font-size: 0.78rem; color: rgba(58,42,31,0.4);
+      line-height: 1.6;
+    }
+
+    .receipt__actions {
+      display: flex; gap: 0.75rem; justify-content: center;
+      padding: 0 2rem 1.5rem;
+    }
+
+    /* FOOTER */
+    .footer {
+      background: var(--green-dark); color: rgba(255,248,240,0.6);
+      padding: 3rem 0;
+    }
+    .footer__layout { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 2rem; }
+    .footer__brand-name { font-family: var(--font-serif); font-size: 1.1rem; font-weight: 600; color: var(--cream); }
+    .footer__tagline { font-size: 0.85rem; margin-top: 0.2rem; }
+    .footer__location { font-size: 0.8rem; margin-top: 0.3rem; }
+    .footer__links { list-style: none; display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+    .footer__links a { font-size: 0.82rem; text-decoration: none; transition: color 0.3s; }
+    .footer__links a:hover { color: var(--cream); }
+    .footer__copy { font-size: 0.75rem; }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(120%);
+      background: var(--green-dark); color: var(--cream);
+      padding: 0.8rem 1.5rem; border-radius: 100px;
+      font-size: 0.85rem; font-weight: 500;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      transition: transform 0.4s var(--ease);
+      z-index: 300; white-space: nowrap;
+    }
+    .toast.is-visible { transform: translateX(-50%) translateY(0); }
+
+    /* ANIMATIONS */
+    [data-animate] {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+    }
+    [data-animate].is-visible { opacity: 1; transform: translateY(0); }
+    [data-animate-delay="1"] { transition-delay: 0.1s; }
+    [data-animate-delay="2"] { transition-delay: 0.2s; }
+    [data-animate-delay="3"] { transition-delay: 0.3s; }
+      /* =============================================
+       MOBILE HAMBURGER MENU
+    ============================================= */
+    .nav__hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 200;
+    }
+    .nav__hamburger span {
+      display: block;
+      width: 100%;
+      height: 2px;
+      background: var(--cream);
+      border-radius: 2px;
+      transition: transform 0.35s var(--ease), opacity 0.25s ease;
+      transform-origin: center;
+    }
+    .nav__hamburger.active span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+    .nav__hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+    .nav__hamburger.active span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+    .nav__backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(30, 63, 43, 0.5);
+      z-index: 90;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .nav__backdrop.visible {
+      opacity: 1;
+    }
+    @media (max-width: 768px) {
+      .nav__hamburger { display: flex; }
+      .nav__links {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: min(300px, 80vw);
+        flex-direction: column;
+        gap: 0 !important;
+        background: var(--green-dark);
+        padding: 5rem 2rem 2rem;
+        transform: translateX(100%);
+        transition: transform 0.4s var(--ease);
+        z-index: 95;
+        box-shadow: -4px 0 24px rgba(0,0,0,0.2);
+        overflow-y: auto;
+      }
+      .nav__links.open {
+        transform: translateX(0);
+      }
+      .nav__links li {
+        border-bottom: 1px solid rgba(255,248,240,0.08);
+      }
+      .nav__links a {
+        display: block;
+        padding: 0.9rem 0;
+        font-size: 1rem !important;
+        color: rgba(255,248,240,0.7);
+      }
+      .nav__links a:hover,
+      .nav__links a.active {
+        color: var(--gold) !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav" aria-label="Main navigation">
+    <a href="/" class="nav__logo">Big Sister Foundation</a>
+    <button class="nav__hamburger" id="nav-hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav__links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/scholars/">Scholars</a></li>
+      <li><a href="/ledger/">Ledger</a></li>
+      <li><a href="/events/">Events</a></li>
+      <li><a href="/volunteer/">Volunteer</a></li>
+      <li><a href="/donate/">Give</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="donate-hero">
+    <div class="container">
+      <p class="eyebrow" data-animate>Every Naira Counts</p>
+      <h1 data-animate data-animate-delay="1">Volunteer<br>Donations</h1>
+      <p class="donate-hero__sub" data-animate data-animate-delay="2">Every contribution — cash, goods, or service — is tracked, receipted, and accounted for. This is how trust is built: one transparent record at a time.</p>
+    </div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section class="section-pad">
+    <div class="container">
+      <div class="dashboard">
+        <div class="dash-card" data-animate>
+          <div class="dash-card__label">Total Raised</div>
+          <div class="dash-card__value dash-card__value--green" id="stat-total">&#8358;0</div>
+        </div>
+        <div class="dash-card" data-animate data-animate-delay="1">
+          <div class="dash-card__label">This Month</div>
+          <div class="dash-card__value dash-card__value--terra" id="stat-month">&#8358;0</div>
+        </div>
+        <div class="dash-card" data-animate data-animate-delay="2">
+          <div class="dash-card__label">Donations</div>
+          <div class="dash-card__value dash-card__value--gold" id="stat-count">0</div>
+        </div>
+        <div class="dash-card" data-animate data-animate-delay="3">
+          <div class="dash-card__label">Unique Donors</div>
+          <div class="dash-card__value" id="stat-donors">0</div>
+        </div>
+      </div>
+
+      <!-- DONATION FORM -->
+      <div class="form-section" data-animate>
+        <div id="form-wrapper">
+          <h3 class="form-section__title">Record a Donation</h3>
+          <form id="donation-form">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="donor-name">Donor Name</label>
+                <input type="text" id="donor-name" required placeholder="Full name">
+              </div>
+              <div class="form-group">
+                <label for="donor-email">Email</label>
+                <input type="email" id="donor-email" placeholder="For receipt delivery (optional)">
+              </div>
+              <div class="form-group">
+                <label for="donation-type">Type</label>
+                <select id="donation-type" required>
+                  <option value="monetary">Monetary (Cash / Transfer)</option>
+                  <option value="goods">Goods / Supplies</option>
+                  <option value="service">Service / Volunteer Time</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="donation-amount">Amount (&#8358;)</label>
+                <input type="number" id="donation-amount" required min="0" step="0.01" placeholder="0.00">
+              </div>
+              <div class="form-group">
+                <label for="donation-date">Date</label>
+                <input type="date" id="donation-date" required>
+              </div>
+              <div class="form-group">
+                <label for="donation-method">Payment Method</label>
+                <select id="donation-method">
+                  <option value="bank-transfer">Bank Transfer</option>
+                  <option value="cash">Cash</option>
+                  <option value="mobile-money">Mobile Money</option>
+                  <option value="in-kind">In-Kind</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="form-group form-group--full">
+                <label for="donation-note">Note (optional)</label>
+                <textarea id="donation-note" rows="2" placeholder="Purpose, items donated, or hours volunteered..."></textarea>
+              </div>
+            </div>
+            <button type="submit" class="btn-primary" id="submit-btn">
+              <span id="submit-text">Record Donation</span>
+            </button>
+          </form>
+        </div>
+
+        <div class="success-msg" id="success-msg">
+          <div class="success-msg__icon">&#10003;</div>
+          <h3 class="success-msg__heading">Donation Recorded</h3>
+          <p class="success-msg__text">The donation has been logged. You can generate a receipt from the table below.</p>
+          <button class="btn-outline" onclick="resetForm()">Record Another</button>
+        </div>
+      </div>
+
+      <!-- DONATIONS TABLE -->
+      <div class="table-section" data-animate>
+        <div class="table-header">
+          <h3 class="table-header__title">Donation History</h3>
+          <div class="filter-bar">
+            <select id="filter-type">
+              <option value="all">All Types</option>
+              <option value="monetary">Monetary</option>
+              <option value="goods">Goods</option>
+              <option value="service">Service</option>
+            </select>
+            <select id="filter-month">
+              <option value="all">All Time</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="donations-loading" class="loading-spinner"></div>
+
+        <div id="donations-empty" class="empty-state" style="display:none;">
+          <div class="empty-state__icon">&#9734;</div>
+          <p>No donations recorded yet.<br>Be the first to contribute.</p>
+        </div>
+
+        <div id="donations-list" style="display:none;">
+          <div class="donation-row donation-row--header">
+            <span>Date</span>
+            <span>Donor</span>
+            <span>Amount</span>
+            <span>Type</span>
+            <span>Receipt</span>
+          </div>
+          <div class="donation-list" id="donation-rows"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- RECEIPT MODAL -->
+  <div class="modal-overlay" id="receipt-modal">
+    <div class="modal">
+      <div class="modal__header">
+        <span></span>
+        <button class="modal__close" onclick="closeReceipt()" aria-label="Close">&times;</button>
+      </div>
+      <div class="receipt" id="receipt-content">
+        <div class="receipt__org">
+          <div class="receipt__org-name">Big Sister Foundation</div>
+          <div class="receipt__org-tagline">Rooted. Present. Protective.</div>
+          <div class="receipt__badge">Donation Receipt</div>
+        </div>
+        <div id="receipt-body"></div>
+        <div class="receipt__footer">
+          Thank you for your generosity.<br>
+          Big Sister Foundation &middot; Lagos, Nigeria<br>
+          hello@thebigsisterfoundation.org
+        </div>
+      </div>
+      <div class="receipt__actions">
+        <button class="btn-outline" onclick="printReceipt()">Print</button>
+        <button class="btn-primary" onclick="downloadReceipt()" style="font-size:0.82rem; padding:0.6rem 1.4rem;">Download</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__layout">
+        <div class="footer__left">
+          <p class="footer__brand-name">Big Sister Foundation</p>
+          <p class="footer__tagline">Rooted. Present. Protective.</p>
+          <p class="footer__location">Lagos, Nigeria</p>
+        </div>
+        <div class="footer__right">
+          <ul class="footer__links">
+            <li><a href="/scholars/">Scholars</a></li>
+            <li><a href="/ledger/">Ledger</a></li>
+            <li><a href="/events/">Events</a></li>
+            <li><a href="/volunteer/">Volunteer</a></li>
+            <li><a href="/forums/">Forums</a></li>
+            <li><a href="/ideas/">Ideas</a></li>
+            <li><a href="/donations/">Donations</a></li>
+            <li><a href="/donate/">Give</a></li>
+            <li><a href="/sponsor/">Sponsor</a></li>
+            <li><a href="mailto:hello@thebigsisterfoundation.org">Email</a></li>
+          </ul>
+          <p class="footer__copy">&copy; 2026 Big Sister Foundation. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- FIREBASE -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script src="/shared/bsf-antispam.js"></script>
+  <script>
+    (function() {
+      BSFAntiSpam.protect('donation-form');
+
+      firebase.initializeApp({
+        apiKey: "AIzaSyCwos6XR9-uqAf_Esmh2K_hJoLxq4gnEuU",
+        authDomain: "big-sister-foundation.firebaseapp.com",
+        projectId: "big-sister-foundation",
+        storageBucket: "big-sister-foundation.firebasestorage.app",
+        messagingSenderId: "778723584560",
+        appId: "1:778723584560:web:7499944c30001e7fcf5bf5"
+      });
+      var db = firebase.firestore();
+
+      /* ── DOM refs ── */
+      var form = document.getElementById('donation-form');
+      var formWrapper = document.getElementById('form-wrapper');
+      var successMsg = document.getElementById('success-msg');
+      var submitBtn = document.getElementById('submit-btn');
+      var submitText = document.getElementById('submit-text');
+      var donationRows = document.getElementById('donation-rows');
+      var donationsLoading = document.getElementById('donations-loading');
+      var donationsEmpty = document.getElementById('donations-empty');
+      var donationsList = document.getElementById('donations-list');
+      var filterType = document.getElementById('filter-type');
+      var filterMonth = document.getElementById('filter-month');
+      var receiptModal = document.getElementById('receipt-modal');
+      var receiptBody = document.getElementById('receipt-body');
+      var toastEl = document.getElementById('toast');
+      var dateInput = document.getElementById('donation-date');
+
+      dateInput.value = new Date().toISOString().split('T')[0];
+
+      var allDonations = [];
+
+      /* ── Format currency ── */
+      function formatNaira(n) {
+        return '\u20A6' + Number(n).toLocaleString('en-NG', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      }
+
+      function formatDate(d) {
+        if (!d) return '\u2014';
+        var date = d.toDate ? d.toDate() : new Date(d);
+        return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      }
+
+      /* ── Receipt ID ── */
+      function generateReceiptId() {
+        var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        var id = 'BSF-';
+        for (var i = 0; i < 8; i++) id += chars.charAt(Math.floor(Math.random() * chars.length));
+        return id;
+      }
+
+      /* ── Toast ── */
+      function showToast(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add('is-visible');
+        setTimeout(function() { toastEl.classList.remove('is-visible'); }, 3000);
+      }
+
+      /* ── Helpers ── */
+      function capitalize(s) {
+        return s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+      }
+
+      function formatMethod(m) {
+        var map = { 'bank-transfer': 'Bank Transfer', 'cash': 'Cash', 'mobile-money': 'Mobile Money', 'in-kind': 'In-Kind', 'other': 'Other' };
+        return map[m] || m || '\u2014';
+      }
+
+      /* ── Submit donation ── */
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (!BSFAntiSpam.check('donation-form')) return;
+        submitBtn.disabled = true;
+        submitText.textContent = 'Recording...';
+
+        var data = {
+          donorName: document.getElementById('donor-name').value.trim(),
+          donorEmail: document.getElementById('donor-email').value.trim(),
+          type: document.getElementById('donation-type').value,
+          amount: parseFloat(document.getElementById('donation-amount').value),
+          date: new Date(document.getElementById('donation-date').value),
+          method: document.getElementById('donation-method').value,
+          note: document.getElementById('donation-note').value.trim(),
+          receiptId: generateReceiptId(),
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        db.collection('donations').add(data).then(function() {
+          formWrapper.style.display = 'none';
+          successMsg.classList.add('is-visible');
+          showToast('Donation recorded successfully');
+          loadDonations();
+        }).catch(function(err) {
+          console.error('Error:', err);
+          showToast('Error recording donation. Please try again.');
+        }).finally(function() {
+          submitBtn.disabled = false;
+          submitText.textContent = 'Record Donation';
+        });
+      });
+
+      /* ── Reset form ── */
+      window.resetForm = function() {
+        form.reset();
+        dateInput.value = new Date().toISOString().split('T')[0];
+        formWrapper.style.display = 'block';
+        successMsg.classList.remove('is-visible');
+      };
+
+      /* ── Load donations ── */
+      function loadDonations() {
+        donationsLoading.style.display = 'flex';
+        donationsEmpty.style.display = 'none';
+        donationsList.style.display = 'none';
+
+        db.collection('donations').orderBy('date', 'desc').get().then(function(snap) {
+          allDonations = [];
+          snap.forEach(function(doc) {
+            allDonations.push(Object.assign({ id: doc.id }, doc.data()));
+          });
+          updateStats();
+          populateMonthFilter();
+          renderDonations();
+        }).catch(function(err) {
+          console.error('Load error:', err);
+          donationsLoading.style.display = 'none';
+          donationsEmpty.style.display = 'block';
+        });
+      }
+
+      /* ── Update stats ── */
+      function updateStats() {
+        var total = 0;
+        var monthTotal = 0;
+        var donors = new Set();
+        var now = new Date();
+        var curMonth = now.getMonth();
+        var curYear = now.getFullYear();
+
+        allDonations.forEach(function(d) {
+          total += d.amount || 0;
+          donors.add((d.donorName || '').toLowerCase());
+          var dDate = d.date && d.date.toDate ? d.date.toDate() : new Date(d.date);
+          if (dDate.getMonth() === curMonth && dDate.getFullYear() === curYear) {
+            monthTotal += d.amount || 0;
+          }
+        });
+
+        document.getElementById('stat-total').textContent = formatNaira(total);
+        document.getElementById('stat-month').textContent = formatNaira(monthTotal);
+        document.getElementById('stat-count').textContent = allDonations.length;
+        document.getElementById('stat-donors').textContent = donors.size;
+      }
+
+      /* ── Populate month filter ── */
+      function populateMonthFilter() {
+        var months = new Set();
+        allDonations.forEach(function(d) {
+          var dDate = d.date && d.date.toDate ? d.date.toDate() : new Date(d.date);
+          months.add(dDate.getFullYear() + '-' + String(dDate.getMonth() + 1).padStart(2, '0'));
+        });
+        var sorted = Array.from(months).sort().reverse();
+
+        while (filterMonth.options.length > 1) filterMonth.remove(1);
+        sorted.forEach(function(m) {
+          var parts = m.split('-');
+          var label = new Date(parts[0], parts[1] - 1).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+          var opt = document.createElement('option');
+          opt.value = m;
+          opt.textContent = label;
+          filterMonth.appendChild(opt);
+        });
+      }
+
+      /* ── Render donations ── */
+      function renderDonations() {
+        donationsLoading.style.display = 'none';
+        var typeFilter = filterType.value;
+        var monthFilter = filterMonth.value;
+
+        var filtered = allDonations.filter(function(d) {
+          if (typeFilter !== 'all' && d.type !== typeFilter) return false;
+          if (monthFilter !== 'all') {
+            var dDate = d.date && d.date.toDate ? d.date.toDate() : new Date(d.date);
+            var key = dDate.getFullYear() + '-' + String(dDate.getMonth() + 1).padStart(2, '0');
+            if (key !== monthFilter) return false;
+          }
+          return true;
+        });
+
+        if (filtered.length === 0) {
+          donationsEmpty.style.display = 'block';
+          donationsList.style.display = 'none';
+          return;
+        }
+
+        donationsEmpty.style.display = 'none';
+        donationsList.style.display = 'block';
+        donationRows.textContent = '';
+
+        filtered.forEach(function(d) {
+          var row = document.createElement('div');
+          row.className = 'donation-row';
+
+          var dateSpan = document.createElement('span');
+          dateSpan.className = 'don-date';
+          dateSpan.textContent = formatDate(d.date);
+
+          var nameSpan = document.createElement('span');
+          nameSpan.className = 'don-name';
+          nameSpan.textContent = d.donorName;
+
+          var amountSpan = document.createElement('span');
+          amountSpan.className = 'don-amount';
+          amountSpan.textContent = formatNaira(d.amount);
+
+          var typeWrapper = document.createElement('span');
+          var typeBadge = document.createElement('span');
+          typeBadge.className = 'don-type don-type--' + d.type;
+          typeBadge.textContent = capitalize(d.type);
+          typeWrapper.appendChild(typeBadge);
+
+          var receiptSpan = document.createElement('span');
+          receiptSpan.className = 'don-receipt';
+          var receiptBtn = document.createElement('button');
+          receiptBtn.textContent = 'View';
+          receiptBtn.addEventListener('click', (function(donation) {
+            return function() { showReceipt(donation); };
+          })(d));
+          receiptSpan.appendChild(receiptBtn);
+
+          row.appendChild(dateSpan);
+          row.appendChild(nameSpan);
+          row.appendChild(amountSpan);
+          row.appendChild(typeWrapper);
+          row.appendChild(receiptSpan);
+          donationRows.appendChild(row);
+        });
+      }
+
+      filterType.addEventListener('change', renderDonations);
+      filterMonth.addEventListener('change', renderDonations);
+
+      /* ── Receipt modal ── */
+      function showReceipt(d) {
+        receiptBody.textContent = '';
+
+        var fields = [
+          { label: 'Receipt No.', value: d.receiptId || '\u2014' },
+          { label: 'Date', value: formatDate(d.date) },
+          { label: 'Donor', value: d.donorName }
+        ];
+        if (d.donorEmail) fields.push({ label: 'Email', value: d.donorEmail });
+        fields.push({ label: 'Type', value: capitalize(d.type) });
+        fields.push({ label: 'Method', value: formatMethod(d.method) });
+        if (d.note) fields.push({ label: 'Note', value: d.note });
+
+        fields.forEach(function(f) {
+          var row = document.createElement('div');
+          row.className = 'receipt__row';
+          var lbl = document.createElement('span');
+          lbl.className = 'receipt__label';
+          lbl.textContent = f.label;
+          var val = document.createElement('span');
+          val.className = 'receipt__value';
+          val.textContent = f.value;
+          row.appendChild(lbl);
+          row.appendChild(val);
+          receiptBody.appendChild(row);
+        });
+
+        var totalRow = document.createElement('div');
+        totalRow.className = 'receipt__total';
+        var totalLbl = document.createElement('span');
+        totalLbl.className = 'receipt__total-label';
+        totalLbl.textContent = 'Total';
+        var totalVal = document.createElement('span');
+        totalVal.className = 'receipt__total-value';
+        totalVal.textContent = formatNaira(d.amount);
+        totalRow.appendChild(totalLbl);
+        totalRow.appendChild(totalVal);
+        receiptBody.appendChild(totalRow);
+
+        receiptModal.classList.add('is-visible');
+        document.body.style.overflow = 'hidden';
+      }
+
+      window.closeReceipt = function() {
+        receiptModal.classList.remove('is-visible');
+        document.body.style.overflow = '';
+      };
+
+      receiptModal.addEventListener('click', function(e) {
+        if (e.target === receiptModal) closeReceipt();
+      });
+
+      /* ── Print receipt ── */
+      window.printReceipt = function() {
+        var printWindow = window.open('', '_blank');
+        var content = document.getElementById('receipt-content');
+        var clone = content.cloneNode(true);
+        var doc = printWindow.document;
+
+        var style = doc.createElement('style');
+        style.textContent =
+          'body{font-family:system-ui,sans-serif;color:#3A2A1F;max-width:500px;margin:2rem auto;padding:0 1rem;}' +
+          '.receipt{padding:0;}' +
+          '.receipt__org{text-align:center;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:2px dashed rgba(58,42,31,0.12);}' +
+          '.receipt__org-name{font-family:Georgia,serif;font-size:1.4rem;font-weight:600;color:#1E3F2B;}' +
+          '.receipt__org-tagline{font-size:0.8rem;color:rgba(58,42,31,0.5);margin-top:0.2rem;}' +
+          '.receipt__badge{display:inline-block;margin-top:0.6rem;padding:0.25rem 0.8rem;background:rgba(45,94,64,0.08);border-radius:100px;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#2D5E40;}' +
+          '.receipt__row{display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid rgba(58,42,31,0.05);}' +
+          '.receipt__label{font-size:0.8rem;font-weight:600;color:rgba(58,42,31,0.5);text-transform:uppercase;letter-spacing:0.04em;}' +
+          '.receipt__value{font-weight:500;text-align:right;}' +
+          '.receipt__total{margin-top:1rem;padding-top:1rem;border-top:2px solid #2D5E40;display:flex;justify-content:space-between;align-items:baseline;}' +
+          '.receipt__total-label{font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;}' +
+          '.receipt__total-value{font-family:Georgia,serif;font-size:1.5rem;font-weight:600;color:#2D5E40;}' +
+          '.receipt__footer{text-align:center;margin-top:1.5rem;padding-top:1rem;border-top:2px dashed rgba(58,42,31,0.12);font-size:0.78rem;color:rgba(58,42,31,0.4);line-height:1.6;}';
+        doc.head.appendChild(style);
+
+        var title = doc.createElement('title');
+        title.textContent = 'Donation Receipt \u2014 Big Sister Foundation';
+        doc.head.appendChild(title);
+
+        doc.body.appendChild(doc.adoptNode(clone));
+        printWindow.focus();
+        setTimeout(function() { printWindow.print(); }, 500);
+      };
+
+      /* ── Download receipt as text ── */
+      window.downloadReceipt = function() {
+        var rows = receiptBody.querySelectorAll('.receipt__row, .receipt__total');
+        var lines = ['BIG SISTER FOUNDATION', 'Rooted. Present. Protective.', 'DONATION RECEIPT', '---'];
+        rows.forEach(function(row) {
+          var label = row.querySelector('.receipt__label, .receipt__total-label');
+          var value = row.querySelector('.receipt__value, .receipt__total-value');
+          if (label && value) lines.push(label.textContent + ': ' + value.textContent);
+        });
+        lines.push('---', 'Thank you for your generosity.', 'Big Sister Foundation - Lagos, Nigeria', 'hello@thebigsisterfoundation.org');
+
+        var blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'BSF-Donation-Receipt.txt';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        showToast('Receipt downloaded');
+      };
+
+      /* ── Keyboard: Escape closes modal ── */
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeReceipt();
+      });
+
+      /* ── Scroll animations ── */
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          if (e.isIntersecting) { e.target.classList.add('is-visible'); observer.unobserve(e.target); }
+        });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('[data-animate]').forEach(function(el) { observer.observe(el); });
+
+      /* ── Init ── */
+      loadDonations();
+
+    })();
+  </script>
+
+<div class="nav__backdrop" id="nav-backdrop"></div>
+<script>
+(function() {
+  var hamburger = document.getElementById("nav-hamburger");
+  var navLinks = document.querySelector(".nav__links");
+  var backdrop = document.getElementById("nav-backdrop");
+  if (!hamburger || !navLinks || !backdrop) return;
+  function openMenu() {
+    hamburger.classList.add("active");
+    navLinks.classList.add("open");
+    backdrop.style.display = "block";
+    requestAnimationFrame(function() { backdrop.classList.add("visible"); });
+    document.body.style.overflow = "hidden";
+  }
+  function closeMenu() {
+    hamburger.classList.remove("active");
+    navLinks.classList.remove("open");
+    backdrop.classList.remove("visible");
+    document.body.style.overflow = "";
+    setTimeout(function() { backdrop.style.display = "none"; }, 350);
+  }
+  hamburger.addEventListener("click", function() {
+    if (navLinks.classList.contains("open")) { closeMenu(); } else { openMenu(); }
+  });
+  backdrop.addEventListener("click", closeMenu);
+  navLinks.querySelectorAll("a").forEach(function(link) {
+    link.addEventListener("click", closeMenu);
+  });
+  var currentPath = window.location.pathname;
+  navLinks.querySelectorAll("a").forEach(function(link) {
+    var href = link.getAttribute("href");
+    if (href === currentPath || (href !== "/" && currentPath.startsWith(href))) {
+      link.classList.add("active");
+      link.style.color = "var(--gold)";
+    } else if (href === "/" && currentPath === "/") {
+      link.classList.add("active");
+      link.style.color = "var(--gold)";
+    }
+  });
+})();
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

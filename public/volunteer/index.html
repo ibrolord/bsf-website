@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q4EYY24EDZ"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-Q4EYY24EDZ');</script>
+  <title>Volunteer — Big Sister Foundation</title>
+  <meta name="description" content="Join Big Sister Foundation as a volunteer. We're looking for people who show up consistently for vulnerable children in Lagos.">
+  <meta property="og:title" content="Volunteer — Big Sister Foundation">
+  <meta property="og:description" content="Join Big Sister Foundation as a volunteer. We're looking for people who show up consistently for vulnerable children in Lagos.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/og-image.svg">
+  <meta name="theme-color" content="#2D5E40">
+  <link rel="canonical" href="https://public-mu-steel.vercel.app/volunteer/">
+  <meta property="og:url" content="https://public-mu-steel.vercel.app/volunteer/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Volunteer — Big Sister Foundation">
+  <meta name="twitter:description" content="Join Big Sister Foundation as a volunteer. We're looking for people who show up consistently for vulnerable children in Lagos.">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cellipse cx='50' cy='35' rx='35' ry='30' fill='%232D5E40' opacity='0.85'/%3E%3Cellipse cx='30' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cellipse cx='70' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cpath d='M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z' fill='%233A2A1F' opacity='0.8'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #2D5E40;
+      --green-dark: #1E3F2B;
+      --brown: #3A2A1F;
+      --terra: #C2734C;
+      --gold: #D4A96A;
+      --sage: #8BAF8E;
+      --cream: #FFF8F0;
+      --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --section-pad: clamp(48px, 4vw + 20px, 100px);
+      --page-margin: clamp(20px, 4vw, 80px);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.2rem);
+      line-height: 1.7;
+      color: var(--brown);
+      background: var(--cream);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+    button { font: inherit; cursor: pointer; border: none; background: none; }
+
+    .eyebrow {
+      font-family: var(--font-sans);
+      font-size: clamp(0.7rem, 0.5vw + 0.5rem, 0.85rem);
+      font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--terra); margin-bottom: 1rem;
+    }
+
+    h1, h2, h3 {
+      font-family: var(--font-serif);
+      font-weight: 500; line-height: 1.08; letter-spacing: -0.02em;
+    }
+    h1 { font-size: clamp(2.2rem, 4vw + 0.5rem, 4rem); }
+    h2 { font-size: clamp(1.8rem, 2.5vw + 0.5rem, 2.8rem); }
+    h3 { font-size: clamp(1.3rem, 1vw + 0.8rem, 1.7rem); line-height: 1.2; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding-left: var(--page-margin); padding-right: var(--page-margin); }
+    .section-pad { padding-top: var(--section-pad); padding-bottom: var(--section-pad); }
+
+    /* NAV */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem var(--page-margin); background: var(--green-dark);
+    }
+    .nav__logo { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; text-decoration: none; color: var(--cream); }
+    .nav__links { list-style: none; display: flex; gap: 2rem; }
+    .nav__links a { font-size: 0.85rem; font-weight: 500; text-decoration: none; color: rgba(255,248,240,0.7); transition: color 0.3s; }
+    .nav__links a:hover { color: var(--cream); }
+    .nav__links a.is-active { color: var(--gold); }
+    
+
+    /* HERO */
+    .volunteer-hero {
+      padding-top: calc(60px + var(--section-pad));
+      padding-bottom: var(--section-pad);
+      background: var(--green-dark); color: var(--cream);
+      position: relative; overflow: hidden;
+    }
+    .volunteer-hero::before {
+      content: '';
+      position: absolute; top: -40%; right: -10%; width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(45,94,64,0.3) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .volunteer-hero .eyebrow { color: var(--gold); }
+    .volunteer-hero__sub {
+      max-width: 640px; margin-top: 1.2rem;
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.15rem);
+      line-height: 1.7; color: rgba(255,248,240,0.75);
+    }
+    .volunteer-hero__scroll {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      margin-top: 2rem; font-size: 0.85rem; font-weight: 600;
+      color: var(--gold); text-decoration: none;
+      transition: gap 0.3s var(--ease);
+    }
+    .volunteer-hero__scroll:hover { gap: 0.75rem; }
+    .volunteer-hero__scroll svg { transition: transform 0.3s var(--ease); }
+    .volunteer-hero__scroll:hover svg { transform: translateY(3px); }
+
+    /* ─── MANIFESTO ─── */
+    .manifesto {
+      background: var(--green-dark); color: var(--cream);
+      position: relative;
+      border-top: 1px solid rgba(139,175,142,0.1);
+    }
+    .manifesto__layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem, 4vw, 5rem);
+      align-items: start;
+    }
+    .manifesto .eyebrow { color: var(--gold); }
+    .manifesto__lead {
+      font-family: var(--font-serif);
+      font-size: clamp(1.3rem, 1.5vw + 0.5rem, 1.8rem);
+      line-height: 1.45;
+      color: var(--cream);
+      margin-top: 0.5rem;
+      font-weight: 400;
+    }
+    .manifesto__lead em {
+      font-style: italic;
+      color: var(--gold);
+    }
+    .manifesto__right {
+      display: flex; flex-direction: column; gap: 2.5rem;
+      padding-top: 0.5rem;
+    }
+    .manifesto__pillar {
+      position: relative;
+      padding-left: 1.5rem;
+    }
+    .manifesto__pillar::before {
+      content: '';
+      position: absolute; left: 0; top: 0.3rem;
+      width: 3px; height: 100%;
+      background: var(--terra);
+      border-radius: 2px;
+    }
+    .manifesto__pillar h3 {
+      color: var(--cream);
+      margin-bottom: 0.4rem;
+      font-size: clamp(1.1rem, 0.5vw + 0.8rem, 1.3rem);
+    }
+    .manifesto__pillar p {
+      font-size: clamp(0.88rem, 0.3vw + 0.75rem, 0.98rem);
+      line-height: 1.65;
+      color: rgba(255,248,240,0.65);
+    }
+    @media (max-width: 768px) {
+      .manifesto__layout { grid-template-columns: 1fr; }
+    }
+
+    /* ─── VISION BANNER ─── */
+    .vision-banner {
+      background: var(--brown);
+      color: var(--cream);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .vision-banner::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(212,169,106,0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .vision-banner__quote {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.5vw + 0.5rem, 2.6rem);
+      font-weight: 400;
+      line-height: 1.3;
+      max-width: 780px;
+      margin: 0 auto;
+      font-style: italic;
+      color: var(--cream);
+    }
+    .vision-banner__quote span {
+      color: var(--gold);
+    }
+    .vision-banner__attr {
+      margin-top: 1.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--terra);
+    }
+
+    /* ─── WHAT WE EXPECT ─── */
+    .expectations {
+      background: var(--cream);
+    }
+    .expectations .eyebrow { color: var(--terra); }
+    .expectations__intro {
+      max-width: 640px;
+      font-size: clamp(0.95rem, 0.3vw + 0.8rem, 1.05rem);
+      line-height: 1.7;
+      color: rgba(58,42,31,0.7);
+      margin-top: 0.5rem;
+      margin-bottom: 3rem;
+    }
+    .expectations__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .expect-card {
+      background: #fff;
+      border: 1.5px solid rgba(58,42,31,0.08);
+      border-radius: 16px;
+      padding: 2rem;
+      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+    }
+    .expect-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(58,42,31,0.06);
+    }
+    .expect-card__icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 1.25rem;
+    }
+    .expect-card__icon--green { background: rgba(45,94,64,0.1); color: var(--green); }
+    .expect-card__icon--terra { background: rgba(194,115,76,0.1); color: var(--terra); }
+    .expect-card__icon--gold { background: rgba(212,169,106,0.15); color: #b88c3d; }
+    .expect-card__icon--sage { background: rgba(139,175,142,0.15); color: var(--green); }
+    .expect-card h3 {
+      font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--brown);
+    }
+    .expect-card p {
+      font-size: 0.9rem; line-height: 1.6; color: rgba(58,42,31,0.65);
+    }
+
+    /* ─── ROLE CATEGORIES ─── */
+    .roles {
+      background: var(--green-dark); color: var(--cream);
+    }
+    .roles .eyebrow { color: var(--gold); }
+    .roles__intro {
+      max-width: 600px;
+      font-size: clamp(0.95rem, 0.3vw + 0.8rem, 1.05rem);
+      line-height: 1.7;
+      color: rgba(255,248,240,0.65);
+      margin-top: 0.5rem;
+      margin-bottom: 3rem;
+    }
+    .roles__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.25rem;
+    }
+    .role-card {
+      background: rgba(255,248,240,0.04);
+      border: 1.5px solid rgba(255,248,240,0.08);
+      border-radius: 16px;
+      padding: 1.75rem;
+      cursor: pointer;
+      transition: all 0.35s var(--ease);
+      position: relative;
+      overflow: hidden;
+    }
+    .role-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+      background: var(--terra);
+      transform: scaleY(0);
+      transform-origin: top;
+      transition: transform 0.35s var(--ease);
+      border-radius: 0 2px 2px 0;
+    }
+    .role-card:hover,
+    .role-card.is-selected {
+      background: rgba(255,248,240,0.08);
+      border-color: rgba(194,115,76,0.3);
+    }
+    .role-card:hover::before,
+    .role-card.is-selected::before {
+      transform: scaleY(1);
+    }
+    .role-card.is-selected {
+      border-color: var(--terra);
+    }
+    .role-card__header {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .role-card__icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0;
+      background: rgba(194,115,76,0.12);
+    }
+    .role-card__check {
+      width: 22px; height: 22px; border-radius: 6px;
+      border: 2px solid rgba(255,248,240,0.2);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.25s var(--ease);
+    }
+    .role-card.is-selected .role-card__check {
+      background: var(--terra);
+      border-color: var(--terra);
+    }
+    .role-card__check svg {
+      width: 12px; height: 12px;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.25s var(--ease);
+    }
+    .role-card.is-selected .role-card__check svg {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .role-card h3 {
+      font-size: 1.1rem; color: var(--cream); margin-bottom: 0.35rem;
+    }
+    .role-card p {
+      font-size: 0.85rem; line-height: 1.6; color: rgba(255,248,240,0.55);
+    }
+    .role-card__tag {
+      display: inline-block;
+      margin-top: 0.75rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.65rem;
+      border-radius: 100px;
+      background: rgba(212,169,106,0.12);
+      color: var(--gold);
+    }
+
+    /* ─── FORM SECTION ─── */
+    .form-section {
+      background: var(--cream);
+    }
+    .form-section .eyebrow { color: var(--terra); }
+    .form-section__intro {
+      max-width: 600px;
+      font-size: clamp(0.95rem, 0.3vw + 0.8rem, 1.05rem);
+      line-height: 1.7;
+      color: rgba(58,42,31,0.65);
+      margin-top: 0.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .form-wrapper {
+      max-width: 680px;
+    }
+    .selected-roles-summary {
+      background: rgba(45,94,64,0.06);
+      border: 1.5px solid rgba(45,94,64,0.12);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 2rem;
+      display: none;
+    }
+    .selected-roles-summary.is-visible { display: block; }
+    .selected-roles-summary__label {
+      font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--green); margin-bottom: 0.5rem;
+    }
+    .selected-roles-summary__tags {
+      display: flex; flex-wrap: wrap; gap: 0.4rem;
+    }
+    .selected-roles-summary__tag {
+      font-size: 0.8rem; font-weight: 500;
+      padding: 0.3rem 0.75rem; border-radius: 100px;
+      background: rgba(45,94,64,0.1); color: var(--green);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--brown);
+      margin-bottom: 0.4rem;
+    }
+    .form-group label .optional {
+      font-weight: 400;
+      color: rgba(58,42,31,0.45);
+      font-size: 0.8rem;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="tel"],
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1.5px solid rgba(58,42,31,0.15);
+      border-radius: 10px;
+      background: #fff;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      color: var(--brown);
+      transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+      outline: none;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(45,94,64,0.1);
+    }
+    .form-group input.is-invalid,
+    .form-group textarea.is-invalid,
+    .form-group select.is-invalid {
+      border-color: #c0392b;
+      box-shadow: 0 0 0 3px rgba(192,57,43,0.08);
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+    .form-group select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%233A2A1F' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      padding-right: 2.5rem;
+    }
+    .char-counter {
+      text-align: right;
+      font-size: 0.75rem;
+      color: rgba(58,42,31,0.45);
+      margin-top: 0.3rem;
+    }
+    .char-counter.is-near { color: var(--terra); }
+    .char-counter.is-over { color: #c0392b; font-weight: 600; }
+
+    /* CHECKBOXES */
+    .checkbox-group {
+      display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.25rem;
+    }
+    .checkbox-item {
+      display: flex; align-items: center; gap: 0.5rem; cursor: pointer;
+    }
+    .checkbox-item input[type="checkbox"] {
+      width: 18px; height: 18px; accent-color: var(--green); cursor: pointer;
+    }
+    .checkbox-item span {
+      font-size: 0.9rem; color: var(--brown);
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.9rem 2rem; border-radius: 100px;
+      font-family: var(--font-sans); font-size: clamp(0.85rem, 0.3vw + 0.75rem, 1rem); font-weight: 600;
+      letter-spacing: 0.02em; text-decoration: none;
+      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), opacity 0.3s;
+      cursor: pointer; border: none;
+    }
+    .btn:hover { transform: scale(1.03); box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
+    .btn--terra { background: var(--terra); color: #fff; }
+    .btn--terra:disabled {
+      opacity: 0.6; cursor: not-allowed; transform: none;
+      box-shadow: none;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 200;
+      padding: 1rem 1.5rem; border-radius: 12px;
+      font-size: 0.9rem; font-weight: 500; color: #fff;
+      transform: translateY(120%); opacity: 0;
+      transition: transform 0.4s var(--ease), opacity 0.4s var(--ease);
+      max-width: 400px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    .toast.is-visible { transform: translateY(0); opacity: 1; }
+    .toast--success { background: var(--green); }
+    .toast--error { background: var(--terra); }
+    @media (max-width: 600px) {
+      .toast { left: 1rem; right: 1rem; bottom: 1rem; max-width: none; }
+    }
+
+    /* SUCCESS STATE */
+    .success-message {
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+    .success-message__icon {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: rgba(45,94,64,0.1); margin: 0 auto 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; color: var(--green);
+    }
+    .success-message h2 {
+      margin-bottom: 0.75rem; color: var(--green);
+    }
+    .success-message p {
+      max-width: 460px; margin: 0 auto;
+      color: rgba(58,42,31,0.7); font-size: 1rem; line-height: 1.7;
+    }
+    .success-message .btn {
+      margin-top: 2rem;
+    }
+
+    /* ─── CLOSING CTA ─── */
+    .closing-cta {
+      background: var(--green-dark);
+      color: var(--cream);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .closing-cta::before {
+      content: '';
+      position: absolute; bottom: -30%; left: 50%; transform: translateX(-50%);
+      width: 800px; height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(194,115,76,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .closing-cta h2 {
+      max-width: 600px; margin: 0 auto 0.75rem;
+    }
+    .closing-cta p {
+      max-width: 500px; margin: 0 auto;
+      font-size: clamp(0.95rem, 0.3vw + 0.8rem, 1.05rem);
+      line-height: 1.7;
+      color: rgba(255,248,240,0.6);
+    }
+    .closing-cta .btn { margin-top: 2rem; }
+
+    /* FOOTER */
+    .footer { background: var(--brown); color: rgba(255,248,240,0.6); padding: 3rem 0; }
+    .footer__layout { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 2rem; }
+    .footer__brand-name { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; color: var(--cream); margin-bottom: 0.25rem; }
+    .footer__tagline { font-size: 0.85rem; color: var(--gold); }
+    .footer__location { font-size: 0.8rem; margin-top: 0.25rem; }
+    .footer__links { list-style: none; display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 0.5rem; }
+    .footer__links a { font-size: 0.85rem; text-decoration: none; transition: color 0.3s; }
+    .footer__links a:hover { color: var(--cream); }
+    .footer__copy { font-size: 0.75rem; opacity: 0.5; }
+    .footer__right { text-align: right; }
+    @media (max-width: 600px) { .footer__layout { flex-direction: column; } .footer__right { text-align: left; } }
+
+    /* DIVIDER */
+    .section-divider {
+      height: 1px;
+      background: rgba(58,42,31,0.08);
+      border: none;
+      margin: 0;
+    }
+
+    /* ANIMATIONS */
+    [data-animate] {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+    }
+    [data-animate].is-visible { opacity: 1; transform: translateY(0); }
+    [data-animate-delay="1"] { transition-delay: 0.1s; }
+    [data-animate-delay="2"] { transition-delay: 0.2s; }
+    [data-animate-delay="3"] { transition-delay: 0.3s; }
+    [data-animate-delay="4"] { transition-delay: 0.4s; }
+    [data-animate-delay="5"] { transition-delay: 0.5s; }
+    [data-animate-delay="6"] { transition-delay: 0.6s; }
+      /* =============================================
+       MOBILE HAMBURGER MENU
+    ============================================= */
+    .nav__hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 200;
+    }
+    .nav__hamburger span {
+      display: block;
+      width: 100%;
+      height: 2px;
+      background: var(--cream);
+      border-radius: 2px;
+      transition: transform 0.35s var(--ease), opacity 0.25s ease;
+      transform-origin: center;
+    }
+    .nav__hamburger.active span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+    .nav__hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+    .nav__hamburger.active span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+    .nav__backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(30, 63, 43, 0.5);
+      z-index: 90;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .nav__backdrop.visible {
+      opacity: 1;
+    }
+    @media (max-width: 768px) {
+      .nav__hamburger { display: flex; }
+      .nav__links {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: min(300px, 80vw);
+        flex-direction: column;
+        gap: 0 !important;
+        background: var(--green-dark);
+        padding: 5rem 2rem 2rem;
+        transform: translateX(100%);
+        transition: transform 0.4s var(--ease);
+        z-index: 95;
+        box-shadow: -4px 0 24px rgba(0,0,0,0.2);
+        overflow-y: auto;
+      }
+      .nav__links.open {
+        transform: translateX(0);
+      }
+      .nav__links li {
+        border-bottom: 1px solid rgba(255,248,240,0.08);
+      }
+      .nav__links a {
+        display: block;
+        padding: 0.9rem 0;
+        font-size: 1rem !important;
+        color: rgba(255,248,240,0.7);
+      }
+      .nav__links a:hover,
+      .nav__links a.active {
+        color: var(--gold) !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav" aria-label="Main navigation">
+    <a href="/" class="nav__logo">Big Sister Foundation</a>
+    <button class="nav__hamburger" id="nav-hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav__links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/scholars/">Scholars</a></li>
+      <li><a href="/ledger/">Ledger</a></li>
+      <li><a href="/events/">Events</a></li>
+      <li><a href="/volunteer/" class="is-active">Volunteer</a></li>
+      <li><a href="/donate/">Give</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="volunteer-hero">
+    <div class="container">
+      <p class="eyebrow" data-animate>JOIN US</p>
+      <h1 data-animate data-animate-delay="1">This Is Not<br>Casual Work</h1>
+      <p class="volunteer-hero__sub" data-animate data-animate-delay="2">We don't need people who want to feel good about themselves for a weekend. We need people who will stay when it gets hard, show up when no one's watching, and mean it when they say they care.</p>
+      <a href="#manifesto" class="volunteer-hero__scroll" data-animate data-animate-delay="3">
+        Read the manifesto
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v10M3 8l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- MANIFESTO -->
+  <section class="manifesto section-pad" id="manifesto">
+    <div class="container">
+      <div class="manifesto__layout">
+        <div class="manifesto__left">
+          <p class="eyebrow" data-animate>OUR MANIFESTO</p>
+          <h2 data-animate data-animate-delay="1">We Believe in<br>Showing Up</h2>
+          <p class="manifesto__lead" data-animate data-animate-delay="2">
+            Every child we work with has already been let down by someone. A parent who left. A system that looked away. An adult who promised and didn't deliver.<br><br>
+            So when we say <em>volunteer</em>, we don't mean it lightly. We mean: <em>become someone a child can count on.</em><br><br>
+            We are building a generation of young people in Lagos who know, deeply and without question, that they are not alone. That is the work. It is quiet, often thankless, and it changes everything.
+          </p>
+        </div>
+        <div class="manifesto__right">
+          <div class="manifesto__pillar" data-animate data-animate-delay="1">
+            <h3>Consistency over intensity</h3>
+            <p>A child doesn't need a hero who shows up once. They need someone who comes back. Every week. Even when it's inconvenient.</p>
+          </div>
+          <div class="manifesto__pillar" data-animate data-animate-delay="2">
+            <h3>Presence over performance</h3>
+            <p>This is not content. There are no cameras. We are not building a brand. We are building trust with children who have every reason not to trust.</p>
+          </div>
+          <div class="manifesto__pillar" data-animate data-animate-delay="3">
+            <h3>Community over charity</h3>
+            <p>We don't save anyone. We walk beside them. We share skills, time, and attention with people who are already resilient. Our job is to make that resilience easier to carry.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISION QUOTE -->
+  <section class="vision-banner section-pad">
+    <div class="container">
+      <p class="vision-banner__quote" data-animate>
+        "We are raising a Lagos where no child grows up <span>wondering if they matter.</span> Where every young girl has someone in her corner who isn't going anywhere."
+      </p>
+      <p class="vision-banner__attr" data-animate data-animate-delay="1">Our Vision</p>
+    </div>
+  </section>
+
+  <!-- WHAT WE EXPECT -->
+  <section class="expectations section-pad" id="expectations">
+    <div class="container">
+      <p class="eyebrow" data-animate>WHAT WE EXPECT</p>
+      <h2 data-animate data-animate-delay="1">Before You Sign Up,<br>Know This</h2>
+      <p class="expectations__intro" data-animate data-animate-delay="2">Volunteering here isn't a checkbox. It's a relationship. Here's what that looks like in practice.</p>
+
+      <div class="expectations__grid">
+        <div class="expect-card" data-animate>
+          <div class="expect-card__icon expect-card__icon--green">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <h3>Show up regularly</h3>
+          <p>Commit to at least 4 hours a month consistently. Not once. Not when you feel like it. On a schedule that a child can depend on.</p>
+        </div>
+        <div class="expect-card" data-animate data-animate-delay="1">
+          <div class="expect-card__icon expect-card__icon--terra">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3>Protect their dignity</h3>
+          <p>No photos of children on your social media. No pity stories. No "saving" narratives. These are people, not projects.</p>
+        </div>
+        <div class="expect-card" data-animate data-animate-delay="2">
+          <div class="expect-card__icon expect-card__icon--gold">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3>Be teachable</h3>
+          <p>You'll work alongside community members who know this context better than you. Listen first. Lead only when asked.</p>
+        </div>
+        <div class="expect-card" data-animate data-animate-delay="3">
+          <div class="expect-card__icon expect-card__icon--sage">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          <h3>Care past the discomfort</h3>
+          <p>Some days will be hard. You'll see situations that hurt. What matters is not looking away, and coming back the next time.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- HOW WILL YOU CONTRIBUTE -->
+  <section class="roles section-pad" id="roles">
+    <div class="container">
+      <p class="eyebrow" data-animate>HOW WILL YOU CONTRIBUTE?</p>
+      <h2 data-animate data-animate-delay="1" style="color: var(--cream);">Choose Your Path</h2>
+      <p class="roles__intro" data-animate data-animate-delay="2">Everyone brings something different. Select the areas where your skills and time can make the most difference. You can choose more than one.</p>
+
+      <div class="roles__grid">
+        <div class="role-card" data-role="mentorship" data-animate>
+          <div class="role-card__header">
+            <div class="role-card__icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div class="role-card__check">
+              <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+          <h3>Mentorship</h3>
+          <p>Be a consistent presence in a young person's life. Weekly check-ins, homework help, career conversations, and honest guidance.</p>
+          <span class="role-card__tag">Relationship-based</span>
+        </div>
+
+        <div class="role-card" data-role="teaching" data-animate data-animate-delay="1">
+          <div class="role-card__header">
+            <div class="role-card__icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            </div>
+            <div class="role-card__check">
+              <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+          <h3>Teaching & Tutoring</h3>
+          <p>Lead workshops, teach a skill you know well, or tutor students in core subjects. Share what you've learned so someone else doesn't have to figure it out alone.</p>
+          <span class="role-card__tag">Skills-based</span>
+        </div>
+
+        <div class="role-card" data-role="creative" data-animate data-animate-delay="2">
+          <div class="role-card__header">
+            <div class="role-card__icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <div class="role-card__check">
+              <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+          <h3>Creative & Arts</h3>
+          <p>Photography, music, storytelling, design, film. Help young people find their voice through creative expression and build confidence that lasts.</p>
+          <span class="role-card__tag">Expression-based</span>
+        </div>
+
+        <div class="role-card" data-role="operations" data-animate data-animate-delay="3">
+          <div class="role-card__header">
+            <div class="role-card__icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </div>
+            <div class="role-card__check">
+              <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+          <h3>Operations & Logistics</h3>
+          <p>Event planning, transport coordination, inventory, admin work. The unglamorous things that make everything else possible.</p>
+          <span class="role-card__tag">Behind-the-scenes</span>
+        </div>
+
+        <div class="role-card" data-role="tech" data-animate data-animate-delay="4">
+          <div class="role-card__header">
+            <div class="role-card__icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            <div class="role-card__check">
+              <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+          <h3>Tech & Digital</h3>
+          <p>Web development, data entry, digital literacy workshops, social media management. Help us build the tools that let us reach more children.</p>
+          <span class="role-card__tag">Technical</span>
+        </div>
+
+        <div class="role-card" data-role="fundraising" data-animate data-animate-delay="5">
+          <div class="role-card__header">
+            <div class="role-card__icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <div class="role-card__check">
+              <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+          <h3>Fundraising & Outreach</h3>
+          <p>Grant writing, donor relations, community partnerships, event fundraising. Help us secure the resources that keep this work alive.</p>
+          <span class="role-card__tag">Growth-focused</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORM -->
+  <section class="form-section section-pad" id="apply">
+    <div class="container">
+      <p class="eyebrow" data-animate>APPLY</p>
+      <h2 data-animate data-animate-delay="1">Tell Us About Yourself</h2>
+      <p class="form-section__intro" data-animate data-animate-delay="2">If you've read all of this and you're still here, we want to hear from you. We review every application personally.</p>
+
+      <div class="form-wrapper" id="form-wrapper">
+
+        <div class="selected-roles-summary" id="roles-summary">
+          <p class="selected-roles-summary__label">You're interested in</p>
+          <div class="selected-roles-summary__tags" id="roles-summary-tags"></div>
+        </div>
+
+        <form id="volunteer-form" novalidate>
+
+          <div class="form-group">
+            <label for="field-name">Full Name</label>
+            <input type="text" id="field-name" name="name" required autocomplete="name" placeholder="Your full name">
+          </div>
+
+          <div class="form-group">
+            <label for="field-email">Email</label>
+            <input type="email" id="field-email" name="email" required autocomplete="email" placeholder="you@example.com">
+          </div>
+
+          <div class="form-group">
+            <label for="field-phone">Phone <span class="optional">(optional)</span></label>
+            <input type="tel" id="field-phone" name="phone" autocomplete="tel" placeholder="+234 800 000 0000">
+          </div>
+
+          <div class="form-group">
+            <label for="field-location">Location</label>
+            <input type="text" id="field-location" name="location" placeholder="Lagos, Nigeria" autocomplete="address-level2">
+          </div>
+
+          <div class="form-group">
+            <label for="field-reason">Why do you want to volunteer with us?</label>
+            <textarea id="field-reason" name="reason" required maxlength="500" placeholder="Be honest. We're not looking for the right answer, we're looking for a real one."></textarea>
+            <div class="char-counter" id="char-counter">0 / 500</div>
+          </div>
+
+          <div class="form-group">
+            <label for="field-skills">What skills or experience do you bring? <span class="optional">(optional)</span></label>
+            <textarea id="field-skills" name="skills" maxlength="300" placeholder="Teaching, counseling, design, coding, event planning, language skills, sports coaching..." style="min-height: 80px;"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="field-heard">How did you hear about us?</label>
+            <select id="field-heard" name="heardFrom">
+              <option value="">Select one...</option>
+              <option value="WhatsApp">WhatsApp</option>
+              <option value="Instagram">Instagram</option>
+              <option value="Twitter/X">Twitter / X</option>
+              <option value="Friend/Family">Friend / Family</option>
+              <option value="Event">Event</option>
+              <option value="LinkedIn">LinkedIn</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Availability</label>
+            <div class="checkbox-group">
+              <label class="checkbox-item">
+                <input type="checkbox" name="availability" value="Weekdays">
+                <span>Weekdays</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" name="availability" value="Weekends">
+                <span>Weekends</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" name="availability" value="Evenings">
+                <span>Evenings</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" name="availability" value="Flexible">
+                <span>Flexible</span>
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn--terra" id="submit-btn">Submit Application</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLOSING CTA -->
+  <section class="closing-cta section-pad">
+    <div class="container">
+      <p class="eyebrow" style="color: var(--gold);" data-animate>ONE MORE THING</p>
+      <h2 data-animate data-animate-delay="1" style="color: var(--cream);">The Children Won't<br>Remember Your Title</h2>
+      <p data-animate data-animate-delay="2">They'll remember that you came back. That you knew their name. That you laughed at their jokes and asked about their day. That's the whole job.</p>
+      <a href="#apply" class="btn btn--terra" data-animate data-animate-delay="3">Apply Now</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__layout">
+        <div class="footer__left">
+          <p class="footer__brand-name">Big Sister Foundation</p>
+          <p class="footer__tagline">Rooted. Present. Protective.</p>
+          <p class="footer__location">Lagos, Nigeria</p>
+        </div>
+        <div class="footer__right">
+          <ul class="footer__links">
+            <li><a href="/scholars/">Scholars</a></li>
+            <li><a href="/ledger/">Ledger</a></li>
+            <li><a href="/events/">Events</a></li>
+            <li><a href="/volunteer/">Volunteer</a></li>
+
+            <li><a href="/forums/">Forums</a></li>
+            <li><a href="/ideas/">Ideas</a></li>
+            <li><a href="/donations/">Donations</a></li>
+            <li><a href="/donate/">Give</a></li>
+            <li><a href="/sponsor/">Sponsor</a></li>
+            <li><a href="mailto:hello@thebigsisterfoundation.org">Email</a></li>
+          </ul>
+          <p class="footer__copy">&copy; 2026 Big Sister Foundation. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- FIREBASE -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script src="/shared/bsf-antispam.js"></script>
+  <script>
+    (function() {
+      'use strict';
+
+      /* ── Firebase init ── */
+      firebase.initializeApp({
+        apiKey: "AIzaSyCwos6XR9-uqAf_Esmh2K_hJoLxq4gnEuU",
+        authDomain: "big-sister-foundation.firebaseapp.com",
+        projectId: "big-sister-foundation",
+        storageBucket: "big-sister-foundation.firebasestorage.app",
+        messagingSenderId: "778723584560",
+        appId: "1:778723584560:web:7499944c30001e7fcf5bf5"
+      });
+      var db = firebase.firestore();
+
+      /* ── DOM refs ── */
+      var form = document.getElementById('volunteer-form');
+      var formWrapper = document.getElementById('form-wrapper');
+
+      BSFAntiSpam.protect('volunteer-form');
+      var submitBtn = document.getElementById('submit-btn');
+      var reasonField = document.getElementById('field-reason');
+      var charCounter = document.getElementById('char-counter');
+      var toastEl = document.getElementById('toast');
+      var rolesSummary = document.getElementById('roles-summary');
+      var rolesSummaryTags = document.getElementById('roles-summary-tags');
+
+      /* ── Invite pre-fill ── */
+      var inviteId = null;
+      (function handleInvite() {
+        var params = new URLSearchParams(window.location.search);
+        var iid = params.get('invite');
+        if (!iid) return;
+        inviteId = iid;
+        db.collection('invites').doc(iid).get().then(function(snap) {
+          if (!snap.exists) return;
+          var inv = snap.data();
+          if (inv.email) {
+            var emailField = document.getElementById('field-email');
+            emailField.value = inv.email;
+            emailField.setAttribute('readonly', true);
+            emailField.style.background = '#e8f0eb';
+          }
+          // Show invite banner
+          var banner = document.createElement('div');
+          banner.style.cssText = 'background:#C2734C;color:#fff;text-align:center;padding:14px 20px;font-size:0.95rem;font-weight:500;position:fixed;top:0;left:0;right:0;z-index:9999;box-shadow:0 2px 8px rgba(0,0,0,.2);';
+          banner.innerHTML = "\u2709\uFE0F You've been invited to join Big Sister Foundation as a volunteer! Fill out the form below to accept.";
+          document.body.prepend(banner);
+          document.body.style.paddingTop = '48px';
+          // Scroll to form
+          setTimeout(function() {
+            var formSection = document.querySelector('.form-section');
+            if (formSection) formSection.scrollIntoView({ behavior: 'smooth' });
+          }, 1000);
+        }).catch(function() {});
+      })();
+
+      /* ── Role selection ── */
+      var selectedRoles = [];
+      var roleCards = document.querySelectorAll('.role-card');
+      var roleLabels = {
+        mentorship: 'Mentorship',
+        teaching: 'Teaching & Tutoring',
+        creative: 'Creative & Arts',
+        operations: 'Operations & Logistics',
+        tech: 'Tech & Digital',
+        fundraising: 'Fundraising & Outreach'
+      };
+
+      roleCards.forEach(function(card) {
+        card.addEventListener('click', function() {
+          var role = card.getAttribute('data-role');
+          var idx = selectedRoles.indexOf(role);
+          if (idx > -1) {
+            selectedRoles.splice(idx, 1);
+            card.classList.remove('is-selected');
+          } else {
+            selectedRoles.push(role);
+            card.classList.add('is-selected');
+          }
+          updateRolesSummary();
+        });
+      });
+
+      function updateRolesSummary() {
+        while (rolesSummaryTags.firstChild) {
+          rolesSummaryTags.removeChild(rolesSummaryTags.firstChild);
+        }
+        if (selectedRoles.length === 0) {
+          rolesSummary.classList.remove('is-visible');
+          return;
+        }
+        rolesSummary.classList.add('is-visible');
+        selectedRoles.forEach(function(role) {
+          var tag = document.createElement('span');
+          tag.className = 'selected-roles-summary__tag';
+          tag.textContent = roleLabels[role] || role;
+          rolesSummaryTags.appendChild(tag);
+        });
+      }
+
+      /* ── Scroll animations ── */
+      var animEls = document.querySelectorAll('[data-animate]');
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      animEls.forEach(function(el) { observer.observe(el); });
+
+      /* ── Character counter ── */
+      reasonField.addEventListener('input', function() {
+        var len = reasonField.value.length;
+        charCounter.textContent = len + ' / 500';
+        charCounter.classList.remove('is-near', 'is-over');
+        if (len >= 500) {
+          charCounter.classList.add('is-over');
+        } else if (len >= 400) {
+          charCounter.classList.add('is-near');
+        }
+      });
+
+      /* ── Toast ── */
+      var toastTimer = null;
+      function showToast(message, type) {
+        clearTimeout(toastTimer);
+        toastEl.textContent = '';
+        toastEl.className = 'toast toast--' + type;
+        toastEl.textContent = message;
+        requestAnimationFrame(function() {
+          toastEl.classList.add('is-visible');
+        });
+        toastTimer = setTimeout(function() {
+          toastEl.classList.remove('is-visible');
+        }, 4000);
+      }
+
+      /* ── Validation ── */
+      function validateField(input) {
+        if (input.hasAttribute('required') && !input.value.trim()) {
+          input.classList.add('is-invalid');
+          return false;
+        }
+        if (input.type === 'email' && input.value.trim()) {
+          var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRe.test(input.value.trim())) {
+            input.classList.add('is-invalid');
+            return false;
+          }
+        }
+        input.classList.remove('is-invalid');
+        return true;
+      }
+
+      /* Clear invalid state on input */
+      var inputs = form.querySelectorAll('input, textarea, select');
+      inputs.forEach(function(input) {
+        input.addEventListener('input', function() {
+          input.classList.remove('is-invalid');
+        });
+      });
+
+      /* ── Show success ── */
+      function showSuccess() {
+        while (formWrapper.firstChild) {
+          formWrapper.removeChild(formWrapper.firstChild);
+        }
+
+        var container = document.createElement('div');
+        container.className = 'success-message';
+
+        var iconWrap = document.createElement('div');
+        iconWrap.className = 'success-message__icon';
+        iconWrap.textContent = '\u2713';
+        container.appendChild(iconWrap);
+
+        var heading = document.createElement('h2');
+        heading.textContent = 'Thank you.';
+        container.appendChild(heading);
+
+        var p1 = document.createElement('p');
+        p1.textContent = 'Your application has been submitted. We read every single one and will reach out personally if there\u2019s a fit.';
+        container.appendChild(p1);
+
+        var p2 = document.createElement('p');
+        p2.style.marginTop = '0.5rem';
+        p2.textContent = 'In the meantime, follow us on Instagram or email us at hello@thebigsisterfoundation.org to stay connected with the community.';
+        container.appendChild(p2);
+
+        var backBtn = document.createElement('a');
+        backBtn.href = '/';
+        backBtn.className = 'btn btn--terra';
+        backBtn.textContent = 'Back to Home';
+        container.appendChild(backBtn);
+
+        formWrapper.appendChild(container);
+      }
+
+      /* ── Form submit ── */
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (!BSFAntiSpam.check('volunteer-form')) return;
+
+        var nameField = document.getElementById('field-name');
+        var emailField = document.getElementById('field-email');
+
+        var valid = true;
+        if (!validateField(nameField)) valid = false;
+        if (!validateField(emailField)) valid = false;
+        if (!validateField(reasonField)) valid = false;
+
+        if (!valid) {
+          showToast('Please fill in all required fields.', 'error');
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+
+        var availChecks = form.querySelectorAll('input[name="availability"]:checked');
+        var availability = [];
+        availChecks.forEach(function(cb) {
+          availability.push(cb.value);
+        });
+
+        var data = {
+          name: nameField.value.trim(),
+          email: emailField.value.trim(),
+          phone: document.getElementById('field-phone').value.trim(),
+          location: document.getElementById('field-location').value.trim(),
+          reason: reasonField.value.trim(),
+          skills: document.getElementById('field-skills').value.trim(),
+          heardFrom: document.getElementById('field-heard').value,
+          availability: availability,
+          roles: selectedRoles.map(function(r) { return roleLabels[r] || r; }),
+          status: 'pending',
+          submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        if (inviteId) {
+          data.inviteId = inviteId;
+          data.status = 'approved';
+        }
+
+        db.collection('volunteer_requests').add(data)
+          .then(function() {
+            if (inviteId) {
+              return db.collection('invites').doc(inviteId).update({
+                status: 'accepted',
+                acceptedAt: firebase.firestore.FieldValue.serverTimestamp()
+              });
+            }
+          })
+          .then(function() {
+            showToast('Application submitted successfully!', 'success');
+            showSuccess();
+          })
+          .catch(function(err) {
+            console.error('Firestore error:', err);
+            showToast('Something went wrong. Please try again.', 'error');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Application';
+          });
+      });
+
+    })();
+  </script>
+<div class="nav__backdrop" id="nav-backdrop"></div>
+<script>
+(function() {
+  var hamburger = document.getElementById("nav-hamburger");
+  var navLinks = document.querySelector(".nav__links");
+  var backdrop = document.getElementById("nav-backdrop");
+  if (!hamburger || !navLinks || !backdrop) return;
+  function openMenu() {
+    hamburger.classList.add("active");
+    navLinks.classList.add("open");
+    backdrop.style.display = "block";
+    requestAnimationFrame(function() { backdrop.classList.add("visible"); });
+    document.body.style.overflow = "hidden";
+  }
+  function closeMenu() {
+    hamburger.classList.remove("active");
+    navLinks.classList.remove("open");
+    backdrop.classList.remove("visible");
+    document.body.style.overflow = "";
+    setTimeout(function() { backdrop.style.display = "none"; }, 350);
+  }
+  hamburger.addEventListener("click", function() {
+    if (navLinks.classList.contains("open")) { closeMenu(); } else { openMenu(); }
+  });
+  backdrop.addEventListener("click", closeMenu);
+  navLinks.querySelectorAll("a").forEach(function(link) {
+    link.addEventListener("click", closeMenu);
+  });
+  var currentPath = window.location.pathname;
+  navLinks.querySelectorAll("a").forEach(function(link) {
+    var href = link.getAttribute("href");
+    if (href === currentPath || (href !== "/" && currentPath.startsWith(href))) {
+      link.classList.add("active");
+      link.style.color = "var(--gold)";
+    } else if (href === "/" && currentPath === "/") {
+      link.classList.add("active");
+      link.style.color = "var(--gold)";
+    }
+  });
+})();
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

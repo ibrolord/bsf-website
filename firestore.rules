@@ -1,0 +1,177 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper functions ──
+    function isAuth() {
+      return request.auth != null;
+    }
+    function userDocExists() {
+      return isAuth() && exists(/databases/$(database)/documents/users/$(request.auth.token.email));
+    }
+    function getUserDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.token.email)).data;
+    }
+    // Supports both legacy `role` (string) and new `roles` (array) fields
+    function hasRole(role) {
+      return userDocExists() && (
+        ('roles' in getUserDoc() && role in getUserDoc().roles) ||
+        ('role' in getUserDoc() && getUserDoc().role == role)
+      );
+    }
+    function isAdmin() {
+      return hasRole('admin') || isSuperAdmin();
+    }
+    function hasAnyRole() {
+      return userDocExists() && (
+        ('roles' in getUserDoc() && getUserDoc().roles.size() > 0) ||
+        ('role' in getUserDoc() && getUserDoc().role != null && getUserDoc().role != '')
+      );
+    }
+    function isSuperAdmin() {
+      return isAuth() && request.auth.token.email == 'admin@bigsisterfoundation.org';
+    }
+
+    // ── Public pages: anyone can read, team members can write ──
+    match /scholars/{docId} {
+      allow read: if true;
+      allow write: if hasAnyRole();
+
+      match /milestones/{milestoneId} {
+        allow read: if true;
+        allow write: if hasAnyRole();
+      }
+    }
+    match /schools/{docId} {
+      allow read: if true;
+      allow write: if hasAnyRole();
+    }
+    match /ledger/{docId} {
+      allow read: if true;
+      allow create: if hasAnyRole();
+      allow update, delete: if isAdmin() || hasRole('finance');
+    }
+    match /events/{docId} {
+      allow read: if true;
+      // Public can update signups array
+      allow update: if true;
+      allow create, delete: if hasAnyRole();
+    }
+    match /goals/{docId} {
+      allow read: if true;
+      allow create: if hasAnyRole();
+      // Allow public updates for donation progress
+      allow update: if true;
+      allow delete: if isAdmin();
+    }
+    match /forums/{docId} {
+      allow read: if true;
+      allow write: if hasAnyRole();
+    }
+    match /forum_replies/{docId} {
+      allow read: if true;
+      allow write: if hasAnyRole();
+    }
+    match /announcements/{docId} {
+      allow read: if true;
+      allow write: if hasAnyRole();
+    }
+    match /outreach/{docId} {
+      allow read: if true;
+      allow write: if hasAnyRole();
+    }
+
+    // ── Public forms: visitors can create, only team can manage ──
+    match /volunteer_requests/{docId} {
+      allow create: if true;
+      allow read, update, delete: if hasAnyRole();
+    }
+    match /invites/{docId} {
+      allow read: if true;
+      allow write: if hasAnyRole();
+    }
+    match /donations/{docId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if hasAnyRole();
+    }
+    match /ideas/{docId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if hasAnyRole();
+    }
+    match /votes/{docId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if hasAnyRole();
+    }
+    match /forum_threads/{docId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if hasAnyRole();
+
+      match /replies/{replyId} {
+        allow read: if true;
+        allow create: if true;
+        allow update: if true;
+        allow delete: if hasAnyRole();
+      }
+    }
+
+    // ── Sponsor dashboard ──
+    match /sponsor_notes/{docId} {
+      allow read: if true;
+      allow write: if hasAnyRole();
+    }
+
+    // ── Admin-only collections ──
+    match /admins/{docId} {
+      allow read: if hasAnyRole();
+      allow write: if isAdmin() || isSuperAdmin();
+    }
+    match /users/{docId} {
+      // Any authenticated user can read their own doc (role lookup on login)
+      allow read: if isAuth();
+      allow write: if isAdmin() || isSuperAdmin();
+    }
+    match /audit_log/{docId} {
+      allow read: if hasAnyRole();
+      // Team members can write audit entries (append-only)
+      allow create: if hasAnyRole();
+      allow update, delete: if false;
+    }
+    match /volunteers/{docId} {
+      allow read, write: if hasAnyRole();
+    }
+    match /teams/{docId} {
+      allow read, write: if hasAnyRole();
+    }
+    match /team_forums/{docId} {
+      allow read, write: if hasAnyRole();
+    }
+    match /team_forum_replies/{docId} {
+      allow read, write: if hasAnyRole();
+    }
+    match /scholar_expenses/{docId} {
+      allow read, write: if hasAnyRole();
+    }
+    match /school_notes/{docId} {
+      allow read, write: if hasAnyRole();
+    }
+    match /ledger_requests/{docId} {
+      allow read: if hasAnyRole();
+      allow create: if hasAnyRole();
+      allow update: if isAdmin() || hasRole('finance');
+      allow delete: if isAdmin();
+    }
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin() || isSuperAdmin();
+    }
+
+    // ── Deny everything else ──
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

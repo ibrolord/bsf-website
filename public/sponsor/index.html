@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q4EYY24EDZ"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-Q4EYY24EDZ');</script>
+  <title>Sponsor a Child — Big Sister Foundation</title>
+  <meta name="description" content="Become a recurring sponsor. Stand behind a child every month — track your impact, see where every naira goes, and become part of their story.">
+  <meta property="og:title" content="Sponsor a Child — Big Sister Foundation">
+  <meta property="og:description" content="Become a recurring sponsor. Stand behind a child every month — track your impact, see where every naira goes, and become part of their story.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/og-image.svg">
+  <meta name="theme-color" content="#2D5E40">
+  <link rel="canonical" href="https://public-mu-steel.vercel.app/sponsor/">
+  <meta property="og:url" content="https://public-mu-steel.vercel.app/sponsor/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Sponsor a Child — Big Sister Foundation">
+  <meta name="twitter:description" content="Become a recurring sponsor. Stand behind a child every month — track your impact, see where every naira goes, and become part of their story.">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cellipse cx='50' cy='35' rx='35' ry='30' fill='%232D5E40' opacity='0.85'/%3E%3Cellipse cx='30' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cellipse cx='70' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cpath d='M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z' fill='%233A2A1F' opacity='0.8'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #2D5E40;
+      --green-dark: #1E3F2B;
+      --brown: #3A2A1F;
+      --terra: #C2734C;
+      --gold: #D4A96A;
+      --sage: #8BAF8E;
+      --cream: #FFF8F0;
+      --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --section-pad: clamp(48px, 4vw + 20px, 100px);
+      --page-margin: clamp(20px, 4vw, 80px);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.2rem);
+      line-height: 1.7;
+      color: var(--brown);
+      background: var(--cream);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+    button { font: inherit; cursor: pointer; border: none; background: none; }
+
+    .eyebrow {
+      font-family: var(--font-sans);
+      font-size: clamp(0.7rem, 0.5vw + 0.5rem, 0.85rem);
+      font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--terra); margin-bottom: 1rem;
+    }
+
+    h1, h2, h3 {
+      font-family: var(--font-serif);
+      font-weight: 500; line-height: 1.08; letter-spacing: -0.02em;
+    }
+    h1 { font-size: clamp(2.2rem, 4vw + 0.5rem, 4rem); }
+    h2 { font-size: clamp(1.8rem, 2.5vw + 0.5rem, 2.8rem); }
+    h3 { font-size: clamp(1.3rem, 1vw + 0.8rem, 1.7rem); line-height: 1.2; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding-left: var(--page-margin); padding-right: var(--page-margin); }
+    .section-pad { padding-top: var(--section-pad); padding-bottom: var(--section-pad); }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.9rem 2rem; border-radius: 100px;
+      font-family: var(--font-sans);
+      font-size: clamp(0.85rem, 0.3vw + 0.75rem, 1rem);
+      font-weight: 600; letter-spacing: 0.02em;
+      text-decoration: none;
+      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), opacity 0.3s;
+      will-change: transform;
+    }
+    .btn:hover { transform: scale(1.03); box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
+    .btn--terra { background: var(--terra); color: #fff; }
+    .btn--ghost { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.5); }
+    .btn--ghost:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
+    .btn--green { background: rgba(45,94,64,0.15); color: var(--cream); border: 1.5px solid rgba(139,175,142,0.3); }
+    .btn--green:hover { background: rgba(45,94,64,0.3); }
+    .btn--disabled { opacity: 0.5; pointer-events: none; }
+
+    /* ANIMATIONS */
+    [data-animate] { opacity: 1; transform: none; }
+    .js-ready [data-animate] {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+    }
+    .js-ready [data-animate].is-visible { opacity: 1; transform: translateY(0); }
+    .js-ready [data-animate-delay="1"] { transition-delay: 0.1s; }
+    .js-ready [data-animate-delay="2"] { transition-delay: 0.2s; }
+    .js-ready [data-animate-delay="3"] { transition-delay: 0.3s; }
+    .js-ready [data-animate-delay="4"] { transition-delay: 0.4s; }
+
+    @keyframes heroFadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    /* NAV */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem var(--page-margin); background: var(--green-dark);
+    }
+    .nav__logo { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; text-decoration: none; color: var(--cream); }
+    .nav__links { list-style: none; display: flex; gap: 2rem; }
+    .nav__links a { font-size: 0.85rem; font-weight: 500; text-decoration: none; color: rgba(255,248,240,0.7); transition: color 0.3s; }
+    .nav__links a:hover { color: var(--cream); }
+    .nav__links a.is-active { color: var(--gold); }
+    
+
+    /* WELCOME-BACK BANNER */
+    .welcome-banner {
+      display: none;
+      background: var(--green);
+      color: var(--cream);
+      text-align: center;
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      position: fixed; top: 56px; left: 0; right: 0; z-index: 99;
+    }
+    .welcome-banner a { color: var(--gold); text-decoration: underline; margin-left: 0.5rem; }
+    .welcome-banner.is-visible { display: block; }
+
+    /* HERO */
+    .sponsor-hero {
+      padding-top: calc(60px + var(--section-pad));
+      padding-bottom: var(--section-pad);
+      background: var(--green-dark); color: var(--cream);
+      position: relative; overflow: hidden;
+    }
+    .sponsor-hero::before {
+      content: '';
+      position: absolute; top: -40%; right: -10%; width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(45,94,64,0.3) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .sponsor-hero .eyebrow { color: var(--gold); }
+    .sponsor-hero__sub {
+      max-width: 640px; margin-top: 1.2rem;
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.15rem);
+      line-height: 1.7; color: rgba(255,248,240,0.75);
+    }
+    .sponsor-hero__scroll {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      margin-top: 2rem; font-size: 0.85rem; font-weight: 600;
+      color: var(--gold); text-decoration: none;
+      transition: gap 0.3s var(--ease);
+    }
+    .sponsor-hero__scroll:hover { gap: 0.75rem; }
+    .sponsor-hero__scroll svg { transition: transform 0.3s var(--ease); }
+    .sponsor-hero__scroll:hover svg { transform: translateY(3px); }
+
+    /* TIER CARDS */
+    .tiers { background: var(--cream); }
+    .tiers .eyebrow { color: var(--terra); }
+    .tiers__intro {
+      max-width: 640px;
+      font-size: clamp(0.95rem, 0.3vw + 0.8rem, 1.05rem);
+      line-height: 1.7; color: rgba(58,42,31,0.7);
+      margin-top: 0.5rem; margin-bottom: 3rem;
+    }
+    .tiers__grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+    }
+    @media (max-width: 900px) { .tiers__grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .tiers__grid { grid-template-columns: 1fr; } }
+
+    .tier-card {
+      background: #fff;
+      border: 1.5px solid rgba(58,42,31,0.08);
+      border-radius: 16px;
+      padding: 2rem 1.5rem;
+      border-left: 5px solid var(--sage);
+      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+      cursor: pointer;
+      position: relative;
+    }
+    .tier-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 48px rgba(58,42,31,0.08);
+    }
+    .tier-card--sage { border-left-color: var(--sage); }
+    .tier-card--green { border-left-color: var(--green); }
+    .tier-card--gold { border-left-color: var(--gold); }
+    .tier-card--terra { border-left-color: var(--terra); }
+
+    .tier-card__icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .tier-card__icon--sage { background: rgba(139,175,142,0.15); }
+    .tier-card__icon--green { background: rgba(45,94,64,0.1); }
+    .tier-card__icon--gold { background: rgba(212,169,106,0.15); }
+    .tier-card__icon--terra { background: rgba(194,115,76,0.1); }
+
+    .tier-card__icon svg { width: 28px; height: 28px; }
+
+    .tier-card__name {
+      font-family: var(--font-serif);
+      font-size: 1.3rem; font-weight: 600;
+      color: var(--brown); margin-bottom: 0.25rem;
+    }
+    .tier-card__range {
+      font-size: 0.85rem; font-weight: 600;
+      color: rgba(58,42,31,0.5); margin-bottom: 1rem;
+    }
+    .tier-card__perks {
+      list-style: none; margin-bottom: 1.5rem;
+    }
+    .tier-card__perks li {
+      font-size: 0.85rem; line-height: 1.6;
+      color: rgba(58,42,31,0.7);
+      padding-left: 1.25rem; position: relative;
+      margin-bottom: 0.25rem;
+    }
+    .tier-card__perks li::before {
+      content: '';
+      position: absolute; left: 0; top: 0.55em;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--sage);
+    }
+    .tier-card--green .tier-card__perks li::before { background: var(--green); }
+    .tier-card--gold .tier-card__perks li::before { background: var(--gold); }
+    .tier-card--terra .tier-card__perks li::before { background: var(--terra); }
+
+    .tier-card__btn {
+      display: block; width: 100%; text-align: center;
+      padding: 0.7rem 1rem; border-radius: 100px;
+      font-size: 0.82rem; font-weight: 600; letter-spacing: 0.02em;
+      border: 1.5px solid rgba(58,42,31,0.15);
+      color: var(--brown); background: transparent;
+      transition: all 0.3s var(--ease);
+    }
+    .tier-card:hover .tier-card__btn,
+    .tier-card__btn:hover {
+      background: var(--brown); color: var(--cream); border-color: var(--brown);
+    }
+
+    /* REGISTRATION SECTION */
+    .register { background: var(--green-dark); color: var(--cream); }
+    .register .eyebrow { color: var(--gold); }
+    .register__layout {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: clamp(2rem, 4vw, 4rem);
+      align-items: start;
+    }
+    @media (max-width: 800px) {
+      .register__layout { grid-template-columns: 1fr; }
+    }
+
+    /* FORM STYLES */
+    .form-step { margin-bottom: 2.5rem; }
+    .form-step__title {
+      font-family: var(--font-serif);
+      font-size: 1.15rem; font-weight: 600;
+      color: var(--cream); margin-bottom: 1.25rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .form-step__number {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(212,169,106,0.2);
+      color: var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-sans); font-size: 0.8rem; font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .form-row { margin-bottom: 1.25rem; }
+    .form-row--inline {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+    }
+    @media (max-width: 560px) { .form-row--inline { grid-template-columns: 1fr; } }
+
+    .form-label {
+      display: block; font-size: 0.82rem; font-weight: 600;
+      color: rgba(255,248,240,0.7);
+      margin-bottom: 0.4rem; letter-spacing: 0.02em;
+    }
+    .form-label span { color: var(--terra); }
+
+    .form-input, .form-select {
+      width: 100%; padding: 0.75rem 1rem;
+      border: 1.5px solid rgba(255,248,240,0.12);
+      border-radius: 10px;
+      background: rgba(255,248,240,0.06);
+      color: var(--cream);
+      font-family: var(--font-sans);
+      font-size: 0.92rem;
+      transition: border-color 0.3s, background 0.3s;
+      outline: none;
+    }
+    .form-input::placeholder { color: rgba(255,248,240,0.3); }
+    .form-input:focus, .form-select:focus {
+      border-color: var(--gold);
+      background: rgba(255,248,240,0.1);
+    }
+    .form-input.is-error { border-color: #e74c3c; }
+    .form-error {
+      font-size: 0.75rem; color: #e74c3c;
+      margin-top: 0.3rem; display: none;
+    }
+    .form-error.is-visible { display: block; }
+    .form-hint {
+      font-size: 0.75rem; color: rgba(255,248,240,0.4);
+      margin-top: 0.3rem;
+    }
+
+    .form-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23FFF8F0' stroke-width='1.5' fill='none' opacity='0.5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      padding-right: 2.5rem;
+    }
+    .form-select option { background: var(--green-dark); color: var(--cream); }
+
+    /* CURRENCY + AMOUNT ROW */
+    .amount-row {
+      display: grid; grid-template-columns: 140px 1fr; gap: 0.75rem;
+    }
+    @media (max-width: 560px) { .amount-row { grid-template-columns: 110px 1fr; } }
+
+    /* FREQUENCY RADIO */
+    .frequency-group { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .frequency-option {
+      padding: 0.6rem 1.25rem; border-radius: 100px;
+      font-size: 0.82rem; font-weight: 600;
+      border: 1.5px solid rgba(255,248,240,0.15);
+      color: rgba(255,248,240,0.6);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+    }
+    .frequency-option.is-selected {
+      background: rgba(212,169,106,0.2);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* PROGRAM PILLS */
+    .program-pills { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .program-pill {
+      padding: 0.5rem 1.1rem; border-radius: 100px;
+      font-size: 0.8rem; font-weight: 600;
+      border: 1.5px solid rgba(255,248,240,0.12);
+      color: rgba(255,248,240,0.5);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+    }
+    .program-pill.is-selected {
+      background: rgba(194,115,76,0.2);
+      border-color: var(--terra);
+      color: var(--terra);
+    }
+
+    /* CHECKBOXES */
+    .form-check {
+      display: flex; gap: 0.75rem; align-items: flex-start;
+      margin-bottom: 1rem; cursor: pointer;
+    }
+    .form-check input[type="checkbox"] {
+      appearance: none; -webkit-appearance: none;
+      width: 20px; height: 20px; min-width: 20px;
+      border: 2px solid rgba(255,248,240,0.2);
+      border-radius: 5px; background: transparent;
+      cursor: pointer; position: relative;
+      margin-top: 2px;
+      transition: all 0.2s;
+    }
+    .form-check input[type="checkbox"]:checked {
+      background: var(--terra); border-color: var(--terra);
+    }
+    .form-check input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute; left: 5px; top: 2px;
+      width: 6px; height: 10px;
+      border: solid #fff; border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+    .form-check__text {
+      font-size: 0.85rem; line-height: 1.5;
+      color: rgba(255,248,240,0.65);
+    }
+
+    /* SIDEBAR SUMMARY */
+    .summary {
+      position: sticky; top: calc(60px + 2rem);
+      background: rgba(255,248,240,0.04);
+      border: 1.5px solid rgba(255,248,240,0.08);
+      border-radius: 20px;
+      padding: 2rem;
+    }
+    .summary__label {
+      font-size: 0.75rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: rgba(255,248,240,0.4);
+      margin-bottom: 0.3rem;
+    }
+    .summary__name {
+      font-family: var(--font-serif);
+      font-size: 1.4rem; font-weight: 600;
+      color: var(--cream); margin-bottom: 1.25rem;
+      min-height: 1.4em;
+    }
+    .summary__tier-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.4rem 1rem; border-radius: 100px;
+      font-size: 0.78rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      background: rgba(139,175,142,0.15);
+      color: var(--sage);
+      margin-bottom: 1.5rem;
+    }
+    .summary__divider {
+      border: none; border-top: 1px solid rgba(255,248,240,0.08);
+      margin: 1.25rem 0;
+    }
+    .summary__amount-label {
+      font-size: 0.75rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: rgba(255,248,240,0.4);
+      margin-bottom: 0.25rem;
+    }
+    .summary__amount {
+      font-family: var(--font-serif);
+      font-size: 2rem; font-weight: 600;
+      color: var(--gold);
+    }
+    .summary__impact {
+      margin-top: 1.5rem;
+    }
+    .summary__impact-item {
+      font-size: 0.85rem; line-height: 1.6;
+      color: rgba(255,248,240,0.6);
+      margin-bottom: 0.4rem;
+    }
+    .summary__impact-item strong { color: var(--cream); }
+    .summary__cta {
+      display: block; width: 100%; text-align: center;
+      margin-top: 1.5rem;
+      padding: 1rem 2rem;
+    }
+    .summary__note {
+      font-size: 0.75rem; line-height: 1.5;
+      color: rgba(255,248,240,0.35);
+      margin-top: 1rem; text-align: center;
+    }
+
+    /* FAQ */
+    .faq { background: var(--cream); }
+    .faq .eyebrow { color: var(--terra); }
+    .faq__list { max-width: 740px; }
+    .faq-item {
+      border-bottom: 1px solid rgba(58,42,31,0.1);
+    }
+    .faq-item__q {
+      width: 100%; text-align: left;
+      padding: 1.25rem 0;
+      font-family: var(--font-serif);
+      font-size: 1.1rem; font-weight: 500;
+      color: var(--brown);
+      display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+      cursor: pointer;
+      background: none; border: none;
+    }
+    .faq-item__q svg {
+      width: 20px; height: 20px; flex-shrink: 0;
+      transition: transform 0.3s var(--ease);
+      color: var(--terra);
+    }
+    .faq-item.is-open .faq-item__q svg { transform: rotate(45deg); }
+    .faq-item__a {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.4s var(--ease), padding 0.4s;
+    }
+    .faq-item.is-open .faq-item__a {
+      max-height: 200px;
+      padding-bottom: 1.25rem;
+    }
+    .faq-item__a p {
+      font-size: 0.92rem; line-height: 1.7;
+      color: rgba(58,42,31,0.65);
+    }
+
+    /* FOOTER */
+    .footer { background: var(--brown); color: rgba(255,248,240,0.6); padding: 3rem 0; }
+    .footer__layout { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 2rem; }
+    .footer__brand-name { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; color: var(--cream); margin-bottom: 0.25rem; }
+    .footer__tagline { font-size: 0.85rem; color: var(--gold); }
+    .footer__location { font-size: 0.8rem; margin-top: 0.25rem; }
+    .footer__links { list-style: none; display: flex; gap: 1.5rem; margin-bottom: 0.5rem; }
+    .footer__links a { font-size: 0.85rem; text-decoration: none; transition: color 0.3s; }
+    .footer__links a:hover { color: var(--cream); }
+    .footer__copy { font-size: 0.75rem; opacity: 0.5; }
+    .footer__right { text-align: right; }
+    @media (max-width: 600px) { .footer__layout { flex-direction: column; } .footer__right { text-align: left; } }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px);
+      padding: 1rem 2rem; border-radius: 12px;
+      font-size: 0.9rem; font-weight: 600; color: #fff;
+      opacity: 0; transition: all 0.4s var(--ease);
+      z-index: 200; max-width: 400px; text-align: center;
+      pointer-events: none;
+    }
+    .toast.is-visible { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast--success { background: var(--green); }
+    .toast--error { background: var(--terra); }
+    @media (max-width: 560px) {
+      .toast { left: 1rem; right: 1rem; bottom: 1rem; max-width: none; transform: translateX(0) translateY(20px); }
+      .toast.is-visible { transform: translateX(0) translateY(0); }
+    }
+      /* =============================================
+       MOBILE HAMBURGER MENU
+    ============================================= */
+    .nav__hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 200;
+    }
+    .nav__hamburger span {
+      display: block;
+      width: 100%;
+      height: 2px;
+      background: var(--cream);
+      border-radius: 2px;
+      transition: transform 0.35s var(--ease), opacity 0.25s ease;
+      transform-origin: center;
+    }
+    .nav__hamburger.active span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+    .nav__hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+    .nav__hamburger.active span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+    .nav__backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(30, 63, 43, 0.5);
+      z-index: 90;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .nav__backdrop.visible {
+      opacity: 1;
+    }
+    @media (max-width: 768px) {
+      .nav__hamburger { display: flex; }
+      .nav__links {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: min(300px, 80vw);
+        flex-direction: column;
+        gap: 0 !important;
+        background: var(--green-dark);
+        padding: 5rem 2rem 2rem;
+        transform: translateX(100%);
+        transition: transform 0.4s var(--ease);
+        z-index: 95;
+        box-shadow: -4px 0 24px rgba(0,0,0,0.2);
+        overflow-y: auto;
+      }
+      .nav__links.open {
+        transform: translateX(0);
+      }
+      .nav__links li {
+        border-bottom: 1px solid rgba(255,248,240,0.08);
+      }
+      .nav__links a {
+        display: block;
+        padding: 0.9rem 0;
+        font-size: 1rem !important;
+        color: rgba(255,248,240,0.7);
+      }
+      .nav__links a:hover,
+      .nav__links a.active {
+        color: var(--gold) !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav" aria-label="Main navigation">
+    <a href="/" class="nav__logo">Big Sister Foundation</a>
+    <button class="nav__hamburger" id="nav-hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav__links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/scholars/">Scholars</a></li>
+      <li><a href="/ledger/">Ledger</a></li>
+      <li><a href="/events/">Events</a></li>
+      <li><a href="/volunteer/">Volunteer</a></li>
+      <li><a href="/donate/">Give</a></li>
+    </ul>
+  </nav>
+
+  <!-- WELCOME-BACK BANNER -->
+  <div class="welcome-banner" id="welcome-banner">
+    Welcome back, <span id="welcome-name"></span>!
+    <a href="/sponsor/dashboard.html">Visit your dashboard &rarr;</a>
+  </div>
+
+  <!-- HERO -->
+  <section class="sponsor-hero">
+    <div class="container">
+      <p class="eyebrow" style="animation: heroFadeUp 0.6s var(--ease) both;">BECOME A SPONSOR</p>
+      <h1 style="animation: heroFadeUp 0.6s var(--ease) 0.15s both;">Stand Behind a Child.<br>Every Month.</h1>
+      <p class="sponsor-hero__sub" style="animation: heroFadeUp 0.6s var(--ease) 0.3s both;">
+        Recurring sponsors don't just give money. They become part of a child's story.
+        You'll see your impact grow, track your contributions, and know exactly where every naira goes.
+      </p>
+      <a href="#tiers" class="sponsor-hero__scroll" style="animation: heroFadeUp 0.6s var(--ease) 0.45s both;">
+        See sponsorship tiers
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M8 3v10M4 9l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- TIER CARDS -->
+  <section class="tiers section-pad" id="tiers">
+    <div class="container">
+      <p class="eyebrow" data-animate>CHOOSE YOUR TIER</p>
+      <h2 data-animate data-animate-delay="1">Every Level Makes a Difference</h2>
+      <p class="tiers__intro" data-animate data-animate-delay="2">
+        Pick a tier that fits your heart and budget. Every sponsor, regardless of tier, helps a child stay in school, eat well, and dream bigger.
+      </p>
+      <div class="tiers__grid">
+        <!-- Seedling -->
+        <div class="tier-card tier-card--sage" data-tier="seedling" data-amount="2000" data-animate data-animate-delay="1">
+          <div class="tier-card__icon tier-card__icon--sage">
+            <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="20" r="8" fill="rgba(139,175,142,0.3)"/><path d="M16 6v14" stroke="#8BAF8E" stroke-width="2" stroke-linecap="round"/><path d="M16 10c-3-2-6-1-7 2" stroke="#8BAF8E" stroke-width="1.5" stroke-linecap="round"/><path d="M16 14c3-2 6-1 7 2" stroke="#8BAF8E" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <p class="tier-card__name">Seedling</p>
+          <p class="tier-card__range">&#8358;2,000 &ndash; &#8358;9,999/mo</p>
+          <ul class="tier-card__perks">
+            <li>Monthly impact updates</li>
+            <li>Full receipt history</li>
+            <li>Sponsor dashboard access</li>
+          </ul>
+          <button class="tier-card__btn" type="button">Choose This Tier</button>
+        </div>
+        <!-- Grower -->
+        <div class="tier-card tier-card--green" data-tier="grower" data-amount="10000" data-animate data-animate-delay="2">
+          <div class="tier-card__icon tier-card__icon--green">
+            <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="18" r="10" fill="rgba(45,94,64,0.15)"/><path d="M16 4v16" stroke="#2D5E40" stroke-width="2" stroke-linecap="round"/><path d="M16 8c-4-2-7 0-8 3" stroke="#2D5E40" stroke-width="1.5" stroke-linecap="round"/><path d="M16 12c4-2 7 0 8 3" stroke="#2D5E40" stroke-width="1.5" stroke-linecap="round"/><path d="M16 16c-3-1-5 0-6 2" stroke="#2D5E40" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <p class="tier-card__name">Grower</p>
+          <p class="tier-card__range">&#8358;10,000 &ndash; &#8358;24,999/mo</p>
+          <ul class="tier-card__perks">
+            <li>Everything in Seedling</li>
+            <li>Quarterly progress reports</li>
+            <li>Program allocation choice</li>
+          </ul>
+          <button class="tier-card__btn" type="button">Choose This Tier</button>
+        </div>
+        <!-- Elder -->
+        <div class="tier-card tier-card--gold" data-tier="elder" data-amount="25000" data-animate data-animate-delay="3">
+          <div class="tier-card__icon tier-card__icon--gold">
+            <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="12" fill="rgba(212,169,106,0.12)"/><path d="M16 2v18" stroke="#D4A96A" stroke-width="2" stroke-linecap="round"/><path d="M16 6c-5-2-8 1-9 4" stroke="#D4A96A" stroke-width="1.5" stroke-linecap="round"/><path d="M16 10c5-2 8 1 9 4" stroke="#D4A96A" stroke-width="1.5" stroke-linecap="round"/><path d="M16 14c-4-1-6 1-7 3" stroke="#D4A96A" stroke-width="1.5" stroke-linecap="round"/><path d="M16 18c4-1 6 1 7 3" stroke="#D4A96A" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <p class="tier-card__name">Elder</p>
+          <p class="tier-card__range">&#8358;25,000 &ndash; &#8358;49,999/mo</p>
+          <ul class="tier-card__perks">
+            <li>Everything in Grower</li>
+            <li>Named recognition on Ledger</li>
+            <li>Annual impact certificate</li>
+          </ul>
+          <button class="tier-card__btn" type="button">Choose This Tier</button>
+        </div>
+        <!-- Baobab -->
+        <div class="tier-card tier-card--terra" data-tier="baobab" data-amount="50000" data-animate data-animate-delay="4">
+          <div class="tier-card__icon tier-card__icon--terra">
+            <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="14" r="13" fill="rgba(194,115,76,0.1)"/><path d="M16 1v20" stroke="#C2734C" stroke-width="2.5" stroke-linecap="round"/><path d="M16 5c-6-2-9 1-10 5" stroke="#C2734C" stroke-width="1.5" stroke-linecap="round"/><path d="M16 9c6-2 9 1 10 5" stroke="#C2734C" stroke-width="1.5" stroke-linecap="round"/><path d="M16 13c-5-1-7 1-8 4" stroke="#C2734C" stroke-width="1.5" stroke-linecap="round"/><path d="M16 17c5-1 7 1 8 4" stroke="#C2734C" stroke-width="1.5" stroke-linecap="round"/><ellipse cx="16" cy="28" rx="10" ry="3" fill="rgba(194,115,76,0.15)"/></svg>
+          </div>
+          <p class="tier-card__name">Baobab</p>
+          <p class="tier-card__range">&#8358;50,000+/mo</p>
+          <ul class="tier-card__perks">
+            <li>Everything in Elder</li>
+            <li>Direct scholar connection stories</li>
+            <li>Invitation to annual gatherings</li>
+          </ul>
+          <button class="tier-card__btn" type="button">Choose This Tier</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REGISTRATION -->
+  <section class="register section-pad" id="register">
+    <div class="container">
+      <p class="eyebrow" data-animate>JOIN AS A SPONSOR</p>
+      <h2 data-animate data-animate-delay="1" style="margin-bottom: 2.5rem;">Set Up Your Monthly Giving</h2>
+
+      <div class="register__layout">
+        <!-- LEFT: FORM -->
+        <form id="sponsor-form" novalidate autocomplete="on">
+
+          <!-- STEP 1 -->
+          <div class="form-step" data-animate>
+            <p class="form-step__title">
+              <span class="form-step__number">1</span> Personal Information
+            </p>
+            <div class="form-row">
+              <label class="form-label" for="field-name">Full Name <span>*</span></label>
+              <input class="form-input" type="text" id="field-name" name="name" required placeholder="Your full name" autocomplete="name">
+              <p class="form-error" id="error-name">Please enter your full name.</p>
+            </div>
+            <div class="form-row">
+              <label class="form-label" for="field-email">Email Address <span>*</span></label>
+              <input class="form-input" type="email" id="field-email" name="email" required placeholder="you@example.com" autocomplete="email">
+              <p class="form-error" id="error-email">Please enter a valid email address.</p>
+            </div>
+            <div class="form-row">
+              <label class="form-label" for="field-phone">Phone Number</label>
+              <input class="form-input" type="tel" id="field-phone" name="phone" placeholder="+234 800 000 0000" autocomplete="tel">
+              <p class="form-hint">Optional. Include country code.</p>
+            </div>
+            <div class="form-row">
+              <label class="form-label" for="field-source">How did you hear about us?</label>
+              <select class="form-select" id="field-source" name="source">
+                <option value="">Select an option</option>
+                <option value="social-media">Social Media</option>
+                <option value="friend-family">Friend or Family</option>
+                <option value="search">Web Search</option>
+                <option value="event">Event or Conference</option>
+                <option value="news">News or Article</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- STEP 2 -->
+          <div class="form-step" data-animate>
+            <p class="form-step__title">
+              <span class="form-step__number">2</span> Recurring Payment Setup
+            </p>
+            <div class="form-row">
+              <label class="form-label">Currency &amp; Amount <span>*</span></label>
+              <div class="amount-row">
+                <select class="form-select" id="field-currency" name="currency">
+                  <option value="NGN">&#8358; NGN</option>
+                  <option value="USD">$ USD</option>
+                  <option value="GBP">&pound; GBP</option>
+                  <option value="EUR">&euro; EUR</option>
+                  <option value="CAD">C$ CAD</option>
+                </select>
+                <input class="form-input" type="number" id="field-amount" name="amount" min="100" step="any" placeholder="e.g. 10,000" required>
+              </div>
+              <p class="form-error" id="error-amount">Please enter an amount.</p>
+            </div>
+            <div class="form-row">
+              <label class="form-label">Frequency</label>
+              <div class="frequency-group">
+                <button type="button" class="frequency-option is-selected" data-freq="monthly">Monthly</button>
+                <button type="button" class="frequency-option" data-freq="quarterly" disabled style="opacity:0.35; cursor:not-allowed;" title="Coming soon">Quarterly</button>
+                <button type="button" class="frequency-option" data-freq="annual" disabled style="opacity:0.35; cursor:not-allowed;" title="Coming soon">Annual</button>
+              </div>
+            </div>
+            <div class="form-row">
+              <label class="form-label">Program Allocation</label>
+              <div class="program-pills" id="program-pills">
+                <button type="button" class="program-pill is-selected" data-program="where-needed">Where needed most</button>
+                <button type="button" class="program-pill" data-program="education">Education</button>
+                <button type="button" class="program-pill" data-program="nutrition">Nutrition</button>
+                <button type="button" class="program-pill" data-program="community">Community</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 3 -->
+          <div class="form-step" data-animate>
+            <p class="form-step__title">
+              <span class="form-step__number">3</span> Agreements
+            </p>
+            <label class="form-check">
+              <input type="checkbox" id="field-agree" required>
+              <span class="form-check__text">I understand this is a recurring monthly commitment. I can cancel anytime from my sponsor dashboard.</span>
+            </label>
+            <p class="form-error" id="error-agree" style="margin-left: 2rem;">You must agree to continue.</p>
+            <label class="form-check">
+              <input type="checkbox" id="field-ledger">
+              <span class="form-check__text">I'd like my name listed on the public Ledger.</span>
+            </label>
+          </div>
+        </form>
+
+        <!-- RIGHT: SUMMARY SIDEBAR -->
+        <div class="summary" data-animate>
+          <p class="summary__label">Sponsor</p>
+          <p class="summary__name" id="summary-name">Your name here</p>
+
+          <div id="summary-tier-badge" class="summary__tier-badge">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M7 4v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="7" cy="10" r="0.5" fill="currentColor"/></svg>
+            <span id="summary-tier-text">Select a tier</span>
+          </div>
+
+          <hr class="summary__divider">
+
+          <p class="summary__amount-label">Monthly Amount</p>
+          <p class="summary__amount" id="summary-amount">&mdash;</p>
+
+          <div class="summary__impact">
+            <p class="summary__impact-item" id="summary-annual">Your annual impact: <strong id="summary-annual-val">&mdash;</strong></p>
+            <p class="summary__impact-item" id="summary-school">This sponsors approximately <strong id="summary-school-val">&mdash;</strong></p>
+          </div>
+
+          <hr class="summary__divider">
+
+          <button type="button" class="btn btn--terra summary__cta" id="submit-btn">
+            Set Up Monthly Giving
+          </button>
+          <p class="summary__note">
+            Your first monthly payment will be processed now. We'll set up automatic billing and confirm via email.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq section-pad" id="faq">
+    <div class="container">
+      <p class="eyebrow" data-animate>FREQUENTLY ASKED</p>
+      <h2 data-animate data-animate-delay="1" style="margin-bottom: 2.5rem;">Common Questions</h2>
+
+      <div class="faq__list" data-animate data-animate-delay="2">
+        <div class="faq-item">
+          <button class="faq-item__q" type="button">
+            Can I change my monthly amount?
+            <svg viewBox="0 0 20 20" fill="none"><line x1="10" y1="4" x2="10" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="4" y1="10" x2="16" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <div class="faq-item__a"><p>Yes! You can adjust your monthly sponsorship amount at any time from your sponsor dashboard. Changes take effect on your next billing cycle.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-item__q" type="button">
+            How do I cancel my sponsorship?
+            <svg viewBox="0 0 20 20" fill="none"><line x1="10" y1="4" x2="10" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="4" y1="10" x2="16" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <div class="faq-item__a"><p>You can cancel directly from your sponsor dashboard, or by emailing us at hello@thebigsisterfoundation.org. There are no penalties or questions asked.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-item__q" type="button">
+            Is my payment secure?
+            <svg viewBox="0 0 20 20" fill="none"><line x1="10" y1="4" x2="10" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="4" y1="10" x2="16" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <div class="faq-item__a"><p>Absolutely. All payments are processed through Paystack, which is PCI-DSS Level 1 compliant -- the highest level of payment security certification. Your card details never touch our servers.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-item__q" type="button">
+            Can I donate from outside Nigeria?
+            <svg viewBox="0 0 20 20" fill="none"><line x1="10" y1="4" x2="10" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="4" y1="10" x2="16" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <div class="faq-item__a"><p>Yes! We accept payments in USD, GBP, EUR, and CAD in addition to Nigerian Naira. Simply select your preferred currency during registration.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-item__q" type="button">
+            Do I get tax receipts?
+            <svg viewBox="0 0 20 20" fill="none"><line x1="10" y1="4" x2="10" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="4" y1="10" x2="16" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <div class="faq-item__a"><p>Yes. A receipt is automatically generated after every payment and available from your sponsor dashboard. Annual summary receipts are also available for tax purposes.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__layout">
+        <div class="footer__left">
+          <p class="footer__brand-name">Big Sister Foundation</p>
+          <p class="footer__tagline">Rooted. Present. Protective.</p>
+          <p class="footer__location">Lagos, Nigeria</p>
+        </div>
+        <div class="footer__right">
+          <ul class="footer__links">
+            <li><a href="/scholars/">Scholars</a></li>
+            <li><a href="/ledger/">Ledger</a></li>
+            <li><a href="/events/">Events</a></li>
+            <li><a href="/volunteer/">Volunteer</a></li>
+            <li><a href="/forums/">Forums</a></li>
+            <li><a href="/ideas/">Ideas</a></li>
+            <li><a href="/donations/">Donations</a></li>
+            <li><a href="/donate/">Give</a></li>
+            <li><a href="/sponsor/">Sponsor</a></li>
+            <li><a href="mailto:hello@thebigsisterfoundation.org">Email</a></li>
+          </ul>
+          <p class="footer__copy">&copy; 2026 Big Sister Foundation. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- FIREBASE -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <!-- SHARED SCRIPTS -->
+  <script src="/shared/bsf-store.js"></script>
+  <script src="/shared/bsf-paystack.js"></script>
+  <script src="https://js.paystack.co/v2/inline.js"></script>
+
+  <script src="/shared/bsf-antispam.js"></script>
+  <script>
+    (function() {
+      'use strict';
+
+      BSFAntiSpam.protect('sponsor-form');
+
+      /* ── Firebase init ── */
+      firebase.initializeApp({
+        apiKey: "AIzaSyCwos6XR9-uqAf_Esmh2K_hJoLxq4gnEuU",
+        authDomain: "big-sister-foundation.firebaseapp.com",
+        projectId: "big-sister-foundation",
+        storageBucket: "big-sister-foundation.firebasestorage.app",
+        messagingSenderId: "778723584560",
+        appId: "1:778723584560:web:7499944c30001e7fcf5bf5"
+      });
+      var db = firebase.firestore();
+
+      /* ── DOM refs ── */
+      var form          = document.getElementById('sponsor-form');
+      var submitBtn     = document.getElementById('submit-btn');
+      var toastEl       = document.getElementById('toast');
+      var nameField     = document.getElementById('field-name');
+      var emailField    = document.getElementById('field-email');
+      var phoneField    = document.getElementById('field-phone');
+      var sourceField   = document.getElementById('field-source');
+      var currencyField = document.getElementById('field-currency');
+      var amountField   = document.getElementById('field-amount');
+      var agreeField    = document.getElementById('field-agree');
+      var ledgerField   = document.getElementById('field-ledger');
+      var summaryName   = document.getElementById('summary-name');
+      var summaryAmount = document.getElementById('summary-amount');
+      var summaryAnnualVal = document.getElementById('summary-annual-val');
+      var summarySchoolVal = document.getElementById('summary-school-val');
+      var summaryTierBadge = document.getElementById('summary-tier-badge');
+      var summaryTierText  = document.getElementById('summary-tier-text');
+      var welcomeBanner = document.getElementById('welcome-banner');
+      var welcomeName   = document.getElementById('welcome-name');
+
+      /* ── State ── */
+      var selectedProgram = 'where-needed';
+      var isSubmitting = false;
+
+      /* ── Check returning sponsor ── */
+      if (BSFStore && BSFStore.isRegisteredSponsor()) {
+        var existingSponsor = BSFStore.getSponsor();
+        welcomeName.textContent = existingSponsor.name || 'Sponsor';
+        welcomeBanner.classList.add('is-visible');
+      }
+
+      /* ── Animations ── */
+      document.documentElement.classList.add('js-ready');
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      document.querySelectorAll('[data-animate]').forEach(function(el) {
+        observer.observe(el);
+      });
+
+      /* ── Tier card selection ── */
+      document.querySelectorAll('.tier-card').forEach(function(card) {
+        card.addEventListener('click', function() {
+          var amt = card.getAttribute('data-amount');
+          amountField.value = amt;
+          currencyField.value = 'NGN';
+          updateSummary();
+          document.getElementById('register').scrollIntoView({ behavior: 'smooth' });
+        });
+      });
+
+      /* ── Program pill selection ── */
+      document.getElementById('program-pills').addEventListener('click', function(e) {
+        var pill = e.target.closest('.program-pill');
+        if (!pill) return;
+        document.querySelectorAll('.program-pill').forEach(function(p) {
+          p.classList.remove('is-selected');
+        });
+        pill.classList.add('is-selected');
+        selectedProgram = pill.getAttribute('data-program');
+      });
+
+      /* ── FAQ accordion ── */
+      document.querySelectorAll('.faq-item__q').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var item = btn.parentElement;
+          var wasOpen = item.classList.contains('is-open');
+          document.querySelectorAll('.faq-item').forEach(function(fi) {
+            fi.classList.remove('is-open');
+          });
+          if (!wasOpen) item.classList.add('is-open');
+        });
+      });
+
+      /* ── Live summary updates ── */
+      nameField.addEventListener('input', updateSummary);
+      amountField.addEventListener('input', updateSummary);
+      currencyField.addEventListener('change', updateSummary);
+
+      function updateSummary() {
+        var name = nameField.value.trim();
+        summaryName.textContent = name || 'Your name here';
+
+        var amount = parseFloat(amountField.value);
+        var currency = currencyField.value;
+
+        if (amount && amount > 0) {
+          var info = BSFPaystack.getCurrencyInfo(currency);
+          var tier = BSFPaystack.getTier(amount, currency);
+          var formatted = info.symbol + Number(amount).toLocaleString();
+          var annualFormatted = info.symbol + Number(amount * 12).toLocaleString();
+
+          summaryAmount.textContent = formatted + '/mo';
+          summaryAnnualVal.textContent = annualFormatted;
+
+          // Approximate school months (rough calc: 5000 NGN per school month in NGN terms)
+          var rates = { NGN: 1, USD: 1500, GBP: 1900, EUR: 1700, CAD: 1100 };
+          var ngnEquiv = amount * (rates[currency] || 1);
+          var schoolMonths = Math.floor(ngnEquiv / 5000);
+          if (schoolMonths > 0) {
+            summarySchoolVal.textContent = schoolMonths + ' month' + (schoolMonths > 1 ? 's' : '') + ' of school fees';
+          } else {
+            summarySchoolVal.textContent = 'partial school support';
+          }
+
+          // Update tier badge
+          var tierColors = {
+            'Seedling': { bg: 'rgba(139,175,142,0.15)', color: '#8BAF8E' },
+            'Grower':   { bg: 'rgba(45,94,64,0.15)',    color: '#2D5E40' },
+            'Elder':    { bg: 'rgba(212,169,106,0.15)',  color: '#D4A96A' },
+            'Baobab':   { bg: 'rgba(194,115,76,0.15)',   color: '#C2734C' }
+          };
+          var tc = tierColors[tier.name] || tierColors['Seedling'];
+          summaryTierBadge.style.background = tc.bg;
+          summaryTierBadge.style.color = tc.color;
+          summaryTierText.textContent = tier.name + ' Sponsor';
+        } else {
+          summaryAmount.textContent = '\u2014';
+          summaryAnnualVal.textContent = '\u2014';
+          summarySchoolVal.textContent = '\u2014';
+          summaryTierBadge.style.background = '';
+          summaryTierBadge.style.color = '';
+          summaryTierText.textContent = 'Select a tier';
+        }
+      }
+
+      /* ── Toast ── */
+      var toastTimer = null;
+      function showToast(message, type) {
+        clearTimeout(toastTimer);
+        toastEl.textContent = '';
+        toastEl.className = 'toast toast--' + type;
+        toastEl.textContent = message;
+        requestAnimationFrame(function() {
+          toastEl.classList.add('is-visible');
+        });
+        toastTimer = setTimeout(function() {
+          toastEl.classList.remove('is-visible');
+        }, 4000);
+      }
+
+      /* ── Validation ── */
+      function clearErrors() {
+        document.querySelectorAll('.form-input.is-error').forEach(function(el) {
+          el.classList.remove('is-error');
+        });
+        document.querySelectorAll('.form-error.is-visible').forEach(function(el) {
+          el.classList.remove('is-visible');
+        });
+      }
+
+      function showError(fieldId, errorId) {
+        var field = document.getElementById(fieldId);
+        var error = document.getElementById(errorId);
+        if (field) field.classList.add('is-error');
+        if (error) error.classList.add('is-visible');
+      }
+
+      function validate() {
+        clearErrors();
+        var valid = true;
+        var name = nameField.value.trim();
+        var email = emailField.value.trim();
+        var amount = parseFloat(amountField.value);
+
+        if (!name) {
+          showError('field-name', 'error-name');
+          valid = false;
+        }
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          showError('field-email', 'error-email');
+          valid = false;
+        }
+        if (!amount || amount <= 0) {
+          showError('field-amount', 'error-amount');
+          valid = false;
+        }
+        if (!agreeField.checked) {
+          document.getElementById('error-agree').classList.add('is-visible');
+          valid = false;
+        }
+
+        return valid;
+      }
+
+      /* ── Submit ── */
+      submitBtn.addEventListener('click', function() {
+        if (isSubmitting) return;
+        if (!BSFAntiSpam.check('sponsor-form')) return;
+        if (!validate()) {
+          showToast('Please fill in all required fields.', 'error');
+          return;
+        }
+
+        isSubmitting = true;
+        submitBtn.textContent = 'Processing...';
+        submitBtn.classList.add('btn--disabled');
+
+        var name     = nameField.value.trim();
+        var email    = emailField.value.trim();
+        var phone    = phoneField.value.trim();
+        var source   = sourceField.value;
+        var currency = currencyField.value;
+        var amount   = parseFloat(amountField.value);
+        var tier     = BSFPaystack.getTier(amount, currency);
+        var wantsLedger = ledgerField.checked;
+
+        // Create sponsor profile
+        var sponsor = {
+          id: BSFStore.generateId('spn_'),
+          name: name,
+          email: email,
+          phone: phone || null,
+          source: source || null,
+          tier: tier.name,
+          isRecurring: true,
+          recurringAmount: amount,
+          recurringCurrency: currency,
+          program: selectedProgram,
+          publicLedger: wantsLedger,
+          createdAt: new Date().toISOString()
+        };
+
+        BSFStore.saveSponsor(sponsor);
+
+        // Sync to Firestore
+        BSFStore.syncSponsorToFirestore(db, sponsor).catch(function(err) {
+          console.warn('[Sponsor] Firestore sync failed, continuing with payment.', err);
+        });
+
+        // Open Paystack
+        var ref = BSFStore.generateRef();
+        BSFPaystack.pay({
+          email: email,
+          amount: amount,
+          currency: currency,
+          ref: ref,
+          metadata: {
+            sponsorId: sponsor.id,
+            sponsorName: name,
+            program: selectedProgram,
+            type: 'recurring',
+            tier: tier.name
+          },
+          onSuccess: function(response) {
+            // Save transaction
+            var txn = BSFStore.addTransaction({
+              type: 'sponsorship',
+              sponsorId: sponsor.id,
+              amount: amount,
+              currency: currency,
+              program: selectedProgram,
+              tier: tier.name,
+              ref: ref,
+              paystackRef: response.reference,
+              status: 'success'
+            });
+
+            // Sync transaction to Firestore
+            BSFStore.syncDonationToFirestore(db, txn).catch(function(err) {
+              console.warn('[Sponsor] Transaction Firestore sync failed.', err);
+            });
+
+            showToast('Welcome aboard! Redirecting to your dashboard...', 'success');
+
+            setTimeout(function() {
+              window.location.href = '/sponsor/dashboard.html?welcome=1';
+            }, 1800);
+          },
+          onClose: function() {
+            isSubmitting = false;
+            submitBtn.textContent = 'Set Up Monthly Giving';
+            submitBtn.classList.remove('btn--disabled');
+            showToast('Payment window closed. Try again when ready.', 'error');
+          }
+        });
+      });
+
+      // Allow Enter key on form
+      form.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          submitBtn.click();
+        }
+      });
+
+    })();
+  </script>
+
+<div class="nav__backdrop" id="nav-backdrop"></div>
+<script>
+(function() {
+  var hamburger = document.getElementById("nav-hamburger");
+  var navLinks = document.querySelector(".nav__links");
+  var backdrop = document.getElementById("nav-backdrop");
+  if (!hamburger || !navLinks || !backdrop) return;
+  function openMenu() {
+    hamburger.classList.add("active");
+    navLinks.classList.add("open");
+    backdrop.style.display = "block";
+    requestAnimationFrame(function() { backdrop.classList.add("visible"); });
+    document.body.style.overflow = "hidden";
+  }
+  function closeMenu() {
+    hamburger.classList.remove("active");
+    navLinks.classList.remove("open");
+    backdrop.classList.remove("visible");
+    document.body.style.overflow = "";
+    setTimeout(function() { backdrop.style.display = "none"; }, 350);
+  }
+  hamburger.addEventListener("click", function() {
+    if (navLinks.classList.contains("open")) { closeMenu(); } else { openMenu(); }
+  });
+  backdrop.addEventListener("click", closeMenu);
+  navLinks.querySelectorAll("a").forEach(function(link) {
+    link.addEventListener("click", closeMenu);
+  });
+  var currentPath = window.location.pathname;
+  navLinks.querySelectorAll("a").forEach(function(link) {
+    var href = link.getAttribute("href");
+    if (href === currentPath || (href !== "/" && currentPath.startsWith(href))) {
+      link.classList.add("active");
+      link.style.color = "var(--gold)";
+    } else if (href === "/" && currentPath === "/") {
+      link.classList.add("active");
+      link.style.color = "var(--gold)";
+    }
+  });
+})();
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

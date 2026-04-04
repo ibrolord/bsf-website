@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q4EYY24EDZ"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-Q4EYY24EDZ');</script>
+  <title>Welcome Aboard — Big Sister Foundation</title>
+  <meta name="description" content="You've been approved as a Big Sister Foundation volunteer. Here's everything you need to get started.">
+  <meta property="og:title" content="Welcome Aboard — Big Sister Foundation">
+  <meta property="og:description" content="You've been approved as a Big Sister Foundation volunteer. Here's everything you need to get started.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/og-image.svg">
+  <meta name="theme-color" content="#2D5E40">
+  <link rel="canonical" href="https://public-mu-steel.vercel.app/volunteer/register/">
+  <meta property="og:url" content="https://public-mu-steel.vercel.app/volunteer/register/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Welcome Aboard — Big Sister Foundation">
+  <meta name="twitter:description" content="You've been approved as a Big Sister Foundation volunteer. Here's everything you need to get started.">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cellipse cx='50' cy='35' rx='35' ry='30' fill='%232D5E40' opacity='0.85'/%3E%3Cellipse cx='30' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cellipse cx='70' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cpath d='M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z' fill='%233A2A1F' opacity='0.8'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #2D5E40;
+      --green-dark: #1E3F2B;
+      --brown: #3A2A1F;
+      --terra: #C2734C;
+      --gold: #D4A96A;
+      --sage: #8BAF8E;
+      --cream: #FFF8F0;
+      --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --section-pad: clamp(48px, 4vw + 20px, 100px);
+      --page-margin: clamp(20px, 4vw, 80px);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.2rem);
+      line-height: 1.7;
+      color: var(--brown);
+      background: var(--cream);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+
+    .eyebrow {
+      font-family: var(--font-sans);
+      font-size: clamp(0.7rem, 0.5vw + 0.5rem, 0.85rem);
+      font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--terra); margin-bottom: 1rem;
+    }
+
+    h1, h2, h3 {
+      font-family: var(--font-serif);
+      font-weight: 500; line-height: 1.08; letter-spacing: -0.02em;
+    }
+    h1 { font-size: clamp(2.2rem, 4vw + 0.5rem, 4rem); }
+    h2 { font-size: clamp(1.8rem, 2.5vw + 0.5rem, 2.8rem); }
+    h3 { font-size: clamp(1.3rem, 1vw + 0.8rem, 1.7rem); line-height: 1.2; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding-left: var(--page-margin); padding-right: var(--page-margin); }
+    .section-pad { padding-top: var(--section-pad); padding-bottom: var(--section-pad); }
+
+    /* NAV */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem var(--page-margin); background: var(--green-dark);
+    }
+    .nav__logo { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; text-decoration: none; color: var(--cream); }
+    .nav__links { list-style: none; display: flex; gap: 2rem; }
+    .nav__links a { font-size: 0.85rem; font-weight: 500; text-decoration: none; color: rgba(255,248,240,0.7); transition: color 0.3s; }
+    .nav__links a:hover { color: var(--cream); }
+    
+
+    /* HERO */
+    .welcome-hero {
+      padding-top: calc(60px + var(--section-pad));
+      padding-bottom: var(--section-pad);
+      background: var(--green-dark); color: var(--cream);
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .welcome-hero::before {
+      content: '';
+      position: absolute; top: -30%; left: 50%; transform: translateX(-50%);
+      width: 800px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(45,94,64,0.25) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .welcome-hero .eyebrow { color: var(--gold); }
+    .welcome-hero__check {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: rgba(139,175,142,0.15);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.5rem;
+    }
+    .welcome-hero__check svg { color: var(--sage); }
+    .welcome-hero__sub {
+      max-width: 560px; margin: 1rem auto 0;
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.15rem);
+      line-height: 1.7; color: rgba(255,248,240,0.7);
+    }
+
+    /* STEPS */
+    .steps { background: var(--cream); }
+    .steps .eyebrow { color: var(--terra); }
+    .steps__intro {
+      max-width: 600px;
+      font-size: clamp(0.95rem, 0.3vw + 0.8rem, 1.05rem);
+      line-height: 1.7;
+      color: rgba(58,42,31,0.65);
+      margin-top: 0.5rem;
+      margin-bottom: 3rem;
+    }
+    .steps__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+    .step-card {
+      background: #fff;
+      border: 1.5px solid rgba(58,42,31,0.08);
+      border-radius: 16px;
+      padding: 2rem;
+      position: relative;
+      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+    }
+    .step-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(58,42,31,0.06);
+    }
+    .step-card__number {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-weight: 700;
+      margin-bottom: 1.25rem;
+      color: #fff;
+    }
+    .step-card__number--1 { background: var(--green); }
+    .step-card__number--2 { background: var(--terra); }
+    .step-card__number--3 { background: var(--brown); }
+    .step-card__number--4 { background: var(--gold); color: var(--brown); }
+    .step-card h3 { margin-bottom: 0.5rem; color: var(--brown); }
+    .step-card p {
+      font-size: 0.9rem; line-height: 1.65; color: rgba(58,42,31,0.6);
+    }
+    .step-card__link {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      margin-top: 1rem;
+      font-size: 0.85rem; font-weight: 600;
+      color: var(--terra); text-decoration: none;
+      transition: gap 0.3s var(--ease);
+    }
+    .step-card__link:hover { gap: 0.6rem; }
+
+    /* EXPECTATIONS REMINDER */
+    .reminder {
+      background: var(--green-dark); color: var(--cream);
+    }
+    .reminder__layout {
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .reminder .eyebrow { color: var(--gold); }
+    .reminder__text {
+      font-family: var(--font-serif);
+      font-size: clamp(1.2rem, 1.5vw + 0.5rem, 1.6rem);
+      line-height: 1.5;
+      color: rgba(255,248,240,0.8);
+      margin-top: 0.5rem;
+    }
+    .reminder__text em {
+      font-style: italic; color: var(--gold);
+    }
+    .reminder__values {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem;
+      margin-top: 2rem;
+    }
+    .reminder__value {
+      font-size: 0.8rem; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 0.5rem 1.25rem; border-radius: 100px;
+      background: rgba(255,248,240,0.06);
+      border: 1px solid rgba(255,248,240,0.1);
+      color: rgba(255,248,240,0.6);
+    }
+
+    /* CONTACT */
+    .contact {
+      background: var(--cream);
+    }
+    .contact .eyebrow { color: var(--terra); }
+    .contact__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+      margin-top: 2rem;
+    }
+    .contact-card {
+      background: #fff;
+      border: 1.5px solid rgba(58,42,31,0.08);
+      border-radius: 16px;
+      padding: 1.75rem;
+      text-align: center;
+      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+    }
+    .contact-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(58,42,31,0.06);
+    }
+    .contact-card__icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
+      background: rgba(45,94,64,0.08);
+    }
+    .contact-card h3 { font-size: 1.05rem; margin-bottom: 0.3rem; }
+    .contact-card p { font-size: 0.88rem; color: rgba(58,42,31,0.55); }
+    .contact-card a {
+      display: inline-block; margin-top: 0.75rem;
+      font-size: 0.85rem; font-weight: 600;
+      color: var(--terra); text-decoration: none;
+    }
+
+    /* CLOSING */
+    .closing {
+      background: var(--brown); color: var(--cream);
+      text-align: center;
+    }
+    .closing__quote {
+      font-family: var(--font-serif);
+      font-size: clamp(1.4rem, 2vw + 0.5rem, 2.2rem);
+      font-weight: 400; font-style: italic;
+      line-height: 1.35;
+      max-width: 640px; margin: 0 auto;
+    }
+    .closing__quote span { color: var(--gold); }
+    .closing__attr {
+      margin-top: 1.5rem;
+      font-size: 0.8rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--terra);
+    }
+
+    /* FOOTER */
+    .footer { background: var(--brown); color: rgba(255,248,240,0.6); padding: 3rem 0; border-top: 1px solid rgba(255,248,240,0.06); }
+    .footer__layout { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 2rem; }
+    .footer__brand-name { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; color: var(--cream); margin-bottom: 0.25rem; }
+    .footer__tagline { font-size: 0.85rem; color: var(--gold); }
+    .footer__location { font-size: 0.8rem; margin-top: 0.25rem; }
+    .footer__links { list-style: none; display: flex; gap: 1.5rem; margin-bottom: 0.5rem; }
+    .footer__links a { font-size: 0.85rem; text-decoration: none; transition: color 0.3s; }
+    .footer__links a:hover { color: var(--cream); }
+    .footer__copy { font-size: 0.75rem; opacity: 0.5; }
+    .footer__right { text-align: right; }
+    @media (max-width: 600px) { .footer__layout { flex-direction: column; } .footer__right { text-align: left; } }
+
+    /* ANIMATIONS */
+    [data-animate] {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+    }
+    [data-animate].is-visible { opacity: 1; transform: translateY(0); }
+    [data-animate-delay="1"] { transition-delay: 0.1s; }
+    [data-animate-delay="2"] { transition-delay: 0.2s; }
+    [data-animate-delay="3"] { transition-delay: 0.3s; }
+    [data-animate-delay="4"] { transition-delay: 0.4s; }
+      /* =============================================
+       MOBILE HAMBURGER MENU
+    ============================================= */
+    .nav__hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 200;
+    }
+    .nav__hamburger span {
+      display: block;
+      width: 100%;
+      height: 2px;
+      background: var(--cream);
+      border-radius: 2px;
+      transition: transform 0.35s var(--ease), opacity 0.25s ease;
+      transform-origin: center;
+    }
+    .nav__hamburger.active span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+    .nav__hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+    .nav__hamburger.active span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+    .nav__backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(30, 63, 43, 0.5);
+      z-index: 90;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .nav__backdrop.visible {
+      opacity: 1;
+    }
+    @media (max-width: 768px) {
+      .nav__hamburger { display: flex; }
+      .nav__links {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: min(300px, 80vw);
+        flex-direction: column;
+        gap: 0 !important;
+        background: var(--green-dark);
+        padding: 5rem 2rem 2rem;
+        transform: translateX(100%);
+        transition: transform 0.4s var(--ease);
+        z-index: 95;
+        box-shadow: -4px 0 24px rgba(0,0,0,0.2);
+        overflow-y: auto;
+      }
+      .nav__links.open {
+        transform: translateX(0);
+      }
+      .nav__links li {
+        border-bottom: 1px solid rgba(255,248,240,0.08);
+      }
+      .nav__links a {
+        display: block;
+        padding: 0.9rem 0;
+        font-size: 1rem !important;
+        color: rgba(255,248,240,0.7);
+      }
+      .nav__links a:hover,
+      .nav__links a.active {
+        color: var(--gold) !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav" aria-label="Main navigation">
+    <a href="/" class="nav__logo">Big Sister Foundation</a>
+    <button class="nav__hamburger" id="nav-hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav__links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/scholars/">Scholars</a></li>
+      <li><a href="/ledger/">Ledger</a></li>
+      <li><a href="/events/">Events</a></li>
+      <li><a href="/volunteer/">Volunteer</a></li>
+      <li><a href="/donate/">Give</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="welcome-hero">
+    <div class="container">
+      <div class="welcome-hero__check" data-animate>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <p class="eyebrow" data-animate data-animate-delay="1">YOU'RE IN</p>
+      <h1 data-animate data-animate-delay="2">Welcome to the Family</h1>
+      <p class="welcome-hero__sub" data-animate data-animate-delay="3">Your application has been approved. You're now part of something that matters. Here's how to get started.</p>
+    </div>
+  </section>
+
+  <!-- NEXT STEPS -->
+  <section class="steps section-pad">
+    <div class="container">
+      <p class="eyebrow" data-animate>YOUR FIRST WEEK</p>
+      <h2 data-animate data-animate-delay="1">Four Things to Do Now</h2>
+      <p class="steps__intro" data-animate data-animate-delay="2">Don't overthink it. Just follow these steps and you'll be ready for your first day.</p>
+
+      <div class="steps__grid">
+        <div class="step-card" data-animate>
+          <div class="step-card__number step-card__number--1">1</div>
+          <h3>Connect with the Team</h3>
+          <p>Contact the team via email for group access. This is where we coordinate everything — schedules, updates, and last-minute changes.</p>
+          <a href="mailto:hello@thebigsisterfoundation.org" class="step-card__link">
+            Email the Team
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+
+        <div class="step-card" data-animate data-animate-delay="1">
+          <div class="step-card__number step-card__number--2">2</div>
+          <h3>Attend Orientation</h3>
+          <p>Every new volunteer attends a short orientation session. We'll walk you through how we work, introduce you to the team, and answer your questions.</p>
+          <p style="margin-top: 0.75rem; font-size: 0.85rem; font-weight: 600; color: var(--green);">Next session: Check your email for dates</p>
+        </div>
+
+        <div class="step-card" data-animate data-animate-delay="2">
+          <div class="step-card__number step-card__number--3">3</div>
+          <h3>Read the Volunteer Guide</h3>
+          <p>A short document covering our values, safeguarding policies, and practical do's and don'ts. It takes 10 minutes and it matters.</p>
+          <a href="#" class="step-card__link">
+            Read the Guide
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+
+        <div class="step-card" data-animate data-animate-delay="3">
+          <div class="step-card__number step-card__number--4">4</div>
+          <h3>Show Up for Your First Session</h3>
+          <p>Your coordinator will assign you a session based on your role and availability. Just show up, be present, and be yourself. That's all we ask.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT YOU HAVE ACCESS TO -->
+  <section class="access section-pad" style="background: #fff; border-top: 1px solid rgba(58,42,31,0.06);">
+    <div class="container">
+      <p class="eyebrow" style="color: var(--green);" data-animate>WHAT YOU NOW HAVE ACCESS TO</p>
+      <h2 data-animate data-animate-delay="1">Your Volunteer Toolkit</h2>
+      <p class="steps__intro" data-animate data-animate-delay="2">As an approved volunteer, these resources are now available to you.</p>
+
+      <div class="steps__grid">
+        <a href="mailto:hello@thebigsisterfoundation.org" style="text-decoration:none;" class="step-card" data-animate>
+          <div class="contact-card__icon" style="margin: 0 0 1rem;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <h3>Volunteer Email Group</h3>
+          <p>Contact the team via email for group access. Schedules, updates, coordination, and community.</p>
+        </a>
+
+        <a href="/scholars/" style="text-decoration:none;" class="step-card" data-animate data-animate-delay="1">
+          <div class="contact-card__icon" style="margin: 0 0 1rem;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3>Scholar Profiles</h3>
+          <p>Learn about the young people in our programme — their pathways, progress, and what support they need.</p>
+        </a>
+
+        <a href="/ideas/" style="text-decoration:none;" class="step-card" data-animate data-animate-delay="2">
+          <div class="contact-card__icon" style="margin: 0 0 1rem;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <h3>Ideas Board</h3>
+          <p>Propose activities, events, or improvements. Vote on ideas from other volunteers. Your voice shapes what we do.</p>
+        </a>
+
+        <a href="/ledger/" style="text-decoration:none;" class="step-card" data-animate data-animate-delay="3">
+          <div class="contact-card__icon" style="margin: 0 0 1rem;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <h3>Open Ledger</h3>
+          <p>Full transparency on how funds are spent. Every naira in, every naira out. No secrets.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT WE EXPECT -->
+  <section class="section-pad" style="background: var(--cream);">
+    <div class="container">
+      <p class="eyebrow" style="color: var(--terra);" data-animate>WHAT WE EXPECT FROM YOU</p>
+      <h2 data-animate data-animate-delay="1">The Short Version</h2>
+
+      <div style="max-width: 680px; margin-top: 2rem;">
+        <div style="display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.5rem;" data-animate>
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(45,94,64,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+          <div>
+            <p style="font-weight: 600; color: var(--brown); margin-bottom: 0.15rem;">4 hours a month, minimum.</p>
+            <p style="font-size: 0.9rem; color: rgba(58,42,31,0.55);">On a schedule a child can depend on. Not once. Consistently.</p>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.5rem;" data-animate data-animate-delay="1">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(45,94,64,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+          <div>
+            <p style="font-weight: 600; color: var(--brown); margin-bottom: 0.15rem;">No photos of children on social media.</p>
+            <p style="font-size: 0.9rem; color: rgba(58,42,31,0.55);">Their dignity is non-negotiable. No exceptions.</p>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.5rem;" data-animate data-animate-delay="2">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(45,94,64,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+          <div>
+            <p style="font-weight: 600; color: var(--brown); margin-bottom: 0.15rem;">Listen before you lead.</p>
+            <p style="font-size: 0.9rem; color: rgba(58,42,31,0.55);">Community members know this context better than you. Follow their lead.</p>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.5rem;" data-animate data-animate-delay="3">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(45,94,64,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+          <div>
+            <p style="font-weight: 600; color: var(--brown); margin-bottom: 0.15rem;">Report safeguarding concerns immediately.</p>
+            <p style="font-size: 0.9rem; color: rgba(58,42,31,0.55);">If something feels wrong about a child's safety, <a href="mailto:hello@thebigsisterfoundation.org?subject=Safeguarding%20Report" style="color: var(--terra); font-weight: 600; text-decoration: none;">report it here</a>. No hesitation.</p>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; align-items: flex-start;" data-animate data-animate-delay="4">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(45,94,64,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+          <div>
+            <p style="font-weight: 600; color: var(--brown); margin-bottom: 0.15rem;">If you can't make it, tell us.</p>
+            <p style="font-size: 0.9rem; color: rgba(58,42,31,0.55);">Life happens. Just don't disappear without a word — a child might be expecting you.</p>
+          </div>
+        </div>
+      </div>
+
+      <p style="max-width: 680px; margin-top: 2.5rem; font-size: 0.9rem; color: rgba(58,42,31,0.5);" data-animate>Read the full expectations on the <a href="/volunteer/#expectations" style="color: var(--terra); font-weight: 600; text-decoration: none;">volunteer page</a>.</p>
+    </div>
+  </section>
+
+  <!-- REMINDER -->
+  <section class="reminder section-pad">
+    <div class="container">
+      <div class="reminder__layout">
+        <p class="eyebrow" data-animate>REMEMBER</p>
+        <h2 data-animate data-animate-delay="1" style="color: var(--cream);">What This Is About</h2>
+        <p class="reminder__text" data-animate data-animate-delay="2">
+          You're not here to fix anyone. You're here to <em>be present</em> for someone who needs consistency more than anything else. Show up. Listen. Come back.
+        </p>
+        <div class="reminder__values" data-animate data-animate-delay="3">
+          <span class="reminder__value">Consistency over intensity</span>
+          <span class="reminder__value">Presence over performance</span>
+          <span class="reminder__value">Community over charity</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact section-pad">
+    <div class="container">
+      <p class="eyebrow" data-animate>NEED HELP?</p>
+      <h2 data-animate data-animate-delay="1">Reach Out Anytime</h2>
+
+      <div class="contact__grid">
+        <div class="contact-card" data-animate>
+          <div class="contact-card__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <h3>Email</h3>
+          <p>Fastest way to reach us. Email the volunteer coordinator directly.</p>
+          <a href="mailto:hello@thebigsisterfoundation.org">Send an email</a>
+        </div>
+
+        <div class="contact-card" data-animate data-animate-delay="1">
+          <div class="contact-card__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <h3>Email</h3>
+          <p>For anything that needs more detail or a paper trail.</p>
+          <a href="mailto:hello@thebigsisterfoundation.org">Send an email</a>
+        </div>
+
+        <div class="contact-card" data-animate data-animate-delay="2">
+          <div class="contact-card__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <h3>Safeguarding</h3>
+          <p>If you see something that concerns you about a child's safety, report it immediately.</p>
+          <a href="mailto:hello@thebigsisterfoundation.org?subject=Safeguarding%20Report">Report a concern</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLOSING -->
+  <section class="closing section-pad">
+    <div class="container">
+      <p class="closing__quote" data-animate>
+        "A tree does not grow strong by avoiding storms. It grows strong because <span>someone planted it in good soil and came back to water it.</span>"
+      </p>
+      <p class="closing__attr" data-animate data-animate-delay="1">Big Sister Foundation</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__layout">
+        <div class="footer__left">
+          <p class="footer__brand-name">Big Sister Foundation</p>
+          <p class="footer__tagline">Rooted. Present. Protective.</p>
+          <p class="footer__location">Lagos, Nigeria</p>
+        </div>
+        <div class="footer__right">
+          <ul class="footer__links">
+            <li><a href="/scholars/">Scholars</a></li>
+            <li><a href="/ledger/">Ledger</a></li>
+            <li><a href="/events/">Events</a></li>
+            <li><a href="/volunteer/">Volunteer</a></li>
+            <li><a href="/forums/">Forums</a></li>
+            <li><a href="/ideas/">Ideas</a></li>
+            <li><a href="/donations/">Donations</a></li>
+            <li><a href="/donate/">Give</a></li>
+            <li><a href="/sponsor/">Sponsor</a></li>
+            <li><a href="mailto:hello@thebigsisterfoundation.org">Email</a></li>
+          </ul>
+          <p class="footer__copy">&copy; 2026 Big Sister Foundation. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      var animEls = document.querySelectorAll('[data-animate]');
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      animEls.forEach(function(el) { observer.observe(el); });
+    })();
+  </script>
+<div class="nav__backdrop" id="nav-backdrop"></div>
+<script>
+(function() {
+  var hamburger = document.getElementById("nav-hamburger");
+  var navLinks = document.querySelector(".nav__links");
+  var backdrop = document.getElementById("nav-backdrop");
+  if (!hamburger || !navLinks || !backdrop) return;
+  function openMenu() {
+    hamburger.classList.add("active");
+    navLinks.classList.add("open");
+    backdrop.style.display = "block";
+    requestAnimationFrame(function() { backdrop.classList.add("visible"); });
+    document.body.style.overflow = "hidden";
+  }
+  function closeMenu() {
+    hamburger.classList.remove("active");
+    navLinks.classList.remove("open");
+    backdrop.classList.remove("visible");
+    document.body.style.overflow = "";
+    setTimeout(function() { backdrop.style.display = "none"; }, 350);
+  }
+  hamburger.addEventListener("click", function() {
+    if (navLinks.classList.contains("open")) { closeMenu(); } else { openMenu(); }
+  });
+  backdrop.addEventListener("click", closeMenu);
+  navLinks.querySelectorAll("a").forEach(function(link) {
+    link.addEventListener("click", closeMenu);
+  });
+  var currentPath = window.location.pathname;
+  navLinks.querySelectorAll("a").forEach(function(link) {
+    var href = link.getAttribute("href");
+    if (href === currentPath || (href !== "/" && currentPath.startsWith(href))) {
+      link.classList.add("active");
+      link.style.color = "var(--gold)";
+    } else if (href === "/" && currentPath === "/") {
+      link.classList.add("active");
+      link.style.color = "var(--gold)";
+    }
+  });
+})();
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

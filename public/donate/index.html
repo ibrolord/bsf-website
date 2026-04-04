@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q4EYY24EDZ"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-Q4EYY24EDZ');</script>
+  <title>Give — Big Sister Foundation</title>
+  <meta name="description" content="Every naira goes somewhere specific. Choose where your support lands — school fees, food, healthcare, events, or reserves. Paystack-powered. Auto-tracked on our public ledger.">
+  <meta property="og:title" content="Give — Big Sister Foundation">
+  <meta property="og:description" content="Every naira goes somewhere specific. Choose where your support lands — school fees, food, healthcare, events, or reserves. Paystack-powered. Auto-tracked on our public ledger.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/og-image.svg">
+  <meta name="theme-color" content="#2D5E40">
+  <link rel="canonical" href="https://public-mu-steel.vercel.app/donate/">
+  <meta property="og:url" content="https://public-mu-steel.vercel.app/donate/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Give — Big Sister Foundation">
+  <meta name="twitter:description" content="Every naira goes somewhere specific. Choose where your support lands — school fees, food, healthcare, events, or reserves.">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cellipse cx='50' cy='35' rx='35' ry='30' fill='%232D5E40' opacity='0.85'/%3E%3Cellipse cx='30' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cellipse cx='70' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cpath d='M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z' fill='%233A2A1F' opacity='0.8'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #2D5E40;
+      --green-dark: #1E3F2B;
+      --brown: #3A2A1F;
+      --terra: #C2734C;
+      --gold: #D4A96A;
+      --sage: #8BAF8E;
+      --cream: #FFF8F0;
+      --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --section-pad: clamp(48px, 4vw + 20px, 100px);
+      --page-margin: clamp(20px, 4vw, 80px);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: clamp(1rem, 0.5vw + 0.875rem, 1.2rem);
+      line-height: 1.7;
+      color: var(--brown);
+      background: var(--cream);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+    button { font: inherit; cursor: pointer; border: none; background: none; }
+
+    .eyebrow {
+      font-family: var(--font-sans);
+      font-size: clamp(0.7rem, 0.5vw + 0.5rem, 0.85rem);
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--terra);
+      margin-bottom: 1rem;
+    }
+
+    h1, h2, h3 {
+      font-family: var(--font-serif);
+      font-weight: 500;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+    }
+
+    h1 { font-size: clamp(2.2rem, 4vw + 0.5rem, 4rem); }
+    h2 { font-size: clamp(1.8rem, 2.5vw + 0.5rem, 2.8rem); }
+    h3 { font-size: clamp(1.3rem, 1vw + 0.8rem, 1.7rem); line-height: 1.2; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding-left: var(--page-margin); padding-right: var(--page-margin); }
+    .section-pad { padding-top: var(--section-pad); padding-bottom: var(--section-pad); }
+
+    /* NAV */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem var(--page-margin); background: var(--green-dark);
+    }
+    .nav__logo { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; text-decoration: none; color: var(--cream); }
+    .nav__links { list-style: none; display: flex; gap: 2rem; }
+    .nav__links a { font-size: 0.85rem; font-weight: 500; text-decoration: none; color: rgba(255,248,240,0.7); transition: color 0.3s; }
+    .nav__links a:hover { color: var(--cream); }
+    .nav__links a.is-active { color: var(--gold); }
+    
+
+    /* HERO */
+    .hero {
+      min-height: 50vh; display: flex; align-items: center;
+      padding-top: calc(var(--section-pad) + 60px); padding-bottom: var(--section-pad);
+      background: linear-gradient(170deg, var(--green-dark) 0%, var(--green) 100%);
+      color: #fff; position: relative; overflow: hidden;
+    }
+    .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 70% 20%, rgba(212,169,106,0.15) 0%, transparent 60%); pointer-events: none; }
+    .hero__content { position: relative; max-width: 720px; }
+    .hero__eyebrow { font-family: var(--font-sans); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; opacity: 0; transform: translateY(20px); animation: fadeUp 0.8s var(--ease) 0.2s forwards; }
+    .hero h1 { color: #fff; margin-bottom: 1.5rem; opacity: 0; transform: translateY(20px); animation: fadeUp 0.8s var(--ease) 0.4s forwards; }
+    .hero__sub { font-size: clamp(1.05rem, 0.5vw + 0.9rem, 1.3rem); line-height: 1.7; max-width: 560px; opacity: 0; transform: translateY(20px); animation: fadeUp 0.8s var(--ease) 0.6s forwards; }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+    /* PROMISE BAR */
+    .promise-bar { background: var(--green-dark); color: #fff; padding: 1.5rem 0; }
+    .promise-bar__inner { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem 3rem; }
+    .promise-bar__item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 500; opacity: 0.9; }
+    .promise-bar__icon { width: 26px; height: 26px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+    /* FUND PICKER */
+    .funds { background: var(--cream); }
+    .funds__intro { max-width: 640px; margin-bottom: 2.5rem; opacity: 0.8; }
+
+    .fund-picker { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.75rem; margin-bottom: 2rem; }
+    .fund-pill {
+      padding: 0.85rem 1rem; border-radius: 10px; border: 2px solid rgba(58,42,31,0.08);
+      background: #fff; text-align: center; transition: all 0.2s var(--ease); cursor: pointer;
+    }
+    .fund-pill:hover { border-color: var(--green); transform: translateY(-2px); }
+    .fund-pill.is-active { border-color: var(--green); background: var(--green); color: #fff; }
+    .fund-pill__icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
+    .fund-pill__label { font-size: 0.82rem; font-weight: 600; }
+    .fund-pill__sub { font-size: 0.7rem; opacity: 0.6; margin-top: 0.15rem; }
+    .fund-pill.is-active .fund-pill__sub { opacity: 0.8; }
+
+    /* CHECKOUT SECTION */
+    .checkout-section { background: #fff; border-top: 1px solid rgba(58,42,31,0.06); }
+    .checkout__layout { display: grid; grid-template-columns: 1fr 400px; gap: 4rem; align-items: start; }
+    @media (max-width: 860px) { .checkout__layout { grid-template-columns: 1fr; gap: 2rem; } }
+
+    .checkout__form { max-width: 520px; }
+    .checkout__title { font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .checkout__sub { font-size: 0.9rem; opacity: 0.55; margin-bottom: 2rem; }
+
+    .field { margin-bottom: 1.25rem; }
+    .field label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.4rem; opacity: 0.7; }
+    .field input, .field select, .field textarea {
+      width: 100%; padding: 0.75rem 1rem; font-size: 0.95rem; font-family: var(--font-sans);
+      border: 1.5px solid rgba(58,42,31,0.12); border-radius: 8px; background: var(--cream); color: var(--brown); transition: border-color 0.2s;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--green); }
+    .field textarea { resize: vertical; min-height: 70px; }
+
+    .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 0.75rem; }
+    .amount-btn {
+      padding: 0.65rem; border: 2px solid rgba(58,42,31,0.1); border-radius: 8px;
+      font-size: 0.95rem; font-weight: 700; background: #fff; color: var(--brown); transition: all 0.2s; text-align: center;
+    }
+    .amount-btn:hover { border-color: var(--green); color: var(--green); }
+    .amount-btn.is-active { background: var(--green); color: #fff; border-color: var(--green); }
+
+    .pay-btn {
+      display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+      width: 100%; padding: 1rem; margin-top: 1.75rem;
+      background: var(--green); color: #fff; border-radius: 10px;
+      font-size: 1.1rem; font-weight: 700; transition: background 0.2s, transform 0.2s;
+    }
+    .pay-btn:hover { background: var(--green-dark); transform: translateY(-1px); }
+    .pay-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .pay-btn svg { flex-shrink: 0; }
+
+    .pay-methods { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 1rem; font-size: 0.75rem; opacity: 0.4; }
+
+    /* SIDEBAR - LIVE ALLOCATION */
+    .sidebar { position: sticky; top: 100px; }
+    .sidebar__card {
+      background: rgba(45,94,64,0.03); border: 1px solid rgba(45,94,64,0.1);
+      border-radius: 14px; padding: 1.75rem; margin-bottom: 1.5rem;
+    }
+    .sidebar__title { font-family: var(--font-serif); font-size: 1.2rem; margin-bottom: 0.25rem; }
+    .sidebar__sub { font-size: 0.82rem; opacity: 0.5; margin-bottom: 1.25rem; }
+
+    .alloc-row { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; font-size: 0.88rem; }
+    .alloc-row + .alloc-row { border-top: 1px dashed rgba(58,42,31,0.06); }
+    .alloc-label { display: flex; align-items: center; gap: 0.5rem; }
+    .alloc-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .alloc-amount { font-weight: 700; }
+
+    .alloc-total { display: flex; justify-content: space-between; padding: 0.85rem 0 0; margin-top: 0.5rem; border-top: 2px solid var(--green); font-weight: 700; }
+    .alloc-total-amount { color: var(--green); font-size: 1.15rem; }
+
+    .sidebar__note { margin-top: 1rem; padding: 0.75rem 1rem; background: rgba(212,169,106,0.08); border-radius: 8px; font-size: 0.78rem; opacity: 0.65; line-height: 1.6; }
+
+    /* RECENT DONATIONS FEED */
+    .recent-card { background: #fff; border: 1px solid rgba(58,42,31,0.06); border-radius: 14px; padding: 1.5rem; }
+    .recent-card__title { font-size: 0.85rem; font-weight: 600; opacity: 0.5; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem; }
+    .recent-item { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; font-size: 0.85rem; }
+    .recent-item + .recent-item { border-top: 1px solid rgba(58,42,31,0.04); }
+    .recent-item__name { opacity: 0.7; }
+    .recent-item__fund { font-size: 0.75rem; opacity: 0.45; }
+    .recent-item__amount { font-weight: 700; color: var(--green); }
+
+    /* SUCCESS STATE */
+    .success-overlay {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(30,63,43,0.95); color: #fff;
+      align-items: center; justify-content: center; text-align: center;
+      padding: var(--page-margin);
+    }
+    .success-overlay.is-visible { display: flex; }
+    .success__icon { width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2.5rem; }
+    .success h2 { color: #fff; margin-bottom: 0.75rem; }
+    .success__ref { font-family: monospace; font-size: 1.1rem; background: rgba(255,255,255,0.1); padding: 0.5rem 1.5rem; border-radius: 8px; display: inline-block; margin: 1rem 0; letter-spacing: 0.05em; }
+    .success__detail { font-size: 0.9rem; opacity: 0.7; max-width: 400px; margin: 0 auto; line-height: 1.7; }
+    .success__actions { margin-top: 2rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .success__btn { padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; font-size: 0.9rem; text-decoration: none; transition: all 0.2s; }
+    .success__btn--primary { background: #fff; color: var(--green); }
+    .success__btn--secondary { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+
+    /* HOW IT WORKS */
+    .how-section { background: var(--cream); }
+    .how__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 2rem; }
+    .how-step { text-align: center; padding: 1.25rem 0.75rem; }
+    .how-step__number { width: 40px; height: 40px; border-radius: 50%; background: var(--green); color: #fff; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; margin: 0 auto 0.75rem; }
+    .how-step h3 { font-size: 1.05rem; margin-bottom: 0.4rem; }
+    .how-step p { font-size: 0.85rem; opacity: 0.6; line-height: 1.6; }
+
+    /* FOOTER */
+    .footer { background: var(--brown); color: rgba(255,255,255,0.7); padding: 3rem 0; font-size: 0.85rem; }
+    .footer__layout { display: flex; justify-content: space-between; align-items: start; gap: 2rem; flex-wrap: wrap; }
+    .footer__brand-name { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; color: #fff; }
+    .footer__tagline { font-size: 0.82rem; opacity: 0.5; margin-top: 0.25rem; }
+    .footer__location { font-size: 0.82rem; opacity: 0.5; margin-top: 0.15rem; }
+    .footer__links { list-style: none; display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; }
+    .footer__links a { text-decoration: none; opacity: 0.7; transition: opacity 0.2s; }
+    .footer__links a:hover { opacity: 1; }
+    .footer__copy { width: 100%; text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.08); opacity: 0.4; font-size: 0.8rem; }
+
+    /* ANIMATIONS */
+    [data-animate] { opacity: 0; transform: translateY(24px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
+    [data-animate].is-visible { opacity: 1; transform: translateY(0); }
+    [data-animate-delay="1"] { transition-delay: 0.1s; }
+    [data-animate-delay="2"] { transition-delay: 0.2s; }
+    [data-animate-delay="3"] { transition-delay: 0.3s; }
+    [data-animate-delay="4"] { transition-delay: 0.4s; }
+
+    /* GOALS SECTION */
+    .goals-section { background: #fff; border-bottom: 1px solid rgba(58,42,31,0.06); }
+    .goals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem; }
+    @media (max-width: 420px) { .goals-grid { grid-template-columns: 1fr; } }
+
+    .goal-card {
+      background: #fff; border: 1px solid rgba(58,42,31,0.08); border-left: 4px solid var(--green);
+      border-radius: 12px; padding: 1.5rem; transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+      position: relative;
+    }
+    .goal-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(58,42,31,0.06); }
+    .goal-card.is-funded { border-left-color: var(--sage); opacity: 0.7; }
+    .goal-card.is-funded .goal-card__cta { background: var(--sage); cursor: default; }
+
+    .goal-card__badge {
+      position: absolute; top: 1rem; right: 1rem;
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 0.2rem 0.6rem; border-radius: 100px;
+    }
+    .goal-card__badge--active { background: rgba(45,94,64,0.08); color: var(--green); }
+    .goal-card__badge--funded { background: rgba(139,175,142,0.2); color: var(--green-dark); }
+
+    .goal-card__title { font-family: var(--font-serif); font-size: 1.1rem; font-weight: 600; margin-bottom: 0.35rem; padding-right: 70px; }
+    .goal-card__child { font-size: 0.78rem; color: var(--terra); font-weight: 600; margin-bottom: 0.5rem; }
+    .goal-card__desc { font-size: 0.85rem; opacity: 0.65; line-height: 1.5; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    .goal-card__progress-wrap { margin-bottom: 0.5rem; }
+    .goal-card__progress-bar { width: 100%; height: 8px; background: rgba(58,42,31,0.06); border-radius: 4px; overflow: hidden; }
+    .goal-card__progress-fill { height: 100%; background: var(--green); border-radius: 4px; transition: width 1s var(--ease); }
+    .goal-card__progress-stats { display: flex; justify-content: space-between; font-size: 0.75rem; margin-top: 0.35rem; }
+    .goal-card__raised { font-weight: 700; color: var(--green); }
+    .goal-card__remaining { opacity: 0.45; }
+
+    .goal-card__meta { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-bottom: 1rem; }
+    .goal-card__tag { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.15rem 0.5rem; border-radius: 100px; }
+    .goal-card__tag--difficult-backgrounds { background: rgba(194,115,76,0.08); color: var(--terra); }
+    .goal-card__tag--special-needs { background: rgba(212,169,106,0.1); color: #8a6d2f; }
+    .goal-card__tag--gifted-talented { background: rgba(45,94,64,0.06); color: var(--green); }
+    .goal-card__tag--general { background: rgba(58,42,31,0.05); color: rgba(58,42,31,0.6); }
+    .goal-card__deadline { font-size: 0.72rem; opacity: 0.4; }
+    .goal-card__sponsors { font-size: 0.72rem; opacity: 0.4; margin-left: auto; }
+
+    .goal-card__cta {
+      display: block; width: 100%; padding: 0.7rem; border-radius: 8px;
+      background: var(--green); color: #fff; font-weight: 600; font-size: 0.88rem;
+      text-align: center; text-decoration: none; transition: background 0.2s, transform 0.2s;
+    }
+    .goal-card__cta:hover { background: var(--green-dark); transform: translateY(-1px); }
+
+    .goals-empty { text-align: center; padding: 2rem; opacity: 0.4; font-size: 0.9rem; grid-column: 1 / -1; }
+      /* =============================================
+       MOBILE HAMBURGER MENU
+    ============================================= */
+    .nav__hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 200;
+    }
+    .nav__hamburger span {
+      display: block;
+      width: 100%;
+      height: 2px;
+      background: var(--cream);
+      border-radius: 2px;
+      transition: transform 0.35s var(--ease), opacity 0.25s ease;
+      transform-origin: center;
+    }
+    .nav__hamburger.active span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+    .nav__hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+    .nav__hamburger.active span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+    .nav__backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(30, 63, 43, 0.5);
+      z-index: 90;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .nav__backdrop.visible {
+      opacity: 1;
+    }
+    @media (max-width: 768px) {
+      .nav__hamburger { display: flex; }
+      .nav__links {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: min(300px, 80vw);
+        flex-direction: column;
+        gap: 0 !important;
+        background: var(--green-dark);
+        padding: 5rem 2rem 2rem;
+        transform: translateX(100%);
+        transition: transform 0.4s var(--ease);
+        z-index: 95;
+        box-shadow: -4px 0 24px rgba(0,0,0,0.2);
+        overflow-y: auto;
+      }
+      .nav__links.open {
+        transform: translateX(0);
+      }
+      .nav__links li {
+        border-bottom: 1px solid rgba(255,248,240,0.08);
+      }
+      .nav__links a {
+        display: block;
+        padding: 0.9rem 0;
+        font-size: 1rem !important;
+        color: rgba(255,248,240,0.7);
+      }
+      .nav__links a:hover,
+      .nav__links a.active {
+        color: var(--gold) !important;
+      }
+    }
+
+    /* ALT PAYMENT METHODS */
+    .alt-pay { background: var(--cream); border-top: 1px solid rgba(58,42,31,0.06); }
+    .alt-pay__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+    .alt-card {
+      background: #fff; border: 1px solid rgba(58,42,31,0.08); border-radius: 12px;
+      padding: 1.75rem; transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+    }
+    .alt-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(58,42,31,0.06); }
+    .alt-card__header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .alt-card__icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .alt-card__icon--paypal { background: rgba(0,112,187,0.08); color: #0070ba; }
+    .alt-card__icon--crypto { background: rgba(247,147,26,0.08); color: #f7931a; }
+    .alt-card__icon--bank { background: rgba(45,94,64,0.08); color: var(--green); }
+    .alt-card__title { font-family: var(--font-serif); font-size: 1.1rem; font-weight: 600; }
+    .alt-card__sub { font-size: 0.78rem; opacity: 0.5; }
+    .alt-card__desc { font-size: 0.88rem; opacity: 0.65; line-height: 1.6; margin-bottom: 1.25rem; }
+    .alt-card__detail {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.6rem 0.75rem; background: rgba(58,42,31,0.03); border-radius: 8px;
+      margin-bottom: 0.5rem; font-size: 0.85rem; gap: 0.5rem;
+    }
+    .alt-card__detail-label { opacity: 0.5; font-size: 0.78rem; white-space: nowrap; }
+    .alt-card__detail-value { font-weight: 600; font-family: monospace; font-size: 0.78rem; word-break: break-all; text-align: right; }
+    .alt-card__copy-btn {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.3rem 0.6rem; border-radius: 6px; font-size: 0.72rem; font-weight: 600;
+      background: rgba(45,94,64,0.08); color: var(--green); transition: background 0.2s; cursor: pointer; white-space: nowrap;
+    }
+    .alt-card__copy-btn:hover { background: rgba(45,94,64,0.15); }
+    .alt-card__cta {
+      display: block; width: 100%; padding: 0.7rem; border-radius: 8px;
+      font-weight: 600; font-size: 0.88rem; text-align: center; text-decoration: none; transition: all 0.2s; margin-top: 1rem;
+    }
+    .alt-card__cta--paypal { background: #0070ba; color: #fff; }
+    .alt-card__cta--paypal:hover { background: #005ea6; }
+    .alt-card__cta--wa { background: var(--green); color: #fff; }
+    .alt-card__cta--wa:hover { background: var(--green-dark); }
+    .alt-card__note { font-size: 0.75rem; opacity: 0.4; margin-top: 0.75rem; line-height: 1.5; }
+  </style>
+</head>
+<body>
+
+  <nav class="nav" aria-label="Main navigation">
+    <a href="/" class="nav__logo">Big Sister Foundation</a>
+    <button class="nav__hamburger" id="nav-hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav__links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/scholars/">Scholars</a></li>
+      <li><a href="/ledger/">Ledger</a></li>
+      <li><a href="/events/">Events</a></li>
+      <li><a href="/volunteer/">Volunteer</a></li>
+      <li><a href="/donate/" class="is-active">Give</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero__content">
+        <p class="hero__eyebrow">Give With Purpose</p>
+        <h1>Every Naira Has a Name</h1>
+        <p class="hero__sub">Pick a fund. Pay instantly. Watch it land on the <a href="/ledger/" style="color:var(--gold);text-decoration:underline;">public ledger</a> in real time. No middleman. No black box.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROMISE BAR -->
+  <div class="promise-bar">
+    <div class="container">
+      <div class="promise-bar__inner">
+        <div class="promise-bar__item">
+          <span class="promise-bar__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span>
+          Auto-logged to public ledger
+        </div>
+        <div class="promise-bar__item">
+          <span class="promise-bar__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>
+          Cards, bank transfer, USSD
+        </div>
+        <div class="promise-bar__item">
+          <span class="promise-bar__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+          Secured by Paystack
+        </div>
+        <div class="promise-bar__item">
+          <span class="promise-bar__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg></span>
+          Named beneficiaries
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIVE GOALS -->
+  <section class="goals-section section-pad" id="goals-section">
+    <div class="container">
+      <p class="eyebrow" style="color: var(--green);">Fund a Specific Goal</p>
+      <h2>Active Goals</h2>
+      <p class="funds__intro">These are real, trackable goals with named beneficiaries. Fund one directly — every naira goes to that exact goal and shows on the ledger.</p>
+      <div class="goals-grid" id="goals-grid">
+        <p style="font-size:0.9rem;opacity:0.4;padding:2rem 0;text-align:center;">Loading goals...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FUND PICKER + CHECKOUT -->
+  <section class="funds section-pad" id="categories">
+    <div class="container">
+      <p class="eyebrow" style="color: var(--terra);">Or Give to a General Fund</p>
+      <h2>Pick a Fund</h2>
+      <p class="funds__intro">Prefer to support a category? Every fund has a budget and named children. Your money only goes to the category you choose.</p>
+
+      <div class="fund-picker" id="fund-picker">
+        <button class="fund-pill is-active" data-fund="school-fees" type="button">
+          <div class="fund-pill__icon">&#127891;</div>
+          <div class="fund-pill__label">School Fees</div>
+          <div class="fund-pill__sub">Tuition, exams, books</div>
+        </button>
+        <button class="fund-pill" data-fund="food" type="button">
+          <div class="fund-pill__icon">&#127858;</div>
+          <div class="fund-pill__label">Food &amp; Nutrition</div>
+          <div class="fund-pill__sub">Meals, supplements</div>
+        </button>
+        <button class="fund-pill" data-fund="healthcare" type="button">
+          <div class="fund-pill__icon">&#129658;</div>
+          <div class="fund-pill__label">Healthcare</div>
+          <div class="fund-pill__sub">Check-ups, medicine</div>
+        </button>
+        <button class="fund-pill" data-fund="counselling" type="button">
+          <div class="fund-pill__icon">&#128156;</div>
+          <div class="fund-pill__label">Counselling</div>
+          <div class="fund-pill__sub">Therapy, mentorship</div>
+        </button>
+        <button class="fund-pill" data-fund="events" type="button">
+          <div class="fund-pill__icon">&#127880;</div>
+          <div class="fund-pill__label">Events</div>
+          <div class="fund-pill__sub">Workshops, career days</div>
+        </button>
+        <button class="fund-pill" data-fund="reserve" type="button">
+          <div class="fund-pill__icon">&#128737;</div>
+          <div class="fund-pill__label">Emergency Reserve</div>
+          <div class="fund-pill__sub">Crisis fund</div>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHECKOUT -->
+  <section class="checkout-section section-pad" id="checkout">
+    <div class="container">
+      <div class="checkout__layout">
+        <div class="checkout__form">
+          <p class="eyebrow" style="color:var(--green);">Step 2 — Make It Happen</p>
+          <h2 class="checkout__title">Give Now</h2>
+          <p class="checkout__sub">Pay instantly with card, bank transfer, or USSD. Your donation hits the ledger automatically.</p>
+
+          <form id="give-form">
+            <div class="field">
+              <label for="donor-name">Your Name</label>
+              <input type="text" id="donor-name" placeholder="e.g. Chidi O. (or leave blank for Anonymous)" autocomplete="name">
+            </div>
+
+            <div class="field">
+              <label for="donor-email">Email (for receipt) *</label>
+              <input type="email" id="donor-email" placeholder="you@example.com" required autocomplete="email">
+            </div>
+
+            <div class="field">
+              <label>Amount (&#8358;) *</label>
+              <div class="amount-grid" id="amount-grid"></div>
+              <input type="number" id="total-amount" placeholder="Custom amount" min="500" step="100" required>
+            </div>
+
+            <div class="field">
+              <label for="donor-note">Note (optional)</label>
+              <textarea id="donor-note" rows="2" placeholder="Any message for the team..."></textarea>
+            </div>
+
+            <button type="submit" class="pay-btn" id="pay-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              <span id="pay-btn-text">Pay with Paystack</span>
+            </button>
+
+            <div class="pay-methods">
+              <span>Visa</span>
+              <span>Mastercard</span>
+              <span>Bank Transfer</span>
+              <span>USSD</span>
+              <span>Verve</span>
+            </div>
+          </form>
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+          <div class="sidebar__card">
+            <h3 class="sidebar__title">Your Allocation</h3>
+            <p class="sidebar__sub">Where your money lands</p>
+            <div id="alloc-rows">
+              <p id="alloc-empty" style="font-size:0.88rem;opacity:0.4;padding:0.5rem 0;">Pick a fund and enter an amount.</p>
+            </div>
+            <div class="alloc-total">
+              <span>Total</span>
+              <span class="alloc-total-amount" id="alloc-total">&#8358;0</span>
+            </div>
+            <div class="sidebar__note">
+              On successful payment, this transaction is automatically recorded on the <a href="/ledger/" style="color:var(--green);font-weight:600;">public ledger</a> with your chosen fund, amount, and receipt reference.
+            </div>
+          </div>
+
+          <!-- Recent donations -->
+          <div class="recent-card" id="recent-card">
+            <p class="recent-card__title">Recent Gifts</p>
+            <div id="recent-feed">
+              <p style="font-size:0.85rem;opacity:0.4;">Loading...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ALTERNATIVE PAYMENT METHODS -->
+  <section class="alt-pay section-pad" id="alt-pay">
+    <div class="container">
+      <p class="eyebrow" style="color:var(--terra);">Other Ways to Give</p>
+      <h2>More Payment Options</h2>
+
+      <div class="alt-pay__grid">
+
+        <!-- PAYPAL -->
+        <div class="alt-card">
+          <div class="alt-card__header">
+            <div class="alt-card__icon alt-card__icon--paypal">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.77.77 0 0 1 .757-.645h6.607c2.19 0 3.81.55 4.77 1.564.93.98 1.27 2.38.97 4.16-.02.11-.04.22-.07.34a7.26 7.26 0 0 1-.27 1.03c-.78 2.3-2.82 3.54-5.83 3.54H9.89a.77.77 0 0 0-.757.645l-.93 5.88a.64.64 0 0 1-.633.54h-.494z"/></svg>
+            </div>
+            <div>
+              <div class="alt-card__title">PayPal</div>
+              <div class="alt-card__sub">Best for diaspora donors (US, UK, Canada, EU)</div>
+            </div>
+          </div>
+          <p class="alt-card__desc">Send from your PayPal balance or linked card. No Nigerian bank account needed. Ideal for international supporters.</p>
+          <a href="https://paypal.me/bigsisterfoundation" target="_blank" rel="noopener" class="alt-card__cta alt-card__cta--paypal">Send via PayPal</a>
+          <p class="alt-card__note">After sending, email us at hello@thebigsisterfoundation.org with your name, amount, and which fund/goal you'd like to support. We'll log it on the ledger within 24 hours.</p>
+        </div>
+
+        <!-- CRYPTO -->
+        <div class="alt-card">
+          <div class="alt-card__header">
+            <div class="alt-card__icon alt-card__icon--crypto">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
+            <div>
+              <div class="alt-card__title">Crypto</div>
+              <div class="alt-card__sub">USDT / USDC — low fees, no forex markup</div>
+            </div>
+          </div>
+          <p class="alt-card__desc">Send stablecoins directly. No conversion fees. Best for tech-savvy donors who want maximum impact per dollar.</p>
+
+          <div class="alt-card__detail">
+            <div>
+              <div class="alt-card__detail-label">USDT (TRC-20)</div>
+              <div class="alt-card__detail-value" id="crypto-trc20">TBD — Coming Soon</div>
+            </div>
+          </div>
+          <div class="alt-card__detail">
+            <div>
+              <div class="alt-card__detail-label">USDC (Base)</div>
+              <div class="alt-card__detail-value" id="crypto-base">TBD — Coming Soon</div>
+            </div>
+          </div>
+
+          <p class="alt-card__note">Wallet addresses coming soon. After sending, email us at hello@thebigsisterfoundation.org with the transaction hash, your name, and which fund/goal to allocate to. We'll verify on-chain and log to the ledger.</p>
+        </div>
+
+        <!-- DIRECT BANK TRANSFER -->
+        <div class="alt-card">
+          <div class="alt-card__header">
+            <div class="alt-card__icon alt-card__icon--bank">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            </div>
+            <div>
+              <div class="alt-card__title">Direct Bank Transfer</div>
+              <div class="alt-card__sub">For donors who prefer traditional bank transfers</div>
+            </div>
+          </div>
+          <p class="alt-card__desc">Transfer directly to our account. Works with any Nigerian bank app or international wire.</p>
+
+          <div class="alt-card__detail">
+            <span class="alt-card__detail-label">Bank</span>
+            <span class="alt-card__detail-value">GTBank</span>
+          </div>
+          <div class="alt-card__detail">
+            <span class="alt-card__detail-label">Account Name</span>
+            <span class="alt-card__detail-value">Big Sister Foundation</span>
+          </div>
+          <div class="alt-card__detail">
+            <span class="alt-card__detail-label">Account Number</span>
+            <span class="alt-card__detail-value">0123456789</span>
+          </div>
+
+          <a href="mailto:hello@thebigsisterfoundation.org?subject=Bank%20Transfer%20Confirmation&body=Hi%20BSF%2C%20I%20just%20made%20a%20bank%20transfer.%20Please%20confirm%20and%20allocate%20to%3A%20" class="alt-card__cta alt-card__cta--wa">Confirm via Email</a>
+          <p class="alt-card__note">After transferring, send us an email with the amount and which fund/goal to allocate. We'll log it on the ledger.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-section section-pad">
+    <div class="container">
+      <p class="eyebrow" data-animate style="color:var(--green);">The BSF Promise</p>
+      <h2 data-animate data-animate-delay="1">How Every Naira Is Tracked</h2>
+      <div class="how__grid">
+        <div class="how-step" data-animate data-animate-delay="1">
+          <div class="how-step__number">1</div>
+          <h3>You Choose</h3>
+          <p>Pick a fund with a specific goal and named beneficiaries.</p>
+        </div>
+        <div class="how-step" data-animate data-animate-delay="2">
+          <div class="how-step__number">2</div>
+          <h3>You Pay</h3>
+          <p>Paystack handles your payment securely. Cards, bank transfer, or USSD.</p>
+        </div>
+        <div class="how-step" data-animate data-animate-delay="3">
+          <div class="how-step__number">3</div>
+          <h3>We Record</h3>
+          <p>Your donation auto-logs to the public ledger with fund, amount, and reference.</p>
+        </div>
+        <div class="how-step" data-animate data-animate-delay="4">
+          <div class="how-step__number">4</div>
+          <h3>You See</h3>
+          <p>Check the <a href="/ledger/" style="color:var(--green);font-weight:600;">ledger</a> any time. Full transparency, always.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUCCESS OVERLAY -->
+  <div class="success-overlay" id="success-overlay">
+    <div class="success">
+      <div class="success__icon">&#10003;</div>
+      <h2>Thank You</h2>
+      <div class="success__ref" id="success-ref">BSF-...</div>
+      <p class="success__detail" id="success-detail">Your gift has been recorded on the public ledger.</p>
+      <div class="success__actions">
+        <a href="/ledger/" class="success__btn success__btn--primary">View on Ledger</a>
+        <a href="/donate/" class="success__btn success__btn--secondary">Give Again</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__layout">
+        <div class="footer__left">
+          <p class="footer__brand-name">Big Sister Foundation</p>
+          <p class="footer__tagline">Rooted. Present. Protective.</p>
+          <p class="footer__location">Lagos, Nigeria</p>
+        </div>
+        <div class="footer__right">
+          <ul class="footer__links">
+            <li><a href="/scholars/">Scholars</a></li>
+            <li><a href="/ledger/">Ledger</a></li>
+            <li><a href="/events/">Events</a></li>
+            <li><a href="/volunteer/">Volunteer</a></li>
+            <li><a href="/forums/">Forums</a></li>
+            <li><a href="/ideas/">Ideas</a></li>
+            <li><a href="/donate/">Give</a></li>
+            <li><a href="/sponsor/">Sponsor</a></li>
+            <li><a href="mailto:hello@thebigsisterfoundation.org">Email</a></li>
+          </ul>
+          <p class="footer__copy">&copy; 2026 Big Sister Foundation. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- FIREBASE -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script src="/shared/bsf-antispam.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      BSFAntiSpam.protect('give-form');
+
+      // ── Firebase init ──
+      firebase.initializeApp({
+        apiKey: "AIzaSyCwos6XR9-uqAf_Esmh2K_hJoLxq4gnEuU",
+        authDomain: "big-sister-foundation.firebaseapp.com",
+        projectId: "big-sister-foundation",
+        storageBucket: "big-sister-foundation.firebasestorage.app",
+        messagingSenderId: "778723584560",
+        appId: "1:778723584560:web:7499944c30001e7fcf5bf5"
+      });
+      var db = firebase.firestore();
+
+      // ── Paystack config ──
+      var PAYSTACK_PUBLIC_KEY = 'pk_test_441d40d980617caac1cfbf3a36bcb66921047667';
+
+      // ── Fund config ──
+      var funds = {
+        'school-fees':  { label: 'School Fees',            color: '#2D5E40', category: 'education',   program: 'general' },
+        'food':         { label: 'Food & Nutrition',        color: '#C2734C', category: 'food',        program: 'difficult-backgrounds' },
+        'healthcare':   { label: 'Healthcare',              color: '#D4A96A', category: 'healthcare',  program: 'general' },
+        'counselling':  { label: 'Counselling & Wellbeing', color: '#8BAF8E', category: 'counselling', program: 'difficult-backgrounds' },
+        'events':       { label: 'Events & Programmes',     color: '#C2734C', category: 'event',       program: 'general' },
+        'reserve':      { label: 'Emergency Reserve',       color: '#3A2A1F', category: 'donation',    program: 'general' }
+      };
+
+      var selectedFund = 'school-fees';
+      var selectedGoal = null; // When funding a specific goal
+
+      // ── Check URL for goal param ──
+      var urlParams = new URLSearchParams(window.location.search);
+      var goalParam = urlParams.get('goal');
+      var amountParam = urlParams.get('amount');
+      var ideaParam = urlParams.get('idea');
+
+      // ── Local fallback goals ──
+      var localGoals = [
+        { id: 'local-goal-1', title: 'Saturday Coding Classes', description: 'Partner with a local tech hub to run free weekly coding workshops for academically gifted students aged 12-17.', pathway: 'gifted-talented', fund: 'events', targetAmount: 480000, raisedAmount: 312000, status: 'active', deadline: '2026-06-30', sponsors: 12, child: '' },
+        { id: 'local-goal-2', title: 'Emergency Food Relief for Makoko', description: 'Distribute monthly food packages to 100 families in Makoko whose children are in our program.', pathway: 'difficult-backgrounds', fund: 'food', targetAmount: 750000, raisedAmount: 450000, status: 'active', deadline: '2026-05-15', sponsors: 18, child: 'Makoko Community' },
+        { id: 'local-goal-3', title: 'Sign Language Training for Volunteers', description: 'Train 20 BSF volunteers in Nigerian Sign Language for direct communication with deaf children.', pathway: 'special-needs', fund: 'counselling', targetAmount: 320000, raisedAmount: 320000, status: 'funded', deadline: '2026-04-30', sponsors: 8, child: '' },
+        { id: 'local-goal-4', title: 'Art Therapy for Trauma Survivors', description: 'Weekly art therapy sessions led by a trained therapist for children who have experienced abuse or displacement.', pathway: 'difficult-backgrounds', fund: 'counselling', targetAmount: 200000, raisedAmount: 85000, status: 'active', deadline: '2026-07-31', sponsors: 5, child: 'Trauma Support Group' },
+        { id: 'local-goal-5', title: 'Weekend Mentorship Programme', description: 'Recruit and train mentors to guide young people through weekend sessions covering life skills, career planning, and personal development.', pathway: 'general', fund: 'counselling', goalType: 'volunteer', targetCapacity: 20, raisedCapacity: 8, unit: 'mentors', status: 'active', deadline: '2026-09-30', sponsors: 4, child: '' },
+        { id: 'local-goal-6', title: 'Community Outreach Drive', description: 'Reach 500 families across underserved communities with information about BSF programmes, enrollment support, and resource packs.', pathway: 'difficult-backgrounds', fund: 'food', goalType: 'outreach', targetCapacity: 500, raisedCapacity: 120, unit: 'families', status: 'active', deadline: '2026-08-15', sponsors: 6, child: '' }
+      ];
+
+      // ── Load active goals ──
+      function loadGoals() {
+        var grid = document.getElementById('goals-grid');
+        db.collection('goals').get().then(function (snap) {
+          while (grid.firstChild) grid.removeChild(grid.firstChild);
+          var goals = [];
+          if (snap.empty) {
+            goals = localGoals.slice();
+          } else {
+            snap.forEach(function (doc) {
+              var data = doc.data();
+              data.id = doc.id;
+              goals.push(data);
+            });
+          }
+          renderGoalsGrid(goals, grid);
+        }).catch(function (err) {
+          console.warn('Firestore goals unavailable, using local data:', err.message);
+          while (grid.firstChild) grid.removeChild(grid.firstChild);
+          renderGoalsGrid(localGoals.slice(), grid);
+        });
+      }
+
+      function renderGoalsGrid(goals, grid) {
+        goals.sort(function (a, b) {
+          var order = { active: 0, funded: 1, expired: 2 };
+          return (order[a.status] || 9) - (order[b.status] || 9);
+        });
+        if (goals.length === 0) {
+          var empty = document.createElement('p');
+          empty.className = 'goals-empty';
+          empty.textContent = 'No active goals right now. Check the Ideas page to see what\'s being proposed.';
+          grid.appendChild(empty);
+          return;
+        }
+        goals.forEach(function (goal) {
+          grid.appendChild(createGoalCard(goal));
+        });
+        if (goalParam) {
+          var matched = goals.filter(function (g) { return g.id === goalParam; })[0];
+          if (!matched) {
+            var goalLower = decodeURIComponent(goalParam).toLowerCase();
+            matched = goals.filter(function (g) { return (g.title || '').toLowerCase() === goalLower; })[0];
+          }
+          if (matched && matched.status === 'active') {
+            selectGoal(matched);
+            if (amountParam) {
+              var amt = parseInt(amountParam);
+              if (amt > 0) document.getElementById('total-amount').value = amt;
+            }
+            document.getElementById('checkout').scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+        if (ideaParam && !goalParam) {
+          var ideaLower = decodeURIComponent(ideaParam).toLowerCase();
+          var ideaGoal = goals.filter(function (g) { return (g.title || '').toLowerCase() === ideaLower; })[0];
+          if (ideaGoal && ideaGoal.fund) {
+            var pill = document.querySelector('.fund-pill[data-fund="' + ideaGoal.fund + '"]');
+            if (pill) {
+              document.querySelectorAll('.fund-pill').forEach(function (p) { p.classList.remove('is-active'); });
+              pill.classList.add('is-active');
+              selectedFund = ideaGoal.fund;
+            }
+          }
+        }
+        if (amountParam && !goalParam) {
+          var preAmt = parseInt(amountParam);
+          if (preAmt > 0) document.getElementById('total-amount').value = preAmt;
+        }
+      }
+
+      function createGoalCard(goal) {
+        var card = document.createElement('div');
+        card.className = 'goal-card' + (goal.status === 'funded' ? ' is-funded' : '');
+
+        var isNonFinancial = goal.goalType && goal.goalType !== 'financial';
+        var effectiveTarget = isNonFinancial ? (goal.targetCapacity || 0) : (goal.targetAmount || 0);
+        var effectiveRaised = isNonFinancial ? (goal.raisedCapacity || 0) : (goal.raisedAmount || 0);
+        var pct = effectiveTarget > 0 ? Math.min(100, Math.round((effectiveRaised / effectiveTarget) * 100)) : 0;
+        var remaining = Math.max(0, effectiveTarget - effectiveRaised);
+
+        // Badge
+        var badge = document.createElement('span');
+        badge.className = 'goal-card__badge goal-card__badge--' + goal.status;
+        badge.textContent = goal.status === 'funded' ? '\u2713 Funded' : pct + '% funded';
+        card.appendChild(badge);
+
+        // Title
+        var title = document.createElement('h3');
+        title.className = 'goal-card__title';
+        title.textContent = goal.title;
+        card.appendChild(title);
+
+        // Child/beneficiary
+        if (goal.child) {
+          var child = document.createElement('p');
+          child.className = 'goal-card__child';
+          child.textContent = 'For: ' + goal.child;
+          card.appendChild(child);
+        }
+
+        // Description
+        if (goal.description) {
+          var desc = document.createElement('p');
+          desc.className = 'goal-card__desc';
+          desc.textContent = goal.description;
+          card.appendChild(desc);
+        }
+
+        // Progress bar
+        var progWrap = document.createElement('div');
+        progWrap.className = 'goal-card__progress-wrap';
+
+        var progBar = document.createElement('div');
+        progBar.className = 'goal-card__progress-bar';
+        var progFill = document.createElement('div');
+        progFill.className = 'goal-card__progress-fill';
+        progFill.style.width = pct + '%';
+        progBar.appendChild(progFill);
+        progWrap.appendChild(progBar);
+
+        var progStats = document.createElement('div');
+        progStats.className = 'goal-card__progress-stats';
+        var raised = document.createElement('span');
+        raised.className = 'goal-card__raised';
+        if (isNonFinancial) {
+          var unitLabels = { 'volunteer': 'volunteers signed up', 'outreach': (goal.unit || 'people') + ' reached', 'mentoring': 'mentors enrolled' };
+          raised.textContent = effectiveRaised + ' ' + (unitLabels[goal.goalType] || (goal.unit || 'units') + ' pledged');
+        } else {
+          raised.textContent = fmt(goal.raisedAmount) + ' raised';
+        }
+        var rem = document.createElement('span');
+        rem.className = 'goal-card__remaining';
+        if (isNonFinancial) {
+          rem.textContent = goal.status === 'funded' ? 'Goal reached!' : remaining + ' ' + (goal.unit || 'more') + ' to go';
+        } else {
+          rem.textContent = goal.status === 'funded' ? 'Goal reached!' : fmt(remaining) + ' to go';
+        }
+        progStats.appendChild(raised);
+        progStats.appendChild(rem);
+        progWrap.appendChild(progStats);
+        card.appendChild(progWrap);
+
+        // Meta row
+        var meta = document.createElement('div');
+        meta.className = 'goal-card__meta';
+
+        if (goal.pathway) {
+          var tag = document.createElement('span');
+          tag.className = 'goal-card__tag goal-card__tag--' + goal.pathway;
+          var pathwayLabels = { 'difficult-backgrounds': 'Difficult Backgrounds', 'special-needs': 'Special Needs', 'gifted-talented': 'Gifted & Talented', 'general': 'General' };
+          tag.textContent = pathwayLabels[goal.pathway] || goal.pathway;
+          meta.appendChild(tag);
+        }
+
+        if (goal.deadline) {
+          var dl = document.createElement('span');
+          dl.className = 'goal-card__deadline';
+          dl.textContent = 'By ' + new Date(goal.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+          meta.appendChild(dl);
+        }
+
+        if (goal.sponsors) {
+          var sp = document.createElement('span');
+          sp.className = 'goal-card__sponsors';
+          sp.textContent = goal.sponsors + ' sponsor' + (goal.sponsors !== 1 ? 's' : '');
+          meta.appendChild(sp);
+        }
+
+        card.appendChild(meta);
+
+        // CTA button
+        var cta = document.createElement('button');
+        cta.className = 'goal-card__cta';
+        if (goal.status === 'funded') {
+          cta.textContent = 'Fully Funded';
+          cta.disabled = true;
+          cta.style.opacity = '0.6';
+          cta.style.cursor = 'default';
+        } else {
+          if (isNonFinancial) {
+            cta.textContent = 'Pledge — ' + remaining + ' ' + (goal.unit || 'more') + ' needed';
+            cta.addEventListener('click', function () {
+              window.location.href = '/volunteer/?goal=' + encodeURIComponent(goal.id);
+            });
+          } else {
+            cta.textContent = 'Fund This Goal — ' + fmt(remaining) + ' needed';
+            cta.addEventListener('click', function () {
+              selectGoal(goal);
+              document.getElementById('checkout').scrollIntoView({ behavior: 'smooth' });
+            });
+          }
+        }
+        card.appendChild(cta);
+
+        return card;
+      }
+
+      // Select a goal for funding
+      function selectGoal(goal) {
+        selectedGoal = goal;
+        var remaining = Math.max(0, goal.targetAmount - goal.raisedAmount);
+
+        // Update the allocation sidebar to show goal info
+        selectedFund = goal.fund || 'school-fees';
+
+        // Pre-fill amount with remaining (or a sensible default)
+        var suggestedAmount = remaining <= 50000 ? remaining : Math.min(25000, remaining);
+        document.getElementById('total-amount').value = suggestedAmount;
+
+        // Deselect fund pills
+        document.querySelectorAll('.fund-pill').forEach(function (p) { p.classList.remove('is-active'); });
+
+        // Update allocation display for goal
+        updateAllocationForGoal(goal, suggestedAmount);
+      }
+
+      function updateAllocationForGoal(goal, amount) {
+        var rowsEl = document.getElementById('alloc-rows');
+        var totalEl = document.getElementById('alloc-total');
+        var btnText = document.getElementById('pay-btn-text');
+
+        while (rowsEl.firstChild) rowsEl.removeChild(rowsEl.firstChild);
+
+        // Goal label row
+        var goalRow = document.createElement('div');
+        goalRow.className = 'alloc-row';
+        goalRow.style.cssText = 'background:rgba(45,94,64,0.04);padding:0.6rem 0.75rem;border-radius:6px;margin-bottom:0.25rem;';
+        var goalLabel = document.createElement('span');
+        goalLabel.className = 'alloc-label';
+        var goalDot = document.createElement('span');
+        goalDot.className = 'alloc-dot';
+        goalDot.style.background = 'var(--green)';
+        goalLabel.appendChild(goalDot);
+        goalLabel.appendChild(document.createTextNode(goal.title));
+        var goalAmt = document.createElement('span');
+        goalAmt.className = 'alloc-amount';
+        goalAmt.textContent = fmt(amount);
+        goalRow.appendChild(goalLabel);
+        goalRow.appendChild(goalAmt);
+        rowsEl.appendChild(goalRow);
+
+        // Child info
+        if (goal.child) {
+          var childRow = document.createElement('div');
+          childRow.style.cssText = 'font-size:0.78rem;color:var(--terra);padding:0.25rem 0;';
+          childRow.textContent = 'Beneficiary: ' + goal.child;
+          rowsEl.appendChild(childRow);
+        }
+
+        // Clear goal link
+        var clearLink = document.createElement('button');
+        clearLink.style.cssText = 'font-size:0.75rem;color:var(--terra);text-decoration:underline;background:none;border:none;cursor:pointer;padding:0.5rem 0 0;';
+        clearLink.textContent = 'Switch to general fund instead';
+        clearLink.addEventListener('click', function () {
+          selectedGoal = null;
+          document.querySelectorAll('.fund-pill').forEach(function (p, i) {
+            p.classList.toggle('is-active', i === 0);
+          });
+          selectedFund = 'school-fees';
+          updateAllocation();
+        });
+        rowsEl.appendChild(clearLink);
+
+        totalEl.textContent = fmt(amount);
+        btnText.textContent = 'Pay ' + fmt(amount);
+      }
+
+      // ── Animations ──
+      document.body.classList.add('js-ready');
+      var animEls = document.querySelectorAll('[data-animate]');
+      if ('IntersectionObserver' in window) {
+        var obs = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('is-visible'); obs.unobserve(e.target); } });
+        }, { threshold: 0.1 });
+        animEls.forEach(function (el) { obs.observe(el); });
+      } else { animEls.forEach(function (el) { el.classList.add('is-visible'); }); }
+
+      // Nav
+      var nav = document.querySelector('.nav');
+      setTimeout(function () { nav.classList.add('is-visible'); }, 300);
+
+      // ── Fund picker ──
+      document.getElementById('fund-picker').addEventListener('click', function (e) {
+        var pill = e.target.closest('.fund-pill');
+        if (!pill) return;
+        document.querySelectorAll('.fund-pill').forEach(function (p) { p.classList.remove('is-active'); });
+        pill.classList.add('is-active');
+        selectedFund = pill.getAttribute('data-fund');
+        updateAllocation();
+      });
+
+      // ── Amount presets ──
+      var presets = [5000, 10000, 25000, 50000, 100000, 250000];
+      var amountGrid = document.getElementById('amount-grid');
+      presets.forEach(function (val) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'amount-btn';
+        btn.textContent = '\u20A6' + val.toLocaleString('en-NG');
+        btn.addEventListener('click', function () {
+          document.getElementById('total-amount').value = val;
+          document.querySelectorAll('.amount-btn').forEach(function (b) { b.classList.remove('is-active'); });
+          btn.classList.add('is-active');
+          updateAllocation();
+        });
+        amountGrid.appendChild(btn);
+      });
+
+      document.getElementById('total-amount').addEventListener('input', function () {
+        document.querySelectorAll('.amount-btn').forEach(function (b) { b.classList.remove('is-active'); });
+        if (selectedGoal) {
+          updateAllocationForGoal(selectedGoal, parseInt(document.getElementById('total-amount').value) || 0);
+        } else {
+          updateAllocation();
+        }
+      });
+
+      // ── Format currency ──
+      function fmt(n) { return '\u20A6' + n.toLocaleString('en-NG'); }
+
+      // ── Update allocation sidebar ──
+      function updateAllocation() {
+        var amount = parseInt(document.getElementById('total-amount').value) || 0;
+        var rowsEl = document.getElementById('alloc-rows');
+        var totalEl = document.getElementById('alloc-total');
+        var emptyEl = document.getElementById('alloc-empty');
+        var btnText = document.getElementById('pay-btn-text');
+
+        if (amount < 500) {
+          while (rowsEl.firstChild) rowsEl.removeChild(rowsEl.firstChild);
+          var p = document.createElement('p');
+          p.id = 'alloc-empty';
+          p.style.cssText = 'font-size:0.88rem;opacity:0.4;padding:0.5rem 0;';
+          p.textContent = 'Pick a fund and enter an amount.';
+          rowsEl.appendChild(p);
+          totalEl.textContent = fmt(0);
+          btnText.textContent = 'Pay with Paystack';
+          return;
+        }
+
+        while (rowsEl.firstChild) rowsEl.removeChild(rowsEl.firstChild);
+        var cfg = funds[selectedFund];
+
+        var row = document.createElement('div');
+        row.className = 'alloc-row';
+        var label = document.createElement('span');
+        label.className = 'alloc-label';
+        var dot = document.createElement('span');
+        dot.className = 'alloc-dot';
+        dot.style.background = cfg.color;
+        label.appendChild(dot);
+        label.appendChild(document.createTextNode(cfg.label));
+        var amtSpan = document.createElement('span');
+        amtSpan.className = 'alloc-amount';
+        amtSpan.textContent = fmt(amount);
+        row.appendChild(label);
+        row.appendChild(amtSpan);
+        rowsEl.appendChild(row);
+
+        totalEl.textContent = fmt(amount);
+        btnText.textContent = 'Pay ' + fmt(amount);
+      }
+
+      // ── Generate receipt reference ──
+      function generateRef() {
+        var d = new Date();
+        var yyyy = d.getFullYear().toString();
+        var mm = ('0' + (d.getMonth() + 1)).slice(-2);
+        var dd = ('0' + d.getDate()).slice(-2);
+        var rand = Math.random().toString(36).substr(2, 6).toUpperCase();
+        return 'BSF-' + yyyy + mm + dd + '-' + rand;
+      }
+
+      // ── Write to Firestore (donations + ledger + goal update) ──
+      function recordDonation(data) {
+        var batch = db.batch();
+
+        // 1. Write to 'donations' collection (donor-facing record)
+        var donRef = db.collection('donations').doc();
+        var donationData = {
+          donorName: data.donorName,
+          donorEmail: data.donorEmail,
+          type: data.goalTitle || funds[data.fund].label,
+          amount: data.amount,
+          date: new Date(),
+          method: 'paystack',
+          note: data.note,
+          fund: data.fund,
+          receiptId: data.receiptId,
+          paystackRef: data.paystackRef,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        if (data.goalId) {
+          donationData.goalId = data.goalId;
+          donationData.goalTitle = data.goalTitle;
+        }
+        batch.set(donRef, donationData);
+
+        // 2. Write to 'ledger' collection (public ledger entry)
+        var ledgerRef = db.collection('ledger').doc();
+        var cfg = funds[data.fund] || { category: 'donation', program: 'general', label: 'General' };
+        var ledgerDesc = data.goalTitle
+          ? 'Goal: ' + data.goalTitle + (data.donorName !== 'Anonymous' ? ' — from ' + data.donorName : '')
+          : 'Online donation — ' + cfg.label + (data.donorName !== 'Anonymous' ? ' from ' + data.donorName : '');
+        batch.set(ledgerRef, {
+          date: new Date().toISOString().split('T')[0],
+          direction: 'in',
+          category: cfg.category,
+          amount: data.amount,
+          description: ledgerDesc,
+          program: cfg.program,
+          source: data.donorName,
+          notes: 'Paystack ref: ' + data.paystackRef + ' | Receipt: ' + data.receiptId + (data.goalId ? ' | Goal: ' + data.goalId : ''),
+          addedBy: 'paystack-auto',
+          addedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // 3. If goal-specific, increment raisedAmount and sponsors count
+        if (data.goalId) {
+          var goalRef = db.collection('goals').doc(data.goalId);
+          batch.update(goalRef, {
+            raisedAmount: firebase.firestore.FieldValue.increment(data.amount),
+            sponsors: firebase.firestore.FieldValue.increment(1)
+          });
+        }
+
+        return batch.commit().then(function () {
+          // Check if goal is now fully funded and update status
+          if (data.goalId) {
+            return db.collection('goals').doc(data.goalId).get().then(function (doc) {
+              if (doc.exists) {
+                var g = doc.data();
+                if (g.raisedAmount >= g.targetAmount && g.status === 'active') {
+                  return doc.ref.update({ status: 'funded' });
+                }
+              }
+            });
+          }
+        });
+      }
+
+      // ── Paystack checkout ──
+      document.getElementById('give-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (!BSFAntiSpam.check('give-form')) return;
+
+        var email = document.getElementById('donor-email').value.trim();
+        var name = document.getElementById('donor-name').value.trim() || 'Anonymous';
+        var amount = parseInt(document.getElementById('total-amount').value) || 0;
+        var note = document.getElementById('donor-note').value.trim();
+
+        if (!email || amount < 500) {
+          if (!email) document.getElementById('donor-email').focus();
+          else document.getElementById('total-amount').focus();
+          return;
+        }
+
+        var receiptId = generateRef();
+        var payBtn = document.getElementById('pay-btn');
+        payBtn.disabled = true;
+
+        var fundLabel = selectedGoal ? selectedGoal.title : funds[selectedFund].label;
+        var metaFields = [
+          { display_name: 'Donor Name', variable_name: 'donor_name', value: name },
+          { display_name: 'Fund', variable_name: 'fund', value: selectedFund },
+          { display_name: 'Fund Label', variable_name: 'fund_label', value: fundLabel },
+          { display_name: 'Note', variable_name: 'note', value: note }
+        ];
+        if (selectedGoal) {
+          metaFields.push({ display_name: 'Goal ID', variable_name: 'goal_id', value: selectedGoal.id });
+          metaFields.push({ display_name: 'Goal Title', variable_name: 'goal_title', value: selectedGoal.title });
+        }
+
+        var paystack = new PaystackPop();
+        paystack.newTransaction({
+          key: PAYSTACK_PUBLIC_KEY,
+          email: email,
+          amount: amount * 100, // Paystack uses kobo
+          currency: 'NGN',
+          ref: receiptId,
+          metadata: { custom_fields: metaFields },
+          onSuccess: function (transaction) {
+            var donationData = {
+              donorName: name,
+              donorEmail: email,
+              amount: amount,
+              fund: selectedFund,
+              note: note,
+              receiptId: receiptId,
+              paystackRef: transaction.reference
+            };
+            if (selectedGoal) {
+              donationData.goalId = selectedGoal.id;
+              donationData.goalTitle = selectedGoal.title;
+            }
+            recordDonation(donationData).then(function () {
+              showSuccess(receiptId, amount, fundLabel);
+            }).catch(function (err) {
+              console.error('Firestore write failed:', err);
+              showSuccess(receiptId, amount, fundLabel);
+            });
+          },
+          onCancel: function () {
+            payBtn.disabled = false;
+          }
+        });
+      });
+
+      // ── Show success ──
+      function showSuccess(ref, amount, fundLabel) {
+        document.getElementById('success-ref').textContent = ref;
+        document.getElementById('success-detail').textContent =
+          fmt(amount) + ' to ' + fundLabel + ' has been recorded on the public ledger. ' +
+          'You\u2019ll receive an email receipt from Paystack. Your gift reference is above \u2014 you can use it to find your transaction on the ledger.';
+        document.getElementById('success-overlay').classList.add('is-visible');
+      }
+
+      // ── Load recent donations for social proof ──
+      function loadRecentDonations() {
+        db.collection('donations')
+          .orderBy('createdAt', 'desc')
+          .limit(5)
+          .get()
+          .then(function (snap) {
+            var feedEl = document.getElementById('recent-feed');
+            while (feedEl.firstChild) feedEl.removeChild(feedEl.firstChild);
+
+            if (snap.empty) {
+              var p = document.createElement('p');
+              p.style.cssText = 'font-size:0.85rem;opacity:0.4;';
+              p.textContent = 'Be the first to give!';
+              feedEl.appendChild(p);
+              return;
+            }
+
+            snap.forEach(function (doc) {
+              var d = doc.data();
+              var item = document.createElement('div');
+              item.className = 'recent-item';
+
+              var left = document.createElement('div');
+              var nameEl = document.createElement('div');
+              nameEl.className = 'recent-item__name';
+              nameEl.textContent = d.donorName || 'Anonymous';
+              var fundEl = document.createElement('div');
+              fundEl.className = 'recent-item__fund';
+              fundEl.textContent = d.type || d.fund || 'General';
+              left.appendChild(nameEl);
+              left.appendChild(fundEl);
+
+              var amtEl = document.createElement('div');
+              amtEl.className = 'recent-item__amount';
+              amtEl.textContent = d.amount ? fmt(d.amount) : '';
+
+              item.appendChild(left);
+              item.appendChild(amtEl);
+              feedEl.appendChild(item);
+            });
+          })
+          .catch(function () {
+            var feedEl = document.getElementById('recent-feed');
+            while (feedEl.firstChild) feedEl.removeChild(feedEl.firstChild);
+            var p = document.createElement('p');
+            p.style.cssText = 'font-size:0.85rem;opacity:0.4;';
+            p.textContent = 'Be the first to give!';
+            feedEl.appendChild(p);
+          });
+      }
+
+      // ── Init ──
+      updateAllocation();
+      loadRecentDonations();
+      loadGoals();
+
+    })();
+  </script>
+
+  <!-- Paystack Inline JS -->
+  <script src="https://js.paystack.co/v2/inline.js"></script>
+
+<div class="nav__backdrop" id="nav-backdrop"></div>
+<script>
+(function() {
+  var hamburger = document.getElementById("nav-hamburger");
+  var navLinks = document.querySelector(".nav__links");
+  var backdrop = document.getElementById("nav-backdrop");
+  if (!hamburger || !navLinks || !backdrop) return;
+  function openMenu() {
+    hamburger.classList.add("active");
+    navLinks.classList.add("open");
+    backdrop.style.display = "block";
+    requestAnimationFrame(function() { backdrop.classList.add("visible"); });
+    document.body.style.overflow = "hidden";
+  }
+  function closeMenu() {
+    hamburger.classList.remove("active");
+    navLinks.classList.remove("open");
+    backdrop.classList.remove("visible");
+    document.body.style.overflow = "";
+    setTimeout(function() { backdrop.style.display = "none"; }, 350);
+  }
+  hamburger.addEventListener("click", function() {
+    if (navLinks.classList.contains("open")) { closeMenu(); } else { openMenu(); }
+  });
+  backdrop.addEventListener("click", closeMenu);
+  navLinks.querySelectorAll("a").forEach(function(link) {
+    link.addEventListener("click", closeMenu);
+  });
+  var currentPath = window.location.pathname;
+  navLinks.querySelectorAll("a").forEach(function(link) {
+    var href = link.getAttribute("href");
+    if (href === currentPath || (href !== "/" && currentPath.startsWith(href))) {
+      link.classList.add("active");
+      link.style.color = "var(--gold)";
+    } else if (href === "/" && currentPath === "/") {
+      link.classList.add("active");
+      link.style.color = "var(--gold)";
+    }
+  });
+})();
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>
