@@ -153,7 +153,8 @@
       cursor: default;
       transition: background 0.2s;
     }
-    .calendar__day:hover { background: rgba(45,94,64,0.03); }
+    .calendar__day:hover { background: rgba(45,94,64,0.03); position: relative; }
+    .calendar__day:hover::after { content: '+'; position: absolute; top: 4px; right: 6px; font-size: 14px; font-weight: 700; color: var(--terra); opacity: 0.4; pointer-events: none; }
     .calendar__day--other { opacity: 0.3; }
     .calendar__day--today .calendar__date {
       background: var(--terra);
@@ -654,6 +655,7 @@
     <ul class="nav__links">
       <li><a href="/">Home</a></li>
       <li><a href="/scholars/">Scholars</a></li>
+      <li><a href="/communities/">Communities</a></li>
       <li><a href="/ledger/">Ledger</a></li>
       <li><a href="/events/" class="is-active">Events</a></li>
       <li><a href="/volunteer/">Volunteer</a></li>
@@ -790,6 +792,7 @@
             <li><a href="/donate/">Give</a></li>
             <li><a href="/sponsor/">Sponsor</a></li>
             <li><a href="mailto:hello@thebigsisterfoundation.org">Email</a></li>
+            <li><a href="/signin/">Sign In</a></li>
           </ul>
           <p class="footer__copy">&copy; 2026 Big Sister Foundation. All rights reserved.</p>
         </div>
@@ -812,6 +815,7 @@
   <div class="toast" id="toast"></div>
 
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script>
     (function () {
@@ -819,15 +823,86 @@
 
       // ── Firebase ──
       const firebaseConfig = {
-        apiKey: "AIzaSyBm-d9DPG4iKbmhEA71E6cBxAHmcVgrdTs",
+        apiKey: "AIzaSyCwos6XR9-uqAf_Esmh2K_hJoLxq4gnEuU",
         authDomain: "big-sister-foundation.firebaseapp.com",
         projectId: "big-sister-foundation",
-        storageBucket: "big-sister-foundation.appspot.com",
-        messagingSenderId: "374538996840",
-        appId: "1:374538996840:web:8e2d02ada8ccba9b69ba1f"
+        storageBucket: "big-sister-foundation.firebasestorage.app",
+        messagingSenderId: "778723584560",
+        appId: "1:778723584560:web:7499944c30001e7fcf5bf5"
       };
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       const db = firebase.firestore();
+      const auth = firebase.auth();
+
+      // ── Show event form for logged-in volunteers/admins ──
+      // Roles that can create events
+      var EVENT_CREATE_ROLES = ['admin', 'superadmin', 'program_lead', 'volunteer'];
+      var userCanCreateEvents = false;
+      var currentUserRoles = [];
+
+      auth.onAuthStateChanged(function(user) {
+        if (user) {
+          var ek = user.email.toLowerCase();
+          // Check superadmin list first
+          var SUPERADMINS = ['admin@bigsisterfoundation.org', 'bsfadmin@bigsisterfoundation.org', 'princebolajibreeze@gmail.com', 'bolajiagunbiade1@gmail.com'];
+          if (SUPERADMINS.indexOf(ek) > -1) {
+            userCanCreateEvents = true;
+            currentUserRoles = ['admin'];
+            var form = document.getElementById('addEventForm');
+            if (form) form.style.display = 'block';
+            return;
+          }
+          // Check Firestore user doc for role
+          db.collection('users').doc(ek).get().then(function(doc) {
+            if (doc.exists) {
+              var d = doc.data();
+              var roles = d.roles || (d.role ? [d.role] : []);
+              currentUserRoles = roles;
+              // Check if any role allows event creation
+              var canCreate = roles.some(function(r) {
+                return EVENT_CREATE_ROLES.indexOf(r) > -1;
+              });
+              // Also check permission overrides
+              if (d.permissions && d.permissions['events.create']) canCreate = true;
+              if (canCreate) {
+                userCanCreateEvents = true;
+                var form = document.getElementById('addEventForm');
+                if (form) form.style.display = 'block';
+              }
+            }
+          }).catch(function() {});
+        }
+      });
+
+      // ── Calendar day click → open event form with date pre-filled ──
+      var isAuthenticated = false;
+      auth.onAuthStateChanged(function(u) { isAuthenticated = !!u; });
+
+      window.onCalendarDayClick = function(dateStr) {
+        if (!userCanCreateEvents) return; // only users with events.create permission
+        var form = document.getElementById('addEventForm');
+        if (!form || form.style.display === 'none') return;
+
+        // Pre-fill the date field
+        var dateInput = document.getElementById('eventDate');
+        if (dateInput) dateInput.value = dateStr;
+
+        // Clear other fields for a fresh event
+        var titleInput = document.getElementById('eventTitle');
+        if (titleInput) { titleInput.value = ''; titleInput.focus(); }
+        document.getElementById('eventTime').value = '';
+        document.getElementById('eventLocation').value = '';
+        document.getElementById('eventCapacity').value = '';
+        document.getElementById('eventDesc').value = '';
+        document.getElementById('eventType').value = 'outreach';
+
+        // Scroll to the form
+        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        // Flash highlight on the form
+        form.style.boxShadow = '0 0 0 3px var(--terra)';
+        setTimeout(function() { form.style.boxShadow = ''; }, 1500);
+      };
 
       // ── Placeholder until Firestore loads ──
       const STORAGE_KEY = 'bsf_events_unused';
@@ -890,7 +965,7 @@
           const isToday = today.getFullYear() === currentYear && today.getMonth() === currentMonth && today.getDate() === d;
           const dayEvents = events.filter(function(e) { return e.date === dateStr; });
 
-          html += '<div class="calendar__day' + (isToday ? ' calendar__day--today' : '') + '">';
+          html += '<div class="calendar__day' + (isToday ? ' calendar__day--today' : '') + '" data-date="' + dateStr + '" style="cursor:pointer;" onclick="onCalendarDayClick(\'' + dateStr + '\')">';
           html += '<span class="calendar__date">' + d + '</span>';
           dayEvents.forEach(function(ev) {
             html += '<div class="calendar__event-dot calendar__event-dot--' + ev.type + '" title="' + ev.title.replace(/"/g, '&quot;') + '">' + ev.title.split(':')[0] + '</div>';

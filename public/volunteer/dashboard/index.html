@@ -240,6 +240,44 @@ tbody tr:hover{background:var(--gray-50)}
 .scholar-card-meta{font-size:12px;color:var(--gray-500);margin-bottom:6px}
 .stars{color:var(--gold);font-size:14px;letter-spacing:2px}
 
+/* VOLUNTEER TIER */
+.tier-display{display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}
+.tier-badge-lg{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:24px;font-size:14px;font-weight:700;letter-spacing:.3px}
+.tier-badge-lg .tier-icon{font-size:20px}
+.tier-seedling{background:rgba(139,175,142,.25);color:#d4edda;border:1px solid rgba(139,175,142,.4)}
+.tier-grower{background:rgba(45,94,64,.3);color:#b5e2c4;border:1px solid rgba(45,94,64,.5)}
+.tier-iroko{background:rgba(212,169,106,.25);color:#fde9c8;border:1px solid rgba(212,169,106,.5)}
+.tier-baobab{background:rgba(194,115,76,.3);color:#fddbc9;border:1px solid rgba(194,115,76,.5)}
+.tier-progress{flex:1;min-width:180px;max-width:320px}
+.tier-progress-label{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.6);margin-bottom:4px}
+.tier-progress-bar{width:100%;background:rgba(255,255,255,.15);border-radius:20px;height:10px;overflow:hidden}
+.tier-progress-fill{height:100%;border-radius:20px;transition:width .6s ease;background:linear-gradient(90deg,var(--sage),var(--gold))}
+.tier-points{font-size:12px;color:rgba(255,255,255,.7);margin-top:2px}
+
+/* SHOUTOUTS */
+.shoutout-form{background:var(--gray-50);border-radius:var(--radius-lg);padding:20px;border:1px solid var(--gray-200);margin-bottom:20px}
+.shoutout-form-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.shoutout-form-row .form-group{flex:1;min-width:160px;margin-bottom:0}
+.shoutout-form textarea{resize:vertical;min-height:60px}
+.shoutout-char-count{text-align:right;font-size:11px;color:var(--gray-400);margin-top:2px}
+
+.shoutout-feed{display:flex;flex-direction:column;gap:12px}
+.shoutout-card{border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:16px 20px;background:var(--white);transition:var(--transition);position:relative;overflow:hidden}
+.shoutout-card:hover{box-shadow:var(--shadow);border-color:var(--gray-300)}
+.shoutout-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--green)}
+.shoutout-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px}
+.shoutout-names{font-size:14px;font-weight:700;color:var(--gray-900)}
+.shoutout-names .arrow{color:var(--green);margin:0 6px;font-weight:400}
+.shoutout-category{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;background:rgba(45,94,64,.08);color:var(--green)}
+.shoutout-message{font-size:13px;color:var(--gray-600);line-height:1.6;margin-bottom:10px}
+.shoutout-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.shoutout-time{font-size:12px;color:var(--gray-400)}
+.shoutout-reactions{display:flex;gap:6px}
+.shoutout-reaction-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:16px;border:1px solid var(--gray-200);background:var(--white);cursor:pointer;font-size:13px;transition:var(--transition)}
+.shoutout-reaction-btn:hover{background:var(--gray-50);border-color:var(--gray-300)}
+.shoutout-reaction-btn.reacted{background:rgba(45,94,64,.06);border-color:rgba(45,94,64,.25)}
+.shoutout-reaction-btn .count{font-size:12px;font-weight:600;color:var(--gray-600)}
+
 /* RESPONSIVE */
 .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:99}.sidebar-backdrop.open{display:block}
 @media(max-width:1024px){
@@ -304,6 +342,9 @@ tbody tr:hover{background:var(--gray-50)}
       <div class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard
       </div>
+      <div class="nav-item" data-page="shoutouts" onclick="navigateTo('shoutouts')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Shoutouts
+      </div>
       <div class="nav-item" data-page="tasks" onclick="navigateTo('tasks')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>My Tasks
       </div>
@@ -348,6 +389,14 @@ tbody tr:hover{background:var(--gray-50)}
           <span id="welcome-since"></span>
         </div>
         <div class="role-badges" id="welcome-roles"></div>
+        <div class="tier-display" id="tier-display" style="display:none">
+          <div class="tier-badge-lg" id="tier-badge"><span class="tier-icon" id="tier-icon"></span><span id="tier-name"></span></div>
+          <div class="tier-progress">
+            <div class="tier-progress-label"><span id="tier-points-label">0 pts</span><span id="tier-next-label"></span></div>
+            <div class="tier-progress-bar"><div class="tier-progress-fill" id="tier-progress-fill" style="width:0%"></div></div>
+            <div class="tier-points" id="tier-desc"></div>
+          </div>
+        </div>
       </div>
       <div class="cards-row" id="dash-cards">
         <div class="stat-card"><div class="label">Open Tasks</div><div class="value green" id="dash-tasks">--</div></div>
@@ -358,6 +407,58 @@ tbody tr:hover{background:var(--gray-50)}
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
         <div class="panel"><div class="panel-header"><h2>Recent Activity</h2></div><div class="panel-body padded"><div id="dash-activity-loading" class="loading-wrap"><div class="spinner"></div> Loading...</div><ul class="activity-feed" id="dash-activity"></ul></div></div>
         <div class="panel"><div class="panel-header"><h2>Upcoming Events</h2></div><div class="panel-body padded"><div id="dash-events-loading" class="loading-wrap"><div class="spinner"></div> Loading...</div><div id="dash-events-list"></div><div id="dash-events-empty" class="no-data" style="display:none">No upcoming events.</div></div></div>
+      </div>
+      <!-- Shoutouts Preview on Dashboard -->
+      <div class="panel" style="margin-top:24px">
+        <div class="panel-header"><h2>Latest Shoutouts</h2><button class="btn btn-primary btn-sm" onclick="navigateTo('shoutouts')">View All</button></div>
+        <div class="panel-body padded">
+          <div id="dash-shoutouts-loading" class="loading-wrap"><div class="spinner"></div> Loading...</div>
+          <div class="shoutout-feed" id="dash-shoutouts-feed"></div>
+          <div id="dash-shoutouts-empty" class="no-data" style="display:none">No shoutouts yet. <a href="#" onclick="navigateTo('shoutouts');return false" style="color:var(--green);font-weight:600">Give the first one!</a></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: SHOUTOUTS -->
+    <section class="page-section" id="page-shoutouts">
+      <div class="panel">
+        <div class="panel-header"><h2>Give a Shoutout</h2></div>
+        <div class="panel-body padded">
+          <div class="shoutout-form">
+            <div class="shoutout-form-row">
+              <div class="form-group">
+                <label>Recipient</label>
+                <select id="shoutout-recipient">
+                  <option value="">Select a volunteer...</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Category</label>
+                <select id="shoutout-category">
+                  <option value="teamwork">Teamwork</option>
+                  <option value="consistency">Consistency</option>
+                  <option value="impact">Impact</option>
+                  <option value="creativity">Creativity</option>
+                  <option value="leadership">Leadership</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Message</label>
+              <textarea id="shoutout-message" rows="2" maxlength="200" placeholder="Write a short appreciation message..." oninput="updateShoutoutCharCount()"></textarea>
+              <div class="shoutout-char-count"><span id="shoutout-chars">0</span>/200</div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="submitShoutout()">Send Shoutout</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><h2>Recent Shoutouts</h2></div>
+        <div class="panel-body padded">
+          <div id="shoutouts-loading" class="loading-wrap"><div class="spinner"></div> Loading...</div>
+          <div class="shoutout-feed" id="shoutouts-feed"></div>
+          <div id="shoutouts-empty" class="no-data" style="display:none">No shoutouts yet. Be the first to recognize a teammate!</div>
+        </div>
       </div>
     </section>
 
@@ -866,7 +967,7 @@ function loadDemoData() {
 
 // ========== NAVIGATION ==========
 var PAGE_TITLES = {
-  dashboard: 'Dashboard', tasks: 'My Tasks', ideas: 'Assigned Ideas',
+  dashboard: 'Dashboard', shoutouts: 'Shoutouts', tasks: 'My Tasks', ideas: 'Assigned Ideas',
   reports: 'My Reports & Performance', team: 'Team', approvals: 'Pending Approvals', sponsor: 'Sponsor View'
 };
 
@@ -891,6 +992,7 @@ function navigateTo(page) {
   else if (page === 'team') loadTeam();
   else if (page === 'approvals') loadApprovals();
   else if (page === 'sponsor') loadSponsorView();
+  else if (page === 'shoutouts') loadShoutoutsPage();
 }
 
 function toggleSidebar() {

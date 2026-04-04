@@ -1169,7 +1169,19 @@ var blob=new Blob([csv],{type:'text/csv'});var a=document.createElement('a');a.h
 
 // Navigation
 function navigateTo(page){if(!canAccessPage(page)){showToast('You don\'t have access to '+page+'.','error');page='dashboard';}document.querySelectorAll('.page-section').forEach(function(el){el.classList.remove('active');});document.querySelectorAll('.nav-item').forEach(function(el){el.classList.remove('active');});var s=document.getElementById('page-'+page);if(s)s.classList.add('active');var n=document.querySelector('.nav-item[data-page="'+page+'"]');if(n)n.classList.add('active');var titles={dashboard:'Dashboard',sponsors:'Sponsors',volunteers:'Volunteers',teams:'Teams',scholars:'Scholars',schools:'Schools',ledger:'Ledger',ideas:'Ideas',forums:'Forums',events:'Events',blog:'Blog & SEO',goals:'Goals',kids:'Kids',outreach:'Outreach',announcements:'Announcements',audit:'Audit Log',reports:'Reports',team:'Team',settings:'Settings'};var t=titles[page]||page;document.getElementById('page-title').textContent=t;document.getElementById('breadcrumb-current').textContent=t;
-if(page==='dashboard')loadDashboard();else if(page==='users'){navigateTo('team');return;}else if(page==='sponsors')loadSponsors();else if(page==='volunteers')loadVolunteers();else if(page==='teams')loadTeamGroups();else if(page==='scholars')loadScholars();else if(page==='schools')loadSchoolsList();else if(page==='ledger')loadLedger();else if(page==='ideas')loadIdeas();else if(page==='forums')loadForumPosts();else if(page==='events')loadEvents();else if(page==='blog')loadBlogAdmin();else if(page==='goals')loadGoals();else if(page==='kids')loadKids();else if(page==='outreach')loadOutreach();else if(page==='announcements')loadAnnouncements();else if(page==='audit'){auditPage=0;loadAuditLog();}else if(page==='reports')loadReports();else if(page==='team')loadTeam();else if(page==='settings')loadSettings();
+if(page==='dashboard')loadDashboard();else if(page==='users'){navigateTo('team');return;}else if(page==='sponsors')loadSponsors();else if(page==='volunteers')loadVolunteers();else if(page==='teams')loadTeamGroups();else if(page==='scholars')loadScholars();else if(page==='schools')loadSchoolsList();else if(page==='ledger')loadLedger();else if(page==='ideas')loadIdeas();else if(page==='forums')loadForumPosts();else if(page==='events')loadEvents();else if(page==='blog'){loadBlogAdmin();
+    // Also fetch Firestore blog_posts and merge
+    if(db){db.collection('blog_posts').get().then(function(snap){
+      var added=0;
+      snap.forEach(function(doc){
+        var d=doc.data();d.firestoreId=doc.id;d._firestoreId=doc.id;d.id=doc.id;d.source='firestore';
+        if(!d.date&&d.submittedAt){var ts=d.submittedAt.toDate?d.submittedAt.toDate():new Date(d.submittedAt);d.date=ts.toISOString().split('T')[0];}
+        var exists=allBlogPosts.some(function(p){return String(p.id)===String(doc.id);});
+        if(!exists){allBlogPosts.push(d);added++;}
+      });
+      if(added>0){updateBlogStats();renderBlogPosts();}
+    }).catch(function(e){console.warn('Firestore blog_posts fetch:',e);});}
+  }else if(page==='goals')loadGoals();else if(page==='kids')loadKids();else if(page==='outreach')loadOutreach();else if(page==='announcements')loadAnnouncements();else if(page==='audit'){auditPage=0;loadAuditLog();}else if(page==='reports')loadReports();else if(page==='team')loadTeam();else if(page==='settings')loadSettings();
 if(window.innerWidth<=768){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-backdrop').classList.remove('open');}}
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebar-backdrop').classList.toggle('open');}
 function switchVolTab(tab){document.querySelectorAll('#page-volunteers .tab-btn').forEach(function(b){b.classList.remove('active');});document.querySelectorAll('#page-volunteers .tab-content').forEach(function(c){c.classList.remove('active');});if(tab==='requests'){document.querySelector('#page-volunteers .tab-btn:first-child').classList.add('active');document.getElementById('vol-tab-requests').classList.add('active');loadVolunteers();}else{document.querySelector('#page-volunteers .tab-btn:last-child').classList.add('active');document.getElementById('vol-tab-confirmed').classList.add('active');loadConfirmedVolunteers();}}
@@ -2130,7 +2142,7 @@ function showDayEvents(day){
   }
   var footer=document.getElementById('day-detail-footer');
   var footerHtml='<button class="btn btn-secondary btn-sm" onclick="closeDayDetail()">Close</button>';
-  if(hasPermission('events.create')){
+  if(hasPermission('events.create')||hasPermission('events.edit')||currentRoles.length>0){
     footerHtml+='<button class="btn btn-primary btn-sm" onclick="closeDayDetail();addEventOnDate('+calYear+','+calMonth+','+day+')">+ Add Event on '+day+'</button>';
   }
   footer.innerHTML=footerHtml;
@@ -2185,7 +2197,7 @@ function openEventModal(d){
 }
 function editEvent(id){var e=allEvents.find(function(x){return x._id===id;});if(e)openEventModal(e);}
 function saveEvent(){
-  if(!hasPermission('events.create')){showToast('No permission','error');return;}
+  if(!hasPermission('events.create')&&!hasPermission('events.edit')&&currentRoles.length===0){showToast('No permission to create events','error');return;}
   var id=document.getElementById('event-edit-id').value;
   var tt=document.getElementById('event-title').value.trim();
   var dt=document.getElementById('event-date').value;
