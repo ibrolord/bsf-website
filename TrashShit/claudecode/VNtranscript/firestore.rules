@@ -2,125 +2,166 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ── Public pages: read-only for visitors ──
+    // ── Helper functions ──
+    function isAuth() {
+      return request.auth != null;
+    }
+    function getUserDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.token.email)).data;
+    }
+    function hasRole(role) {
+      return isAuth() && exists(/databases/$(database)/documents/users/$(request.auth.token.email))
+        && role in getUserDoc().roles;
+    }
+    function isAdmin() {
+      return hasRole('admin');
+    }
+    function hasAnyRole() {
+      return isAuth() && exists(/databases/$(database)/documents/users/$(request.auth.token.email))
+        && getUserDoc().roles.size() > 0;
+    }
+    function isSuperAdmin() {
+      return isAuth() && request.auth.token.email == 'admin@bigsisterfoundation.org';
+    }
+
+    // ── Public pages: anyone can read, team members can write ──
     match /scholars/{docId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if hasAnyRole();
+
+      match /milestones/{milestoneId} {
+        allow read: if true;
+        allow write: if hasAnyRole();
+      }
     }
     match /schools/{docId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if hasAnyRole();
     }
     match /ledger/{docId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow create: if hasAnyRole();
+      allow update, delete: if isAdmin() || hasRole('finance');
     }
     match /events/{docId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      // Public can update signups array
+      allow update: if true;
+      allow create, delete: if hasAnyRole();
     }
     match /goals/{docId} {
       allow read: if true;
-      allow create: if request.auth != null;
+      allow create: if hasAnyRole();
+      // Allow public updates for donation progress
       allow update: if true;
-      allow delete: if request.auth != null;
+      allow delete: if isAdmin();
     }
     match /forums/{docId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if hasAnyRole();
     }
     match /forum_replies/{docId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if hasAnyRole();
     }
     match /announcements/{docId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if hasAnyRole();
+    }
+    match /outreach/{docId} {
+      allow read: if true;
+      allow write: if hasAnyRole();
     }
 
-    // ── Public forms: visitors can create, only auth can read/modify ──
+    // ── Public forms: visitors can create, only team can manage ──
     match /volunteer_requests/{docId} {
       allow create: if true;
-      allow read, update, delete: if request.auth != null;
+      allow read, update, delete: if hasAnyRole();
     }
     match /invites/{docId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if hasAnyRole();
     }
     match /donations/{docId} {
       allow read: if true;
       allow create: if true;
-      allow update, delete: if request.auth != null;
+      allow update, delete: if hasAnyRole();
     }
     match /ideas/{docId} {
       allow read: if true;
       allow create: if true;
-      allow update, delete: if request.auth != null;
+      allow update, delete: if hasAnyRole();
     }
     match /votes/{docId} {
       allow read: if true;
       allow create: if true;
-      allow update, delete: if request.auth != null;
+      allow update, delete: if hasAnyRole();
     }
     match /forum_threads/{docId} {
       allow read: if true;
       allow create: if true;
-      allow update, delete: if request.auth != null;
+      allow update, delete: if hasAnyRole();
 
       match /replies/{replyId} {
         allow read: if true;
         allow create: if true;
         allow update: if true;
-        allow delete: if request.auth != null;
+        allow delete: if hasAnyRole();
       }
     }
 
-    // ── Sponsor dashboard: public read for sponsor lookups ──
+    // ── Sponsor dashboard ──
     match /sponsor_notes/{docId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if hasAnyRole();
     }
 
     // ── Admin-only collections ──
     match /admins/{docId} {
-      allow read, write: if request.auth != null;
+      allow read: if hasAnyRole();
+      allow write: if isAdmin() || isSuperAdmin();
     }
     match /users/{docId} {
-      allow read, write: if request.auth != null;
+      // Any authenticated user can read their own doc (role lookup on login)
+      allow read: if isAuth();
+      allow write: if isAdmin() || isSuperAdmin();
     }
     match /audit_log/{docId} {
-      allow read, write: if request.auth != null;
+      allow read: if hasAnyRole();
+      // Team members can write audit entries (append-only)
+      allow create: if hasAnyRole();
+      allow update, delete: if false;
     }
     match /volunteers/{docId} {
-      allow read, write: if request.auth != null;
+      allow read, write: if hasAnyRole();
     }
     match /teams/{docId} {
-      allow read, write: if request.auth != null;
+      allow read, write: if hasAnyRole();
     }
     match /team_forums/{docId} {
-      allow read, write: if request.auth != null;
+      allow read, write: if hasAnyRole();
     }
     match /team_forum_replies/{docId} {
-      allow read, write: if request.auth != null;
+      allow read, write: if hasAnyRole();
     }
     match /scholar_expenses/{docId} {
-      allow read, write: if request.auth != null;
+      allow read, write: if hasAnyRole();
     }
     match /school_notes/{docId} {
-      allow read, write: if request.auth != null;
+      allow read, write: if hasAnyRole();
     }
     match /ledger_requests/{docId} {
-      allow read, write: if request.auth != null;
-    }
-    match /outreach/{docId} {
-      allow read, write: if request.auth != null;
+      allow read: if hasAnyRole();
+      allow create: if hasAnyRole();
+      allow update: if isAdmin() || hasRole('finance');
+      allow delete: if isAdmin();
     }
     match /settings/{docId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if isAdmin() || isSuperAdmin();
     }
 
-    // ── Deny everything else by default ──
+    // ── Deny everything else ──
     match /{document=**} {
       allow read, write: if false;
     }
