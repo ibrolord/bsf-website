@@ -705,6 +705,20 @@
 </head>
 <body>
 
+  <!-- AUTH OVERLAY -->
+  <div id="auth-overlay" style="display:flex;position:fixed;inset:0;z-index:9999;background:var(--cream);align-items:center;justify-content:center">
+    <div style="background:white;padding:48px 40px;border-radius:12px;width:380px;max-width:92vw;box-shadow:0 4px 12px rgba(0,0,0,.12);text-align:center">
+      <div style="font-size:13px;text-transform:uppercase;letter-spacing:2px;color:var(--green);font-weight:600;margin-bottom:20px">Sponsor Dashboard</div>
+      <h1 style="font-family:var(--font-serif);font-size:28px;color:var(--green);margin-bottom:4px">Welcome Back</h1>
+      <p style="color:#6b7280;font-size:14px;margin-bottom:28px">Sign in to view your dashboard</p>
+      <div style="margin-bottom:16px;text-align:left"><label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:4px">Email</label><input type="email" id="auth-email" placeholder="you@example.com" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px"></div>
+      <div style="margin-bottom:16px;text-align:left"><label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:4px">Password</label><input type="password" id="auth-password" placeholder="Your password" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px" onkeydown="if(event.key==='Enter')sponsorLogin()"></div>
+      <button onclick="sponsorLogin()" style="width:100%;padding:12px;background:var(--green);color:white;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer">Sign In</button>
+      <div id="auth-error" style="color:#dc2626;font-size:13px;margin-top:8px;min-height:20px"></div>
+      <p style="margin-top:16px;font-size:13px;color:#9ca3af">New sponsor? <a href="/sponsor/" style="color:var(--green)">Register here</a></p>
+    </div>
+  </div>
+
   <!-- NAV -->
   <nav class="nav" aria-label="Main navigation">
     <a href="/" class="nav__logo">Big Sister Foundation</a>
@@ -718,6 +732,7 @@
       <li><a href="/events/">Events</a></li>
       <li><a href="/volunteer/">Volunteer</a></li>
       <li><a href="/donate/">Give</a></li>
+      <li id="nav-signout" style="display:none"><a href="#" onclick="sponsorSignOut();return false" style="color:var(--gold)">Sign Out</a></li>
     </ul>
   </nav>
 
@@ -1074,6 +1089,7 @@
 
   <!-- FIREBASE -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
   <script>
@@ -1097,6 +1113,55 @@
     } catch (e) {
       console.warn('[Dashboard] Firebase init failed, running offline:', e);
     }
+
+    /* ================================================================
+       AUTH
+    ================================================================ */
+    window.sponsorLogin = function() {
+      var em = document.getElementById('auth-email').value.trim();
+      var pw = document.getElementById('auth-password').value;
+      document.getElementById('auth-error').textContent = '';
+      if (!em || !pw) { document.getElementById('auth-error').textContent = 'Please enter email and password.'; return; }
+      firebase.auth().signInWithEmailAndPassword(em, pw).catch(function(err) {
+        document.getElementById('auth-error').textContent = err.message;
+      });
+    };
+    window.sponsorSignOut = function() {
+      firebase.auth().signOut().then(function() {
+        localStorage.removeItem('bsf_sponsor');
+        localStorage.removeItem('bsf_sponsor_txns');
+        window.location.reload();
+      });
+    };
+    firebase.auth().onAuthStateChanged(function(user) {
+      var overlay = document.getElementById('auth-overlay');
+      var signoutBtn = document.getElementById('nav-signout');
+      if (user) {
+        overlay.style.display = 'none';
+        if (signoutBtn) signoutBtn.style.display = '';
+        // If we have Firestore, try to load sponsor data by email
+        if (db && user.email) {
+          db.collection('sponsors').where('email', '==', user.email).limit(1).get().then(function(snap) {
+            if (!snap.empty) {
+              var sData = snap.docs[0].data();
+              sData._id = snap.docs[0].id;
+              // Cache to localStorage for existing flow
+              localStorage.setItem('bsf_sponsor', JSON.stringify(sData));
+            }
+          }).catch(function() {});
+        }
+      } else {
+        // Check if localStorage has sponsor data (fallback for existing flow)
+        var stored = localStorage.getItem('bsf_sponsor');
+        if (stored) {
+          overlay.style.display = 'none';
+          if (signoutBtn) signoutBtn.style.display = '';
+        } else {
+          overlay.style.display = 'flex';
+          if (signoutBtn) signoutBtn.style.display = 'none';
+        }
+      }
+    });
 
     /* ================================================================
        STATE
