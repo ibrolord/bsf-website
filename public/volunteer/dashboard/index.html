@@ -299,6 +299,20 @@ tbody tr:hover{background:var(--gray-50)}
   .topbar{padding:0 16px}
   .panel-header{padding:12px 16px}
 }
+
+/* Ledger vote progress */
+.vote-progress { margin: 10px 0; }
+.vote-bar { height: 8px; background: rgba(0,0,0,0.06); border-radius: 4px; overflow: hidden; }
+.vote-bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+.vote-bar-approve { background: var(--green); }
+.vote-label { font-size: 12px; color: var(--gray-500); margin-top: 4px; display: block; }
+.voter-list { margin: 8px 0; font-size: 13px; }
+.voter-chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 12px; font-size: 12px; margin: 2px; font-weight: 500; }
+.voter-approve { background: rgba(45,94,64,0.1); color: #2D5E40; }
+.voter-reject { background: rgba(220,38,38,0.1); color: #dc2626; }
+.vote-status-badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+.vote-status-badge--voted { background: rgba(45,94,64,0.1); color: #2D5E40; }
+.vote-status-badge--self { background: rgba(212,169,106,0.15); color: #8a6d2f; }
 </style>
 </head>
 <body>
@@ -678,6 +692,7 @@ tbody tr:hover{background:var(--gray-50)}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
 <script>
 // ========== FIREBASE INIT ==========
@@ -693,6 +708,12 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var auth = firebase.auth();
 var db = firebase.firestore();
+
+// EmailJS for notifications
+if (typeof emailjs !== 'undefined') {
+  emailjs.init('pDnM72TrZDasASLGj');
+}
+var EMAILJS_SERVICE = 'service_mx5iaor';
 
 // ========== STATE ==========
 var currentUser = null;
@@ -1113,6 +1134,12 @@ function loadDashboard() {
 
   // Upcoming events
   loadUpcomingEvents();
+
+  // Tier system
+  initTierSystem();
+
+  // Shoutouts (real-time listener for dashboard preview)
+  startShoutoutsListener();
 }
 
 function loadRecentActivity() {
@@ -1979,6 +2006,420 @@ function loadSponsoredScholars(sponsorId) {
     .catch(function() {
       empty.style.display = 'block';
     });
+}
+
+// ========== VOLUNTEER TIER SYSTEM ==========
+/*
+  Tier system based on impact score:
+  - Seedling (0-49): New volunteer
+  - Grower (50-149): Consistent contributor
+  - Iroko (150-299): Significant impact maker
+  - Baobab (300+): Legendary volunteer, community pillar
+
+  Scoring:
+  - Task completed: +5 | Event attended: +10 | Idea submitted: +3
+  - Idea voted on: +1 | Blog post approved: +15 | Hours logged (per hour): +2
+  - Forum post: +1
+*/
+
+var TIER_CONFIG = [
+  { name: 'Seedling', icon: '\uD83C\uDF31', min: 0, max: 49, cls: 'tier-seedling', desc: 'New volunteer, just getting started' },
+  { name: 'Grower', icon: '\uD83C\uDF3F', min: 50, max: 149, cls: 'tier-grower', desc: 'Consistent contributor' },
+  { name: 'Iroko', icon: '\uD83C\uDF33', min: 150, max: 299, cls: 'tier-iroko', desc: 'Significant impact maker' },
+  { name: 'Baobab', icon: '\uD83C\uDF34', min: 300, max: Infinity, cls: 'tier-baobab', desc: 'Legendary volunteer, community pillar' }
+];
+
+var tierScore = 0;
+var tierData = null;
+
+function getTierForScore(score) {
+  for (var i = TIER_CONFIG.length - 1; i >= 0; i--) {
+    if (score >= TIER_CONFIG[i].min) return TIER_CONFIG[i];
+  }
+  return TIER_CONFIG[0];
+}
+
+function getNextTier(currentTier) {
+  var idx = TIER_CONFIG.indexOf(currentTier);
+  if (idx < TIER_CONFIG.length - 1) return TIER_CONFIG[idx + 1];
+  return null;
+}
+
+function calculateTierScore(cb) {
+  var email = volunteerDoc ? volunteerDoc.email : (currentUser ? currentUser.email.toLowerCase() : '');
+  if (!email) { if (cb) cb(0); return; }
+
+  var score = 0;
+  var pending = 5;
+
+  function checkDone() {
+    pending--;
+    if (pending <= 0) {
+      tierScore = score;
+      try {
+        localStorage.setItem('bsf_tier_score', JSON.stringify({ score: score, email: email, ts: Date.now() }));
+      } catch(e) {}
+      if (cb) cb(score);
+    }
+  }
+
+  // 1. Tasks completed: +5 each
+  db.collection('tasks').where('assigneeEmail', '==', email).where('status', '==', 'completed').get()
+    .then(function(snap) { score += snap.size * 5; checkDone(); })
+    .catch(function() {
+      var completed = tasksData.filter(function(t) { return t.status === 'completed'; }).length;
+      score += completed * 5;
+      checkDone();
+    });
+
+  // 2. Events attended: +10 each
+  db.collection('volunteer_logs').where('volunteerEmail', '==', email).where('type', '==', 'attendance').get()
+    .then(function(snap) { score += snap.size * 10; checkDone(); })
+    .catch(function() {
+      var attended = logsData.filter(function(l) { return l.type === 'attendance'; }).length;
+      score += attended * 10;
+      checkDone();
+    });
+
+  // 3. Ideas submitted: +3 each, votes received: +1 each
+  db.collection('ideas').where('authorEmail', '==', email).get()
+    .then(function(snap) {
+      score += snap.size * 3;
+      snap.forEach(function(d) {
+        var data = d.data();
+        score += (data.votes || 0);
+      });
+      checkDone();
+    })
+    .catch(function() {
+      var myIdeas = ideasData.filter(function(i) { return i.authorEmail === email; });
+      score += myIdeas.length * 3;
+      myIdeas.forEach(function(i) { score += (i.votes || 0); });
+      checkDone();
+    });
+
+  // 4. Hours logged: +2 per hour
+  db.collection('volunteer_logs').where('volunteerEmail', '==', email).where('type', '==', 'hours').get()
+    .then(function(snap) {
+      snap.forEach(function(d) {
+        var data = d.data();
+        score += Math.floor((data.hours || 0) * 2);
+      });
+      checkDone();
+    })
+    .catch(function() {
+      logsData.forEach(function(l) {
+        if (l.type === 'hours') score += Math.floor((l.hours || 0) * 2);
+      });
+      checkDone();
+    });
+
+  // 5. Forum posts: +1 each
+  db.collection('team_forums').where('authorEmail', '==', email).get()
+    .then(function(snap) { score += snap.size; checkDone(); })
+    .catch(function() {
+      var myPosts = forumPosts.filter(function(p) { return p.authorEmail === email; });
+      score += myPosts.length;
+      checkDone();
+    });
+}
+
+function renderTierBadge(score) {
+  var tier = getTierForScore(score);
+  var nextTier = getNextTier(tier);
+  tierData = tier;
+
+  var display = document.getElementById('tier-display');
+  var badge = document.getElementById('tier-badge');
+  var icon = document.getElementById('tier-icon');
+  var nameEl = document.getElementById('tier-name');
+  var pointsLabel = document.getElementById('tier-points-label');
+  var nextLabel = document.getElementById('tier-next-label');
+  var fill = document.getElementById('tier-progress-fill');
+  var desc = document.getElementById('tier-desc');
+
+  display.style.display = 'flex';
+  badge.className = 'tier-badge-lg ' + tier.cls;
+  icon.textContent = tier.icon;
+  nameEl.textContent = tier.name;
+  pointsLabel.textContent = score + ' pts';
+  desc.textContent = tier.desc;
+
+  if (nextTier) {
+    var progress = ((score - tier.min) / (nextTier.min - tier.min)) * 100;
+    progress = Math.min(Math.max(progress, 0), 100);
+    fill.style.width = progress + '%';
+    nextLabel.textContent = nextTier.min + ' pts for ' + nextTier.name;
+  } else {
+    fill.style.width = '100%';
+    nextLabel.textContent = 'Max tier reached!';
+  }
+}
+
+function loadTierFromCache() {
+  try {
+    var cached = localStorage.getItem('bsf_tier_score');
+    if (cached) {
+      var data = JSON.parse(cached);
+      var email = volunteerDoc ? volunteerDoc.email : (currentUser ? currentUser.email.toLowerCase() : '');
+      if (data.email === email && (Date.now() - data.ts) < 300000) {
+        renderTierBadge(data.score);
+        return true;
+      }
+    }
+  } catch(e) {}
+  return false;
+}
+
+function initTierSystem() {
+  loadTierFromCache();
+  calculateTierScore(function(score) {
+    renderTierBadge(score);
+  });
+}
+
+// ========== PEER SHOUTOUTS SYSTEM ==========
+/*
+  Firestore collection: 'shoutouts'
+  Firestore security rules for shoutouts:
+  -----------------------------------------------
+  match /shoutouts/{shoutoutId} {
+    allow read: if request.auth != null;
+    allow create: if request.auth != null;
+    allow update: if request.auth != null;
+    allow delete: if request.auth != null && request.auth.token.email == resource.data.from;
+  }
+  -----------------------------------------------
+*/
+
+var SHOUTOUT_CATEGORIES = {
+  teamwork: { emoji: '\uD83E\uDD1D', label: 'Teamwork' },
+  consistency: { emoji: '\uD83D\uDD25', label: 'Consistency' },
+  impact: { emoji: '\uD83D\uDCA5', label: 'Impact' },
+  creativity: { emoji: '\uD83C\uDFA8', label: 'Creativity' },
+  leadership: { emoji: '\uD83D\uDC51', label: 'Leadership' }
+};
+
+var shoutoutsData = [];
+var shoutoutsListener = null;
+var volunteersListCache = [];
+
+function updateShoutoutCharCount() {
+  var el = document.getElementById('shoutout-message');
+  var count = document.getElementById('shoutout-chars');
+  if (el && count) count.textContent = el.value.length;
+}
+
+function loadVolunteersList(cb) {
+  if (volunteersListCache.length > 0) { if (cb) cb(volunteersListCache); return; }
+
+  db.collection('volunteers').where('status', '==', 'active').get()
+    .then(function(snap) {
+      volunteersListCache = [];
+      snap.forEach(function(d) {
+        var data = d.data();
+        volunteersListCache.push({
+          email: data.email || '',
+          name: data.name || ((data.firstName || '') + ' ' + (data.lastName || '')).trim() || data.email
+        });
+      });
+      var myEmail = volunteerDoc ? volunteerDoc.email : (currentUser ? currentUser.email.toLowerCase() : '');
+      volunteersListCache = volunteersListCache.filter(function(v) { return v.email !== myEmail; });
+
+      if (volunteersListCache.length === 0) {
+        volunteersListCache = (DEMO_TEAM.members || []).filter(function(m) {
+          return m.email !== myEmail;
+        }).map(function(m) {
+          return { email: m.email, name: m.name };
+        });
+      }
+      if (cb) cb(volunteersListCache);
+    })
+    .catch(function() {
+      var myEmail = volunteerDoc ? volunteerDoc.email : '';
+      volunteersListCache = (DEMO_TEAM.members || []).filter(function(m) {
+        return m.email !== myEmail;
+      }).map(function(m) {
+        return { email: m.email, name: m.name };
+      });
+      if (cb) cb(volunteersListCache);
+    });
+}
+
+function populateRecipientDropdown() {
+  var select = document.getElementById('shoutout-recipient');
+  if (!select) return;
+
+  loadVolunteersList(function(vols) {
+    var currentVal = select.value;
+    select.length = 1; // keep the first "Select..." option
+    vols.forEach(function(v) {
+      var opt = document.createElement('option');
+      opt.value = v.email;
+      opt.textContent = v.name || v.email;
+      opt.setAttribute('data-name', v.name || v.email);
+      select.appendChild(opt);
+    });
+    if (currentVal) select.value = currentVal;
+  });
+}
+
+function submitShoutout() {
+  var recipientSelect = document.getElementById('shoutout-recipient');
+  var recipientEmail = recipientSelect.value;
+  var selectedOption = recipientSelect.options[recipientSelect.selectedIndex];
+  var recipientName = selectedOption ? (selectedOption.getAttribute('data-name') || recipientEmail) : recipientEmail;
+  var message = document.getElementById('shoutout-message').value.trim();
+  var category = document.getElementById('shoutout-category').value;
+
+  if (!recipientEmail) { showToast('Please select a recipient', 'error'); return; }
+  if (!message) { showToast('Please write a message', 'error'); return; }
+  if (message.length > 200) { showToast('Message must be 200 characters or less', 'error'); return; }
+
+  var fromEmail = volunteerDoc ? volunteerDoc.email : (currentUser ? currentUser.email.toLowerCase() : '');
+  var fromName = volunteerDoc ? (volunteerDoc.name || ((volunteerDoc.firstName || '') + ' ' + (volunteerDoc.lastName || '')).trim() || fromEmail) : fromEmail;
+
+  var shoutout = {
+    from: fromEmail,
+    fromName: fromName,
+    to: recipientEmail,
+    toName: recipientName,
+    message: message,
+    category: category || 'teamwork',
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    reactions: { fire: 0, heart: 0, clap: 0 }
+  };
+
+  db.collection('shoutouts').add(shoutout)
+    .then(function() {
+      document.getElementById('shoutout-message').value = '';
+      document.getElementById('shoutout-recipient').value = '';
+      document.getElementById('shoutout-chars').textContent = '0';
+      showToast('Shoutout sent!', 'success');
+    })
+    .catch(function() {
+      shoutout.id = 'so-' + Date.now();
+      shoutout.createdAt = { toDate: function() { return new Date(); } };
+      shoutoutsData.unshift(shoutout);
+      renderShoutoutsFeed('shoutouts-feed', shoutoutsData, 20);
+      renderShoutoutsFeed('dash-shoutouts-feed', shoutoutsData.slice(0, 5), 5);
+      document.getElementById('shoutout-message').value = '';
+      document.getElementById('shoutout-recipient').value = '';
+      document.getElementById('shoutout-chars').textContent = '0';
+      showToast('Shoutout sent (local)', 'success');
+    });
+}
+
+function buildShoutoutCardHtml(s) {
+  var cat = SHOUTOUT_CATEGORIES[s.category] || SHOUTOUT_CATEGORIES.teamwork;
+  var reactions = s.reactions || { fire: 0, heart: 0, clap: 0 };
+  var docId = s.id || '';
+
+  return '<div class="shoutout-card">' +
+    '<div class="shoutout-card-header">' +
+      '<div class="shoutout-names">' + escapeHtml(s.fromName || s.from) + '<span class="arrow">\u2192</span>' + escapeHtml(s.toName || s.to) + '</div>' +
+      '<div class="shoutout-category">' + cat.emoji + ' ' + cat.label + '</div>' +
+    '</div>' +
+    '<div class="shoutout-message">' + escapeHtml(s.message || '') + '</div>' +
+    '<div class="shoutout-footer">' +
+      '<div class="shoutout-time">' + timeAgo(s.createdAt) + '</div>' +
+      '<div class="shoutout-reactions">' +
+        '<button class="shoutout-reaction-btn" onclick="reactToShoutout(\'' + escapeHtml(docId) + '\',\'fire\')" title="Fire">\uD83D\uDD25 <span class="count">' + (reactions.fire || 0) + '</span></button>' +
+        '<button class="shoutout-reaction-btn" onclick="reactToShoutout(\'' + escapeHtml(docId) + '\',\'heart\')" title="Heart">\u2764\uFE0F <span class="count">' + (reactions.heart || 0) + '</span></button>' +
+        '<button class="shoutout-reaction-btn" onclick="reactToShoutout(\'' + escapeHtml(docId) + '\',\'clap\')" title="Clap">\uD83D\uDC4F <span class="count">' + (reactions.clap || 0) + '</span></button>' +
+      '</div>' +
+    '</div>' +
+    '</div>';
+}
+
+function renderShoutoutsFeed(containerId, data, limit) {
+  var container = document.getElementById(containerId);
+  if (!container) return;
+
+  var items = data.slice(0, limit || 20);
+
+  var emptyId = containerId === 'shoutouts-feed' ? 'shoutouts-empty' : 'dash-shoutouts-empty';
+  var emptyEl = document.getElementById(emptyId);
+
+  if (items.length === 0) {
+    container.textContent = '';
+    if (emptyEl) emptyEl.style.display = 'block';
+    return;
+  }
+
+  if (emptyEl) emptyEl.style.display = 'none';
+
+  var fragment = document.createDocumentFragment();
+  var wrapper = document.createElement('div');
+  wrapper.className = 'shoutout-feed';
+  var htmlParts = [];
+  items.forEach(function(s) {
+    htmlParts.push(buildShoutoutCardHtml(s));
+  });
+  container.innerHTML = htmlParts.join('');
+}
+
+function reactToShoutout(docId, reactionType) {
+  if (!docId) return;
+
+  var field = 'reactions.' + reactionType;
+  var update = {};
+  update[field] = firebase.firestore.FieldValue.increment(1);
+
+  db.collection('shoutouts').doc(docId).update(update)
+    .then(function() { /* real-time listener picks it up */ })
+    .catch(function() {
+      shoutoutsData.forEach(function(s) {
+        if (s.id === docId) {
+          if (!s.reactions) s.reactions = { fire: 0, heart: 0, clap: 0 };
+          s.reactions[reactionType] = (s.reactions[reactionType] || 0) + 1;
+        }
+      });
+      renderShoutoutsFeed('shoutouts-feed', shoutoutsData, 20);
+      renderShoutoutsFeed('dash-shoutouts-feed', shoutoutsData.slice(0, 5), 5);
+    });
+}
+
+function startShoutoutsListener() {
+  if (shoutoutsListener) return;
+
+  shoutoutsListener = db.collection('shoutouts')
+    .orderBy('createdAt', 'desc')
+    .limit(20)
+    .onSnapshot(function(snap) {
+      shoutoutsData = [];
+      snap.forEach(function(d) {
+        var data = d.data();
+        data.id = d.id;
+        shoutoutsData.push(data);
+      });
+
+      var loading = document.getElementById('shoutouts-loading');
+      if (loading) loading.style.display = 'none';
+      var dashLoading = document.getElementById('dash-shoutouts-loading');
+      if (dashLoading) dashLoading.style.display = 'none';
+
+      renderShoutoutsFeed('shoutouts-feed', shoutoutsData, 20);
+      renderShoutoutsFeed('dash-shoutouts-feed', shoutoutsData.slice(0, 5), 5);
+    }, function(err) {
+      console.error('Shoutouts listener error:', err);
+      var loading = document.getElementById('shoutouts-loading');
+      if (loading) loading.style.display = 'none';
+      var dashLoading = document.getElementById('dash-shoutouts-loading');
+      if (dashLoading) dashLoading.style.display = 'none';
+
+      if (shoutoutsData.length === 0) {
+        var emptyEl = document.getElementById('shoutouts-empty');
+        if (emptyEl) emptyEl.style.display = 'block';
+        var dashEmptyEl = document.getElementById('dash-shoutouts-empty');
+        if (dashEmptyEl) dashEmptyEl.style.display = 'block';
+      }
+    });
+}
+
+function loadShoutoutsPage() {
+  populateRecipientDropdown();
+  if (!shoutoutsListener) startShoutoutsListener();
 }
 
 // ========== INIT ON LOAD ==========
