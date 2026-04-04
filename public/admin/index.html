@@ -590,6 +590,7 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--gr
         <div class="stat-card"><div class="label">AI-Generated</div><div class="value blue" id="stat-ai-posts">--</div></div>
         <div class="stat-card"><div class="label">Custom Posts</div><div class="value green" id="stat-custom-posts">--</div></div>
         <div class="stat-card"><div class="label">Avg SEO Score</div><div class="value terra" id="stat-avg-seo">--</div></div>
+        <div class="stat-card"><div class="label">Pending Review</div><div class="value" style="color:var(--orange)" id="stat-pending-posts">--</div></div>
       </div>
 
       <!-- AI Orchestrator Controls -->
@@ -660,6 +661,14 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--gr
               <option value="ai">AI-Generated</option>
               <option value="custom">Custom</option>
             </select>
+            <select id="blog-status-filter" onchange="renderBlogPosts()">
+              <option value="">All Statuses</option>
+              <option value="pending">Pending Review</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+              <option value="published">Published</option>
+              <option value="draft">Draft</option>
+            </select>
             <button class="btn btn-primary btn-sm" onclick="openBlogPostModal()">+ Write Post</button>
             <button class="btn btn-secondary btn-sm" onclick="exportCSV('blog')">Export CSV</button>
           </div>
@@ -674,6 +683,7 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--gr
                 <th>Author</th>
                 <th>Date</th>
                 <th>Source</th>
+                <th>Status</th>
                 <th>SEO</th>
                 <th>Actions</th>
               </tr>
@@ -756,7 +766,7 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--gr
 <div class="modal-overlay" id="modal-team-forum-post"><div class="modal modal-wide"><div class="modal-head"><h3 id="tf-post-modal-title">New Team Post</h3><button class="modal-close" onclick="closeModal('modal-team-forum-post')">&times;</button></div><div class="modal-body"><div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#9a3412">Could this be useful to others? Post it in the <strong>General Forums</strong> instead. Team forums are for coordination only.</div><input type="hidden" id="tf-post-edit-id"><div class="form-group"><label>Title *</label><input type="text" id="tf-post-title"></div><div class="form-group"><label>Body *</label><textarea id="tf-post-body" rows="5"></textarea></div><div class="form-group"><label>Pinned</label><select id="tf-post-pinned"><option value="false">No</option><option value="true">Yes</option></select></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-team-forum-post')">Cancel</button><button class="btn btn-primary" onclick="saveTeamForumPost()">Save Post</button></div></div></div>
 <div class="modal-overlay" id="modal-team-forum-reply"><div class="modal"><div class="modal-head"><h3>Add Reply</h3><button class="modal-close" onclick="closeModal('modal-team-forum-reply')">&times;</button></div><div class="modal-body"><input type="hidden" id="tf-reply-post-id"><div class="form-group"><label>Your Reply *</label><textarea id="tf-reply-body" rows="4"></textarea></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-team-forum-reply')">Cancel</button><button class="btn btn-primary" onclick="saveTeamForumReply()">Post Reply</button></div></div></div>
 <div class="modal-overlay" id="modal-sponsor-detail"><div class="modal modal-wide"><div class="modal-head"><h3 id="sponsor-detail-title">Sponsor Details</h3><button class="modal-close" onclick="closeModal('modal-sponsor-detail')">&times;</button></div><div id="sponsor-detail-content"></div></div></div>
-<div class="modal-overlay" id="modal-blog-post"><div class="modal modal-wide"><div class="modal-head"><h3 id="blog-modal-title">Write Blog Post</h3><button class="modal-close" onclick="closeModal('modal-blog-post')">&times;</button></div><div class="modal-body"><input type="hidden" id="blog-edit-id"><div class="form-group"><label>Title *</label><input type="text" id="blog-post-title" placeholder="SEO-optimized title (50-65 chars ideal)"></div><div class="form-group"><label>Category *</label><select id="blog-post-category"><option value="story">Story</option><option value="update">Update</option><option value="insight">Insight</option><option value="guide">Guide</option></select></div><div class="form-group"><label>Author *</label><input type="text" id="blog-post-author" placeholder="Author name"></div><div class="form-group"><label>Excerpt * <small style="font-weight:400;color:var(--gray-400)">(1-2 sentences for preview cards)</small></label><input type="text" id="blog-post-excerpt" placeholder="Brief summary including target keyword"></div><div class="form-group"><label>Keywords <small style="font-weight:400;color:var(--gray-400)">(comma-separated)</small></label><input type="text" id="blog-post-keywords" placeholder="e.g. child welfare Lagos, nonprofit Nigeria"></div><div class="form-group"><label>Meta Description <small style="font-weight:400;color:var(--gray-400)">(150-160 chars for search results)</small></label><input type="text" id="blog-post-meta" placeholder="Compelling meta description with primary keyword" maxlength="165"></div><div class="form-group"><label>Body * <small style="font-weight:400;color:var(--gray-400)">(use blank lines for paragraphs)</small></label><textarea id="blog-post-body" rows="12" placeholder="Write your blog post..."></textarea></div><div class="form-group"><label>Status</label><select id="blog-post-status"><option value="published">Published</option><option value="draft">Draft</option></select></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-blog-post')">Cancel</button><button class="btn btn-primary" onclick="saveBlogPost()">Publish Post</button></div></div></div>
+<div class="modal-overlay" id="modal-blog-post"><div class="modal modal-wide"><div class="modal-head"><h3 id="blog-modal-title">Write Blog Post</h3><button class="modal-close" onclick="closeModal('modal-blog-post')">&times;</button></div><div class="modal-body"><input type="hidden" id="blog-edit-id"><div class="form-group"><label>Title *</label><input type="text" id="blog-post-title" placeholder="SEO-optimized title (50-65 chars ideal)"></div><div class="form-group"><label>Category *</label><select id="blog-post-category"><option value="story">Story</option><option value="update">Update</option><option value="insight">Insight</option><option value="guide">Guide</option></select></div><div class="form-group"><label>Author *</label><input type="text" id="blog-post-author" placeholder="Author name"></div><div class="form-group"><label>Excerpt * <small style="font-weight:400;color:var(--gray-400)">(1-2 sentences for preview cards)</small></label><input type="text" id="blog-post-excerpt" placeholder="Brief summary including target keyword"></div><div class="form-group"><label>Keywords <small style="font-weight:400;color:var(--gray-400)">(comma-separated)</small></label><input type="text" id="blog-post-keywords" placeholder="e.g. child welfare Lagos, nonprofit Nigeria"></div><div class="form-group"><label>Meta Description <small style="font-weight:400;color:var(--gray-400)">(150-160 chars for search results)</small></label><input type="text" id="blog-post-meta" placeholder="Compelling meta description with primary keyword" maxlength="165"></div><div class="form-group"><label>Body * <small style="font-weight:400;color:var(--gray-400)">(use blank lines for paragraphs)</small></label><textarea id="blog-post-body" rows="12" placeholder="Write your blog post..."></textarea></div><div class="form-group"><label>Status</label><select id="blog-post-status"><option value="published">Published</option><option value="draft">Draft</option><option value="pending">Pending Review</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-blog-post')">Cancel</button><button class="btn btn-primary" onclick="saveBlogPost()">Publish Post</button></div></div></div>
 <div class="modal-overlay" id="modal-blog-preview"><div class="modal modal-wide" style="max-width:700px"><div class="modal-head"><h3>Post Preview</h3><button class="modal-close" onclick="closeModal('modal-blog-preview')">&times;</button></div><div class="modal-body" id="blog-preview-content" style="max-height:70vh;overflow-y:auto"></div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-blog-preview')">Close</button><button class="btn btn-primary" onclick="window.open('/blog/?post='+document.getElementById('blog-preview-id').value,'_blank')">View on Site</button><input type="hidden" id="blog-preview-id"></div></div></div>
 <div class="confirm-overlay" id="confirm-dialog"><div class="confirm-box"><h3 id="confirm-title">Confirm Action</h3><p id="confirm-message">Are you sure?</p><div class="confirm-actions"><button class="btn btn-secondary" onclick="closeConfirm()">Cancel</button><button class="btn btn-danger" id="confirm-yes" onclick="confirmAction()">Delete</button></div></div></div>
 <div class="day-detail-overlay" id="day-detail-overlay" onclick="if(event.target===this)closeDayDetail()">
@@ -975,7 +985,8 @@ var PERMISSION_REGISTRY=[
   {key:'blog.edit_any',group:'Blog & SEO',label:'Edit Any Post',risk:'medium'},
   {key:'blog.delete_own',group:'Blog & SEO',label:'Delete Own Posts',risk:'medium'},
   {key:'blog.delete_any',group:'Blog & SEO',label:'Delete Any Post',risk:'high'},
-  {key:'blog.ai_generate',group:'Blog & SEO',label:'Trigger AI Generation',risk:'medium'}
+  {key:'blog.ai_generate',group:'Blog & SEO',label:'Trigger AI Generation',risk:'medium'},
+  {key:'blog.approve',group:'Blog & SEO',label:'Approve/Reject Submitted Posts',risk:'medium'}
 ];
 var ALL_PERMISSION_KEYS=PERMISSION_REGISTRY.map(function(p){return p.key;});
 
@@ -1000,7 +1011,7 @@ var ROLE_PRESETS={
       'outreach.view','outreach.create','outreach.edit','outreach.delete','outreach.export',
       'teams.view','teams.create','teams.edit','teams.manage_members','teams.export',
       'team_forums.view','team_forums.create','team_forums.edit','team_forums.delete','team_forums.moderate',
-      'blog.view','blog.create','blog.edit_any','blog.delete_any','blog.ai_generate',
+      'blog.view','blog.create','blog.edit_any','blog.delete_any','blog.ai_generate','blog.approve',
       'reports.view','sponsors.view'
     ]
   },
@@ -1019,7 +1030,7 @@ var ROLE_PRESETS={
       'announcements.view','announcements.create','announcements.edit','announcements.delete',
       'forums.view','forums.create','forums.edit_own','forums.edit_any','forums.delete_own','forums.delete_any','forums.moderate',
       'ideas.view','ideas.create','ideas.edit_own','ideas.edit_any','ideas.delete_own','ideas.delete_any',
-      'blog.view','blog.create','blog.edit_own','blog.edit_any','blog.delete_own','blog.delete_any','blog.ai_generate'
+      'blog.view','blog.create','blog.edit_own','blog.edit_any','blog.delete_own','blog.delete_any','blog.ai_generate','blog.approve'
     ]
   },
   moderator:{
@@ -1077,7 +1088,7 @@ var RESOURCE_PAGE_MAP={
 };
 function canAccessPage(page){
   if(page==='dashboard')return true; // everyone can see dashboard
-  if(page==='team')return hasPermission('users.assign_permissions');
+  if(page==='team')return hasPermission('users.assign_permissions')||hasPermission('users.view');
   // Check if user has any view permission for resources on that page
   for(var res in RESOURCE_PAGE_MAP){
     if(RESOURCE_PAGE_MAP[res]===page && hasPermission(res+'.view'))return true;
@@ -1329,6 +1340,13 @@ function applyRolePermissions(){
     if(txt.indexOf('Ledger')>-1)btn.style.display=hasPermission('ledger.create')?'':'none';
     if(txt.indexOf('Scholar')>-1)btn.style.display=hasPermission('scholars.create')?'':'none';
   });
+  // Confirmed volunteers toolbar: + Create Volunteer button
+  document.querySelectorAll('#vol-tab-confirmed .toolbar .btn').forEach(function(btn){
+    if(btn.textContent.indexOf('Create Volunteer')>-1)btn.style.display=hasPermission('volunteers.create')?'':'none';
+  });
+  // Volunteer requests bulk bar: hide approve/reject for non-approvers
+  var volBulkBar=document.getElementById('vol-bulk-bar');
+  if(volBulkBar){volBulkBar.querySelectorAll('.btn').forEach(function(btn){var t=btn.textContent;if(t==='Approve'||t==='Reject')btn.style.display=hasPermission('volunteer_requests.approve')?'':'none';});}
 }
 function updateNotifBell(){var count=0;db.collection('volunteer_requests').get().then(function(snap){snap.forEach(function(doc){if((doc.data().status||'').toLowerCase()==='pending')count++;});return db.collection('invites').get();}).then(function(snap){snap.forEach(function(doc){if((doc.data().status||'').toLowerCase()==='pending')count++;});return db.collection('notifications').where('read','==',false).get();}).then(function(snap){count+=snap.size;var b=document.getElementById('notif-count');b.textContent=count>0?count:'';b.setAttribute('data-count',count);}).catch(function(){});}
 
@@ -1343,9 +1361,9 @@ document.getElementById('activity-loading').style.display='flex';document.getEle
 // Sponsors
 var allSponsors=[];
 function loadSponsors(){var l=document.getElementById('sp-loading'),t=document.getElementById('sp-table'),e=document.getElementById('sp-empty');l.style.display='flex';t.style.display='none';e.style.display='none';db.collection('sponsors').get().then(function(s){allSponsors=[];s.forEach(function(d){var x=d.data();x._id=d.id;allSponsors.push(x);});document.getElementById('sp-stat-total').textContent=allSponsors.length;var mrr=0,totalDonated=0,activeCount=0;allSponsors.forEach(function(sp){mrr+=Number(sp.recurringAmount)||0;totalDonated+=Number(sp.totalDonated)||0;if((sp.status||'active')==='active')activeCount++;});document.getElementById('sp-stat-mrr').textContent=formatCurrency(mrr);document.getElementById('sp-stat-donated').textContent=formatCurrency(totalDonated);document.getElementById('sp-stat-active').textContent=activeCount;renderSponsors();}).catch(function(err){l.style.display='none';showToast(err.message,'error');});}
-function renderSponsors(){var l=document.getElementById('sp-loading'),t=document.getElementById('sp-table'),e=document.getElementById('sp-empty'),tb=document.getElementById('sp-tbody');var sr=(document.getElementById('sp-search').value||'').toLowerCase();var tf=document.getElementById('sp-tier-filter')?document.getElementById('sp-tier-filter').value:'';var sf=document.getElementById('sp-status-filter')?document.getElementById('sp-status-filter').value:'';var f=allSponsors.filter(function(sp){if(sr&&(sp.name||'').toLowerCase().indexOf(sr)===-1&&(sp.email||'').toLowerCase().indexOf(sr)===-1)return false;if(tf&&(sp.tier||'').toLowerCase()!==tf.toLowerCase())return false;if(sf&&(sp.status||'active').toLowerCase()!==sf.toLowerCase())return false;return true;});l.style.display='none';if(!f.length){t.style.display='none';e.style.display='block';return;}t.style.display='table';e.style.display='none';tb.innerHTML='';f.forEach(function(sp){var tr=document.createElement('tr');tr.innerHTML='<td>'+escHtml(sp.name||sp.email||'--')+'</td><td>'+escHtml(sp.email||'--')+'</td><td>'+statusBadge(sp.tier||'seedling')+'</td><td>'+formatCurrency(sp.recurringAmount||0)+'/mo</td><td>'+formatCurrency(sp.totalDonated||0)+'</td><td>'+formatDate(sp.joinedAt||sp.createdAt)+'</td><td>'+statusBadge(sp.status||'active')+'</td><td><button class="btn btn-primary btn-xs" onclick="viewSponsorDetail(\''+sp._id+'\')">View</button> <button class="btn btn-secondary btn-xs" onclick="toggleSponsorStatus(\''+sp._id+'\',\''+(sp.status==='suspended'?'active':'suspended')+'\')">'+((sp.status||'active')==='suspended'?'Activate':'Suspend')+'</button></td>';tb.appendChild(tr);});}
+function renderSponsors(){var l=document.getElementById('sp-loading'),t=document.getElementById('sp-table'),e=document.getElementById('sp-empty'),tb=document.getElementById('sp-tbody');var sr=(document.getElementById('sp-search').value||'').toLowerCase();var tf=document.getElementById('sp-tier-filter')?document.getElementById('sp-tier-filter').value:'';var sf=document.getElementById('sp-status-filter')?document.getElementById('sp-status-filter').value:'';var f=allSponsors.filter(function(sp){if(sr&&(sp.name||'').toLowerCase().indexOf(sr)===-1&&(sp.email||'').toLowerCase().indexOf(sr)===-1)return false;if(tf&&(sp.tier||'').toLowerCase()!==tf.toLowerCase())return false;if(sf&&(sp.status||'active').toLowerCase()!==sf.toLowerCase())return false;return true;});l.style.display='none';if(!f.length){t.style.display='none';e.style.display='block';return;}t.style.display='table';e.style.display='none';tb.innerHTML='';f.forEach(function(sp){var tr=document.createElement('tr');tr.innerHTML='<td>'+escHtml(sp.name||sp.email||'--')+'</td><td>'+escHtml(sp.email||'--')+'</td><td>'+statusBadge(sp.tier||'seedling')+'</td><td>'+formatCurrency(sp.recurringAmount||0)+'/mo</td><td>'+formatCurrency(sp.totalDonated||0)+'</td><td>'+formatDate(sp.joinedAt||sp.createdAt)+'</td><td>'+statusBadge(sp.status||'active')+'</td><td><button class="btn btn-primary btn-xs" onclick="viewSponsorDetail(\''+sp._id+'\')">View</button>'+(hasPermission('sponsors.edit')?' <button class="btn btn-secondary btn-xs" onclick="toggleSponsorStatus(\''+sp._id+'\',\''+(sp.status==='suspended'?'active':'suspended')+'\')">'+((sp.status||'active')==='suspended'?'Activate':'Suspend')+'</button>':'')+'</td>';tb.appendChild(tr);});}
 function viewSponsorDetail(id){var sp=allSponsors.find(function(x){return x._id===id;});if(!sp)return;var body=document.getElementById('sponsor-detail-content');if(!body){showToast('Sponsor detail modal not found','error');return;}document.getElementById('sponsor-detail-title').textContent=(sp.name||sp.email||'Sponsor');var html='<div style="display:flex;gap:20px;align-items:center;padding:24px;border-bottom:1px solid var(--gray-200)">';html+='<div style="width:64px;height:64px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700">'+escHtml((sp.name||sp.email||'S').charAt(0).toUpperCase())+'</div>';html+='<div><div style="font-size:20px;font-weight:700">'+escHtml(sp.name||'--')+'</div><div style="color:var(--gray-500)">'+escHtml(sp.email||'')+'</div><div style="margin-top:6px">'+statusBadge(sp.tier||'seedling')+' '+statusBadge(sp.status||'active')+'</div></div></div>';html+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:24px">';html+='<div class="stat-card" style="padding:12px"><div class="label">Total Donated</div><div class="value" style="font-size:18px">'+formatCurrency(sp.totalDonated||0)+'</div></div>';html+='<div class="stat-card" style="padding:12px"><div class="label">Monthly</div><div class="value" style="font-size:18px">'+formatCurrency(sp.recurringAmount||0)+'</div></div>';html+='<div class="stat-card" style="padding:12px"><div class="label">Donations</div><div class="value" style="font-size:18px">'+(sp.donationCount||0)+'</div></div>';html+='<div class="stat-card" style="padding:12px"><div class="label">Joined</div><div class="value" style="font-size:16px">'+formatDate(sp.joinedAt||sp.createdAt)+'</div></div>';html+='</div>';html+='<div style="padding:0 24px 24px"><h4 style="margin-bottom:12px">Donation History</h4><div id="sponsor-donations-list" style="max-height:300px;overflow-y:auto"><div class="loading-wrap"><div class="spinner"></div> Loading...</div></div></div>';body.innerHTML=html;openModal('modal-sponsor-detail');db.collection('donations').where('email','==',sp.email||'').get().then(function(snap){var donations=[];snap.forEach(function(d){var x=d.data();x._id=d.id;donations.push(x);});donations.sort(function(a,b){var ta=a.date?(typeof a.date==='string'?new Date(a.date):(a.date.toDate?a.date.toDate():new Date(a.date))):new Date(0);var tb2=b.date?(typeof b.date==='string'?new Date(b.date):(b.date.toDate?b.date.toDate():new Date(b.date))):new Date(0);return tb2-ta;});var el=document.getElementById('sponsor-donations-list');if(!donations.length){el.innerHTML='<div class="no-data">No donations recorded.</div>';return;}var tbl='<table style="width:100%"><thead><tr><th>Date</th><th>Amount</th><th>Type</th><th>Reference</th></tr></thead><tbody>';donations.forEach(function(d){tbl+='<tr><td>'+formatDate(d.date||d.createdAt)+'</td><td class="amount-in">'+formatCurrency(d.amount||0)+'</td><td>'+escHtml(d.type||d.frequency||'one-time')+'</td><td style="font-family:monospace;font-size:12px">'+escHtml((d.reference||d.paymentRef||'--').substring(0,12))+'</td></tr>';});tbl+='</tbody></table>';el.innerHTML=tbl;}).catch(function(){document.getElementById('sponsor-donations-list').innerHTML='<div class="no-data">Could not load donations.</div>';});}
-function toggleSponsorStatus(id,newStatus){showConfirm(newStatus==='suspended'?'Suspend Sponsor':'Activate Sponsor',newStatus==='suspended'?'Suspend this sponsor?':'Reactivate this sponsor?',function(){db.collection('sponsors').doc(id).update({status:newStatus,lastEditedAt:FieldValue.serverTimestamp()}).then(function(){writeAudit('update','sponsors',id,'Status: '+newStatus);showToast('Sponsor '+newStatus+'.');loadSponsors();}).catch(function(e){showToast(e.message,'error');});});}
+function toggleSponsorStatus(id,newStatus){if(!hasPermission('sponsors.edit')){showToast('No permission to edit sponsors.','error');return;}showConfirm(newStatus==='suspended'?'Suspend Sponsor':'Activate Sponsor',newStatus==='suspended'?'Suspend this sponsor?':'Reactivate this sponsor?',function(){db.collection('sponsors').doc(id).update({status:newStatus,lastEditedAt:FieldValue.serverTimestamp()}).then(function(){writeAudit('update','sponsors',id,'Status: '+newStatus);showToast('Sponsor '+newStatus+'.');loadSponsors();}).catch(function(e){showToast(e.message,'error');});});}
 
 // Notifications
 var allNotifications=[];
@@ -1378,24 +1396,24 @@ function loadUsers(){loadTeam();}
 function loadInvites(){}
 // Volunteers
 function loadVolunteers(){var l=document.getElementById('vol-loading'),t=document.getElementById('vol-table'),e=document.getElementById('vol-empty');l.style.display='flex';t.style.display='none';e.style.display='none';clearSelection('vol');db.collection('volunteer_requests').get().then(function(s){allVolunteers=[];s.forEach(function(d){var x=d.data();x._id=d.id;allVolunteers.push(x);});allVolunteers.sort(function(a,b){var ta=a.createdAt?(a.createdAt.toDate?a.createdAt.toDate():new Date(a.createdAt)):new Date(0);var tb=b.createdAt?(b.createdAt.toDate?b.createdAt.toDate():new Date(b.createdAt)):new Date(0);return tb-ta;});renderVolunteers();});}
-function renderVolunteers(){var l=document.getElementById('vol-loading'),t=document.getElementById('vol-table'),e=document.getElementById('vol-empty'),tb=document.getElementById('vol-tbody');var sr=(document.getElementById('vol-search').value||'').toLowerCase(),sf=document.getElementById('vol-status-filter').value;var f=allVolunteers.filter(function(v){if(sf&&(v.status||'').toLowerCase()!==sf)return false;if(sr&&(v.name||'').toLowerCase().indexOf(sr)===-1&&(v.email||'').toLowerCase().indexOf(sr)===-1)return false;return true;});l.style.display='none';if(!f.length){t.style.display='none';e.style.display='block';return;}t.style.display='table';e.style.display='none';tb.innerHTML='';f.forEach(function(v){var tr=document.createElement('tr');tr.className='expandable';tr.innerHTML='<td class="cb-cell"><input type="checkbox" value="'+v._id+'" onchange="event.stopPropagation();toggleSelectOne(\'vol\',\''+v._id+'\')"></td><td>'+escHtml(v.name)+'</td><td>'+escHtml(v.email)+'</td><td>'+escHtml(v.phone)+'</td><td>'+escHtml(v.location)+'</td><td>'+statusBadge(v.status||'pending')+'</td><td>'+formatDate(v.createdAt)+'</td><td class="vol-actions"></td>';var act=tr.querySelector('.vol-actions');if((v.status||'').toLowerCase()!=='approved'){var ba=document.createElement('button');ba.className='btn btn-primary btn-xs';ba.textContent='Approve & Email';ba.onclick=function(e){e.stopPropagation();updateVolStatus(v._id,'approved',v);};act.appendChild(ba);}if((v.status||'').toLowerCase()!=='rejected'){var br=document.createElement('button');br.className='btn btn-danger btn-xs';br.textContent='Reject';br.style.marginLeft='4px';br.onclick=function(e){e.stopPropagation();updateVolStatus(v._id,'rejected',v);};act.appendChild(br);}var xtr=document.createElement('tr');xtr.className='expand-row';var expandDl=document.createElement('dl');
+function renderVolunteers(){var l=document.getElementById('vol-loading'),t=document.getElementById('vol-table'),e=document.getElementById('vol-empty'),tb=document.getElementById('vol-tbody');var sr=(document.getElementById('vol-search').value||'').toLowerCase(),sf=document.getElementById('vol-status-filter').value;var f=allVolunteers.filter(function(v){if(sf&&(v.status||'').toLowerCase()!==sf)return false;if(sr&&(v.name||'').toLowerCase().indexOf(sr)===-1&&(v.email||'').toLowerCase().indexOf(sr)===-1)return false;return true;});l.style.display='none';if(!f.length){t.style.display='none';e.style.display='block';return;}t.style.display='table';e.style.display='none';tb.innerHTML='';f.forEach(function(v){var tr=document.createElement('tr');tr.className='expandable';tr.innerHTML='<td class="cb-cell"><input type="checkbox" value="'+v._id+'" onchange="event.stopPropagation();toggleSelectOne(\'vol\',\''+v._id+'\')"></td><td>'+escHtml(v.name)+'</td><td>'+escHtml(v.email)+'</td><td>'+escHtml(v.phone)+'</td><td>'+escHtml(v.location)+'</td><td>'+statusBadge(v.status||'pending')+'</td><td>'+formatDate(v.createdAt)+'</td><td class="vol-actions"></td>';var act=tr.querySelector('.vol-actions');if(hasPermission('volunteer_requests.approve')){if((v.status||'').toLowerCase()!=='approved'){var ba=document.createElement('button');ba.className='btn btn-primary btn-xs';ba.textContent='Approve & Email';ba.onclick=function(e){e.stopPropagation();updateVolStatus(v._id,'approved',v);};act.appendChild(ba);}if((v.status||'').toLowerCase()!=='rejected'){var br=document.createElement('button');br.className='btn btn-danger btn-xs';br.textContent='Reject';br.style.marginLeft='4px';br.onclick=function(e){e.stopPropagation();updateVolStatus(v._id,'rejected',v);};act.appendChild(br);}}var xtr=document.createElement('tr');xtr.className='expand-row';var expandDl=document.createElement('dl');
     var expandFields=[{l:'Reason',v:v.reason},{l:'Roles',v:Array.isArray(v.roles)&&v.roles.length?v.roles.join(', '):null},{l:'Skills',v:v.skills},{l:'Heard About',v:v.heardFrom||v.hearAbout},{l:'Availability',v:Array.isArray(v.availability)?v.availability.join(', '):v.availability}];
     expandFields.forEach(function(f){if(!f.v)return;var dt=document.createElement('dt');dt.textContent=f.l;expandDl.appendChild(dt);var dd=document.createElement('dd');dd.textContent=f.v;expandDl.appendChild(dd);});
     var expandWrap=document.createElement('div');expandWrap.className='expand-content';expandWrap.appendChild(expandDl);
     var expandTd=document.createElement('td');expandTd.setAttribute('colspan','8');expandTd.appendChild(expandWrap);
     xtr.appendChild(expandTd);tr.onclick=function(){xtr.classList.toggle('open');};tb.appendChild(tr);tb.appendChild(xtr);});}
-function updateVolStatus(id,st,vol){db.collection('volunteer_requests').doc(id).update({status:st}).then(function(){writeAudit('update','volunteer_requests',id,'Status: '+st);
+function updateVolStatus(id,st,vol){if(!hasPermission('volunteer_requests.approve')){showToast('No permission to approve/reject volunteers','error');return;}db.collection('volunteer_requests').doc(id).update({status:st}).then(function(){writeAudit('update','volunteer_requests',id,'Status: '+st);
   if(vol&&vol.email&&emailReady){
     sendVolunteerEmail(vol,st).then(function(){showToast('Volunteer '+st+' — email sent to '+vol.email);}).catch(function(err){console.error('Email error:',err);showToast('Volunteer '+st+' but email failed.','error');});
   }else if(vol&&vol.email&&!emailReady){
     sendVolunteerEmail(vol,st);showToast('Volunteer '+st+' — email draft opened.');
   }else{showToast('Volunteer '+st+'.');}
   loadVolunteers();loadDashboard();updateNotifBell();}).catch(function(e){showToast(e.message,'error');});}
-function bulkVolStatus(st){var s=getSelected('vol');if(!s.size)return;var b=db.batch();s.forEach(function(id){b.update(db.collection('volunteer_requests').doc(id),{status:st});});b.commit().then(function(){writeAudit('update','volunteer_requests','','Bulk '+st+' '+s.size);showToast(s.size+' '+st+'.');clearSelection('vol');loadVolunteers();updateNotifBell();}).catch(function(e){showToast(e.message,'error');});}
+function bulkVolStatus(st){if(!hasPermission('volunteer_requests.approve')){showToast('No permission to approve/reject volunteers.','error');return;}var s=getSelected('vol');if(!s.size)return;var b=db.batch();s.forEach(function(id){b.update(db.collection('volunteer_requests').doc(id),{status:st});});b.commit().then(function(){writeAudit('update','volunteer_requests','','Bulk '+st+' '+s.size);showToast(s.size+' '+st+'.');clearSelection('vol');loadVolunteers();updateNotifBell();}).catch(function(e){showToast(e.message,'error');});}
 
 // Confirmed Volunteers
 function loadConfirmedVolunteers(){var l=document.getElementById('cvol-loading'),t=document.getElementById('cvol-table'),e=document.getElementById('cvol-empty');l.style.display='flex';t.style.display='none';e.style.display='none';clearSelection('cvol');db.collection('volunteers').get().then(function(s){allConfirmedVolunteers=[];s.forEach(function(d){var x=d.data();x._id=d.id;allConfirmedVolunteers.push(x);});allConfirmedVolunteers.sort(function(a,b){var ta=a.createdAt?(a.createdAt.toDate?a.createdAt.toDate():new Date(a.createdAt)):new Date(0);var tb=b.createdAt?(b.createdAt.toDate?b.createdAt.toDate():new Date(b.createdAt)):new Date(0);return tb-ta;});renderConfirmedVolunteers();});}
-function renderConfirmedVolunteers(){var l=document.getElementById('cvol-loading'),t=document.getElementById('cvol-table'),e=document.getElementById('cvol-empty'),tb=document.getElementById('cvol-tbody');var sr=(document.getElementById('cvol-search').value||'').toLowerCase(),sf=document.getElementById('cvol-status-filter').value;var f=allConfirmedVolunteers.filter(function(v){if(sf&&(v.status||'').toLowerCase()!==sf)return false;if(sr&&(v.name||'').toLowerCase().indexOf(sr)===-1&&(v.email||'').toLowerCase().indexOf(sr)===-1)return false;return true;});l.style.display='none';if(!f.length){t.style.display='none';e.style.display='block';return;}t.style.display='table';e.style.display='none';tb.innerHTML='';f.forEach(function(v){var sk=Array.isArray(v.skills)?v.skills.map(function(s){return'<span class="tag">'+escHtml(s)+'</span>';}).join(' '):escHtml(v.skills||'');var tr=document.createElement('tr');tr.innerHTML='<td class="cb-cell"><input type="checkbox" value="'+v._id+'" onchange="toggleSelectOne(\'cvol\',\''+v._id+'\')"></td><td>'+escHtml(v.name)+'</td><td>'+escHtml(v.email)+'</td><td>'+escHtml(v.phone)+'</td><td>'+escHtml(v.location)+'</td><td>'+escHtml(v.role||'--')+'</td><td>'+sk+'</td><td>'+statusBadge(v.status||'active')+'</td><td><button class="btn btn-secondary btn-xs" onclick="editConfirmedVolunteer(\''+v._id+'\')">Edit</button> <button class="btn btn-info btn-xs" onclick="sendVolunteerInvite(\''+escHtml(v.email)+'\',\''+escHtml(v.name)+'\')">Invite</button> <button class="btn btn-danger btn-xs" onclick="deleteConfirmedVolunteer(\''+v._id+'\',\''+escHtml(v.name)+'\')">Del</button></td>';tb.appendChild(tr);});}
+function renderConfirmedVolunteers(){var l=document.getElementById('cvol-loading'),t=document.getElementById('cvol-table'),e=document.getElementById('cvol-empty'),tb=document.getElementById('cvol-tbody');var sr=(document.getElementById('cvol-search').value||'').toLowerCase(),sf=document.getElementById('cvol-status-filter').value;var f=allConfirmedVolunteers.filter(function(v){if(sf&&(v.status||'').toLowerCase()!==sf)return false;if(sr&&(v.name||'').toLowerCase().indexOf(sr)===-1&&(v.email||'').toLowerCase().indexOf(sr)===-1)return false;return true;});l.style.display='none';if(!f.length){t.style.display='none';e.style.display='block';return;}t.style.display='table';e.style.display='none';tb.innerHTML='';f.forEach(function(v){var sk=Array.isArray(v.skills)?v.skills.map(function(s){return'<span class="tag">'+escHtml(s)+'</span>';}).join(' '):escHtml(v.skills||'');var tr=document.createElement('tr');tr.innerHTML='<td class="cb-cell"><input type="checkbox" value="'+v._id+'" onchange="toggleSelectOne(\'cvol\',\''+v._id+'\')"></td><td>'+escHtml(v.name)+'</td><td>'+escHtml(v.email)+'</td><td>'+escHtml(v.phone)+'</td><td>'+escHtml(v.location)+'</td><td>'+escHtml(v.role||'--')+'</td><td>'+sk+'</td><td>'+statusBadge(v.status||'active')+'</td><td>'+(hasPermission('volunteers.edit')?'<button class="btn btn-secondary btn-xs" onclick="editConfirmedVolunteer(\''+v._id+'\')">Edit</button> ':'')+' <button class="btn btn-info btn-xs" onclick="sendVolunteerInvite(\''+escHtml(v.email)+'\',\''+escHtml(v.name)+'\')">Invite</button>'+(hasPermission('volunteers.delete')?' <button class="btn btn-danger btn-xs" onclick="deleteConfirmedVolunteer(\''+v._id+'\',\''+escHtml(v.name)+'\')">Del</button>':'')+'</td>';tb.appendChild(tr);});}
 function openVolunteerCreateModal(d){document.getElementById('cvol-modal-title').textContent=d?'Edit Volunteer':'Create Volunteer';document.getElementById('cvol-edit-id').value=d?d._id:'';document.getElementById('cvol-name').value=d?d.name||'':'';document.getElementById('cvol-email').value=d?d.email||'':'';document.getElementById('cvol-phone').value=d?d.phone||'':'';document.getElementById('cvol-location').value=d?d.location||'':'';document.getElementById('cvol-role').value=d?d.role||'':'';document.getElementById('cvol-skills').value=d&&Array.isArray(d.skills)?d.skills.join(', '):'';document.getElementById('cvol-status').value=d?d.status||'active':'active';openModal('modal-create-volunteer');}
 function editConfirmedVolunteer(id){var v=allConfirmedVolunteers.find(function(x){return x._id===id;});if(v)openVolunteerCreateModal(v);}
 function saveConfirmedVolunteer(){var id=document.getElementById('cvol-edit-id').value,nm=document.getElementById('cvol-name').value.trim(),em=document.getElementById('cvol-email').value.trim();if(!nm||!em){showToast('Name and email required.','error');return;}var sk=document.getElementById('cvol-skills').value.split(',').map(function(s){return s.trim()}).filter(Boolean);var data={name:nm,email:em,phone:document.getElementById('cvol-phone').value.trim(),location:document.getElementById('cvol-location').value.trim(),role:document.getElementById('cvol-role').value.trim(),skills:sk,status:document.getElementById('cvol-status').value,lastEditedAt:FieldValue.serverTimestamp()};if(id){db.collection('volunteers').doc(id).get().then(function(s){var ch=diffFields(s.data(),data,{});return db.collection('volunteers').doc(id).update(data).then(function(){writeAudit('update','volunteers',id,ch);showToast('Updated.');closeModal('modal-create-volunteer');loadConfirmedVolunteers();});}).catch(function(e){showToast(e.message,'error');});}else{data.createdAt=FieldValue.serverTimestamp();db.collection('volunteers').add(data).then(function(ref){writeAudit('create','volunteers',ref.id,'Created: '+nm);showToast('Created.');closeModal('modal-create-volunteer');loadConfirmedVolunteers();loadDashboard();}).catch(function(e){showToast(e.message,'error');});}}
@@ -2730,6 +2748,43 @@ function loadBlogAdmin(){
     }
   }).catch(function(){});
 
+  // Fetch user-submitted posts from Firestore (all statuses for admin view)
+  db.collection('blog_posts').get().then(function(snapshot){
+    var firestorePosts=[];
+    snapshot.forEach(function(doc){
+      var d=doc.data();
+      firestorePosts.push({
+        id:doc.id,
+        firestoreId:doc.id,
+        title:d.title||'',
+        category:d.category||'story',
+        author:d.author||'Anonymous',
+        date:d.date||'',
+        excerpt:d.excerpt||'',
+        body:d.body||'',
+        readTime:d.readTime||3,
+        aiGenerated:d.aiGenerated||false,
+        status:d.status||'published',
+        submittedBy:d.submittedBy||'',
+        submittedAt:d.submittedAt||null,
+        keywords:d.keywords||[],
+        metaDescription:d.metaDescription||'',
+        seoScore:d.seoScore||null
+      });
+    });
+    if(firestorePosts.length){
+      // Merge Firestore posts into allBlogPosts, deduping by id
+      var seen={};
+      allBlogPosts.forEach(function(p){seen[p.id]=true;});
+      firestorePosts.forEach(function(p){
+        if(!seen[p.id]){seen[p.id]=true;allBlogPosts.push(p);}
+      });
+      allBlogPosts.sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+      renderBlogPosts();
+      updateBlogStats();
+    }
+  }).catch(function(err){console.log('Could not fetch Firestore blog_posts:',err);});
+
   renderKeywordCloud();
 }
 
@@ -2745,12 +2800,14 @@ function updateBlogStats(){
   var total=allBlogPosts.length;
   var aiCount=allBlogPosts.filter(function(p){return p.aiGenerated;}).length;
   var customCount=total-aiCount;
+  var pendingCount=allBlogPosts.filter(function(p){return p.status==='pending';}).length;
   var seoScores=allBlogPosts.filter(function(p){return p.seoScore;}).map(function(p){return p.seoScore;});
   var avgSeo=seoScores.length?Math.round(seoScores.reduce(function(a,b){return a+b;},0)/seoScores.length):'--';
   document.getElementById('stat-total-posts').textContent=total;
   document.getElementById('stat-ai-posts').textContent=aiCount;
   document.getElementById('stat-custom-posts').textContent=customCount;
   document.getElementById('stat-avg-seo').textContent=avgSeo;
+  document.getElementById('stat-pending-posts').textContent=pendingCount;
   document.getElementById('blog-loading').style.display='none';
 }
 
@@ -2761,11 +2818,13 @@ function renderBlogPosts(){
   var search=(document.getElementById('blog-search').value||'').toLowerCase();
   var catFilter=document.getElementById('blog-cat-filter').value;
   var srcFilter=document.getElementById('blog-source-filter').value;
+  var statusFilter=(document.getElementById('blog-status-filter')||{}).value||'';
 
   var filtered=allBlogPosts.filter(function(p){
     if(catFilter&&p.category!==catFilter)return false;
     if(srcFilter==='ai'&&!p.aiGenerated)return false;
     if(srcFilter==='custom'&&p.aiGenerated)return false;
+    if(statusFilter&&(p.status||'published')!==statusFilter)return false;
     if(search){
       return(p.title||'').toLowerCase().indexOf(search)>-1||
         (p.author||'').toLowerCase().indexOf(search)>-1||
@@ -2777,22 +2836,39 @@ function renderBlogPosts(){
   if(!filtered.length){table.style.display='none';empty.style.display='block';return;}
   empty.style.display='none';table.style.display='table';
 
+  var canApprove=hasPermission('blog.approve')||hasPermission('blog.edit_any');
+
   tbody.innerHTML=filtered.map(function(p){
     var catBadge='badge-'+(p.category==='story'?'active':p.category==='update'?'pending':p.category==='insight'?'info':'active');
     var srcBadge=p.aiGenerated?'<span class="badge" style="background:#eff6ff;color:#2563eb;font-size:11px">AI</span>':'<span class="badge" style="background:var(--green-light);color:var(--green-dark);font-size:11px">Custom</span>';
     var seoHtml=p.seoScore?'<span style="font-weight:700;color:'+(p.seoScore>=80?'var(--green-money)':p.seoScore>=60?'var(--orange)':'var(--red)')+'">'+p.seoScore+'</span>':'<span style="color:var(--gray-400)">--</span>';
-    var statusDot=p.status==='draft'?' <span class="badge badge-pending" style="font-size:10px">Draft</span>':'';
+
+    var st=p.status||'published';
+    var statusBadgeClass=st==='pending'?'badge-pending':st==='approved'?'badge-approved':st==='rejected'?'badge-rejected':st==='draft'?'badge-default':'badge-active';
+    var statusHtml='<span class="badge '+statusBadgeClass+'" style="font-size:11px">'+escHtml(st)+'</span>';
+    if(p.submittedBy&&st==='pending'){statusHtml+='<div style="font-size:11px;color:var(--gray-400);margin-top:2px">by '+escHtml(p.submittedBy)+'</div>';}
+
+    var approveRejectHtml='';
+    if(st==='pending'&&p.firestoreId&&canApprove){
+      approveRejectHtml=
+        '<button class="btn btn-sm" style="background:var(--green);color:#fff;padding:3px 8px;font-size:11px" title="Approve" onclick="approveBlogPost(\''+escHtml(p.firestoreId)+'\')">Approve</button>'+
+        '<button class="btn btn-sm" style="background:var(--red);color:#fff;padding:3px 8px;font-size:11px" title="Reject" onclick="rejectBlogPost(\''+escHtml(p.firestoreId)+'\')">Reject</button>';
+    }
+
+    var pIdArg=typeof p.id==='string'?"'"+escHtml(p.id)+"'":p.id;
     return '<tr>'+
-      '<td style="max-width:300px"><div style="font-weight:600">'+escHtml(p.title)+statusDot+'</div><div style="font-size:12px;color:var(--gray-400);margin-top:2px">'+escHtml((p.excerpt||'').substring(0,80))+'</div></td>'+
-      '<td><span class="badge '+catBadge+'">'+(p.category||'--')+'</span></td>'+
+      '<td style="max-width:300px"><div style="font-weight:600">'+escHtml(p.title)+'</div><div style="font-size:12px;color:var(--gray-400);margin-top:2px">'+escHtml((p.excerpt||'').substring(0,80))+'</div></td>'+
+      '<td><span class="badge '+catBadge+'">'+escHtml(p.category||'--')+'</span></td>'+
       '<td>'+escHtml(p.author||'--')+'</td>'+
-      '<td style="white-space:nowrap">'+(p.date||'--')+'</td>'+
+      '<td style="white-space:nowrap">'+escHtml(p.date||'--')+'</td>'+
       '<td>'+srcBadge+'</td>'+
+      '<td>'+statusHtml+'</td>'+
       '<td>'+seoHtml+'</td>'+
-      '<td><div style="display:flex;gap:4px">'+
-        '<button class="btn-icon btn-xs" title="Preview" onclick="previewBlogPost('+p.id+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>'+
-        '<button class="btn-icon btn-xs" title="Edit" onclick="editBlogPost('+p.id+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>'+
-        '<button class="btn-icon btn-xs" title="Delete" onclick="deleteBlogPost('+p.id+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>'+
+      '<td><div style="display:flex;gap:4px;flex-wrap:wrap">'+
+        approveRejectHtml+
+        '<button class="btn-icon btn-xs" title="Preview" onclick="previewBlogPost('+pIdArg+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>'+
+        '<button class="btn-icon btn-xs" title="Edit" onclick="editBlogPost('+pIdArg+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>'+
+        '<button class="btn-icon btn-xs" title="Delete" onclick="deleteBlogPost('+pIdArg+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>'+
       '</div></td>'+
     '</tr>';
   }).join('');
@@ -2831,6 +2907,20 @@ function saveBlogPost(){
     status:document.getElementById('blog-post-status').value,
     readTime:Math.max(1,Math.ceil(body.split(/\s+/).length/220))
   };
+
+  // Check if editing a Firestore post
+  var existingPost=id?allBlogPosts.find(function(p){return String(p.id)===String(id);}):null;
+  if(existingPost&&existingPost.firestoreId){
+    // Update in Firestore
+    db.collection('blog_posts').doc(existingPost.firestoreId).update(postData).then(function(){
+      closeModal('modal-blog-post');
+      showToast('Post updated!','success');
+      loadBlogAdmin();
+    }).catch(function(err){
+      showToast('Error updating post: '+err.message,'error');
+    });
+    return;
+  }
 
   // Save to localStorage (custom posts)
   var local=[];try{local=JSON.parse(localStorage.getItem(BLOG_STORAGE)||'[]');}catch(e){}
@@ -2878,8 +2968,54 @@ function deleteBlogPost(id){
   ai=ai.filter(function(p){return p.id!==id;});
   localStorage.setItem(AI_POSTS_STORAGE,JSON.stringify(ai));
 
+  // If it's a Firestore post, delete from Firestore too
+  if(typeof id==='string'&&id.length>10){
+    db.collection('blog_posts').doc(id).delete().catch(function(err){console.log('Firestore delete error:',err);});
+  }
+
   showToast('Post deleted.','success');
   loadBlogAdmin();
+}
+
+// ── Approve/Reject user-submitted blog posts in Firestore ──
+function approveBlogPost(firestoreId){
+  if(!hasPermission('blog.approve')&&!hasPermission('blog.edit_any')){
+    showToast('You do not have permission to approve posts.','error');return;
+  }
+  if(!confirm('Approve this post? It will become publicly visible on the blog.'))return;
+  db.collection('blog_posts').doc(firestoreId).update({
+    status:'approved',
+    approvedBy:currentUser?currentUser.email:'unknown',
+    approvedAt:FieldValue.serverTimestamp()
+  }).then(function(){
+    showToast('Post approved and now publicly visible.','success');
+    // Update local state
+    allBlogPosts.forEach(function(p){if(p.firestoreId===firestoreId)p.status='approved';});
+    renderBlogPosts();
+    updateBlogStats();
+  }).catch(function(err){
+    showToast('Error approving post: '+err.message,'error');
+  });
+}
+
+function rejectBlogPost(firestoreId){
+  if(!hasPermission('blog.approve')&&!hasPermission('blog.edit_any')){
+    showToast('You do not have permission to reject posts.','error');return;
+  }
+  var reason=prompt('Reason for rejection (optional):');
+  db.collection('blog_posts').doc(firestoreId).update({
+    status:'rejected',
+    rejectedBy:currentUser?currentUser.email:'unknown',
+    rejectedAt:FieldValue.serverTimestamp(),
+    rejectionReason:reason||''
+  }).then(function(){
+    showToast('Post rejected.','success');
+    allBlogPosts.forEach(function(p){if(p.firestoreId===firestoreId)p.status='rejected';});
+    renderBlogPosts();
+    updateBlogStats();
+  }).catch(function(err){
+    showToast('Error rejecting post: '+err.message,'error');
+  });
 }
 
 function previewBlogPost(id){
