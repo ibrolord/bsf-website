@@ -195,7 +195,7 @@
     /* IDEAS GRID */
     .ideas-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
       gap: 1.25rem;
     }
     @media (max-width: 500px) { .ideas-grid { grid-template-columns: 1fr; } }
@@ -331,7 +331,7 @@
 
     /* GOALS GRID */
     .goals-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 1.5rem;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(min(380px, 100%), 1fr)); gap: 1.5rem;
     }
     @media (max-width: 500px) { .goals-grid { grid-template-columns: 1fr; } }
 
@@ -735,7 +735,6 @@
             <li><a href="/blog/">Blog</a></li>
             <li><a href="/forums/">Forums</a></li>
             <li><a href="/ideas/">Ideas</a></li>
-            <li><a href="/donations/">Donations</a></li>
             <li><a href="/donate/">Give</a></li>
             <li><a href="/sponsor/">Sponsor</a></li>
             <li><a href="mailto:hello@thebigsisterfoundation.org">Email</a></li>

@@ -9,10 +9,15 @@
   <meta name="description" content="Stories, updates, and insights from Big Sister Foundation. Read about our work with vulnerable children in Lagos and the communities we serve.">
   <meta name="theme-color" content="#2D5E40">
 
+  <link rel="canonical" href="https://public-mu-steel.vercel.app/blog/">
   <meta property="og:title" content="Blog — Big Sister Foundation">
   <meta property="og:description" content="Stories, updates, and insights from our work with vulnerable children in Lagos.">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://public-mu-steel.vercel.app/blog/">
   <meta property="og:image" content="/og-image.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Blog — Big Sister Foundation">
+  <meta name="twitter:description" content="Stories, updates, and insights from our work with vulnerable children in Lagos.">
 
   <link rel="alternate" type="application/rss+xml" title="Big Sister Foundation Blog" href="/feed.xml">
 
@@ -577,13 +582,21 @@
     </div>
   </section>
 
-  <!-- WRITE POST -->
-  <section class="section-pad" id="writeSection" style="background: rgba(45,94,64,0.04);">
+  <!-- WRITE POST (hidden by default; shown only for logged-in volunteers) -->
+  <section class="section-pad" id="writeSection" style="background: rgba(45,94,64,0.04); display:none;">
     <div class="container">
-      <div class="write-post">
+      <!-- CTA for non-logged-in users -->
+      <div class="write-post" id="writeCTA" style="display:none; text-align:center;">
+        <p class="eyebrow" style="color: var(--green);">Contribute</p>
+        <h2>Want to Share Your Story?</h2>
+        <p style="margin-bottom:1.5rem;">Only registered volunteers and team members can submit blog posts. Join our volunteer community to contribute.</p>
+        <a href="/volunteer/" class="btn btn--primary" style="text-decoration:none;">Join Our Volunteer Community</a>
+      </div>
+      <!-- Form for authenticated volunteers -->
+      <div class="write-post" id="writeFormWrap" style="display:none;">
         <p class="eyebrow" style="color: var(--green);">Contribute</p>
         <h2>Write a Post</h2>
-        <p>Share a story, an update, or insight with the BSF community.</p>
+        <p>Share a story, an update, or insight with the BSF community. Posts are reviewed before publishing.</p>
 
         <form id="postForm">
           <div class="form-grid">
@@ -614,7 +627,7 @@
             </div>
           </div>
           <div class="form-actions">
-            <button type="submit" class="btn btn--primary">Publish Post</button>
+            <button type="submit" class="btn btn--primary">Submit for Review</button>
             <button type="reset" class="btn btn--outline">Clear</button>
           </div>
         </form>
@@ -639,7 +652,6 @@
             <li><a href="/volunteer/">Volunteer</a></li>
             <li><a href="/forums/">Forums</a></li>
             <li><a href="/ideas/">Ideas</a></li>
-            <li><a href="/donations/">Donations</a></li>
             <li><a href="/donate/">Give</a></li>
             <li><a href="/sponsor/">Sponsor</a></li>
             <li><a href="mailto:hello@thebigsisterfoundation.org">Email</a></li>
@@ -652,6 +664,37 @@
 
   <div class="toast" id="toast"></div>
 
+  <!-- Firebase SDK for blog submission to Firestore -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script>
+    var firebaseConfig={apiKey:"AIzaSyCwos6XR9-uqAf_Esmh2K_hJoLxq4gnEuU",authDomain:"big-sister-foundation.firebaseapp.com",projectId:"big-sister-foundation",storageBucket:"big-sister-foundation.firebasestorage.app"};
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    var blogDb = firebase.firestore();
+    var blogAuth = firebase.auth();
+
+    /*
+     * ── Firestore Security Rules needed for blog_posts collection ──
+     *
+     * rules_version = '2';
+     * service cloud.firestore {
+     *   match /databases/{database}/documents {
+     *     match /blog_posts/{postId} {
+     *       // Public read for approved posts
+     *       allow read: if resource.data.status == 'approved' || resource.data.aiGenerated == true;
+     *       // Authenticated volunteers can create posts (status must be 'pending')
+     *       allow create: if request.auth != null && request.resource.data.status == 'pending';
+     *       // Only admins can update (approve/reject) — enforced via admin custom claims
+     *       allow update: if request.auth != null && request.auth.token.admin == true;
+     *       // Only admins can delete
+     *       allow delete: if request.auth != null && request.auth.token.admin == true;
+     *     }
+     *   }
+     * }
+     */
+  </script>
+
   <script src="/shared/bsf-antispam.js"></script>
   <script>
     (function () {
@@ -662,6 +705,43 @@
       var STORAGE_KEY = 'bsf_blog_posts';
       var AI_POSTS_KEY = 'bsf_ai_posts_cache';
       var colorClasses = ['post-card__img--green', 'post-card__img--terra', 'post-card__img--brown', 'post-card__img--sage'];
+
+      // ── Auth gate for write section ──
+      var currentBlogUser = null;
+      function checkBlogAuth() {
+        var writeSection = document.getElementById('writeSection');
+        var writeCTA = document.getElementById('writeCTA');
+        var writeForm = document.getElementById('writeFormWrap');
+        writeSection.style.display = '';
+
+        // Check localStorage for volunteer/sponsor registration
+        var sponsor = localStorage.getItem('bsf_sponsor');
+        var volunteerData = localStorage.getItem('bsf_volunteer');
+
+        // Check Firebase Auth state
+        blogAuth.onAuthStateChanged(function(user) {
+          if (user || sponsor || volunteerData) {
+            currentBlogUser = user;
+            writeCTA.style.display = 'none';
+            writeForm.style.display = '';
+            // Pre-fill author from user info
+            if (user && user.displayName) {
+              var authorField = document.getElementById('postAuthor');
+              if (authorField && !authorField.value) authorField.value = user.displayName;
+            } else if (volunteerData) {
+              try {
+                var vd = JSON.parse(volunteerData);
+                var authorField = document.getElementById('postAuthor');
+                if (authorField && !authorField.value) authorField.value = vd.name || '';
+              } catch(e){}
+            }
+          } else {
+            writeCTA.style.display = '';
+            writeForm.style.display = 'none';
+          }
+        });
+      }
+      checkBlogAuth();
 
       var defaultPosts = [
         {
@@ -755,8 +835,8 @@
       var activeFilter = 'all';
       var searchQuery = '';
 
-      // Fetch AI-generated posts from API and merge
-      (function fetchAIPosts() {
+      // Fetch AI-generated posts from API and approved Firestore posts, then merge
+      (function fetchAllPosts() {
         // Try cached AI posts first
         var cached = localStorage.getItem(AI_POSTS_KEY);
         if (cached) {
@@ -780,6 +860,37 @@
             }
           })
           .catch(function() { /* API not available, use local posts only */ });
+
+        // Fetch approved user-submitted posts from Firestore
+        blogDb.collection('blog_posts')
+          .where('status', '==', 'approved')
+          .get()
+          .then(function(snapshot) {
+            var firestorePosts = [];
+            snapshot.forEach(function(doc) {
+              var data = doc.data();
+              firestorePosts.push({
+                id: doc.id,
+                title: data.title || '',
+                category: data.category || 'story',
+                author: data.author || 'Anonymous',
+                date: data.date || '',
+                excerpt: data.excerpt || '',
+                body: data.body || '',
+                readTime: data.readTime || 3,
+                aiGenerated: data.aiGenerated || false,
+                status: data.status
+              });
+            });
+            if (firestorePosts.length) {
+              posts = mergeAndDedupe(posts, firestorePosts);
+              renderFeatured();
+              renderGrid();
+            }
+          })
+          .catch(function(err) {
+            console.log('Could not fetch Firestore blog posts:', err);
+          });
       })();
 
       // ── Helpers ──
@@ -991,7 +1102,10 @@
       document.getElementById('blogGrid').addEventListener('click', function(e) {
         var card = e.target.closest('.post-card');
         if (!card) return;
-        showPost(parseInt(card.dataset.id, 10));
+        var cardId = card.dataset.id;
+        // Support both numeric IDs (localStorage posts) and string IDs (Firestore posts)
+        var numId = parseInt(cardId, 10);
+        showPost(isNaN(numId) || String(numId) !== cardId ? cardId : numId);
       });
 
       // ── Filters ──
@@ -1013,30 +1127,53 @@
         }, 250);
       });
 
-      // ── Publish post ──
+      // ── Submit post for review (saves to Firestore with status: 'pending') ──
       document.getElementById('postForm').addEventListener('submit', function(e) {
         e.preventDefault();
         if (!BSFAntiSpam.check('postForm')) return;
 
         var body = document.getElementById('postBody').value.trim();
-        var newPost = {
-          id: Date.now(),
-          title: document.getElementById('postTitle').value.trim(),
-          category: document.getElementById('postCategory').value,
-          author: document.getElementById('postAuthor').value.trim(),
+        var title = document.getElementById('postTitle').value.trim();
+        var category = document.getElementById('postCategory').value;
+        var author = document.getElementById('postAuthor').value.trim();
+        var excerpt = document.getElementById('postExcerpt').value.trim();
+
+        // Determine submitter email
+        var submitterEmail = '';
+        if (currentBlogUser && currentBlogUser.email) {
+          submitterEmail = currentBlogUser.email;
+        } else {
+          var sponsor = localStorage.getItem('bsf_sponsor');
+          if (sponsor) { try { submitterEmail = JSON.parse(sponsor).email || ''; } catch(ex){} }
+          if (!submitterEmail) {
+            var vd = localStorage.getItem('bsf_volunteer');
+            if (vd) { try { submitterEmail = JSON.parse(vd).email || ''; } catch(ex){} }
+          }
+        }
+
+        var postData = {
+          title: title,
+          category: category,
+          author: author,
           date: new Date().toISOString().split('T')[0],
-          excerpt: document.getElementById('postExcerpt').value.trim(),
+          excerpt: excerpt,
           body: body,
-          readTime: estimateReadTime(body)
+          readTime: estimateReadTime(body),
+          status: 'pending',
+          aiGenerated: false,
+          submittedBy: submitterEmail,
+          submittedAt: firebase.firestore.FieldValue.serverTimestamp()
         };
 
-        posts.unshift(newPost);
-        savePosts(posts);
-        renderFeatured();
-        renderGrid();
-        e.target.reset();
-        showToast('Post published!');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Save to Firestore blog_posts collection
+        blogDb.collection('blog_posts').add(postData).then(function(docRef) {
+          e.target.reset();
+          showToast('Your post has been submitted for review.');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }).catch(function(err) {
+          console.error('Error submitting post:', err);
+          showToast('Error submitting post. Please try again.');
+        });
       });
 
       // ── Handle back/forward ──
@@ -1044,7 +1181,8 @@
         var params = new URLSearchParams(window.location.search);
         var postId = params.get('post');
         if (postId) {
-          showPost(parseInt(postId, 10));
+          var numPid = parseInt(postId, 10);
+          showPost(isNaN(numPid) || String(numPid) !== postId ? postId : numPid);
         } else {
           document.getElementById('postDetail').classList.add('hidden');
           document.getElementById('blogListing').classList.remove('hidden');
@@ -1080,7 +1218,8 @@
       if (postParam) {
         renderFeatured();
         renderGrid();
-        showPost(parseInt(postParam, 10));
+        var numPp = parseInt(postParam, 10);
+        showPost(isNaN(numPp) || String(numPp) !== postParam ? postParam : numPp);
       } else {
         renderFeatured();
         renderGrid();

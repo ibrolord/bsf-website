@@ -659,7 +659,7 @@
       flex-wrap: wrap;
     }
 
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
       .vision__values { grid-template-columns: 1fr; gap: 1.5rem; }
     }
 
@@ -747,21 +747,57 @@
     .tree-bg {
       position: fixed;
       top: 0;
-      right: 5%;
-      width: 200px;
+      left: 0;
+      width: 100vw;
       height: 100vh;
       pointer-events: none;
-      z-index: 1;
-      mix-blend-mode: multiply;
-      opacity: 0.6;
+      z-index: 50;
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       justify-content: center;
     }
 
     .tree-bg svg {
       width: 100%;
-      height: 90vh;
+      height: 100vh;
+    }
+
+    /* Forest companion trees — sprout from edges */
+    .forest-tree {
+      opacity: 0;
+      transform-origin: center bottom;
+      transform: scale(0) translateY(20px);
+      transition: opacity 1.4s var(--ease), transform 1.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .forest-tree.is-shown {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+    .forest-trunk {
+      fill: none;
+      stroke: var(--brown);
+      stroke-linecap: round;
+      stroke-width: 3;
+      opacity: 0.2;
+    }
+    .forest-canopy {
+      fill: var(--green);
+      opacity: 0;
+      transform-origin: center;
+      transform: scale(0);
+      transition: opacity 1.2s var(--ease) 0.4s, transform 1.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s;
+    }
+    .forest-tree.is-shown .forest-canopy {
+      opacity: 0.18;
+      transform: scale(1);
+      animation: forestSway 8s ease-in-out infinite;
+    }
+    .forest-tree:nth-child(odd) .forest-canopy { animation-delay: -4s; }
+    .forest-tree:nth-child(3n) .forest-canopy { animation-duration: 9s; }
+    @keyframes forestSway {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      25% { transform: scale(1.01) rotate(0.8deg); }
+      75% { transform: scale(0.99) rotate(-0.8deg); }
     }
 
     /* === GROWTH STAGE ELEMENTS === */
@@ -1018,7 +1054,7 @@
 
   <!-- CONTINUOUS TREE — grows from seeds to full canopy as user scrolls -->
   <div class="tree-bg" aria-hidden="true">
-    <svg viewBox="0 0 200 1000" fill="none" preserveAspectRatio="xMidYMid meet">
+    <svg viewBox="0 0 800 1000" fill="none" preserveAspectRatio="xMidYMid meet">
 
       <!-- STAGE 1: Seeds (0-5% scroll) — three small seeds in the soil -->
       <ellipse class="tree-seed" cx="92" cy="970" rx="4" ry="5.5"/>
@@ -1068,6 +1104,71 @@
       <ellipse class="tree-leaf" cx="70" cy="264" rx="34" ry="28"/>
       <ellipse class="tree-leaf" cx="132" cy="260" rx="36" ry="30"/>
       <ellipse class="tree-leaf" cx="100" cy="274" rx="30" ry="24"/>
+
+      <!-- ═══ STAGE 9: FOREST — companion trees sprout as scroll nears end ═══ -->
+
+      <!-- Forest tree 1: left near, medium -->
+      <g class="forest-tree" data-forest="1">
+        <path class="forest-trunk" d="M42,990 C41,970 43,950 42,930 C41,910 43,890 42,870 C43,850 41,830 42,810 C41,790 43,770 42,750"/>
+        <ellipse class="forest-canopy" cx="42" cy="730" rx="30" ry="24"/>
+        <ellipse class="forest-canopy" cx="28" cy="742" rx="22" ry="18"/>
+        <ellipse class="forest-canopy" cx="56" cy="738" rx="24" ry="20"/>
+      </g>
+
+      <!-- Forest tree 2: far left, small -->
+      <g class="forest-tree" data-forest="2">
+        <path class="forest-trunk" d="M-20,992 C-21,978 -19,964 -20,950 C-21,936 -19,922 -20,908 C-19,894 -21,880 -20,866"/>
+        <ellipse class="forest-canopy" cx="-20" cy="850" rx="24" ry="20"/>
+        <ellipse class="forest-canopy" cx="-34" cy="860" rx="18" ry="15"/>
+        <ellipse class="forest-canopy" cx="-6" cy="856" rx="20" ry="16"/>
+      </g>
+
+      <!-- Forest tree 3: right near, tall -->
+      <g class="forest-tree" data-forest="3">
+        <path class="forest-trunk" d="M168,988 C167,965 169,942 168,920 C167,898 169,876 168,854 C169,832 167,810 168,788 C167,766 169,744 168,722 C169,700 167,680 168,660"/>
+        <ellipse class="forest-canopy" cx="168" cy="640" rx="34" ry="28"/>
+        <ellipse class="forest-canopy" cx="148" cy="654" rx="26" ry="22"/>
+        <ellipse class="forest-canopy" cx="188" cy="650" rx="28" ry="24"/>
+        <ellipse class="forest-canopy" cx="168" cy="660" rx="24" ry="20"/>
+      </g>
+
+      <!-- Forest tree 4: far right, medium-small -->
+      <g class="forest-tree" data-forest="4">
+        <path class="forest-trunk" d="M228,990 C227,972 229,954 228,936 C227,918 229,900 228,882 C229,864 227,846 228,828"/>
+        <ellipse class="forest-canopy" cx="228" cy="812" rx="26" ry="22"/>
+        <ellipse class="forest-canopy" cx="214" cy="822" rx="20" ry="16"/>
+        <ellipse class="forest-canopy" cx="242" cy="818" rx="22" ry="18"/>
+      </g>
+
+      <!-- Forest tree 5: left edge, tiny sapling -->
+      <g class="forest-tree" data-forest="5">
+        <path class="forest-trunk" d="M-52,994 C-53,980 -51,966 -52,952 C-51,938 -53,924 -52,910"/>
+        <ellipse class="forest-canopy" cx="-52" cy="898" rx="18" ry="15"/>
+        <ellipse class="forest-canopy" cx="-62" cy="906" rx="14" ry="12"/>
+      </g>
+
+      <!-- Forest tree 6: right edge, tiny sapling -->
+      <g class="forest-tree" data-forest="6">
+        <path class="forest-trunk" d="M264,993 C263,980 265,967 264,954 C265,941 263,928 264,916"/>
+        <ellipse class="forest-canopy" cx="264" cy="904" rx="18" ry="15"/>
+        <ellipse class="forest-canopy" cx="276" cy="912" rx="14" ry="12"/>
+      </g>
+
+      <!-- Forest tree 7: behind center-left, background depth -->
+      <g class="forest-tree" data-forest="7" style="opacity:0;">
+        <path class="forest-trunk" d="M66,992 C65,975 67,958 66,941 C67,924 65,907 66,890 C65,873 67,856 66,840"/>
+        <ellipse class="forest-canopy" cx="66" cy="824" rx="22" ry="18"/>
+        <ellipse class="forest-canopy" cx="54" cy="834" rx="16" ry="14"/>
+        <ellipse class="forest-canopy" cx="78" cy="830" rx="18" ry="15"/>
+      </g>
+
+      <!-- Forest tree 8: behind center-right, background depth -->
+      <g class="forest-tree" data-forest="8" style="opacity:0;">
+        <path class="forest-trunk" d="M140,991 C139,976 141,961 140,946 C141,931 139,916 140,901 C139,886 141,871 140,856"/>
+        <ellipse class="forest-canopy" cx="140" cy="840" rx="22" ry="18"/>
+        <ellipse class="forest-canopy" cx="128" cy="850" rx="16" ry="14"/>
+        <ellipse class="forest-canopy" cx="152" cy="846" rx="18" ry="15"/>
+      </g>
     </svg>
   </div>
 
@@ -1340,7 +1441,6 @@
 
             <li><a href="/forums/">Forums</a></li>
             <li><a href="/ideas/">Ideas</a></li>
-            <li><a href="/donations/">Donations</a></li>
             <li><a href="/donate/">Give</a></li>
             <li><a href="/sponsor/">Sponsor</a></li>
 
@@ -1464,6 +1564,14 @@
         treeLeaves.forEach(function(leaf, i) {
           if (scrollPct > 0.78 + (i * 0.02)) leaf.classList.add('is-shown');
           else leaf.classList.remove('is-shown');
+        });
+
+        // STAGE 9: Forest — companion trees sprout (70-100%)
+        var forestTrees = document.querySelectorAll('.forest-tree');
+        forestTrees.forEach(function(ft, i) {
+          var forestStart = 0.65 + (i * 0.04);
+          if (scrollPct > forestStart) ft.classList.add('is-shown');
+          else ft.classList.remove('is-shown');
         });
       }
 
