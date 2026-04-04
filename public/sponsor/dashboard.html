@@ -1376,7 +1376,9 @@
       successTxns = txns.filter(function(t) { return t.status === 'success'; });
       totalDonated = successTxns.reduce(function(sum, t) { return sum + (Number(t.amount) || 0); }, 0);
       donationCount = successTxns.length;
-      monthsAsSponsor = Math.max(1, Math.ceil((Date.now() - new Date(sponsor.createdAt).getTime()) / (30 * 24 * 60 * 60 * 1000)));
+      var joinDate = sponsor.createdAt || sponsor.joinedAt || new Date().toISOString();
+      if (joinDate && joinDate.toDate) joinDate = joinDate.toDate();
+      monthsAsSponsor = Math.max(1, Math.ceil((Date.now() - new Date(joinDate).getTime()) / (30 * 24 * 60 * 60 * 1000)));
 
       document.getElementById('dashboard').style.display = 'block';
 

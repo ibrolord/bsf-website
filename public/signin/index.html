@@ -428,11 +428,12 @@
         .then(function(c){
           var upd=nm?c.user.updateProfile({displayName:nm}):Promise.resolve();
           return upd.then(function(){
+            var ts=firebase.firestore.FieldValue.serverTimestamp();
             return db.collection('sponsors').doc(em).set({
               email:em,name:nm||em.split('@')[0],
               status:'active',tier:'seedling',
               totalDonated:0,recurringAmount:0,
-              joinedAt:firebase.firestore.FieldValue.serverTimestamp()
+              createdAt:ts,joinedAt:ts
             },{merge:true});
           }).then(function(){return c;});
         });

@@ -1166,6 +1166,7 @@
             var upd = nameVal ? cred.user.updateProfile({ displayName: nameVal }) : Promise.resolve();
             return upd.then(function() {
               // Create stub sponsor doc so dashboard works immediately
+              var now = firebase.firestore.FieldValue.serverTimestamp();
               return db.collection('sponsors').doc(email).set({
                 email: email,
                 name: nameVal || email.split('@')[0],
@@ -1173,7 +1174,8 @@
                 tier: 'seedling',
                 totalDonated: 0,
                 recurringAmount: 0,
-                joinedAt: firebase.firestore.FieldValue.serverTimestamp()
+                createdAt: now,
+                joinedAt: now
               }, { merge: true });
             });
           }).catch(function(err) { errEl.textContent = err.message; });
@@ -1459,6 +1461,7 @@
           // For new Google users, create stub sponsor doc
           if (result.additionalUserInfo && result.additionalUserInfo.isNewUser && db) {
             var u = result.user;
+            var ts = firebase.firestore.FieldValue.serverTimestamp();
             db.collection('sponsors').doc(u.email).set({
               email: u.email,
               name: u.displayName || u.email.split('@')[0],
@@ -1466,7 +1469,8 @@
               tier: 'seedling',
               totalDonated: 0,
               recurringAmount: 0,
-              joinedAt: firebase.firestore.FieldValue.serverTimestamp()
+              createdAt: ts,
+              joinedAt: ts
             }, { merge: true }).catch(function() {});
           }
         }).catch(function(err) {
