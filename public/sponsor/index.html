@@ -1399,8 +1399,8 @@
 
       window.sponsorSignOut = function() {
         auth.signOut().then(function() {
-          localStorage.removeItem('bsf_sponsor');
-          localStorage.removeItem('bsf_sponsor_txns');
+          localStorage.removeItem('bsf_sponsor_profile');
+          localStorage.removeItem('bsf_transactions');
           welcomeBanner.classList.remove('is-visible');
         });
       };

@@ -1276,30 +1276,37 @@
     };
     window.sponsorSignOut = function() {
       firebase.auth().signOut().then(function() {
-        localStorage.removeItem('bsf_sponsor');
-        localStorage.removeItem('bsf_sponsor_txns');
+        localStorage.removeItem('bsf_sponsor_profile');
+        localStorage.removeItem('bsf_transactions');
         window.location.reload();
       });
     };
+    var hasBooted = false;
     firebase.auth().onAuthStateChanged(function(user) {
       var overlay = document.getElementById('auth-overlay');
       var signoutBtn = document.getElementById('nav-signout');
       if (user) {
         overlay.style.display = 'none';
         if (signoutBtn) signoutBtn.style.display = '';
-        // Load sponsor data by email
+        // Load sponsor data from Firestore by email, then boot
         if (db && user.email) {
           db.collection('sponsors').where('email', '==', user.email).limit(1).get().then(function(snap) {
             if (!snap.empty) {
               var sData = snap.docs[0].data();
               sData._id = snap.docs[0].id;
-              localStorage.setItem('bsf_sponsor', JSON.stringify(sData));
+              BSFStore.saveSponsor(sData);
             }
-          }).catch(function() {});
+            if (!hasBooted) { hasBooted = true; boot(); }
+          }).catch(function() {
+            if (!hasBooted) { hasBooted = true; boot(); }
+          });
+        } else {
+          if (!hasBooted) { hasBooted = true; boot(); }
         }
       } else {
-        // Redirect to unified sign-in
-        window.location.href = '/signin/';
+        // Show auth overlay (not signed in)
+        overlay.style.display = 'flex';
+        if (signoutBtn) signoutBtn.style.display = 'none';
       }
     });
 
@@ -2081,13 +2088,8 @@
     }
 
     /* ================================================================
-       INIT
+       INIT — boot() is called by onAuthStateChanged after sponsor data loads
     ================================================================ */
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', boot);
-    } else {
-      boot();
-    }
 
   })();
   </script>
