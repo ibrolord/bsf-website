@@ -279,31 +279,46 @@
 (function(){
   'use strict';
 
-  /* ── Two Firebase apps — one per destination so auth sessions are stored
-        under the correct API key and the destination page sees them ── */
-  var volApp = firebase.initializeApp({
+  /* ── Firebase configs — must match destination pages exactly so auth
+        session (stored per apiKey + [DEFAULT] app name) carries over ── */
+  var VOL_CONFIG = {
     apiKey: "AIzaSyBm-d9DPG4iKbmhEA71E6cBxAHmcVgrdTs",
     authDomain: "big-sister-foundation.firebaseapp.com",
     projectId: "big-sister-foundation",
     storageBucket: "big-sister-foundation.appspot.com",
     messagingSenderId: "374538996840",
     appId: "1:374538996840:web:8e2d02ada8ccba9b69ba1f"
-  }, 'vol');
-
-  var spApp = firebase.initializeApp({
+  };
+  var SP_CONFIG = {
     apiKey: "AIzaSyCwos6XR9-uqAf_Esmh2K_hJoLxq4gnEuU",
     authDomain: "big-sister-foundation.firebaseapp.com",
     projectId: "big-sister-foundation",
     storageBucket: "big-sister-foundation.firebasestorage.app",
     messagingSenderId: "778723584560",
     appId: "1:778723584560:web:7499944c30001e7fcf5bf5"
-  }, 'sp');
+  };
 
-  var volAuth = volApp.auth();
-  var spAuth  = spApp.auth();
-  var spDb    = spApp.firestore();
+  var activeRole = null; // 'vol' | 'sp'
+  var auth = null;
+  var db = null;
+  var spMode = 'in';
 
-  var spMode = 'in'; // 'in' | 'up'
+  /* Lazy-init: only create the default Firebase app when the user picks a role.
+     This ensures the auth session is stored under the SAME key the destination
+     page will look for (apiKey + [DEFAULT] app name). */
+  function initFor(role) {
+    if (activeRole === role) return; // already set
+    if (firebase.apps.length) {
+      // Different role chosen — reload for clean slate
+      window.location.reload();
+      return;
+    }
+    activeRole = role;
+    var cfg = role === 'sp' ? SP_CONFIG : VOL_CONFIG;
+    firebase.initializeApp(cfg);
+    auth = firebase.auth();
+    db = firebase.firestore();
+  }
 
   /* ── Helpers ── */
   function show(id){ document.querySelectorAll('.step').forEach(function(s){s.classList.remove('on');}); document.getElementById(id).classList.add('on'); }
@@ -311,6 +326,19 @@
   function clrMsg(id){ document.getElementById(id).className='msg'; }
   function dis(id,v,t){ var b=document.getElementById(id); b.disabled=v; if(t)b.textContent=t; }
   function splash(name){ document.querySelectorAll('.step').forEach(function(s){s.classList.remove('on');}); var s=document.getElementById('splash'); s.classList.add('on'); document.getElementById('splash-name').textContent=name||''; }
+
+  function errMsg(code){
+    var m={
+      'auth/user-not-found':'No account found with that email.',
+      'auth/wrong-password':'Incorrect password.',
+      'auth/invalid-credential':'Email or password is incorrect.',
+      'auth/invalid-email':'That doesn\'t look like a valid email.',
+      'auth/email-already-in-use':'Account already exists — sign in instead.',
+      'auth/weak-password':'Password must be at least 6 characters.',
+      'auth/too-many-requests':'Too many attempts — wait a few minutes.'
+    };
+    return m[code]||'Sign in failed ('+code+'). Please try again.';
+  }
 
   /* ── Password show/hide ── */
   document.querySelectorAll('.pshow').forEach(function(el){
@@ -324,6 +352,7 @@
 
   /* ── Role card buttons ── */
   document.getElementById('vol-signin-card').addEventListener('click',function(){
+    initFor('vol');
     show('step-vol');
     document.getElementById('hdr-sub').textContent='Volunteer portal';
     setTimeout(function(){document.getElementById('vol-email').focus();},40);
@@ -332,30 +361,23 @@
     window.location.href='/volunteer/';
   });
   document.getElementById('sp-signin-card').addEventListener('click',function(){
+    initFor('sp');
     spTab('in');
     show('step-sp');
     document.getElementById('hdr-sub').textContent='Sponsor dashboard';
     setTimeout(function(){document.getElementById('sp-email').focus();},40);
   });
   document.getElementById('sp-signup-card').addEventListener('click',function(){
+    initFor('sp');
     spTab('up');
     show('step-sp');
     document.getElementById('hdr-sub').textContent='Sponsor dashboard';
     setTimeout(function(){document.getElementById('sp-name').focus();},40);
   });
 
-  /* ── Back buttons ── */
-  document.getElementById('vol-back').addEventListener('click',function(){
-    clrMsg('vol-msg');
-    document.getElementById('vol-nudge').classList.remove('on');
-    document.getElementById('hdr-sub').textContent='Choose your account type to continue';
-    show('step-pick');
-  });
-  document.getElementById('sp-back').addEventListener('click',function(){
-    clrMsg('sp-msg');
-    document.getElementById('hdr-sub').textContent='Choose your account type to continue';
-    show('step-pick');
-  });
+  /* ── Back buttons — reload to get clean Firebase state ── */
+  document.getElementById('vol-back').addEventListener('click',function(){ window.location.href='/signin/'; });
+  document.getElementById('sp-back').addEventListener('click',function(){ window.location.href='/signin/'; });
 
   /* ── Sponsor tab toggle ── */
   window.spTab = function(mode){
@@ -376,15 +398,14 @@
     var pw=document.getElementById('vol-pw').value;
     if(!em||!pw){msg('vol-msg','Enter your email and password.');return;}
     dis('vol-btn',true,'Signing in…');
-    volAuth.signInWithEmailAndPassword(em,pw)
+    auth.signInWithEmailAndPassword(em,pw)
       .then(function(c){
         splash(c.user.displayName||c.user.email);
         window.location.href='/volunteer/portal/';
       })
       .catch(function(err){
         dis('vol-btn',false,'Sign In to Volunteer Portal');
-        var m={'auth/user-not-found':'No account found. Have you applied yet?','auth/wrong-password':'Incorrect password.','auth/invalid-credential':'Email or password is incorrect.','auth/invalid-email':'That doesn\'t look like a valid email.','auth/too-many-requests':'Too many attempts — wait a few minutes.'};
-        msg('vol-msg',m[err.code]||'Sign in failed. Check your details.');
+        msg('vol-msg',errMsg(err.code));
         if(err.code==='auth/user-not-found'||err.code==='auth/invalid-credential')document.getElementById('vol-nudge').classList.add('on');
       });
   }
@@ -395,7 +416,7 @@
   document.getElementById('vol-forgot').addEventListener('click',function(){
     var em=document.getElementById('vol-email').value.trim();
     if(!em){msg('vol-msg','Enter your email above first.');return;}
-    volAuth.sendPasswordResetEmail(em).then(function(){msg('vol-msg','Reset email sent — check your inbox.','ok');}).catch(function(){msg('vol-msg','Could not send reset email.');});
+    auth.sendPasswordResetEmail(em).then(function(){msg('vol-msg','Reset email sent — check your inbox.','ok');}).catch(function(){msg('vol-msg','Could not send reset email.');});
   });
 
   /* ── Sponsor sign in / create ── */
@@ -410,11 +431,11 @@
     var promise;
     if(spMode==='up'){
       var nm=(document.getElementById('sp-name').value||'').trim();
-      promise=spAuth.createUserWithEmailAndPassword(em,pw)
+      promise=auth.createUserWithEmailAndPassword(em,pw)
         .then(function(c){
           var upd=nm?c.user.updateProfile({displayName:nm}):Promise.resolve();
           return upd.then(function(){
-            return spDb.collection('sponsors').doc(em).set({
+            return db.collection('sponsors').doc(em).set({
               email:em,name:nm||em.split('@')[0],
               status:'active',tier:'seedling',
               totalDonated:0,recurringAmount:0,
@@ -423,7 +444,7 @@
           }).then(function(){return c;});
         });
     } else {
-      promise=spAuth.signInWithEmailAndPassword(em,pw);
+      promise=auth.signInWithEmailAndPassword(em,pw);
     }
 
     promise.then(function(c){
@@ -444,7 +465,7 @@
   document.getElementById('sp-forgot').addEventListener('click',function(){
     var em=document.getElementById('sp-email').value.trim();
     if(!em){msg('sp-msg','Enter your email above first.');return;}
-    spAuth.sendPasswordResetEmail(em).then(function(){msg('sp-msg','Reset email sent — check your inbox.','ok');}).catch(function(){msg('sp-msg','Could not send reset email.');});
+    auth.sendPasswordResetEmail(em).then(function(){msg('sp-msg','Reset email sent — check your inbox.','ok');}).catch(function(){msg('sp-msg','Could not send reset email.');});
   });
 
 })();
