@@ -394,7 +394,7 @@
     auth.signInWithEmailAndPassword(em,pw)
       .then(function(c){
         splash(c.user.displayName||c.user.email);
-        window.location.href='/volunteer/portal/';
+        window.location.href='/volunteer/dashboard/';
       })
       .catch(function(err){
         dis('vol-btn',false,'Sign In to Volunteer Portal');
