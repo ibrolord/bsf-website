@@ -248,17 +248,26 @@
     .tier-card--gold .tier-card__perks li::before { background: var(--gold); }
     .tier-card--terra .tier-card__perks li::before { background: var(--terra); }
 
+    .tier-card__btns {
+      display: flex; gap: 0.5rem;
+    }
     .tier-card__btn {
-      display: block; width: 100%; text-align: center;
-      padding: 0.7rem 1rem; border-radius: 100px;
-      font-size: 0.82rem; font-weight: 600; letter-spacing: 0.02em;
+      flex: 1; text-align: center;
+      padding: 0.65rem 0.5rem; border-radius: 100px;
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.02em;
       border: 1.5px solid rgba(58,42,31,0.15);
       color: var(--brown); background: transparent;
       transition: all 0.3s var(--ease);
+      cursor: pointer; font-family: inherit;
     }
-    .tier-card:hover .tier-card__btn,
     .tier-card__btn:hover {
+      background: rgba(58,42,31,0.06);
+    }
+    .tier-card__btn--solid {
       background: var(--brown); color: var(--cream); border-color: var(--brown);
+    }
+    .tier-card__btn--solid:hover {
+      background: var(--green); border-color: var(--green);
     }
 
     /* INLINE AUTH ON TIER CARD */
@@ -285,15 +294,6 @@
     }
     .tier-card__auth .tc-or span { font-size: 0.7rem; color: rgba(58,42,31,0.3); }
     .tier-card__auth .tc-or div { flex: 1; height: 1px; background: rgba(58,42,31,0.08); }
-    .tier-card__auth .tc-tabs {
-      display: flex; background: rgba(58,42,31,0.06); border-radius: 6px; padding: 2px; margin-bottom: 0.75rem;
-    }
-    .tier-card__auth .tc-tab {
-      flex: 1; padding: 0.35rem; border-radius: 5px; border: none; cursor: pointer;
-      font-size: 0.72rem; font-weight: 600; font-family: inherit; transition: background 0.2s, color 0.2s;
-      background: none; color: rgba(58,42,31,0.4);
-    }
-    .tier-card__auth .tc-tab.active { background: var(--green); color: #fff; }
     .tier-card__auth .tc-field { margin-bottom: 0.5rem; }
     .tier-card__auth .tc-field label {
       display: block; font-size: 0.7rem; font-weight: 600; color: var(--brown); margin-bottom: 0.2rem;
@@ -734,7 +734,10 @@
             <li>Full receipt history</li>
             <li>Sponsor dashboard access</li>
           </ul>
-          <button class="tier-card__btn" type="button">Choose This Tier</button>
+          <div class="tier-card__btns">
+            <button class="tier-card__btn" type="button" data-action="signin">Sign In</button>
+            <button class="tier-card__btn tier-card__btn--solid" type="button" data-action="create">Create Account</button>
+          </div>
         </div>
         <!-- Grower -->
         <div class="tier-card tier-card--green" data-tier="grower" data-amount="10000" data-animate data-animate-delay="2">
@@ -748,7 +751,10 @@
             <li>Quarterly progress reports</li>
             <li>Program allocation choice</li>
           </ul>
-          <button class="tier-card__btn" type="button">Choose This Tier</button>
+          <div class="tier-card__btns">
+            <button class="tier-card__btn" type="button" data-action="signin">Sign In</button>
+            <button class="tier-card__btn tier-card__btn--solid" type="button" data-action="create">Create Account</button>
+          </div>
         </div>
         <!-- Elder -->
         <div class="tier-card tier-card--gold" data-tier="elder" data-amount="25000" data-animate data-animate-delay="3">
@@ -762,7 +768,10 @@
             <li>Named recognition on Ledger</li>
             <li>Annual impact certificate</li>
           </ul>
-          <button class="tier-card__btn" type="button">Choose This Tier</button>
+          <div class="tier-card__btns">
+            <button class="tier-card__btn" type="button" data-action="signin">Sign In</button>
+            <button class="tier-card__btn tier-card__btn--solid" type="button" data-action="create">Create Account</button>
+          </div>
         </div>
         <!-- Baobab -->
         <div class="tier-card tier-card--terra" data-tier="baobab" data-amount="50000" data-animate data-animate-delay="4">
@@ -776,7 +785,10 @@
             <li>Direct scholar connection stories</li>
             <li>Invitation to annual gatherings</li>
           </ul>
-          <button class="tier-card__btn" type="button">Choose This Tier</button>
+          <div class="tier-card__btns">
+            <button class="tier-card__btn" type="button" data-action="signin">Sign In</button>
+            <button class="tier-card__btn tier-card__btn--solid" type="button" data-action="create">Create Account</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1071,11 +1083,15 @@
       /* ── Tier card selection ── */
       var activeAuthCard = null;
 
-      function buildCardAuth(card) {
+      function buildCardAuth(card, mode) {
         var existing = card.querySelector('.tier-card__auth');
-        if (existing) return existing;
+        if (existing) {
+          applyCardMode(existing, mode);
+          return existing;
+        }
         var wrap = document.createElement('div');
         wrap.className = 'tier-card__auth';
+        var isCreate = (mode === 'create');
         wrap.innerHTML =
           '<div class="tier-card__auth-inner">' +
             '<button class="tc-google" type="button" onclick="event.stopPropagation();window.doSponsorGoogle()">' +
@@ -1083,60 +1099,57 @@
               'Continue with Google' +
             '</button>' +
             '<div class="tc-or"><div></div><span>or</span><div></div></div>' +
-            '<div class="tc-tabs">' +
-              '<button class="tc-tab active" type="button" data-mode="signin" onclick="event.stopPropagation();window.setCardAuthMode(this,\'signin\')">Sign In</button>' +
-              '<button class="tc-tab" type="button" data-mode="create" onclick="event.stopPropagation();window.setCardAuthMode(this,\'create\')">Create Account</button>' +
-            '</div>' +
-            '<div class="tc-field tc-name-field" style="display:none"><label>Full Name</label><input type="text" placeholder="Your full name" onclick="event.stopPropagation()"></div>' +
+            '<div class="tc-field tc-name-field" style="' + (isCreate ? '' : 'display:none') + '"><label>Full Name</label><input type="text" placeholder="Your full name" onclick="event.stopPropagation()"></div>' +
             '<div class="tc-field"><label>Email</label><input type="email" placeholder="you@example.com" onclick="event.stopPropagation()"></div>' +
             '<div class="tc-field"><label>Password</label><input type="password" placeholder="••••••••" onclick="event.stopPropagation()" onkeydown="if(event.key===\'Enter\'){event.stopPropagation();window.doCardAuth(this)}"></div>' +
             '<div class="tc-error"></div>' +
-            '<button class="tc-submit" type="button" onclick="event.stopPropagation();window.doCardAuth(this)">Sign In</button>' +
+            '<button class="tc-submit" type="button" onclick="event.stopPropagation();window.doCardAuth(this)">' + (isCreate ? 'Create Account' : 'Sign In') + '</button>' +
           '</div>';
         card.appendChild(wrap);
         return wrap;
       }
 
-      document.querySelectorAll('.tier-card').forEach(function(card) {
-        card.addEventListener('click', function(e) {
-          // Ignore clicks on auth form elements
-          if (e.target.closest('.tier-card__auth')) return;
-          var amt = card.getAttribute('data-amount');
-          if (!auth.currentUser) {
-            pendingTierAmt = amt;
-            // Close any other open card auth
-            if (activeAuthCard && activeAuthCard !== card) {
-              var prev = activeAuthCard.querySelector('.tier-card__auth');
-              if (prev) prev.classList.remove('is-open');
-            }
-            activeAuthCard = card;
-            var authEl = buildCardAuth(card);
-            authEl.classList.add('is-open');
-            var emailInput = authEl.querySelector('input[type="email"]');
-            if (emailInput) setTimeout(function() { emailInput.focus(); }, 150);
-          } else {
-            amountField.value = amt;
-            currencyField.value = 'NGN';
-            updateSummary();
-            document.getElementById('register').scrollIntoView({ behavior: 'smooth' });
-          }
-        });
-      });
-
-      window.setCardAuthMode = function(btn, mode) {
-        var card = btn.closest('.tier-card__auth');
-        var nameField = card.querySelector('.tc-name-field');
-        var submit = card.querySelector('.tc-submit');
-        var tabs = card.querySelectorAll('.tc-tab');
+      function applyCardMode(wrap, mode) {
         var isCreate = (mode === 'create');
         sponsorAuthMode = mode;
-        nameField.style.display = isCreate ? '' : 'none';
-        submit.textContent = isCreate ? 'Create Account' : 'Sign In';
-        tabs.forEach(function(t) {
-          t.classList.toggle('active', t.getAttribute('data-mode') === mode);
+        var nameField = wrap.querySelector('.tc-name-field');
+        var submit = wrap.querySelector('.tc-submit');
+        if (nameField) nameField.style.display = isCreate ? '' : 'none';
+        if (submit) submit.textContent = isCreate ? 'Create Account' : 'Sign In';
+        var errEl = wrap.querySelector('.tc-error');
+        if (errEl) errEl.textContent = '';
+      }
+
+      document.querySelectorAll('.tier-card').forEach(function(card) {
+        card.querySelectorAll('.tier-card__btn').forEach(function(btn) {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var amt = card.getAttribute('data-amount');
+            var action = btn.getAttribute('data-action') || 'signin';
+            if (!auth.currentUser) {
+              pendingTierAmt = amt;
+              sponsorAuthMode = action;
+              // Close any other open card auth
+              if (activeAuthCard && activeAuthCard !== card) {
+                var prev = activeAuthCard.querySelector('.tier-card__auth');
+                if (prev) prev.classList.remove('is-open');
+              }
+              activeAuthCard = card;
+              var authEl = buildCardAuth(card, action);
+              authEl.classList.add('is-open');
+              var focusField = action === 'create'
+                ? authEl.querySelector('.tc-name-field input')
+                : authEl.querySelector('input[type="email"]');
+              if (focusField) setTimeout(function() { focusField.focus(); }, 150);
+            } else {
+              amountField.value = amt;
+              currencyField.value = 'NGN';
+              updateSummary();
+              document.getElementById('register').scrollIntoView({ behavior: 'smooth' });
+            }
+          });
         });
-        card.querySelector('.tc-error').textContent = '';
-      };
+      });
 
       window.doCardAuth = function(btn) {
         var card = btn.closest('.tier-card__auth');
