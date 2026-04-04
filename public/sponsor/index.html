@@ -261,6 +261,56 @@
       background: var(--brown); color: var(--cream); border-color: var(--brown);
     }
 
+    /* INLINE AUTH ON TIER CARD */
+    .tier-card__auth {
+      max-height: 0; overflow: hidden; opacity: 0;
+      transition: max-height 0.45s var(--ease), opacity 0.3s ease, margin 0.3s ease;
+      margin-top: 0;
+    }
+    .tier-card__auth.is-open {
+      max-height: 420px; opacity: 1; margin-top: 1.25rem;
+    }
+    .tier-card__auth-inner {
+      border-top: 1px solid rgba(58,42,31,0.08); padding-top: 1.25rem;
+    }
+    .tier-card__auth .tc-google {
+      width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      padding: 0.6rem; border: 1.5px solid rgba(58,42,31,0.14); border-radius: 8px;
+      background: #fff; font-size: 0.8rem; font-weight: 600; cursor: pointer;
+      font-family: inherit; margin-bottom: 0.75rem; transition: border-color 0.2s;
+    }
+    .tier-card__auth .tc-google:hover { border-color: rgba(58,42,31,0.35); }
+    .tier-card__auth .tc-or {
+      display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.75rem;
+    }
+    .tier-card__auth .tc-or span { font-size: 0.7rem; color: rgba(58,42,31,0.3); }
+    .tier-card__auth .tc-or div { flex: 1; height: 1px; background: rgba(58,42,31,0.08); }
+    .tier-card__auth .tc-tabs {
+      display: flex; background: rgba(58,42,31,0.06); border-radius: 6px; padding: 2px; margin-bottom: 0.75rem;
+    }
+    .tier-card__auth .tc-tab {
+      flex: 1; padding: 0.35rem; border-radius: 5px; border: none; cursor: pointer;
+      font-size: 0.72rem; font-weight: 600; font-family: inherit; transition: background 0.2s, color 0.2s;
+      background: none; color: rgba(58,42,31,0.4);
+    }
+    .tier-card__auth .tc-tab.active { background: var(--green); color: #fff; }
+    .tier-card__auth .tc-field { margin-bottom: 0.5rem; }
+    .tier-card__auth .tc-field label {
+      display: block; font-size: 0.7rem; font-weight: 600; color: var(--brown); margin-bottom: 0.2rem;
+    }
+    .tier-card__auth .tc-field input {
+      width: 100%; padding: 0.5rem 0.7rem; border: 1.5px solid rgba(58,42,31,0.14);
+      border-radius: 6px; font-size: 0.82rem; font-family: inherit; outline: none; background: #fff;
+    }
+    .tier-card__auth .tc-field input:focus { border-color: var(--green); }
+    .tier-card__auth .tc-error {
+      color: #dc2626; font-size: 0.72rem; min-height: 1em; margin-bottom: 0.4rem;
+    }
+    .tier-card__auth .tc-submit {
+      width: 100%; padding: 0.65rem; background: var(--green); color: #fff; border: none;
+      border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; font-family: inherit;
+    }
+
     /* REGISTRATION SECTION */
     .register { background: var(--green-dark); color: var(--cream); }
     .register .eyebrow { color: var(--gold); }
@@ -522,10 +572,6 @@
     .footer__right { text-align: right; }
     @media (max-width: 600px) { .footer__layout { flex-direction: column; } .footer__right { text-align: left; } }
 
-    /* SPONSOR AUTH MODAL */
-    #sponsor-google-btn:hover { border-color: rgba(58,42,31,0.4) !important; background: #fafafa !important; }
-    #sponsor-auth-email:focus, #sponsor-auth-password:focus, #sponsor-auth-name:focus { border-color: var(--green) !important; }
-
     /* TOAST */
     .toast {
       position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px);
@@ -642,43 +688,6 @@
       <li><a href="/donate/">Give</a></li>
     </ul>
   </nav>
-
-  <!-- SPONSOR AUTH MODAL -->
-  <div id="sponsor-auth-modal" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(58,42,31,0.55);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1rem">
-    <div style="background:var(--cream);border-radius:16px;padding:2.5rem 2rem 2rem;width:400px;max-width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.25);position:relative">
-      <button onclick="window.closeSponsorAuth()" style="position:absolute;top:1rem;right:1.25rem;background:none;border:none;font-size:1.5rem;cursor:pointer;color:rgba(58,42,31,0.35);line-height:1">&times;</button>
-      <p style="font-family:var(--font-sans);font-size:0.68rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--terra);margin-bottom:0.6rem">SPONSOR ACCOUNT</p>
-      <h2 id="sponsor-auth-title" style="font-family:var(--font-serif);font-size:1.75rem;color:var(--brown);margin-bottom:0.3rem;line-height:1.1">Sign in to continue</h2>
-      <p style="font-size:0.83rem;color:rgba(58,42,31,0.5);margin-bottom:1.5rem">You'll be able to track your impact and manage your giving from your dashboard.</p>
-      <button id="sponsor-google-btn" onclick="window.doSponsorGoogle()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:0.65rem;padding:0.75rem;border:1.5px solid rgba(58,42,31,0.18);border-radius:8px;background:#fff;font-size:0.9rem;font-weight:600;cursor:pointer;margin-bottom:1.25rem;font-family:inherit;transition:border-color 0.2s">
-        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908C18.22 11.838 17.64 9.2 17.64 9.2Z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332Z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58Z"/></svg>
-        Continue with Google
-      </button>
-      <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem">
-        <div style="flex:1;height:1px;background:rgba(58,42,31,0.12)"></div>
-        <span style="font-size:0.75rem;color:rgba(58,42,31,0.35)">or</span>
-        <div style="flex:1;height:1px;background:rgba(58,42,31,0.12)"></div>
-      </div>
-      <div style="display:flex;background:rgba(58,42,31,0.07);border-radius:8px;padding:3px;margin-bottom:1.25rem">
-        <button id="sponsor-auth-tab-signin" onclick="window.setSponsorAuthMode('signin')" style="flex:1;padding:0.45rem;border-radius:6px;background:var(--green);color:#fff;font-size:0.8rem;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:background 0.2s,color 0.2s">Sign In</button>
-        <button id="sponsor-auth-tab-create" onclick="window.setSponsorAuthMode('create')" style="flex:1;padding:0.45rem;border-radius:6px;background:none;color:rgba(58,42,31,0.5);font-size:0.8rem;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:background 0.2s,color 0.2s">Create Account</button>
-      </div>
-      <div id="sponsor-auth-name-row" style="display:none;margin-bottom:0.75rem">
-        <label style="display:block;font-size:0.78rem;font-weight:600;color:var(--brown);margin-bottom:0.3rem">Full Name</label>
-        <input type="text" id="sponsor-auth-name" placeholder="Your full name" style="width:100%;padding:0.65rem 0.85rem;border:1.5px solid rgba(58,42,31,0.18);border-radius:8px;font-size:0.88rem;font-family:inherit;outline:none;background:#fff">
-      </div>
-      <div style="margin-bottom:0.75rem">
-        <label style="display:block;font-size:0.78rem;font-weight:600;color:var(--brown);margin-bottom:0.3rem">Email</label>
-        <input type="email" id="sponsor-auth-email" placeholder="you@example.com" style="width:100%;padding:0.65rem 0.85rem;border:1.5px solid rgba(58,42,31,0.18);border-radius:8px;font-size:0.88rem;font-family:inherit;outline:none;background:#fff">
-      </div>
-      <div style="margin-bottom:0.85rem">
-        <label style="display:block;font-size:0.78rem;font-weight:600;color:var(--brown);margin-bottom:0.3rem">Password</label>
-        <input type="password" id="sponsor-auth-password" placeholder="••••••••" style="width:100%;padding:0.65rem 0.85rem;border:1.5px solid rgba(58,42,31,0.18);border-radius:8px;font-size:0.88rem;font-family:inherit;outline:none;background:#fff" onkeydown="if(event.key==='Enter')window.doSponsorEmailAuth()">
-      </div>
-      <div id="sponsor-auth-error" style="color:#dc2626;font-size:0.8rem;margin-bottom:0.75rem;min-height:1.1em"></div>
-      <button id="sponsor-auth-submit" onclick="window.doSponsorEmailAuth()" style="width:100%;padding:0.85rem;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:inherit">Sign In</button>
-    </div>
-  </div>
 
   <!-- WELCOME-BACK BANNER -->
   <div class="welcome-banner" id="welcome-banner">
@@ -1059,12 +1068,51 @@
       });
 
       /* ── Tier card selection ── */
+      var activeAuthCard = null;
+
+      function buildCardAuth(card) {
+        var existing = card.querySelector('.tier-card__auth');
+        if (existing) return existing;
+        var wrap = document.createElement('div');
+        wrap.className = 'tier-card__auth';
+        wrap.innerHTML =
+          '<div class="tier-card__auth-inner">' +
+            '<button class="tc-google" type="button" onclick="event.stopPropagation();window.doSponsorGoogle()">' +
+              '<svg width="16" height="16" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908C18.22 11.838 17.64 9.2 17.64 9.2Z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332Z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58Z"/></svg>' +
+              'Continue with Google' +
+            '</button>' +
+            '<div class="tc-or"><div></div><span>or</span><div></div></div>' +
+            '<div class="tc-tabs">' +
+              '<button class="tc-tab active" type="button" data-mode="signin" onclick="event.stopPropagation();window.setCardAuthMode(this,\'signin\')">Sign In</button>' +
+              '<button class="tc-tab" type="button" data-mode="create" onclick="event.stopPropagation();window.setCardAuthMode(this,\'create\')">Create Account</button>' +
+            '</div>' +
+            '<div class="tc-field tc-name-field" style="display:none"><label>Full Name</label><input type="text" placeholder="Your full name" onclick="event.stopPropagation()"></div>' +
+            '<div class="tc-field"><label>Email</label><input type="email" placeholder="you@example.com" onclick="event.stopPropagation()"></div>' +
+            '<div class="tc-field"><label>Password</label><input type="password" placeholder="••••••••" onclick="event.stopPropagation()" onkeydown="if(event.key===\'Enter\'){event.stopPropagation();window.doCardAuth(this)}"></div>' +
+            '<div class="tc-error"></div>' +
+            '<button class="tc-submit" type="button" onclick="event.stopPropagation();window.doCardAuth(this)">Sign In</button>' +
+          '</div>';
+        card.appendChild(wrap);
+        return wrap;
+      }
+
       document.querySelectorAll('.tier-card').forEach(function(card) {
-        card.addEventListener('click', function() {
+        card.addEventListener('click', function(e) {
+          // Ignore clicks on auth form elements
+          if (e.target.closest('.tier-card__auth')) return;
           var amt = card.getAttribute('data-amount');
           if (!auth.currentUser) {
             pendingTierAmt = amt;
-            window.openSponsorAuth();
+            // Close any other open card auth
+            if (activeAuthCard && activeAuthCard !== card) {
+              var prev = activeAuthCard.querySelector('.tier-card__auth');
+              if (prev) prev.classList.remove('is-open');
+            }
+            activeAuthCard = card;
+            var authEl = buildCardAuth(card);
+            authEl.classList.add('is-open');
+            var emailInput = authEl.querySelector('input[type="email"]');
+            if (emailInput) setTimeout(function() { emailInput.focus(); }, 150);
           } else {
             amountField.value = amt;
             currencyField.value = 'NGN';
@@ -1073,6 +1121,41 @@
           }
         });
       });
+
+      window.setCardAuthMode = function(btn, mode) {
+        var card = btn.closest('.tier-card__auth');
+        var nameField = card.querySelector('.tc-name-field');
+        var submit = card.querySelector('.tc-submit');
+        var tabs = card.querySelectorAll('.tc-tab');
+        var isCreate = (mode === 'create');
+        sponsorAuthMode = mode;
+        nameField.style.display = isCreate ? '' : 'none';
+        submit.textContent = isCreate ? 'Create Account' : 'Sign In';
+        tabs.forEach(function(t) {
+          t.classList.toggle('active', t.getAttribute('data-mode') === mode);
+        });
+        card.querySelector('.tc-error').textContent = '';
+      };
+
+      window.doCardAuth = function(btn) {
+        var card = btn.closest('.tier-card__auth');
+        var email = card.querySelector('input[type="email"]').value.trim();
+        var password = card.querySelector('input[type="password"]').value;
+        var errEl = card.querySelector('.tc-error');
+        errEl.textContent = '';
+        if (!email || !password) { errEl.textContent = 'Email and password required.'; return; }
+        if (sponsorAuthMode === 'create') {
+          var name = card.querySelector('.tc-name-field input');
+          var nameVal = name ? name.value.trim() : '';
+          auth.createUserWithEmailAndPassword(email, password).then(function(cred) {
+            if (nameVal) return cred.user.updateProfile({ displayName: nameVal });
+          }).catch(function(err) { errEl.textContent = err.message; });
+        } else {
+          auth.signInWithEmailAndPassword(email, password).catch(function(err) {
+            errEl.textContent = err.message;
+          });
+        }
+      };
 
       /* ── Program pill selection ── */
       document.getElementById('program-pills').addEventListener('click', function(e) {
@@ -1320,11 +1403,15 @@
           if (user.displayName && !nameField.value) nameField.value = user.displayName;
           if (user.email && !emailField.value) emailField.value = user.email;
           updateSummary();
-          // Handle pending tier after sign-in
+          // Close inline card auth and scroll to form
+          if (activeAuthCard) {
+            var openAuth = activeAuthCard.querySelector('.tier-card__auth');
+            if (openAuth) openAuth.classList.remove('is-open');
+            activeAuthCard = null;
+          }
           if (pendingTierAmt) {
             var amt = pendingTierAmt;
             pendingTierAmt = null;
-            window.closeSponsorAuth();
             amountField.value = amt;
             currencyField.value = 'NGN';
             updateSummary();
@@ -1338,63 +1425,16 @@
         }
       });
 
-      /* ── Auth modal helpers ── */
-      window.openSponsorAuth = function() {
-        window.setSponsorAuthMode('signin');
-        var modal = document.getElementById('sponsor-auth-modal');
-        modal.style.display = 'flex';
-        setTimeout(function() {
-          var em = document.getElementById('sponsor-auth-email');
-          if (em) em.focus();
-        }, 120);
-      };
-
-      window.closeSponsorAuth = function() {
-        document.getElementById('sponsor-auth-modal').style.display = 'none';
-        document.getElementById('sponsor-auth-error').textContent = '';
-      };
-
-      window.setSponsorAuthMode = function(mode) {
-        sponsorAuthMode = mode;
-        var nameRow = document.getElementById('sponsor-auth-name-row');
-        var title = document.getElementById('sponsor-auth-title');
-        var sub = document.getElementById('sponsor-auth-submit');
-        var tabIn = document.getElementById('sponsor-auth-tab-signin');
-        var tabCr = document.getElementById('sponsor-auth-tab-create');
-        var isCreate = (mode === 'create');
-        nameRow.style.display = isCreate ? '' : 'none';
-        title.textContent = isCreate ? 'Create your account' : 'Sign in to continue';
-        sub.textContent = isCreate ? 'Create Account' : 'Sign In';
-        tabIn.style.background = isCreate ? 'none' : 'var(--green)';
-        tabIn.style.color = isCreate ? 'rgba(58,42,31,0.5)' : '#fff';
-        tabCr.style.background = isCreate ? 'var(--green)' : 'none';
-        tabCr.style.color = isCreate ? '#fff' : 'rgba(58,42,31,0.5)';
-        document.getElementById('sponsor-auth-error').textContent = '';
-      };
-
+      /* ── Google auth (used by inline card auth) ── */
       window.doSponsorGoogle = function() {
         var provider = new firebase.auth.GoogleAuthProvider();
         auth.signInWithPopup(provider).catch(function(err) {
-          document.getElementById('sponsor-auth-error').textContent = err.message;
+          // Show error on the active card if any
+          if (activeAuthCard) {
+            var errEl = activeAuthCard.querySelector('.tc-error');
+            if (errEl) errEl.textContent = err.message;
+          }
         });
-      };
-
-      window.doSponsorEmailAuth = function() {
-        var email = document.getElementById('sponsor-auth-email').value.trim();
-        var password = document.getElementById('sponsor-auth-password').value;
-        var errEl = document.getElementById('sponsor-auth-error');
-        errEl.textContent = '';
-        if (!email || !password) { errEl.textContent = 'Please enter email and password.'; return; }
-        if (sponsorAuthMode === 'create') {
-          var name = (document.getElementById('sponsor-auth-name').value || '').trim();
-          auth.createUserWithEmailAndPassword(email, password).then(function(cred) {
-            if (name) return cred.user.updateProfile({ displayName: name });
-          }).catch(function(err) { errEl.textContent = err.message; });
-        } else {
-          auth.signInWithEmailAndPassword(email, password).catch(function(err) {
-            errEl.textContent = err.message;
-          });
-        }
       };
 
       window.sponsorSignOut = function() {
