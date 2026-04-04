@@ -706,7 +706,7 @@
             <li><a href="/donations/">Donations</a></li>
             <li><a href="/donate/">Give</a></li>
             <li><a href="/sponsor/">Sponsor</a></li>
-            <li><a href="mailto:princebolajibreeze@gmail.com">Email</a></li>
+            <li><a href="mailto:hello@thebigsisterfoundation.org">Email</a></li>
           </ul>
           <p class="footer__copy">&copy; 2026 Big Sister Foundation. All rights reserved.</p>
         </div>
@@ -1066,7 +1066,7 @@
         var options = [
           { label: 'Copy link', icon: 'link', action: function() { copyToClipboard(pageUrl); showToast('Link copied!'); } },
           { label: 'Share on X', icon: 'x', action: function() { window.open('https://x.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(pageUrl), '_blank'); } },
-          { label: 'Share on WhatsApp', icon: 'wa', action: function() { window.open('https://wa.me/?text=' + encodeURIComponent(text + ' ' + pageUrl), '_blank'); } },
+          { label: 'Share via Email', icon: 'email', action: function() { window.open('mailto:?subject=' + encodeURIComponent(text) + '&body=' + encodeURIComponent(text + ' ' + pageUrl)); } },
           { label: 'Share on LinkedIn', icon: 'li', action: function() { window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(pageUrl), '_blank'); } },
           { label: 'Share on Facebook', icon: 'fb', action: function() { window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(pageUrl), '_blank'); } }
         ];

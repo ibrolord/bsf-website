@@ -760,118 +760,150 @@
     }
 
     /* === GROWTH STAGE ELEMENTS === */
-    /* Seeds: small teardrop shapes at the very bottom */
+
+    /* Seeds: warm brown teardrops pulse gently */
     .tree-seed {
       fill: var(--brown);
       opacity: 0;
       transform-origin: center;
-      transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
-      transform: scale(0);
+      transition: opacity 0.8s var(--ease), transform 1s var(--ease);
+      transform: scale(0) translateY(8px);
     }
     .tree-seed.is-shown {
-      opacity: 0.25;
-      transform: scale(1);
+      opacity: 0.4;
+      transform: scale(1) translateY(0);
+      animation: seedPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes seedPulse {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 0.55; transform: scale(1.15); }
     }
 
-    /* Sprout: tiny stem + two cotyledon leaves */
+    /* Sprout stem unfurls upward with glow */
     .tree-sprout-stem {
       fill: none;
-      stroke: #2D5E40;
-      stroke-width: 2;
+      stroke: var(--green);
+      stroke-width: 2.5;
       stroke-linecap: round;
       opacity: 0;
-      transition: opacity 0.8s var(--ease);
+      transition: opacity 1.2s var(--ease);
+      filter: drop-shadow(0 0 3px rgba(45,94,64,0.3));
     }
-    .tree-sprout-stem.is-shown { opacity: 0.15; }
+    .tree-sprout-stem.is-shown { opacity: 0.35; }
 
+    /* Cotyledon leaves unfurl with gentle sway */
     .tree-sprout-leaf {
-      fill: #2D5E40;
+      fill: var(--green);
       opacity: 0;
       transform-origin: center bottom;
-      transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
-      transform: scale(0) rotate(0deg);
+      transition: opacity 0.8s var(--ease), transform 1.2s var(--ease);
+      transform: scale(0) rotate(-20deg);
     }
     .tree-sprout-leaf.is-shown {
-      opacity: 0.2;
-      transform: scale(1) rotate(0deg);
+      opacity: 0.35;
+      transform: scale(1.1) rotate(0deg);
+      animation: leafSway 4s ease-in-out infinite;
+    }
+    .tree-sprout-leaf:nth-child(2).is-shown { animation-delay: -2s; }
+    @keyframes leafSway {
+      0%, 100% { transform: scale(1.1) rotate(0deg); }
+      25% { transform: scale(1.1) rotate(3deg); }
+      75% { transform: scale(1.1) rotate(-3deg); }
     }
 
-    /* Thin stem growing upward */
+    /* Thin stem: organic stroke */
     .tree-stem {
       fill: none;
       stroke: var(--brown);
-      stroke-width: 1.5;
+      stroke-width: 2;
       stroke-linecap: round;
-      opacity: 0.2;
+      opacity: 0.3;
+      filter: drop-shadow(0 0 2px rgba(58,42,31,0.15));
     }
 
-    /* Trunk: thickens as it grows */
+    /* Trunk: warm brown with subtle glow */
     .tree-trunk {
       fill: none;
       stroke: var(--brown);
       stroke-linecap: round;
       stroke-linejoin: round;
-      opacity: 0.2;
-      stroke-width: 3;
+      opacity: 0.3;
+      stroke-width: 4;
+      filter: drop-shadow(0 0 4px rgba(58,42,31,0.12));
     }
 
-    /* Roots spread from base */
+    /* Roots spread with earthy warmth */
     .tree-root {
       fill: none;
       stroke: var(--brown);
       stroke-linecap: round;
-      stroke-width: 1.5;
-      opacity: 0.15;
+      stroke-width: 2;
+      opacity: 0.22;
     }
 
-    /* Branches fork out from trunk */
+    /* Branches: green-tinted organic strokes */
     .tree-branch {
       fill: none;
-      stroke: #2D5E40;
+      stroke: var(--green);
       stroke-linecap: round;
       stroke-linejoin: round;
-      stroke-width: 2;
-      opacity: 0.18;
+      stroke-width: 2.5;
+      opacity: 0.25;
+      filter: drop-shadow(0 0 3px rgba(45,94,64,0.15));
     }
 
-    /* Small leaf buds on branches */
+    /* Leaf buds pop with spring-like bounce */
     .tree-bud {
-      fill: #2D5E40;
+      fill: var(--sage);
       opacity: 0;
-      transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+      transition: opacity 0.6s var(--ease), transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
       transform-origin: center;
       transform: scale(0);
     }
     .tree-bud.is-shown {
-      opacity: 0.18;
-      transform: scale(1);
+      opacity: 0.35;
+      transform: scale(1.2);
+      animation: budBreathe 3s ease-in-out infinite;
+    }
+    @keyframes budBreathe {
+      0%, 100% { opacity: 0.35; transform: scale(1.2); }
+      50% { opacity: 0.45; transform: scale(1.35); }
     }
 
-    /* Full canopy leaves */
+    /* Full canopy leaves: lush with gentle sway */
     .tree-leaf {
-      fill: #2D5E40;
+      fill: var(--green);
       opacity: 0;
-      transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+      transition: opacity 1s var(--ease), transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
       transform-origin: center;
-      transform: scale(0.5);
+      transform: scale(0.3) rotate(-5deg);
+      filter: drop-shadow(0 2px 6px rgba(45,94,64,0.2));
     }
     .tree-leaf.is-shown {
-      opacity: 0.15;
-      transform: scale(1);
+      opacity: 0.22;
+      transform: scale(1) rotate(0deg);
+      animation: canopySway 6s ease-in-out infinite;
+    }
+    .tree-leaf:nth-child(odd).is-shown { animation-delay: -3s; }
+    .tree-leaf:nth-child(3n).is-shown { animation-duration: 7s; }
+    @keyframes canopySway {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      33% { transform: scale(1.02) rotate(1.5deg); }
+      66% { transform: scale(0.98) rotate(-1.5deg); }
     }
 
     /* Hide on mobile */
     @media (max-width: 768px) {
       .tree-bg { display: none; }
     }
-    /* Reduced motion: show tree fully drawn */
+    /* Reduced motion: show tree fully, no animation */
     @media (prefers-reduced-motion: reduce) {
-      .tree-seed, .tree-sprout-stem, .tree-sprout-leaf { opacity: 0.2 !important; transform: scale(1) !important; }
+      .tree-seed, .tree-sprout-stem, .tree-sprout-leaf { opacity: 0.35 !important; transform: scale(1) !important; animation: none !important; }
       .tree-stem, .tree-trunk, .tree-root, .tree-branch {
         stroke-dashoffset: 0 !important;
       }
-      .tree-bud { opacity: 0.18 !important; transform: scale(1) !important; }
-      .tree-leaf { opacity: 0.15 !important; transform: scale(1) !important; }
+      .tree-bud { opacity: 0.35 !important; transform: scale(1) !important; animation: none !important; }
+      .tree-leaf { opacity: 0.22 !important; transform: scale(1) !important; animation: none !important; }
     }
       /* =============================================
        MOBILE HAMBURGER MENU
@@ -1074,7 +1106,7 @@
     <div class="hero__gradient"></div>
 
     <div class="hero__content">
-      <p class="eyebrow hero__eyebrow">Empowering Children in Lagos</p>
+      <p class="eyebrow hero__eyebrow">For the Children of Lagos</p>
       <h1 class="hero__heading">Every child we reach becomes someone who <em>raises their community</em></h1>
       <p class="hero__sub">Big Sister Foundation invests in vulnerable children in Lagos — not as recipients, but as the future leaders who will lift the communities around them.</p>
       <p class="hero__tagline">Rooted &middot; Present &middot; Protective</p>

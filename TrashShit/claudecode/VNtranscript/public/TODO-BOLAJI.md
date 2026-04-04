@@ -81,13 +81,21 @@ match /goals/{goalId} {
 
 ---
 
-## 7. Email Address
-**Status:** Using `princebolajibreeze@gmail.com` across site
-**Why:** May want a dedicated BSF email
-**Steps:**
-1. Decide if you want a branded email (e.g. give@bigsisterfoundation.org)
-2. If yes, set up via Google Workspace or Zoho Mail (free for nonprofits)
-3. Tell Claude to update across all pages
+## 7. Set Up Email Routing for thebigsisterfoundation.org
+**Status:** All pages updated to use BSF emails. Need to CREATE the actual mailboxes.
+**Emails configured on site:** `hello@thebigsisterfoundation.org` (general) + `give@thebigsisterfoundation.org` (donations)
+**Quickest setup — Cloudflare Email Routing (FREE):**
+1. Add thebigsisterfoundation.org to Cloudflare (free plan)
+2. Go to Email → Email Routing → Enable
+3. Add: `hello@` → forwards to princebolajibreeze@gmail.com
+4. Add: `give@` → forwards to princebolajibreeze@gmail.com
+5. Done — emails arrive in your Gmail, donors see the professional address
+
+**Alternative — Zoho Mail (FREE, up to 5 users, own inbox):**
+1. Go to zoho.com/mail → Sign up → Add domain thebigsisterfoundation.org
+2. Verify domain via DNS TXT record
+3. Create mailboxes: hello@, give@
+4. Access at mail.zoho.com
 
 ---
 
@@ -102,11 +110,11 @@ match /goals/{goalId} {
 ---
 
 ## Priority Order
-1. **WhatsApp number** (5 seconds — just tell Claude)
-2. **Bank details** (5 seconds — just tell Claude)
-3. **Firebase rules** (2 minutes in console)
-4. **Trust Wallet** (2 minutes on phone)
-5. **Paystack verification** (5 minutes + 24-48hr wait)
-6. **PayPal business** (10 minutes + verification wait)
-7. **Deploy** (tell Claude when ready)
-8. **Email** (optional, can do later)
+1. ~~**WhatsApp → Email**~~ DONE — all pages use hello@ and give@ now
+2. **Email routing** (5 min — Cloudflare free, so emails actually arrive)
+3. **Bank details** (5 seconds — just tell Claude)
+4. **Firebase rules** (2 minutes in console)
+5. **Trust Wallet** (2 minutes on phone)
+6. **Paystack verification** (5 min setup + 24-48hr wait)
+7. **PayPal business** (10 min + verification wait)
+8. **Deploy** (tell Claude when ready)

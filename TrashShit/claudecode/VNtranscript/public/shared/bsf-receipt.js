@@ -243,7 +243,7 @@ window.BSFReceipt = (function () {
       '    <div class="receipt-header">',
       '      <div class="logo">' + LOGO_SVG + '</div>',
       '      <h1>Big Sister Foundation</h1>',
-      '      <div class="org-name">Empowering Girls Through Education &amp; Mentorship</div>',
+      '      <div class="org-name">Rooted. Present. Protective.</div>',
       '    </div>',
       '',
       '    <!-- Title band -->',
