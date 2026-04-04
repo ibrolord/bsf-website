@@ -292,12 +292,17 @@ tbody tr:hover{background:var(--gray-50)}
   .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:99}.sidebar-backdrop.open{display:block}
   .welcome-banner{padding:20px}
   .welcome-banner h2{font-size:20px}
+  .tier-display{flex-direction:column;align-items:flex-start}
+  .tier-progress{max-width:100%;min-width:0}
+  .shoutout-form-row{flex-direction:column}
 }
 @media(max-width:480px){
   .cards-row{grid-template-columns:repeat(2,1fr)}
   .main-content{padding:16px}
   .topbar{padding:0 16px}
   .panel-header{padding:12px 16px}
+  .shoutout-card-header{flex-direction:column;align-items:flex-start}
+  .shoutout-footer{flex-direction:column;align-items:flex-start}
 }
 
 /* Ledger vote progress */
@@ -827,9 +832,7 @@ auth.onAuthStateChanged(function(user) {
     document.getElementById('login-screen').style.display = 'none';
     loadVolunteerProfile(user.email.toLowerCase());
   } else {
-    document.getElementById('login-screen').style.display = 'flex';
-    document.getElementById('vol-app').style.display = 'none';
-    document.getElementById('not-registered-screen').style.display = 'none';
+    window.location.href = '/signin/';
   }
 });
 
