@@ -786,9 +786,11 @@
   </style>
 </head>
 <body>
+  <!-- Redirect gate: show loading until Firebase confirms auth or redirects to /signin/ -->
+  <div id="loading-gate" style="position:fixed;inset:0;z-index:10000;background:var(--cream,#FFF8F0);display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;color:#3A2A1F;font-size:.95rem">Loading…</div>
 
-  <!-- AUTH OVERLAY -->
-  <div id="auth-overlay" style="display:flex;position:fixed;inset:0;z-index:9999;background:var(--cream);align-items:center;justify-content:center;padding:1rem">
+  <!-- AUTH OVERLAY (hidden — /signin/ handles login now) -->
+  <div id="auth-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:var(--cream);align-items:center;justify-content:center;padding:1rem">
     <div style="background:white;padding:2.5rem 2rem 2rem;border-radius:16px;width:400px;max-width:100%;box-shadow:0 8px 40px rgba(0,0,0,.12);text-align:center">
       <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--green);font-weight:700;margin-bottom:16px">Sponsor Dashboard</div>
       <h1 id="dash-auth-title" style="font-family:var(--font-serif);font-size:1.75rem;color:var(--brown);margin-bottom:6px;line-height:1.1">Welcome Back</h1>
@@ -1278,15 +1280,15 @@
       firebase.auth().signOut().then(function() {
         localStorage.removeItem('bsf_sponsor_profile');
         localStorage.removeItem('bsf_transactions');
-        window.location.reload();
+        window.location.href = '/signin/';
       });
     };
     var hasBooted = false;
     firebase.auth().onAuthStateChanged(function(user) {
-      var overlay = document.getElementById('auth-overlay');
+      var gate = document.getElementById('loading-gate');
       var signoutBtn = document.getElementById('nav-signout');
       if (user) {
-        overlay.style.display = 'none';
+        if (gate) gate.style.display = 'none';
         if (signoutBtn) signoutBtn.style.display = '';
         // Load sponsor data from Firestore by email, then boot
         if (db && user.email) {
@@ -1304,9 +1306,8 @@
           if (!hasBooted) { hasBooted = true; boot(); }
         }
       } else {
-        // Show auth overlay (not signed in)
-        overlay.style.display = 'flex';
-        if (signoutBtn) signoutBtn.style.display = 'none';
+        // Not signed in — redirect to unified sign-in
+        window.location.href = '/signin/';
       }
     });
 
