@@ -652,6 +652,14 @@ tbody tr:hover{background:var(--gray-50)}
           <div id="approvals-vol-empty" class="no-data" style="display:none">No pending applications.</div>
         </div>
       </div>
+      <!-- Blog Post Approvals -->
+      <div class="panel" id="approvals-blog-panel" style="display:none">
+        <div class="panel-header"><h2>Pending Blog Posts</h2></div>
+        <div class="panel-body padded">
+          <div id="approvals-blog-list"></div>
+          <div id="approvals-blog-empty" class="no-data" style="display:none">No pending blog posts.</div>
+        </div>
+      </div>
       <div id="approvals-none" class="no-data">No pending approvals to review, or you don't have approval permissions.</div>
     </section>
 
@@ -1937,7 +1945,105 @@ function loadApprovals() {
     loadVolunteerRequests();
   }
 
+  var hasBlog = hasPermission('blog.approve') || hasPermission('blog.edit_any');
+  if (hasBlog) {
+    anyPanel = true;
+    document.getElementById('approvals-blog-panel').style.display = 'block';
+    loadPendingBlogPosts();
+  }
+
   if (anyPanel) document.getElementById('approvals-none').style.display = 'none';
+}
+
+function loadPendingBlogPosts() {
+  var el = document.getElementById('approvals-blog-list');
+  var empty = document.getElementById('approvals-blog-empty');
+
+  db.collection('blog_posts').where('status', '==', 'pending').get()
+    .then(function(snap) {
+      if (snap.empty) { empty.style.display = 'block'; el.textContent = ''; return; }
+      empty.style.display = 'none';
+      while (el.firstChild) el.removeChild(el.firstChild);
+
+      snap.forEach(function(doc) {
+        var d = doc.data();
+        var card = document.createElement('div');
+        card.className = 'approval-card';
+
+        var header = document.createElement('div');
+        header.className = 'approval-card-header';
+        var title = document.createElement('div');
+        title.className = 'approval-card-title';
+        title.textContent = d.title || 'Untitled Post';
+        header.appendChild(title);
+        var meta = document.createElement('div');
+        meta.style.cssText = 'font-size:12px;color:var(--gray-400)';
+        meta.textContent = 'by ' + (d.submittedBy || d.author || 'Unknown');
+        if (d.submittedAt) {
+          var dt = d.submittedAt.toDate ? d.submittedAt.toDate() : new Date(d.submittedAt);
+          meta.textContent += ' · ' + formatDate(dt);
+        }
+        header.appendChild(meta);
+        card.appendChild(header);
+
+        var body = document.createElement('div');
+        body.className = 'approval-card-body';
+        body.textContent = (d.excerpt || (d.body || '').substring(0, 150)) + '...';
+        card.appendChild(body);
+
+        if (d.category) {
+          var catBadge = document.createElement('span');
+          catBadge.className = 'badge';
+          catBadge.style.cssText = 'font-size:11px;margin-bottom:8px;display:inline-block';
+          catBadge.textContent = d.category;
+          card.insertBefore(catBadge, body);
+        }
+
+        var actions = document.createElement('div');
+        actions.className = 'approval-actions';
+
+        var approveBtn = document.createElement('button');
+        approveBtn.className = 'btn btn-sm';
+        approveBtn.style.cssText = 'background:var(--green);color:#fff;padding:6px 16px;font-size:13px;border-radius:6px;border:none;cursor:pointer';
+        approveBtn.textContent = 'Approve';
+        approveBtn.onclick = function() {
+          db.collection('blog_posts').doc(doc.id).update({
+            status: 'approved',
+            approvedBy: currentUser ? currentUser.email : '',
+            approvedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }).then(function() {
+            showToast('Blog post approved!');
+            card.style.opacity = '0.5';
+            approveBtn.disabled = true;
+            rejectBtn.disabled = true;
+            loadPendingBlogPosts();
+          }).catch(function(e) { showToast(e.message, 'error'); });
+        };
+        actions.appendChild(approveBtn);
+
+        var rejectBtn = document.createElement('button');
+        rejectBtn.className = 'btn btn-sm';
+        rejectBtn.style.cssText = 'background:var(--red,#dc2626);color:#fff;padding:6px 16px;font-size:13px;border-radius:6px;border:none;cursor:pointer';
+        rejectBtn.textContent = 'Reject';
+        rejectBtn.onclick = function() {
+          var reason = prompt('Rejection reason (optional):');
+          db.collection('blog_posts').doc(doc.id).update({
+            status: 'rejected',
+            rejectedBy: currentUser ? currentUser.email : '',
+            rejectedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            rejectionReason: reason || ''
+          }).then(function() {
+            showToast('Blog post rejected.');
+            card.remove();
+            loadPendingBlogPosts();
+          }).catch(function(e) { showToast(e.message, 'error'); });
+        };
+        actions.appendChild(rejectBtn);
+        card.appendChild(actions);
+        el.appendChild(card);
+      });
+    })
+    .catch(function(e) { console.warn('Blog approvals error:', e); empty.style.display = 'block'; });
 }
 
 function loadLedgerRequests() {
