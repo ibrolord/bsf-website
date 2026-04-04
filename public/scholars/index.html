@@ -4169,6 +4169,306 @@
     }
   });
 })();
+
+// ── Communities View ──
+(function () {
+  var commGrid = document.getElementById('communities-grid');
+  var commSearch = document.getElementById('community-search');
+  var commArea = 'all';
+  var commQuery = '';
+  var commData = [];
+
+  var demoCommunities = [
+    {
+      id: 'makoko', name: 'Makoko Community', location: 'Yaba, Lagos Mainland', area: 'mainland',
+      description: 'One of Lagos\u2019s most resilient waterside communities. BSF supports children here with education, food security, and vocational training for older youth.',
+      scholarCount: 28, totalInvestment: 4200000,
+      schools: [
+        { name: 'Makoko Community Primary School', type: 'Primary', scholars: 15, contact: 'Mrs. Adebayo' },
+        { name: 'Whanyinna Nursery & Primary', type: 'Nursery/Primary', scholars: 8, contact: 'Mr. Ogunlade' },
+        { name: 'Makoko Junior Secondary', type: 'Junior Secondary', scholars: 5, contact: 'Mrs. Fashola' }
+      ],
+      trades: [
+        { name: 'Boat Building & Repair', icon: '\u2693', desc: 'Traditional craft training for youth aged 15-19', enrolled: 6, graduates: 12 },
+        { name: 'Fish Smoking & Processing', icon: '\uD83C\uDF63', desc: 'Value-add skills for the local fishing economy', enrolled: 8, graduates: 15 },
+        { name: 'Tailoring & Fashion', icon: '\uD83E\uDDF5', desc: 'Sewing, design, and small business skills', enrolled: 10, graduates: 8 }
+      ],
+      events: [
+        { title: 'Saturday Tutoring Session', date: '2026-04-12', type: 'Education', location: 'Community Center' },
+        { title: 'Health Screening Day', date: '2026-04-20', type: 'Healthcare', location: 'Makoko Clinic' }
+      ]
+    },
+    {
+      id: 'ajegunle', name: 'Ajegunle Community', location: 'Ajeromi-Ifelodun, Lagos Mainland', area: 'mainland',
+      description: 'A densely populated community with incredible potential. BSF focuses on education access, after-school programs, and skills training for out-of-school youth.',
+      scholarCount: 22, totalInvestment: 3100000,
+      schools: [
+        { name: 'Ajeromi Community School', type: 'Primary', scholars: 12, contact: 'Mr. Nwachukwu' },
+        { name: 'Hope Academy Ajegunle', type: 'Secondary', scholars: 10, contact: 'Mrs. Igwe' }
+      ],
+      trades: [
+        { name: 'Barbing & Hairstyling', icon: '\u2702', desc: 'Professional grooming skills with business training', enrolled: 7, graduates: 20 },
+        { name: 'Mobile Phone Repair', icon: '\uD83D\uDCF1', desc: 'Electronics repair and entrepreneurship', enrolled: 5, graduates: 10 },
+        { name: 'Catering & Baking', icon: '\uD83C\uDF70', desc: 'Culinary skills for events and small business', enrolled: 9, graduates: 6 }
+      ],
+      events: [
+        { title: 'After-School Reading Club', date: '2026-04-08', type: 'Education', location: 'Hope Academy' }
+      ]
+    },
+    {
+      id: 'iwaya', name: 'Iwaya Community', location: 'Yaba, Lagos Mainland', area: 'mainland',
+      description: 'Neighboring Makoko, Iwaya has a growing creative energy. BSF supports education and connects youth with mentors in tech and the arts.',
+      scholarCount: 14, totalInvestment: 1900000,
+      schools: [
+        { name: 'Iwaya Community Primary', type: 'Primary', scholars: 9, contact: 'Mrs. Akinwunmi' },
+        { name: 'St. Jude\u2019s Grammar School', type: 'Secondary', scholars: 5, contact: 'Mr. Ojo' }
+      ],
+      trades: [
+        { name: 'Digital Literacy & Coding', icon: '\uD83D\uDCBB', desc: 'Basic computing, web design, and intro to coding', enrolled: 12, graduates: 4 },
+        { name: 'Art & Craft Production', icon: '\uD83C\uDFA8', desc: 'Visual arts, crafts, and selling on local markets', enrolled: 6, graduates: 3 }
+      ],
+      events: [
+        { title: 'Coding Saturday Workshop', date: '2026-04-19', type: 'Education', location: 'Tech Hub Iwaya' }
+      ]
+    },
+    {
+      id: 'ajah', name: 'Ajah/Sangotedo Community', location: 'Eti-Osa, Lagos Island', area: 'island',
+      description: 'A rapidly growing suburban area. BSF supports peri-urban schools and runs weekend programs for children of market traders.',
+      scholarCount: 11, totalInvestment: 1500000,
+      schools: [
+        { name: 'Sangotedo Community School', type: 'Primary/Secondary', scholars: 7, contact: 'Mr. Balogun' },
+        { name: 'Graceland Academy Ajah', type: 'Primary', scholars: 4, contact: 'Mrs. Chukwuma' }
+      ],
+      trades: [
+        { name: 'Solar Panel Installation', icon: '\u2600', desc: 'Renewable energy skills for the growing housing market', enrolled: 4, graduates: 2 },
+        { name: 'Plumbing & Pipefitting', icon: '\uD83D\uDD27', desc: 'Essential trade skills for construction', enrolled: 3, graduates: 0 }
+      ],
+      events: [
+        { title: 'Weekend Mentorship Circle', date: '2026-04-13', type: 'Mentorship', location: 'Sangotedo Community School' }
+      ]
+    },
+    {
+      id: 'ikorodu', name: 'Ikorodu Community', location: 'Ikorodu, Lagos Suburban', area: 'suburban',
+      description: 'A historic town with deep cultural roots. BSF works with local artisans to create apprenticeship pipelines for young people.',
+      scholarCount: 9, totalInvestment: 1100000,
+      schools: [
+        { name: 'Ikorodu Grammar School', type: 'Secondary', scholars: 5, contact: 'Mr. Ayoola' },
+        { name: 'Little Stars Nursery', type: 'Nursery', scholars: 4, contact: 'Mrs. Bakare' }
+      ],
+      trades: [
+        { name: 'Adire Textile Dyeing', icon: '\uD83C\uDFA8', desc: 'Traditional Yoruba textile art and modern fashion', enrolled: 8, graduates: 14 },
+        { name: 'Carpentry & Woodwork', icon: '\uD83E\uDE93', desc: 'Furniture making and construction woodwork', enrolled: 5, graduates: 7 }
+      ],
+      events: [
+        { title: 'Adire Workshop Open Day', date: '2026-04-26', type: 'Culture', location: 'Ikorodu Artisan Market' }
+      ]
+    }
+  ];
+
+  function esc(s) { var d = document.createElement('div'); d.appendChild(document.createTextNode(s || '')); return d.innerHTML; }
+
+  function fmtNaira(n) {
+    if (!n) return '\u20A60';
+    if (n >= 1000000) return '\u20A6' + (n / 1000000).toFixed(1) + 'M';
+    if (n >= 1000) return '\u20A6' + Math.round(n / 1000) + 'K';
+    return '\u20A6' + n;
+  }
+
+  function loadCommunities() {
+    firebase.firestore().collection('communities').get().then(function (snap) {
+      if (snap.empty) { commData = demoCommunities.slice(); renderComm(); return; }
+      commData = [];
+      snap.forEach(function (d) { var c = d.data(); c.id = d.id; commData.push(c); });
+      renderComm();
+    }).catch(function () { commData = demoCommunities.slice(); renderComm(); });
+  }
+
+  function renderComm() {
+    if (!commGrid) return;
+    var filtered = commData.slice();
+    if (commArea !== 'all') filtered = filtered.filter(function (c) { return c.area === commArea; });
+    if (commQuery) {
+      var q = commQuery.toLowerCase();
+      filtered = filtered.filter(function (c) {
+        var txt = (c.name + ' ' + c.location + ' ' + c.description).toLowerCase();
+        var sm = (c.schools || []).some(function (s) { return s.name.toLowerCase().indexOf(q) !== -1; });
+        var tm = (c.trades || []).some(function (t) { return t.name.toLowerCase().indexOf(q) !== -1; });
+        return txt.indexOf(q) !== -1 || sm || tm;
+      });
+    }
+
+    if (filtered.length === 0) {
+      commGrid.innerHTML = '<div style="text-align:center;padding:3rem;color:rgba(58,42,31,0.4);">No communities match your search.</div>';
+      return;
+    }
+
+    var html = '';
+    filtered.forEach(function (c) {
+      var sc = (c.schools || []).length, tc = (c.trades || []).length, ec = (c.events || []).length;
+
+      html += '<div class="community-card-wrap" style="background:#fff;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,0.04);overflow:hidden;margin-bottom:1.25rem;">';
+
+      // Header
+      html += '<div class="comm-header" style="padding:1.25rem 1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:space-between;">';
+      html += '<div style="display:flex;align-items:center;gap:1rem;">';
+      html += '<div style="width:48px;height:48px;border-radius:12px;background:rgba(45,94,64,0.08);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">&#127966;</div>';
+      html += '<div><div style="font-family:var(--font-serif);font-size:1.15rem;font-weight:600;">' + esc(c.name) + '</div>';
+      html += '<div style="font-size:0.78rem;color:rgba(58,42,31,0.5);">' + esc(c.location) + '</div></div>';
+      html += '</div>';
+      html += '<div style="display:flex;align-items:center;gap:0.75rem;">';
+      html += '<div style="display:flex;gap:0.3rem;flex-wrap:wrap;">';
+      html += '<span style="font-size:0.6rem;font-weight:700;padding:0.15rem 0.45rem;border-radius:100px;background:rgba(45,94,64,0.08);color:var(--green);">' + c.scholarCount + ' scholars</span>';
+      html += '<span style="font-size:0.6rem;font-weight:700;padding:0.15rem 0.45rem;border-radius:100px;background:rgba(194,115,76,0.08);color:var(--terra);">' + sc + ' schools</span>';
+      html += '<span style="font-size:0.6rem;font-weight:700;padding:0.15rem 0.45rem;border-radius:100px;background:rgba(212,169,106,0.1);color:#8a6d2f;">' + tc + ' trades</span>';
+      html += '</div>';
+      html += '<div class="comm-toggle" style="width:28px;height:28px;border-radius:50%;background:rgba(58,42,31,0.06);display:flex;align-items:center;justify-content:center;font-size:0.8rem;transition:transform 0.3s;">&#9660;</div>';
+      html += '</div></div>';
+
+      // Body
+      html += '<div class="comm-body" style="max-height:0;overflow:hidden;transition:max-height 0.5s cubic-bezier(0.16,1,0.3,1);">';
+      html += '<div style="padding:0 1.5rem 1.5rem;">';
+      html += '<p style="font-size:0.9rem;color:rgba(58,42,31,0.65);line-height:1.7;margin-bottom:1.25rem;">' + esc(c.description) + '</p>';
+
+      // Impact row
+      html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:0.6rem;margin-bottom:1.25rem;">';
+      html += '<div style="background:var(--cream);border-radius:8px;padding:0.7rem;text-align:center;border:1px solid rgba(58,42,31,0.05);"><div style="font-family:var(--font-serif);font-size:1.3rem;font-weight:500;color:var(--green);">' + c.scholarCount + '</div><div style="font-size:0.68rem;color:rgba(58,42,31,0.4);">Scholars</div></div>';
+      html += '<div style="background:var(--cream);border-radius:8px;padding:0.7rem;text-align:center;border:1px solid rgba(58,42,31,0.05);"><div style="font-family:var(--font-serif);font-size:1.3rem;font-weight:500;color:var(--terra);">' + sc + '</div><div style="font-size:0.68rem;color:rgba(58,42,31,0.4);">Schools</div></div>';
+      html += '<div style="background:var(--cream);border-radius:8px;padding:0.7rem;text-align:center;border:1px solid rgba(58,42,31,0.05);"><div style="font-family:var(--font-serif);font-size:1.3rem;font-weight:500;color:#8a6d2f;">' + tc + '</div><div style="font-size:0.68rem;color:rgba(58,42,31,0.4);">Trades</div></div>';
+      html += '<div style="background:var(--cream);border-radius:8px;padding:0.7rem;text-align:center;border:1px solid rgba(58,42,31,0.05);"><div style="font-family:var(--font-serif);font-size:1.3rem;font-weight:500;color:var(--green);">' + fmtNaira(c.totalInvestment) + '</div><div style="font-size:0.68rem;color:rgba(58,42,31,0.4);">Invested</div></div>';
+      html += '</div>';
+
+      // Tabs
+      html += '<div style="display:flex;gap:0;border-radius:100px;background:rgba(58,42,31,0.05);padding:3px;margin-bottom:1rem;">';
+      html += '<button class="ctab is-active" data-ctab="schools" data-cid="' + c.id + '" style="padding:0.4rem 1rem;border-radius:100px;font-size:0.78rem;font-weight:600;color:var(--cream);background:var(--green);border:none;cursor:pointer;">Schools (' + sc + ')</button>';
+      html += '<button class="ctab" data-ctab="trades" data-cid="' + c.id + '" style="padding:0.4rem 1rem;border-radius:100px;font-size:0.78rem;font-weight:600;color:rgba(58,42,31,0.5);background:none;border:none;cursor:pointer;">Trades (' + tc + ')</button>';
+      html += '<button class="ctab" data-ctab="events" data-cid="' + c.id + '" style="padding:0.4rem 1rem;border-radius:100px;font-size:0.78rem;font-weight:600;color:rgba(58,42,31,0.5);background:none;border:none;cursor:pointer;">Events (' + ec + ')</button>';
+      html += '</div>';
+
+      // Schools
+      html += '<div class="cpanel" data-cpanel="schools" data-cid="' + c.id + '">';
+      (c.schools || []).forEach(function (s) {
+        html += '<div style="background:var(--cream);border-radius:10px;padding:0.85rem 1rem;margin-bottom:0.5rem;border:1px solid rgba(58,42,31,0.05);">';
+        html += '<div style="font-family:var(--font-serif);font-size:0.95rem;font-weight:600;">' + esc(s.name) + '</div>';
+        html += '<div style="font-size:0.75rem;color:rgba(58,42,31,0.5);margin-top:0.15rem;">' + esc(s.type) + (s.contact ? ' &middot; ' + esc(s.contact) : '') + '</div>';
+        html += '<div style="font-size:0.72rem;color:var(--green);font-weight:700;margin-top:0.3rem;">' + s.scholars + ' scholars enrolled</div>';
+        html += '</div>';
+      });
+      if (sc === 0) html += '<div style="text-align:center;padding:1.5rem;color:rgba(58,42,31,0.35);font-size:0.85rem;">No schools registered yet.</div>';
+      html += '</div>';
+
+      // Trades
+      html += '<div class="cpanel" data-cpanel="trades" data-cid="' + c.id + '" style="display:none;">';
+      (c.trades || []).forEach(function (t) {
+        html += '<div style="background:var(--cream);border-radius:10px;padding:0.85rem 1rem;margin-bottom:0.5rem;border:1px solid rgba(58,42,31,0.05);display:flex;gap:0.75rem;align-items:flex-start;">';
+        html += '<div style="width:36px;height:36px;border-radius:8px;background:rgba(212,169,106,0.1);color:#8a6d2f;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">' + (t.icon || '\uD83D\uDEE0') + '</div>';
+        html += '<div style="flex:1;"><div style="font-family:var(--font-serif);font-size:0.95rem;font-weight:600;">' + esc(t.name) + '</div>';
+        html += '<div style="font-size:0.78rem;color:rgba(58,42,31,0.5);margin-top:0.1rem;">' + esc(t.desc || t.description || '') + '</div>';
+        html += '<div style="display:flex;gap:0.75rem;margin-top:0.3rem;font-size:0.72rem;">';
+        html += '<span style="color:var(--green);font-weight:700;">' + (t.enrolled || 0) + ' enrolled</span>';
+        html += '<span style="color:#8a6d2f;font-weight:700;">' + (t.graduates || 0) + ' graduates</span>';
+        html += '</div></div></div>';
+      });
+      if (tc === 0) html += '<div style="text-align:center;padding:1.5rem;color:rgba(58,42,31,0.35);font-size:0.85rem;">No vocational programs yet.</div>';
+      html += '</div>';
+
+      // Events
+      html += '<div class="cpanel" data-cpanel="events" data-cid="' + c.id + '" style="display:none;">';
+      (c.events || []).forEach(function (ev) {
+        var d = new Date(ev.date);
+        var mo = d.toLocaleDateString('en-NG', { month: 'short' }).toUpperCase();
+        var dy = d.getDate();
+        html += '<div style="background:var(--cream);border-radius:10px;padding:0.85rem 1rem;margin-bottom:0.5rem;border:1px solid rgba(58,42,31,0.05);display:flex;gap:0.75rem;align-items:flex-start;">';
+        html += '<div style="width:44px;text-align:center;background:rgba(45,94,64,0.06);border-radius:6px;padding:0.3rem;flex-shrink:0;"><div style="font-size:0.5rem;font-weight:700;color:var(--green);letter-spacing:0.05em;">' + mo + '</div><div style="font-family:var(--font-serif);font-size:1.1rem;font-weight:600;color:var(--green-dark);line-height:1;">' + dy + '</div></div>';
+        html += '<div style="flex:1;"><div style="font-family:var(--font-serif);font-size:0.95rem;font-weight:600;">' + esc(ev.title) + '</div>';
+        html += '<div style="font-size:0.78rem;color:rgba(58,42,31,0.5);margin-top:0.1rem;">' + esc(ev.location) + ' &middot; <span style="font-size:0.6rem;font-weight:700;padding:0.1rem 0.35rem;border-radius:100px;background:rgba(139,175,142,0.12);color:#3d6b42;">' + esc(ev.type) + '</span></div>';
+        html += '</div></div>';
+      });
+      if (ec === 0) html += '<div style="text-align:center;padding:1.5rem;color:rgba(58,42,31,0.35);font-size:0.85rem;">No upcoming events.</div>';
+      html += '</div>';
+
+      html += '</div></div>'; // padding div, comm-body
+      html += '</div>'; // card
+    });
+
+    commGrid.innerHTML = html;
+
+    // Toggle handlers
+    commGrid.querySelectorAll('.comm-header').forEach(function (h) {
+      h.addEventListener('click', function () {
+        var body = h.nextElementSibling;
+        var toggle = h.querySelector('.comm-toggle');
+        if (body.style.maxHeight === '0px' || body.style.maxHeight === '') {
+          body.style.maxHeight = body.scrollHeight + 200 + 'px';
+          if (toggle) toggle.style.transform = 'rotate(180deg)';
+        } else {
+          body.style.maxHeight = '0px';
+          if (toggle) toggle.style.transform = 'rotate(0deg)';
+        }
+      });
+    });
+
+    // Tab handlers
+    commGrid.querySelectorAll('.ctab').forEach(function (tab) {
+      tab.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var cid = tab.getAttribute('data-cid');
+        var tname = tab.getAttribute('data-ctab');
+        commGrid.querySelectorAll('.ctab[data-cid="' + cid + '"]').forEach(function (t) {
+          t.classList.remove('is-active');
+          t.style.background = 'none'; t.style.color = 'rgba(58,42,31,0.5)';
+        });
+        tab.classList.add('is-active');
+        tab.style.background = 'var(--green)'; tab.style.color = 'var(--cream)';
+        commGrid.querySelectorAll('.cpanel[data-cid="' + cid + '"]').forEach(function (p) {
+          p.style.display = p.getAttribute('data-cpanel') === tname ? '' : 'none';
+        });
+      });
+    });
+  }
+
+  // View toggle
+  document.querySelectorAll('.view-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      var view = tab.getAttribute('data-view');
+      document.querySelectorAll('.view-tab').forEach(function (t) {
+        t.style.background = 'none'; t.style.color = 'rgba(58,42,31,0.5)';
+        t.classList.remove('is-active');
+      });
+      tab.classList.add('is-active');
+      tab.style.background = 'var(--green)'; tab.style.color = 'var(--cream)';
+
+      document.getElementById('scholars-view').style.display = view === 'scholars' ? '' : 'none';
+      document.getElementById('communities-view').style.display = view === 'communities' ? '' : 'none';
+
+      if (view === 'communities' && commData.length === 0) {
+        loadCommunities();
+      }
+    });
+  });
+
+  // Community filters
+  document.querySelectorAll('.comm-filter').forEach(function (f) {
+    f.addEventListener('click', function () {
+      document.querySelectorAll('.comm-filter').forEach(function (b) {
+        b.classList.remove('is-active');
+        b.style.background = 'rgba(58,42,31,0.04)'; b.style.color = 'rgba(58,42,31,0.6)';
+      });
+      f.classList.add('is-active');
+      f.style.background = 'var(--green)'; f.style.color = 'var(--cream)';
+      commArea = f.getAttribute('data-area');
+      renderComm();
+    });
+  });
+
+  // Community search
+  if (commSearch) {
+    var st;
+    commSearch.addEventListener('input', function () {
+      clearTimeout(st);
+      st = setTimeout(function () { commQuery = commSearch.value.trim(); renderComm(); }, 250);
+    });
+  }
+})();
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
 </body>
