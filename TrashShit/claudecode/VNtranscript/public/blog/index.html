@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q4EYY24EDZ"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-Q4EYY24EDZ');</script>
   <title>Blog — Big Sister Foundation</title>
   <meta name="description" content="Stories, updates, and insights from Big Sister Foundation. Read about our work with vulnerable children in Lagos and the communities we serve.">
   <meta name="theme-color" content="#2D5E40">
@@ -931,6 +933,8 @@
         if (ogTitle) ogTitle.setAttribute('content', post.title + ' — Big Sister Foundation');
         var ogDesc = document.querySelector('meta[property="og:description"]');
         if (ogDesc) ogDesc.setAttribute('content', post.metaDescription || post.excerpt);
+        var ogImage = document.querySelector('meta[property="og:image"]');
+        if (ogImage) ogImage.setAttribute('content', post.ogImage || '/api/og-image?title=' + encodeURIComponent(post.title || '') + '&category=' + encodeURIComponent(post.category || 'insight'));
 
         // Remove any existing article schema
         var existingSchema = document.getElementById('article-schema');
@@ -948,6 +952,7 @@
           "author": {"@type": "Person", "name": post.author || "Big Sister Foundation"},
           "publisher": {"@type": "Organization", "name": "Big Sister Foundation"},
           "datePublished": post.date,
+          "image": post.ogImage || '/api/og-image?title=' + encodeURIComponent(post.title || ''),
           "keywords": (post.keywords || []).join(", ")
         });
         document.head.appendChild(schema);

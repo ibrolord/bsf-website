@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q4EYY24EDZ"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-Q4EYY24EDZ');</script>
   <title>Events — Big Sister Foundation</title>
   <meta name="description" content="Upcoming outreach webinars, community events, and workshops from Big Sister Foundation. See what's happening and join us.">
   <meta property="og:title" content="Events — Big Sister Foundation">
@@ -186,6 +188,8 @@
     .calendar__event-dot--outreach { background: rgba(194,115,76,0.15); color: var(--terra); }
     .calendar__event-dot--workshop { background: rgba(212,169,106,0.2); color: #8B6914; }
     .calendar__event-dot--community { background: rgba(139,175,142,0.25); color: var(--green-dark); }
+    .calendar__event-dot--fundraiser { background: rgba(212,169,106,0.2); color: #8B6914; }
+    .calendar__event-dot--meeting { background: rgba(45,94,64,0.12); color: var(--green); }
 
     /* EVENT LIST */
     .events-list { display: flex; flex-direction: column; gap: 1.5rem; }
@@ -246,6 +250,8 @@
     .event-card__tag--outreach { background: rgba(194,115,76,0.12); color: var(--terra); }
     .event-card__tag--workshop { background: rgba(212,169,106,0.15); color: #8B6914; }
     .event-card__tag--community { background: rgba(139,175,142,0.2); color: var(--green-dark); }
+    .event-card__tag--fundraiser { background: rgba(212,169,106,0.18); color: #8B6914; }
+    .event-card__tag--meeting { background: rgba(45,94,64,0.10); color: var(--green); }
 
     @media (max-width: 600px) {
       .event-card { grid-template-columns: 1fr; gap: 1rem; }
@@ -468,6 +474,85 @@
       text-decoration: underline;
     }
 
+    /* RSVP */
+    .event-card__signup-info {
+      font-size: 0.8rem;
+      color: var(--green);
+      font-weight: 600;
+      display: flex; align-items: center; gap: 0.3rem;
+    }
+    .event-card__owner {
+      font-size: 0.8rem;
+      opacity: 0.6;
+      font-style: italic;
+    }
+    .btn--rsvp {
+      padding: 0.5rem 1.2rem;
+      font-size: 0.8rem;
+      background: var(--terra);
+      color: white;
+      border-radius: 100px;
+      font-weight: 600;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+    .btn--rsvp:hover { background: #a85a35; }
+    .btn--rsvp:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn--rsvp-done {
+      padding: 0.5rem 1.2rem;
+      font-size: 0.8rem;
+      background: rgba(45,94,64,0.1);
+      color: var(--green);
+      border-radius: 100px;
+      font-weight: 600;
+      border: none;
+      cursor: default;
+    }
+
+    /* RSVP MODAL */
+    .rsvp-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 300;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+    .rsvp-overlay.show { opacity: 1; pointer-events: all; }
+    .rsvp-box {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 420px;
+      width: 90%;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+    }
+    .rsvp-box h3 { margin-bottom: 0.3rem; }
+    .rsvp-box .rsvp-event-title { opacity: 0.6; margin-bottom: 1.25rem; font-size: 0.9rem; }
+    .rsvp-box .form-group { margin-bottom: 0.75rem; }
+    .rsvp-box .form-actions { margin-top: 1rem; }
+
+    /* LOADING SPINNER */
+    .loading-state {
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+    .loading-spinner {
+      width: 36px; height: 36px;
+      border: 3px solid rgba(45,94,64,0.15);
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* PAST EVENTS */
+    .event-card--past { opacity: 0.6; }
+    .event-card--past .event-card__date-block { background: var(--brown); opacity: 0.7; }
+
     /* EMPTY STATE */
     .empty-state {
       text-align: center;
@@ -618,10 +703,10 @@
 
       <div class="filter-tabs" id="filterTabs">
         <button class="filter-tab active" data-filter="all">All</button>
-        <button class="filter-tab" data-filter="webinar">Webinars</button>
         <button class="filter-tab" data-filter="outreach">Outreach</button>
-        <button class="filter-tab" data-filter="workshop">Workshops</button>
-        <button class="filter-tab" data-filter="community">Community</button>
+        <button class="filter-tab" data-filter="fundraiser">Fundraiser</button>
+        <button class="filter-tab" data-filter="workshop">Workshop</button>
+        <button class="filter-tab" data-filter="meeting">Meeting</button>
       </div>
 
       <div class="events-list" id="eventsList"></div>

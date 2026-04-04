@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q4EYY24EDZ"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-Q4EYY24EDZ');</script>
   <title>Help Center — Big Sister Foundation</title>
   <meta name="description" content="Step-by-step guides for everything on the Big Sister Foundation platform. Learn how to use the Ideas Board, Ledger, Scholars Tracker, Forums, Donations, Events, and more.">
   <meta property="og:title" content="Help Center — Big Sister Foundation">
@@ -685,7 +687,7 @@
           <span class="quick-link__icon quick-link__icon--gold">&#128197;</span>
           <span class="quick-link__text">Events</span>
         </a>
-        <a class="quick-link" href="#admin">
+        <a class="quick-link admin-only" href="#admin" style="display:none">
           <span class="quick-link__icon quick-link__icon--terra">&#128736;</span>
           <span class="quick-link__text">Admin</span>
         </a>
@@ -720,7 +722,7 @@
           <li><a href="#events">Events</a></li>
           <li><a href="#blog">Blog</a></li>
           <li><a href="#sponsor">Sponsor a Scholar</a></li>
-          <li><a href="#admin">Admin Dashboard</a></li>
+          <li class="admin-only" style="display:none"><a href="#admin">Admin Dashboard</a></li>
           <li><a href="#accounts">Accounts &amp; Roles</a></li>
           <li><a href="#connections">How It All Connects</a></li>
           <li><a href="#faq">FAQ</a></li>
@@ -2147,7 +2149,7 @@
         </section>
 
         <!-- ===== ADMIN DASHBOARD ===== -->
-        <section class="docs-section" id="admin">
+        <section class="docs-section admin-only" id="admin" style="display:none">
           <div class="section-header">
             <div class="section-icon quick-link__icon--terra" style="font-size:1.4rem;">&#128736;</div>
             <div>
@@ -2187,45 +2189,56 @@
                         </div>
                       </div>
                       <div style="font-size:0.5rem;font-weight:700;color:rgba(58,42,31,0.4);text-transform:uppercase;margin-bottom:0.2rem;">Management Sections</div>
-                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.25rem;">
+                      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.25rem;">
                         <div class="m-card"><div class="m-card__title">&#128100; Volunteers</div></div>
                         <div class="m-card"><div class="m-card__title">&#127891; Scholars</div></div>
                         <div class="m-card"><div class="m-card__title">&#127979; Schools</div></div>
                         <div class="m-card"><div class="m-card__title">&#128176; Ledger</div></div>
-                        <div class="m-card"><div class="m-card__title">&#128161; Ideas</div></div>
-                        <div class="m-card"><div class="m-card__title">&#128203; Audit Log</div></div>
+                        <div class="m-card"><div class="m-card__title">&#128197; Events</div></div>
+                        <div class="m-card"><div class="m-card__title">&#127919; Goals</div></div>
+                        <div class="m-card"><div class="m-card__title">&#128118; Kids</div></div>
+                        <div class="m-card"><div class="m-card__title">&#127760; Outreach</div></div>
+                        <div class="m-card"><div class="m-card__title">&#128101; Team</div></div>
                       </div>
                     </div>
                   </div>
 
                   <ol class="steps">
                     <li class="step">
-                      <p class="step__title">Dashboard stats</p>
-                      <p class="step__desc">At-a-glance numbers: total scholars, active volunteers, pending applications, and recent activity.</p>
+                      <p class="step__title">Dashboard</p>
+                      <p class="step__desc">At-a-glance stats, quick actions, and recent activity feed.</p>
                     </li>
                     <li class="step">
-                      <p class="step__title">Volunteer management</p>
-                      <p class="step__desc">Review pending applications, approve or reject them, and manage existing volunteers.</p>
+                      <p class="step__title">Volunteers</p>
+                      <p class="step__desc">Review and approve/reject volunteer applications, manage confirmed volunteers.</p>
                     </li>
                     <li class="step">
-                      <p class="step__title">Scholar management</p>
-                      <p class="step__desc">Full CRUD operations on scholars. Add new scholars, edit profiles, update statuses and performance.</p>
+                      <p class="step__title">Scholars &amp; Kids</p>
+                      <p class="step__desc">Manage scholar profiles with the table view (Scholars) or visual card view (Kids). Track milestones per child.</p>
                     </li>
                     <li class="step">
-                      <p class="step__title">School management</p>
-                      <p class="step__desc">Add, edit, and remove schools. Attach notes about conditions and teacher contact info.</p>
+                      <p class="step__title">Ledger</p>
+                      <p class="step__desc">Full financial tracking. Admins edit directly; other roles submit change requests for approval. All changes are tracked with field-level diffs.</p>
                     </li>
                     <li class="step">
-                      <p class="step__title">Ledger management</p>
-                      <p class="step__desc">Edit, delete, and bulk manage ledger entries. Export financial data to CSV.</p>
+                      <p class="step__title">Events</p>
+                      <p class="step__desc">Calendar and list views. Create events with owners and collaborators. Volunteers can sign up. Click any day to add an event.</p>
                     </li>
                     <li class="step">
-                      <p class="step__title">Ideas management</p>
-                      <p class="step__desc">Edit, delete, and bulk manage ideas. Change statuses (Open, Planned, In Progress, Completed).</p>
+                      <p class="step__title">Goals &amp; Targets</p>
+                      <p class="step__desc">Set fundraising, education, and outreach goals with progress tracking. Color-coded status bars show on-track vs at-risk.</p>
                     </li>
                     <li class="step">
-                      <p class="step__title">Audit log</p>
-                      <p class="step__desc">A permanent record of every create, edit, and delete action across the platform. Shows who did what, when, and on which record.</p>
+                      <p class="step__title">Outreach</p>
+                      <p class="step__desc">Track community visits, school visits, awareness campaigns, and partnerships. Log impact metrics like people reached.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Team &amp; Permissions</p>
+                      <p class="step__desc">Add team members, create their accounts, assign multiple role groups (Admin, Program Lead, Finance, Comms, Moderator, Volunteer, Viewer), and fine-tune individual permissions. Reset passwords from here.</p>
+                    </li>
+                    <li class="step">
+                      <p class="step__title">Audit Log</p>
+                      <p class="step__desc">Permanent record of every action. Shows who changed what, when, and the exact field-level diff (e.g., "Amount: 50000 to 80000").</p>
                     </li>
                   </ol>
                 </div>
@@ -2377,7 +2390,7 @@
 
                   <div class="tip tip--warning">
                     <span class="tip__icon">&#128272;</span>
-                    <span class="tip__text"><strong>Forgot your password?</strong> Contact the BSF team via <a href="mailto:hello@thebigsisterfoundation.org" style="color:var(--terra);font-weight:600;">email</a> and they'll help you reset it.</span>
+                    <span class="tip__text"><strong>Forgot your password?</strong> On the Admin login page, click "Forgot password?" and enter your email. You'll receive a reset link. Alternatively, contact the BSF team and an admin can send you a reset from the Team page.</span>
                   </div>
                 </div>
               </div>
@@ -2654,6 +2667,72 @@
                 <div class="faq-item__a-content">Reach out via email at <a href="mailto:hello@thebigsisterfoundation.org" style="color:var(--terra);font-weight:600;">hello@thebigsisterfoundation.org</a>. Include a description of the problem, what page you were on, and what device/browser you were using.</div>
               </div>
             </div>
+
+            <!-- Admin-only FAQ items -->
+            <div class="admin-only" style="display:none;border-top:2px solid var(--terra);margin-top:1.5rem;padding-top:1.5rem;">
+              <p style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--terra);margin-bottom:1rem;">Admin FAQ</p>
+
+              <div class="faq-item" data-faq>
+                <div class="faq-item__q">
+                  <span>How do I add a new team member?</span>
+                  <span class="faq-item__toggle">&#9660;</span>
+                </div>
+                <div class="faq-item__a">
+                  <div class="faq-item__a-content">Go to the Team page in the admin panel. Click "+ Add Team Member". Enter their email, set a temporary password, choose their role groups (Admin, Program Lead, Finance, Comms, Moderator, Volunteer, Viewer), and fine-tune individual permissions if needed. Check "Send password reset email" so they can set their own password. Click Save.</div>
+                </div>
+              </div>
+
+              <div class="faq-item" data-faq>
+                <div class="faq-item__q">
+                  <span>What are role groups and how do permissions work?</span>
+                  <span class="faq-item__toggle">&#9660;</span>
+                </div>
+                <div class="faq-item__a">
+                  <div class="faq-item__a-content">Role groups are bundles of permissions. You can assign multiple groups to a user (e.g., "Program Lead" + "Finance") and their permissions stack. Each group grants access to specific sections and actions. You can also override individual permissions on top of the groups. Permissions follow a resource.action pattern (e.g., "scholars.edit", "ledger.approve"). High-risk permissions like delete and approve are flagged in the UI.</div>
+                </div>
+              </div>
+
+              <div class="faq-item" data-faq>
+                <div class="faq-item__q">
+                  <span>How does the ledger change request system work?</span>
+                  <span class="faq-item__toggle">&#9660;</span>
+                </div>
+                <div class="faq-item__a">
+                  <div class="faq-item__a-content">Users without direct ledger edit permission see a "Request Change" button instead of Edit/Delete. They submit a request with the proposed changes and a reason. Admins (or anyone with the ledger.approve permission) see a "Pending Change Requests" panel on the Ledger page where they can approve or reject requests. Approved requests are automatically applied to the ledger. All actions are audit-logged.</div>
+                </div>
+              </div>
+
+              <div class="faq-item" data-faq>
+                <div class="faq-item__q">
+                  <span>How do I reset a team member's password?</span>
+                  <span class="faq-item__toggle">&#9660;</span>
+                </div>
+                <div class="faq-item__a">
+                  <div class="faq-item__a-content">Go to the Team page. Find the user and click "Reset Password". This sends a password reset email to their address via Firebase. They'll receive a link to set a new password. The action is recorded in the audit log.</div>
+                </div>
+              </div>
+
+              <div class="faq-item" data-faq>
+                <div class="faq-item__q">
+                  <span>What's the difference between Kids and Scholars pages?</span>
+                  <span class="faq-item__toggle">&#9660;</span>
+                </div>
+                <div class="faq-item__a">
+                  <div class="faq-item__a-content">They show the same data (the scholars collection) in different formats. Scholars is a traditional table view for quick data management. Kids is a visual card layout that also supports milestone tracking per child. Use whichever view suits your task.</div>
+                </div>
+              </div>
+
+              <div class="faq-item" data-faq>
+                <div class="faq-item__q">
+                  <span>How do event owners and collaborators work?</span>
+                  <span class="faq-item__toggle">&#9660;</span>
+                </div>
+                <div class="faq-item__a">
+                  <div class="faq-item__a-content">Every event has an owner (the person responsible) and optional collaborators (other team members helping). These are set when creating or editing an event. The owner defaults to the person creating the event. Collaborators are added as comma-separated emails.</div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </section>
 
@@ -2895,6 +2974,42 @@
       link.style.color = "var(--gold)";
     }
   });
+})();
+</script>
+<!-- Firebase Auth for admin-only content -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+(function(){
+  var fc = {apiKey:"AIzaSyCwos6XR9-uqAf_Esmh2K_hJoLxq4gnEuU",authDomain:"big-sister-foundation.firebaseapp.com",projectId:"big-sister-foundation",storageBucket:"big-sister-foundation.firebasestorage.app"};
+  var app = firebase.initializeApp(fc, "docs");
+  var auth = app.auth();
+  var db = app.firestore();
+  var SUPERADMINS = ['admin@bigsisterfoundation.org'];
+
+  auth.onAuthStateChanged(function(user) {
+    if (!user) return;
+    var email = user.email.toLowerCase();
+    if (SUPERADMINS.indexOf(email) > -1) {
+      showAdminContent();
+      return;
+    }
+    db.collection('users').doc(email).get().then(function(snap) {
+      if (!snap.exists) return;
+      var data = snap.data();
+      var roles = data.roles || (data.role ? [data.role] : []);
+      if (roles.indexOf('admin') > -1) {
+        showAdminContent();
+      }
+    }).catch(function() {});
+  });
+
+  function showAdminContent() {
+    document.querySelectorAll('.admin-only').forEach(function(el) {
+      el.style.display = '';
+    });
+  }
 })();
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
