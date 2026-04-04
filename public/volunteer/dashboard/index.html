@@ -1,0 +1,1888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q4EYY24EDZ"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-Q4EYY24EDZ');</script>
+<title>Volunteer Dashboard — Big Sister Foundation</title>
+<meta name="description" content="Volunteer dashboard for Big Sister Foundation. Track tasks, ideas, performance and team activity.">
+<meta name="theme-color" content="#2D5E40">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cellipse cx='50' cy='35' rx='35' ry='30' fill='%232D5E40' opacity='0.85'/%3E%3Cellipse cx='30' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cellipse cx='70' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cpath d='M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z' fill='%233A2A1F' opacity='0.8'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#2D5E40;--green-dark:#1E3F2B;--green-light:#e8f0eb;
+  --brown:#3A2A1F;--terra:#C2734C;--gold:#D4A96A;--sage:#8BAF8E;--cream:#FFF8F0;
+  --bg:#f5f6fa;--white:#fff;--gray-50:#f9fafb;--gray-100:#f3f4f6;
+  --gray-200:#e5e7eb;--gray-300:#d1d5db;--gray-400:#9ca3af;
+  --gray-500:#6b7280;--gray-600:#4b5563;--gray-700:#374151;
+  --gray-800:#1f2937;--gray-900:#111827;
+  --red:#dc2626;--red-light:#fef2f2;--green-money:#16a34a;
+  --blue:#2563eb;--blue-light:#eff6ff;--orange:#ea580c;--orange-light:#fff7ed;
+  --purple:#7c3aed;--purple-light:#f5f3ff;
+  --sidebar-w:260px;--topbar-h:60px;
+  --radius:8px;--radius-lg:12px;--shadow:0 1px 3px rgba(0,0,0,.1);
+  --shadow-lg:0 4px 12px rgba(0,0,0,.12);
+  --font-sans:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-serif:'EB Garamond',Georgia,serif;
+  --transition:all .2s ease;
+}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--gray-800);line-height:1.5;min-height:100vh}
+
+/* LOGIN */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,var(--green-dark),var(--green))}
+.login-card{background:var(--white);border-radius:var(--radius-lg);padding:48px 40px;width:380px;max-width:92vw;box-shadow:var(--shadow-lg);text-align:center}
+.login-card h1{font-family:var(--font-serif);font-size:28px;color:var(--green-dark);margin-bottom:4px}
+.login-card p.sub{color:var(--gray-500);font-size:14px;margin-bottom:28px}
+.login-card .logo-text{font-size:13px;text-transform:uppercase;letter-spacing:2px;color:var(--green);font-weight:600;margin-bottom:20px}
+.form-group{margin-bottom:16px;text-align:left}
+.form-group label{display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:4px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 12px;border:1px solid var(--gray-300);border-radius:var(--radius);font-size:14px;font-family:var(--font-sans);transition:var(--transition);background:var(--white)}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(45,94,64,.12)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;transition:var(--transition);font-family:var(--font-sans)}
+.btn-primary{background:var(--green);color:#fff}.btn-primary:hover{background:var(--green-dark)}
+.btn-secondary{background:var(--gray-100);color:var(--gray-700);border:1px solid var(--gray-300)}.btn-secondary:hover{background:var(--gray-200)}
+.btn-danger{background:var(--red);color:#fff}.btn-danger:hover{background:#b91c1c}
+.btn-warning{background:var(--orange);color:#fff}.btn-warning:hover{background:#c2410c}
+.btn-info{background:var(--blue);color:#fff}.btn-info:hover{background:#1d4ed8}
+.btn-sm{padding:6px 12px;font-size:13px}
+.btn-xs{padding:4px 10px;font-size:12px}
+.btn-full{width:100%;justify-content:center}
+#login-error{color:var(--red);font-size:13px;margin-top:8px;min-height:20px}
+
+/* NOT REGISTERED */
+#not-registered-screen{display:none;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,var(--green-dark),var(--green))}
+
+/* APP LAYOUT */
+#vol-app{display:none}
+.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--gray-900);color:#fff;display:flex;flex-direction:column;z-index:100;transition:transform .3s ease}
+.sidebar-brand{padding:20px 24px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-brand h2{font-family:var(--font-serif);font-size:20px;font-weight:700;color:#fff}
+.sidebar-brand span{font-size:11px;color:var(--gray-400);text-transform:uppercase;letter-spacing:1.5px}
+.sidebar-nav{flex:1;padding:12px 0;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 24px;color:var(--gray-400);font-size:14px;cursor:pointer;transition:var(--transition);border-left:3px solid transparent}
+.nav-item:hover{background:rgba(255,255,255,.05);color:var(--gray-200)}
+.nav-item.active{background:rgba(45,94,64,.5);color:#fff;border-left-color:var(--sage);font-weight:600}
+.nav-item svg{width:18px;height:18px;flex-shrink:0}
+.nav-item.role-hidden{display:none!important}
+.sidebar-footer{padding:16px 24px;border-top:1px solid rgba(255,255,255,.08);font-size:12px;color:var(--gray-500)}
+
+.topbar{position:fixed;top:0;left:var(--sidebar-w);right:0;height:var(--topbar-h);background:var(--white);border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:90;transition:left .3s ease}
+.topbar-left{display:flex;align-items:center;gap:16px}
+.topbar-left h1{font-size:18px;font-weight:700;color:var(--gray-900)}
+.hamburger{display:none;background:none;border:none;cursor:pointer;padding:4px;color:var(--gray-600)}
+.hamburger svg{width:24px;height:24px}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.user-info{font-size:13px;color:var(--gray-500)}.user-info strong{color:var(--gray-700)}
+.breadcrumb{font-size:12px;color:var(--gray-400);margin-top:2px}.breadcrumb span{color:var(--gray-600);font-weight:600}
+
+.main-content{margin-left:var(--sidebar-w);margin-top:var(--topbar-h);padding:28px;min-height:calc(100vh - var(--topbar-h));transition:margin-left .3s ease}
+.page-section{display:none}.page-section.active{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARDS */
+.cards-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:28px}
+.stat-card{background:var(--white);border-radius:var(--radius-lg);padding:20px 24px;box-shadow:var(--shadow);border:1px solid var(--gray-100)}
+.stat-card .label{font-size:13px;color:var(--gray-500);margin-bottom:4px}
+.stat-card .value{font-size:28px;font-weight:700;color:var(--gray-900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat-card .value.green{color:var(--green)}.stat-card .value.terra{color:var(--terra)}.stat-card .value.blue{color:var(--blue)}.stat-card .value.purple{color:var(--purple)}.stat-card .value.gold{color:#b88c3d}
+
+/* PANELS */
+.panel{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow);border:1px solid var(--gray-100);margin-bottom:24px}
+.panel-header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;gap:12px}
+.panel-header h2{font-size:16px;font-weight:700;color:var(--gray-900)}
+.panel-body{padding:0;overflow-x:auto}.panel-body.padded{padding:24px}
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.toolbar input[type=text],.toolbar select{padding:7px 12px;border:1px solid var(--gray-300);border-radius:var(--radius);font-size:13px;font-family:var(--font-sans)}
+.toolbar input[type=text]{width:200px}.toolbar select{min-width:130px}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse}
+thead th{text-align:left;padding:10px 16px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-500);background:var(--gray-50);border-bottom:1px solid var(--gray-200)}
+tbody td{padding:12px 16px;font-size:14px;border-bottom:1px solid var(--gray-100);color:var(--gray-700);vertical-align:top}
+tbody tr:hover{background:var(--gray-50)}
+
+/* BADGES */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;text-transform:capitalize}
+.badge-open{background:var(--green-light);color:var(--green-dark)}
+.badge-planned{background:#e0f2fe;color:#0369a1}
+.badge-inprogress,.badge-in_progress{background:#fef9c3;color:#854d0e}
+.badge-completed{background:#d1fae5;color:#065f46}
+.badge-blocked{background:var(--red-light);color:var(--red)}
+.badge-low{background:var(--gray-100);color:var(--gray-600)}
+.badge-medium{background:rgba(212,169,106,.2);color:#92700e}
+.badge-high{background:rgba(194,115,76,.15);color:var(--terra)}
+.badge-urgent{background:var(--red-light);color:var(--red)}
+.badge-default{background:var(--gray-100);color:var(--gray-600)}
+.badge-volunteer{background:var(--green-light);color:var(--green-dark)}
+.badge-program_lead{background:#d1fae5;color:#065f46}
+.badge-finance{background:#fef3c7;color:#92400e}
+.badge-moderator{background:#ede9fe;color:#5b21b6}
+.badge-admin{background:#ede9fe;color:#5b21b6}
+.badge-pending{background:#fef3c7;color:#92400e}
+.badge-approved,.badge-active{background:var(--green-light);color:var(--green-dark)}
+.badge-rejected{background:var(--red-light);color:var(--red)}
+.badge-seedling{background:rgba(139,175,142,.2);color:#8BAF8E}
+.badge-grower{background:rgba(45,94,64,.15);color:#2D5E40}
+.badge-elder{background:rgba(212,169,106,.15);color:#D4A96A}
+.badge-baobab{background:rgba(194,115,76,.15);color:#C2734C}
+
+/* TAG */
+.tag{display:inline-block;padding:2px 8px;background:var(--gray-100);border-radius:4px;font-size:12px;color:var(--gray-600);margin:1px 2px}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--white);border-radius:var(--radius-lg);width:560px;max-width:94vw;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--gray-200)}
+.modal-head h3{font-size:18px;font-weight:700}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:22px;padding:4px 8px}.modal-close:hover{color:var(--gray-800)}
+.modal-body{padding:24px}.modal-body .form-group{margin-bottom:14px}
+.modal-footer{display:flex;justify-content:flex-end;gap:10px;padding:16px 24px;border-top:1px solid var(--gray-200)}
+
+/* TOAST */
+.toast-container{position:fixed;top:20px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px}
+.toast{padding:14px 20px;border-radius:var(--radius);font-size:14px;font-weight:500;box-shadow:var(--shadow-lg);animation:slideIn .3s ease;min-width:280px;display:flex;align-items:center;gap:10px}
+.toast-success{background:var(--green-dark);color:#fff}.toast-error{background:var(--red);color:#fff}
+@keyframes slideIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+
+/* LOADING */
+.spinner{display:inline-block;width:20px;height:20px;border:2.5px solid var(--gray-200);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite}
+.spinner-lg{width:36px;height:36px;border-width:3px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-wrap{display:flex;align-items:center;justify-content:center;padding:60px;gap:12px;color:var(--gray-400);font-size:14px}
+.no-data{text-align:center;padding:60px 20px;color:var(--gray-400);font-size:14px}
+
+/* WELCOME BANNER */
+.welcome-banner{background:linear-gradient(135deg,var(--green-dark),var(--green));color:#fff;border-radius:var(--radius-lg);padding:28px 32px;margin-bottom:28px;position:relative;overflow:hidden}
+.welcome-banner::before{content:'';position:absolute;top:-40%;right:-10%;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(139,175,142,.2) 0%,transparent 70%);pointer-events:none}
+.welcome-banner h2{font-family:var(--font-serif);font-size:24px;margin-bottom:6px}
+.welcome-banner .meta{font-size:13px;color:rgba(255,255,255,.65);display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.welcome-banner .role-badges{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.welcome-banner .role-badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(255,255,255,.15);color:rgba(255,255,255,.9);text-transform:capitalize}
+
+/* ACTIVITY FEED */
+.activity-feed{list-style:none}
+.activity-feed li{padding:10px 0;border-bottom:1px solid var(--gray-100);font-size:13px;display:flex;gap:10px;align-items:flex-start}
+.activity-feed li:last-child{border-bottom:none}
+.activity-dot{width:8px;height:8px;border-radius:50%;background:var(--green);margin-top:5px;flex-shrink:0}
+.activity-time{color:var(--gray-400);font-size:12px;white-space:nowrap}
+
+/* TASK CARDS */
+.task-card{border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:12px;transition:var(--transition);background:var(--white)}
+.task-card:hover{box-shadow:var(--shadow);border-color:var(--gray-300)}
+.task-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px}
+.task-card-title{font-size:15px;font-weight:700;color:var(--gray-900)}
+.task-card-desc{font-size:13px;color:var(--gray-600);line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.task-card-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--gray-500)}
+.task-card-footer .due{font-weight:600}
+.task-card-footer .due.overdue{color:var(--red)}
+.task-actions{display:flex;gap:4px;margin-top:10px}
+
+/* IDEA CARD */
+.idea-card{border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:12px;cursor:pointer;transition:var(--transition);background:var(--white)}
+.idea-card:hover{box-shadow:var(--shadow);border-color:var(--gray-300)}
+.idea-card-title{font-size:15px;font-weight:700;color:var(--gray-900);margin-bottom:4px}
+.idea-card-desc{font-size:13px;color:var(--gray-600);line-height:1.5;margin-bottom:10px}
+.idea-card-desc.collapsed{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.idea-card-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--gray-500)}
+.vote-count{display:inline-flex;align-items:center;gap:4px;font-weight:600;color:var(--green)}
+
+/* HOURS CHART */
+.hours-chart{display:flex;align-items:flex-end;gap:8px;height:160px;padding:16px 0}
+.hours-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.hours-bar{width:100%;min-height:4px;border-radius:4px 4px 0 0;background:var(--green);transition:height .4s ease}
+.hours-bar-label{font-size:11px;color:var(--gray-500)}
+.hours-bar-value{font-size:11px;font-weight:700;color:var(--gray-700)}
+
+/* DONUT CHART (conic-gradient) */
+.donut-chart{width:140px;height:140px;border-radius:50%;position:relative;margin:0 auto}
+.donut-chart::after{content:'';position:absolute;inset:30px;border-radius:50%;background:var(--white)}
+.donut-legend{list-style:none;margin-top:16px;font-size:13px}
+.donut-legend li{display:flex;align-items:center;gap:8px;padding:3px 0}
+.donut-legend .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+/* PROGRESS BAR */
+.progress-bar{width:100%;background:var(--gray-200);border-radius:20px;height:20px;overflow:hidden;position:relative}
+.progress-fill{height:100%;border-radius:20px;transition:width .4s ease;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;min-width:30px}
+.progress-fill.green{background:var(--green)}.progress-fill.terra{background:var(--terra)}.progress-fill.blue{background:var(--blue)}
+
+/* RECOGNITION BADGES */
+.recognition-badges{display:flex;flex-wrap:wrap;gap:8px}
+.rec-badge{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.rec-badge.earned{background:rgba(45,94,64,.1);color:var(--green);border:1px solid rgba(45,94,64,.2)}
+.rec-badge.locked{background:var(--gray-100);color:var(--gray-400);border:1px solid var(--gray-200)}
+.rec-badge .icon{font-size:14px}
+
+/* FORUM */
+.forum-card{border:1px solid var(--gray-200);border-left:3px solid var(--green);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:12px;transition:var(--transition)}
+.forum-card:hover{border-color:var(--gray-300);box-shadow:var(--shadow)}
+.forum-card-title{font-size:15px;font-weight:700;color:var(--gray-900);margin-bottom:4px}
+.forum-card-meta{font-size:12px;color:var(--gray-400);margin-bottom:8px}
+.forum-card-body{font-size:13px;color:var(--gray-600);line-height:1.6}
+.post-form{background:var(--gray-50);border-radius:var(--radius-lg);padding:16px;border:1px solid var(--gray-200);margin-bottom:16px}
+
+/* APPROVAL CARD */
+.approval-card{border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:12px;background:var(--white)}
+.approval-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.approval-card-title{font-size:15px;font-weight:700;color:var(--gray-900)}
+.approval-card-body{font-size:13px;color:var(--gray-600);line-height:1.5;margin-bottom:12px}
+.approval-actions{display:flex;gap:8px}
+
+/* SPONSOR VIEW */
+.sponsor-overview{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-bottom:24px}
+.scholar-card{border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:16px;background:var(--white);margin-bottom:12px}
+.scholar-card-name{font-size:15px;font-weight:700;color:var(--gray-900);margin-bottom:4px}
+.scholar-card-meta{font-size:12px;color:var(--gray-500);margin-bottom:6px}
+.stars{color:var(--gold);font-size:14px;letter-spacing:2px}
+
+/* RESPONSIVE */
+.sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:99}.sidebar-backdrop.open{display:block}
+@media(max-width:1024px){
+  .main-content{padding:20px}
+  .toolbar input[type=text]{width:160px}
+  .cards-row{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}
+  .topbar{left:0}.main-content{margin-left:0}.hamburger{display:block}
+  .cards-row{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:99}.sidebar-backdrop.open{display:block}
+  .welcome-banner{padding:20px}
+  .welcome-banner h2{font-size:20px}
+}
+@media(max-width:480px){
+  .cards-row{grid-template-columns:repeat(2,1fr)}
+  .main-content{padding:16px}
+  .topbar{padding:0 16px}
+  .panel-header{padding:12px 16px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="logo-text">Big Sister Foundation</div>
+    <h1>Volunteer Portal</h1>
+    <p class="sub">Sign in to access your dashboard</p>
+    <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="you@example.com"></div>
+    <div class="form-group"><label>Password</label><input type="password" id="login-password" placeholder="Enter your password"></div>
+    <button class="btn btn-primary btn-full" onclick="doLogin()" id="btn-login">Sign In</button>
+    <div id="login-error"></div>
+    <div style="margin-top:16px;font-size:13px">
+      <a href="/volunteer/" style="color:var(--green);text-decoration:none">&larr; Back to volunteer page</a>
+    </div>
+  </div>
+</div>
+
+<!-- NOT REGISTERED SCREEN -->
+<div id="not-registered-screen">
+  <div class="login-card">
+    <div class="logo-text">Big Sister Foundation</div>
+    <h1>Not Registered</h1>
+    <p class="sub">You're not a registered volunteer. Please apply on our volunteer page or contact an admin.</p>
+    <p style="font-size:13px;color:var(--gray-500);margin-bottom:20px" id="nr-email"></p>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <a href="/volunteer/" class="btn btn-primary" style="text-decoration:none">Apply to Volunteer</a>
+      <button class="btn btn-secondary" onclick="doLogout()">Sign Out</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="vol-app">
+  <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebar()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><span>Volunteer Portal</span><h2>Big Sister Foundation</h2></div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard
+      </div>
+      <div class="nav-item" data-page="tasks" onclick="navigateTo('tasks')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>My Tasks
+      </div>
+      <div class="nav-item" data-page="ideas" onclick="navigateTo('ideas')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>Assigned Ideas
+      </div>
+      <div class="nav-item" data-page="reports" onclick="navigateTo('reports')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>My Reports
+      </div>
+      <div class="nav-item" data-page="team" onclick="navigateTo('team')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Team
+      </div>
+      <div class="nav-item" data-page="approvals" onclick="navigateTo('approvals')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Approvals
+      </div>
+      <div class="nav-item" data-page="sponsor" onclick="navigateTo('sponsor')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Sponsor View
+      </div>
+    </nav>
+    <div class="sidebar-footer">&copy; 2026 BSF Volunteer Portal</div>
+  </aside>
+
+  <header class="topbar" id="topbar">
+    <div class="topbar-left">
+      <button class="hamburger" onclick="toggleSidebar()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <div><h1 id="page-title">Dashboard</h1><div class="breadcrumb">Volunteer &gt; <span id="breadcrumb-current">Dashboard</span></div></div>
+    </div>
+    <div class="topbar-right">
+      <div class="user-info">Welcome, <strong id="user-name-display"></strong></div>
+      <button class="btn btn-secondary btn-sm" onclick="doLogout()">Sign Out</button>
+    </div>
+  </header>
+
+  <main class="main-content" id="main-content">
+
+    <!-- SECTION: DASHBOARD -->
+    <section class="page-section active" id="page-dashboard">
+      <div class="welcome-banner">
+        <h2 id="welcome-text">Welcome back</h2>
+        <div class="meta">
+          <span id="welcome-team"></span>
+          <span id="welcome-since"></span>
+        </div>
+        <div class="role-badges" id="welcome-roles"></div>
+      </div>
+      <div class="cards-row" id="dash-cards">
+        <div class="stat-card"><div class="label">Open Tasks</div><div class="value green" id="dash-tasks">--</div></div>
+        <div class="stat-card"><div class="label">Ideas Assigned</div><div class="value blue" id="dash-ideas">--</div></div>
+        <div class="stat-card"><div class="label">Hours This Month</div><div class="value gold" id="dash-hours">--</div></div>
+        <div class="stat-card"><div class="label">Completion Rate</div><div class="value terra" id="dash-rate">--</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <div class="panel"><div class="panel-header"><h2>Recent Activity</h2></div><div class="panel-body padded"><div id="dash-activity-loading" class="loading-wrap"><div class="spinner"></div> Loading...</div><ul class="activity-feed" id="dash-activity"></ul></div></div>
+        <div class="panel"><div class="panel-header"><h2>Upcoming Events</h2></div><div class="panel-body padded"><div id="dash-events-loading" class="loading-wrap"><div class="spinner"></div> Loading...</div><div id="dash-events-list"></div><div id="dash-events-empty" class="no-data" style="display:none">No upcoming events.</div></div></div>
+      </div>
+    </section>
+
+    <!-- SECTION: MY TASKS -->
+    <section class="page-section" id="page-tasks">
+      <div class="panel">
+        <div class="panel-header">
+          <h2>My Tasks</h2>
+          <div class="toolbar">
+            <select id="task-filter" onchange="renderTasks()">
+              <option value="">All</option><option value="open">Open</option><option value="in_progress">In Progress</option><option value="completed">Completed</option><option value="blocked">Blocked</option>
+            </select>
+            <select id="task-sort" onchange="renderTasks()">
+              <option value="dueDate">Due Date</option><option value="priority">Priority</option><option value="newest">Newest</option>
+            </select>
+            <button class="btn btn-primary btn-sm" onclick="openTaskModal()">+ New Task</button>
+          </div>
+        </div>
+        <div class="panel-body padded">
+          <div id="tasks-loading" class="loading-wrap"><div class="spinner"></div> Loading...</div>
+          <div id="tasks-list"></div>
+          <div id="tasks-empty" class="no-data" style="display:none">No tasks found.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: ASSIGNED IDEAS -->
+    <section class="page-section" id="page-ideas">
+      <div class="panel">
+        <div class="panel-header"><h2>Ideas Assigned to Me</h2></div>
+        <div class="panel-body padded">
+          <div id="ideas-loading" class="loading-wrap"><div class="spinner"></div> Loading...</div>
+          <div id="ideas-list"></div>
+          <div id="ideas-empty" class="no-data" style="display:none">No ideas assigned to you.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: MY REPORTS -->
+    <section class="page-section" id="page-reports">
+      <div class="cards-row">
+        <div class="stat-card"><div class="label">Total Hours Logged</div><div class="value green" id="rpt-hours">--</div></div>
+        <div class="stat-card"><div class="label">Tasks Completed</div><div class="value blue" id="rpt-completed">--</div></div>
+        <div class="stat-card"><div class="label">Current Streak</div><div class="value terra" id="rpt-streak">--</div></div>
+        <div class="stat-card"><div class="label">Average Rating</div><div class="value gold" id="rpt-rating">--</div></div>
+      </div>
+
+      <!-- Hours Chart -->
+      <div class="panel">
+        <div class="panel-header"><h2>Hours Per Week (Last 8 Weeks)</h2><button class="btn btn-primary btn-sm" onclick="openLogHoursModal()">Log Hours</button></div>
+        <div class="panel-body padded">
+          <div id="hours-chart-container"></div>
+        </div>
+      </div>
+
+      <!-- Performance Grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <div class="panel">
+          <div class="panel-header"><h2>Task Performance</h2></div>
+          <div class="panel-body padded">
+            <div style="margin-bottom:16px">
+              <div style="font-size:13px;color:var(--gray-500);margin-bottom:4px">Completion Rate</div>
+              <div class="progress-bar"><div class="progress-fill green" id="rpt-completion-bar" style="width:0%">0%</div></div>
+            </div>
+            <div style="margin-bottom:16px">
+              <div style="font-size:13px;color:var(--gray-500);margin-bottom:4px">On-Time Rate</div>
+              <div class="progress-bar"><div class="progress-fill blue" id="rpt-ontime-bar" style="width:0%">0%</div></div>
+            </div>
+            <div style="margin-bottom:16px">
+              <div style="font-size:13px;color:var(--gray-500)">Avg. Completion Time: <strong id="rpt-avg-time">--</strong></div>
+            </div>
+            <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap">
+              <div class="donut-chart" id="rpt-task-donut"></div>
+              <ul class="donut-legend" id="rpt-task-legend"></ul>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><h2>Ideas Impact</h2></div>
+          <div class="panel-body padded">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+              <div><div style="font-size:13px;color:var(--gray-500)">Ideas Contributed</div><div style="font-size:24px;font-weight:700;color:var(--green)" id="rpt-ideas-count">0</div></div>
+              <div><div style="font-size:13px;color:var(--gray-500)">Total Votes</div><div style="font-size:24px;font-weight:700;color:var(--blue)" id="rpt-ideas-votes">0</div></div>
+              <div><div style="font-size:13px;color:var(--gray-500)">Ideas In Progress</div><div style="font-size:24px;font-weight:700;color:var(--terra)" id="rpt-ideas-progress">0</div></div>
+              <div><div style="font-size:13px;color:var(--gray-500)">Ideas Completed</div><div style="font-size:24px;font-weight:700;color:var(--green-dark)" id="rpt-ideas-done">0</div></div>
+            </div>
+            <div style="margin-bottom:16px">
+              <div style="font-size:13px;color:var(--gray-500);margin-bottom:4px">Attendance Rate</div>
+              <div class="progress-bar"><div class="progress-fill terra" id="rpt-attendance-bar" style="width:0%">0%</div></div>
+            </div>
+            <div style="font-size:13px;color:var(--gray-500)">Sessions This Month: <strong id="rpt-sessions-this">0</strong> &middot; Last Month: <strong id="rpt-sessions-last">0</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recognition Badges -->
+      <div class="panel" style="margin-top:24px">
+        <div class="panel-header"><h2>Recognition Badges</h2></div>
+        <div class="panel-body padded">
+          <div class="recognition-badges" id="rpt-badges"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: TEAM -->
+    <section class="page-section" id="page-team">
+      <div class="panel">
+        <div class="panel-header"><h2 id="team-title">My Team</h2></div>
+        <div class="panel-body padded">
+          <div id="team-loading" class="loading-wrap"><div class="spinner"></div> Loading...</div>
+          <div id="team-info" style="display:none">
+            <div style="margin-bottom:16px">
+              <div style="font-size:13px;color:var(--gray-500)">Team</div>
+              <div style="font-size:18px;font-weight:700;color:var(--gray-900)" id="team-name"></div>
+              <div style="font-size:13px;color:var(--gray-600);margin-top:4px" id="team-desc"></div>
+              <div style="font-size:12px;color:var(--gray-500);margin-top:4px"><span id="team-focus"></span> &middot; <span id="team-schedule"></span></div>
+            </div>
+            <h3 style="font-size:14px;font-weight:700;color:var(--gray-700);margin-bottom:10px">Members</h3>
+            <table id="team-members-table"><thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Joined</th></tr></thead><tbody id="team-members-tbody"></tbody></table>
+          </div>
+          <div id="team-none" class="no-data" style="display:none">You're not assigned to a team yet.</div>
+        </div>
+      </div>
+      <!-- Team Forum -->
+      <div class="panel" id="team-forum-panel" style="display:none">
+        <div class="panel-header"><h2>Team Forum</h2></div>
+        <div class="panel-body padded">
+          <div class="post-form">
+            <div class="form-group"><label>Title</label><input type="text" id="forum-title" placeholder="Post title"></div>
+            <div class="form-group"><label>Message</label><textarea id="forum-body" rows="3" placeholder="Write your message..."></textarea></div>
+            <button class="btn btn-primary btn-sm" onclick="submitForumPost()">Post Message</button>
+          </div>
+          <div id="forum-loading" class="loading-wrap" style="display:none"><div class="spinner"></div> Loading...</div>
+          <div id="forum-list"></div>
+          <div id="forum-empty" class="no-data" style="display:none">No forum posts yet. Start the conversation!</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: APPROVALS -->
+    <section class="page-section" id="page-approvals">
+      <!-- Ledger Requests -->
+      <div class="panel" id="approvals-ledger-panel" style="display:none">
+        <div class="panel-header"><h2>Pending Ledger Requests</h2></div>
+        <div class="panel-body padded">
+          <div id="approvals-ledger-list"></div>
+          <div id="approvals-ledger-empty" class="no-data" style="display:none">No pending ledger requests.</div>
+        </div>
+      </div>
+      <!-- Volunteer Applications -->
+      <div class="panel" id="approvals-vol-panel" style="display:none">
+        <div class="panel-header"><h2>Pending Volunteer Applications</h2></div>
+        <div class="panel-body padded">
+          <div id="approvals-vol-list"></div>
+          <div id="approvals-vol-empty" class="no-data" style="display:none">No pending applications.</div>
+        </div>
+      </div>
+      <div id="approvals-none" class="no-data">No pending approvals to review, or you don't have approval permissions.</div>
+    </section>
+
+    <!-- SECTION: SPONSOR VIEW -->
+    <section class="page-section" id="page-sponsor">
+      <div id="sponsor-loading" class="loading-wrap"><div class="spinner"></div> Loading...</div>
+      <div id="sponsor-content" style="display:none">
+        <div class="sponsor-overview" id="sponsor-stats"></div>
+        <div class="panel">
+          <div class="panel-header"><h2>Sponsored Scholars</h2></div>
+          <div class="panel-body padded">
+            <div id="sponsor-scholars-list"></div>
+            <div id="sponsor-scholars-empty" class="no-data" style="display:none">No scholars currently sponsored.</div>
+          </div>
+        </div>
+      </div>
+      <div id="sponsor-none" class="no-data" style="display:none">
+        <p>You're not currently a sponsor.</p>
+        <p style="margin-top:8px"><a href="/sponsor/" style="color:var(--green);font-weight:600">Become a Sponsor &rarr;</a></p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- MODALS -->
+<!-- New Task Modal -->
+<div class="modal-overlay" id="modal-task">
+  <div class="modal">
+    <div class="modal-head"><h3>New Task</h3><button class="modal-close" onclick="closeModal('modal-task')">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Title</label><input type="text" id="task-title"></div>
+      <div class="form-group"><label>Description</label><textarea id="task-desc" rows="3"></textarea></div>
+      <div class="form-group"><label>Priority</label><select id="task-priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="urgent">Urgent</option></select></div>
+      <div class="form-group"><label>Due Date</label><input type="date" id="task-due"></div>
+      <div class="form-group"><label>Source Type</label><select id="task-source-type" onchange="toggleSourceSelector()"><option value="">None</option><option value="idea">Idea</option><option value="event">Event</option><option value="goal">Goal</option></select></div>
+      <div class="form-group" id="task-source-group" style="display:none"><label>Source</label><select id="task-source-id"><option value="">Select...</option></select></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-task')">Cancel</button><button class="btn btn-primary" onclick="saveTask()">Create Task</button></div>
+  </div>
+</div>
+
+<!-- Log Hours Modal -->
+<div class="modal-overlay" id="modal-hours">
+  <div class="modal">
+    <div class="modal-head"><h3>Log Hours</h3><button class="modal-close" onclick="closeModal('modal-hours')">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Date</label><input type="date" id="hours-date"></div>
+      <div class="form-group"><label>Hours</label><input type="number" id="hours-amount" min="0.5" max="24" step="0.5" value="1"></div>
+      <div class="form-group"><label>Notes</label><textarea id="hours-notes" rows="3" placeholder="What did you work on?"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-hours')">Cancel</button><button class="btn btn-primary" onclick="logHours()">Submit</button></div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- FIREBASE SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+// ========== FIREBASE INIT ==========
+var firebaseConfig = {
+  apiKey: "AIzaSyCwos6XR9-uqAf_Esmh2K_hJoLxq4gnEuU",
+  authDomain: "big-sister-foundation.firebaseapp.com",
+  projectId: "big-sister-foundation",
+  storageBucket: "big-sister-foundation.firebasestorage.app",
+  messagingSenderId: "778723584560",
+  appId: "1:778723584560:web:7499944c30001e7fcf5bf5",
+  measurementId: "G-Q4EYY24EDZ"
+};
+firebase.initializeApp(firebaseConfig);
+var auth = firebase.auth();
+var db = firebase.firestore();
+
+// ========== STATE ==========
+var currentUser = null;
+var volunteerDoc = null;
+var volunteerId = null;
+var userDoc = null;
+var currentPermissions = [];
+var currentPage = 'dashboard';
+
+// Data caches
+var tasksData = [];
+var ideasData = [];
+var logsData = [];
+var teamData = null;
+var teamMembers = [];
+var forumPosts = [];
+var eventsData = [];
+var sponsorData = null;
+var scholarsData = [];
+
+// ========== ROLE / PERMISSION SYSTEM ==========
+var ROLE_PRESETS = {
+  volunteer: {
+    permissions: ['tasks.view','tasks.edit','ideas.view','team.view','reports.view','forums.view','forums.post']
+  },
+  program_lead: {
+    permissions: ['tasks.view','tasks.edit','ideas.view','team.view','reports.view','forums.view','forums.post',
+      'volunteer_requests.view','volunteer_requests.approve','ledger.view','sponsor.view']
+  },
+  finance: {
+    permissions: ['tasks.view','tasks.edit','ideas.view','team.view','reports.view','forums.view','forums.post',
+      'ledger.view','ledger.approve']
+  },
+  moderator: {
+    permissions: ['tasks.view','tasks.edit','ideas.view','team.view','reports.view','forums.view','forums.post',
+      'forums.moderate','volunteer_requests.view']
+  },
+  admin: {
+    permissions: ['tasks.view','tasks.edit','ideas.view','team.view','reports.view','forums.view','forums.post',
+      'volunteer_requests.view','volunteer_requests.approve','ledger.view','ledger.approve',
+      'forums.moderate','sponsor.view']
+  }
+};
+
+function computePermissions(roles, overrides) {
+  var roleList = Array.isArray(roles) ? roles : (roles ? [roles] : ['volunteer']);
+  var permSet = {};
+  roleList.forEach(function(r) {
+    var preset = ROLE_PRESETS[r];
+    if (preset) preset.permissions.forEach(function(p) { permSet[p] = true; });
+  });
+  if (overrides) {
+    Object.keys(overrides).forEach(function(k) {
+      if (overrides[k]) permSet[k] = true;
+      else delete permSet[k];
+    });
+  }
+  return Object.keys(permSet);
+}
+
+function hasPermission(perm) {
+  return currentPermissions && currentPermissions.indexOf(perm) > -1;
+}
+
+function applyNavVisibility() {
+  // Approvals: only if can approve ledger or volunteer requests
+  var approvalsNav = document.querySelector('[data-page="approvals"]');
+  if (approvalsNav) {
+    if (!hasPermission('ledger.approve') && !hasPermission('volunteer_requests.approve')) {
+      approvalsNav.classList.add('role-hidden');
+    } else {
+      approvalsNav.classList.remove('role-hidden');
+    }
+  }
+  // Sponsor view: show for program_lead/admin or if they are a sponsor
+  var sponsorNav = document.querySelector('[data-page="sponsor"]');
+  if (sponsorNav) {
+    if (!hasPermission('sponsor.view') && !sponsorData) {
+      sponsorNav.classList.add('role-hidden');
+    } else {
+      sponsorNav.classList.remove('role-hidden');
+    }
+  }
+}
+
+// ========== AUTH ==========
+function doLogin() {
+  var email = document.getElementById('login-email').value.trim();
+  var pw = document.getElementById('login-password').value;
+  if (!email || !pw) { document.getElementById('login-error').textContent = 'Please enter email and password.'; return; }
+  document.getElementById('btn-login').disabled = true;
+  document.getElementById('btn-login').textContent = 'Signing in...';
+  auth.signInWithEmailAndPassword(email, pw).catch(function(err) {
+    document.getElementById('login-error').textContent = err.message;
+    document.getElementById('btn-login').disabled = false;
+    document.getElementById('btn-login').textContent = 'Sign In';
+  });
+}
+
+function doLogout() {
+  auth.signOut().then(function() { window.location.reload(); });
+}
+
+// Enter key support
+document.getElementById('login-password').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+document.getElementById('login-email').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+
+auth.onAuthStateChanged(function(user) {
+  if (user) {
+    currentUser = user;
+    document.getElementById('login-screen').style.display = 'none';
+    loadVolunteerProfile(user.email.toLowerCase());
+  } else {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('vol-app').style.display = 'none';
+    document.getElementById('not-registered-screen').style.display = 'none';
+  }
+});
+
+function loadVolunteerProfile(email) {
+  // Look up volunteer doc by email
+  db.collection('volunteers').where('email', '==', email).limit(1).get()
+    .then(function(snap) {
+      if (snap.empty) {
+        // Not a registered volunteer
+        document.getElementById('not-registered-screen').style.display = 'flex';
+        document.getElementById('nr-email').textContent = email;
+        return;
+      }
+      var doc = snap.docs[0];
+      volunteerDoc = doc.data();
+      volunteerId = doc.id;
+
+      // Now load user permissions
+      return db.collection('users').where('email', '==', email).limit(1).get();
+    })
+    .then(function(snap) {
+      if (!snap) return; // not-registered case
+      if (!snap.empty) {
+        userDoc = snap.docs[0].data();
+        var roles = userDoc.roles || userDoc.role || 'volunteer';
+        currentPermissions = computePermissions(roles, userDoc.permissionOverrides);
+      } else {
+        // No user doc, default volunteer perms
+        currentPermissions = computePermissions(['volunteer'], null);
+      }
+
+      // Check sponsor status early
+      return db.collection('sponsors').where('email', '==', currentUser.email.toLowerCase()).limit(1).get();
+    })
+    .then(function(snap) {
+      if (!snap) return;
+      if (!snap.empty) {
+        sponsorData = snap.docs[0].data();
+        sponsorData._id = snap.docs[0].id;
+      }
+
+      // Show app
+      document.getElementById('vol-app').style.display = 'block';
+      var displayName = volunteerDoc.firstName || volunteerDoc.name || currentUser.email.split('@')[0];
+      document.getElementById('user-name-display').textContent = displayName;
+      applyNavVisibility();
+      loadDashboard();
+    })
+    .catch(function(err) {
+      console.error('Profile load error:', err);
+      // Fallback to demo mode
+      loadDemoData();
+      document.getElementById('vol-app').style.display = 'block';
+      document.getElementById('user-name-display').textContent = 'Demo User';
+      currentPermissions = computePermissions(['admin'], null);
+      applyNavVisibility();
+      loadDashboard();
+    });
+}
+
+// ========== DEMO / SEED DATA ==========
+var DEMO_VOLUNTEER = {
+  firstName: 'Adaeze',
+  lastName: 'Okafor',
+  name: 'Adaeze Okafor',
+  email: 'adaeze@example.com',
+  phone: '+234 801 234 5678',
+  location: 'Lagos, Nigeria',
+  role: 'program_lead',
+  skills: ['Mentorship', 'Teaching', 'Operations'],
+  teamId: 'team-mentorship',
+  status: 'active',
+  joinedAt: '2025-06-15',
+  createdAt: { toDate: function() { return new Date('2025-06-15'); } }
+};
+
+var DEMO_TASKS = [
+  { id: 't1', title: 'Prepare mentorship curriculum for Q2', description: 'Draft a new curriculum guide covering emotional intelligence and study skills for the mentorship team to use in Q2 sessions.', status: 'open', priority: 'high', dueDate: '2026-04-10', assigneeEmail: 'adaeze@example.com', createdAt: { toDate: function() { return new Date('2026-03-25'); } } },
+  { id: 't2', title: 'Follow up with new mentor applications', description: 'Review the 5 new mentor applications received last week and schedule intro calls with qualified candidates.', status: 'in_progress', priority: 'medium', dueDate: '2026-04-06', assigneeEmail: 'adaeze@example.com', createdAt: { toDate: function() { return new Date('2026-03-28'); } } },
+  { id: 't3', title: 'Submit monthly volunteer hours report', description: 'Compile total volunteer hours for March and submit to the coordinator.', status: 'completed', priority: 'medium', dueDate: '2026-04-01', assigneeEmail: 'adaeze@example.com', completedAt: { toDate: function() { return new Date('2026-03-31'); } }, createdAt: { toDate: function() { return new Date('2026-03-20'); } } },
+  { id: 't4', title: 'Organize school supply drive', description: 'Coordinate the collection and distribution of school supplies for 30 scholars.', status: 'open', priority: 'urgent', dueDate: '2026-04-08', assigneeEmail: 'adaeze@example.com', createdAt: { toDate: function() { return new Date('2026-03-30'); } } },
+  { id: 't5', title: 'Update team onboarding doc', description: 'Revise the mentorship team onboarding document with new guidelines.', status: 'in_progress', priority: 'low', dueDate: '2026-04-15', assigneeEmail: 'adaeze@example.com', createdAt: { toDate: function() { return new Date('2026-03-22'); } } },
+  { id: 't6', title: 'Plan community reading event', description: 'Work with the creative team to plan a reading event at the community center.', status: 'open', priority: 'medium', dueDate: '2026-04-20', assigneeEmail: 'adaeze@example.com', createdAt: { toDate: function() { return new Date('2026-04-01'); } } },
+  { id: 't7', title: 'Attend safeguarding training', description: 'Complete the mandatory safeguarding training module by end of month.', status: 'completed', priority: 'high', dueDate: '2026-03-28', assigneeEmail: 'adaeze@example.com', completedAt: { toDate: function() { return new Date('2026-03-27'); } }, createdAt: { toDate: function() { return new Date('2026-03-10'); } } },
+  { id: 't8', title: 'Review scholar progress reports', description: 'Check quarterly progress reports for all 8 scholars assigned to the mentorship team and flag any concerns.', status: 'blocked', priority: 'high', dueDate: '2026-04-12', assigneeEmail: 'adaeze@example.com', createdAt: { toDate: function() { return new Date('2026-04-02'); } } }
+];
+
+var DEMO_LOGS = [];
+(function() {
+  var now = new Date();
+  for (var w = 0; w < 8; w++) {
+    var weekDate = new Date(now);
+    weekDate.setDate(weekDate.getDate() - (w * 7));
+    var hrs = [6, 4.5, 8, 3, 7, 5, 4, 6.5][w];
+    var wn = getWeekNumber(weekDate);
+    DEMO_LOGS.push({
+      type: 'hours', hours: hrs, date: weekDate.toISOString().slice(0, 10),
+      weekNumber: wn, volunteerEmail: 'adaeze@example.com',
+      createdAt: { toDate: function() { return weekDate; } }
+    });
+  }
+  // attendance logs
+  for (var a = 0; a < 6; a++) {
+    var d = new Date(now);
+    d.setDate(d.getDate() - (a * 5));
+    DEMO_LOGS.push({ type: 'attendance', eventId: 'ev' + a, date: d.toISOString().slice(0, 10), volunteerEmail: 'adaeze@example.com', createdAt: { toDate: function() { return d; } } });
+  }
+  // feedback
+  DEMO_LOGS.push({ type: 'feedback', rating: 4, date: '2026-03-15', volunteerEmail: 'adaeze@example.com', createdAt: { toDate: function() { return new Date('2026-03-15'); } } });
+  DEMO_LOGS.push({ type: 'feedback', rating: 5, date: '2026-02-20', volunteerEmail: 'adaeze@example.com', createdAt: { toDate: function() { return new Date('2026-02-20'); } } });
+})();
+
+var DEMO_TEAM = {
+  name: 'Mentorship Team',
+  description: 'Focused on building lasting one-on-one relationships with young scholars through weekly mentorship sessions.',
+  focusArea: 'Mentorship',
+  meetingSchedule: 'Tuesdays & Thursdays, 3:00 PM',
+  status: 'active',
+  members: [
+    { name: 'Adaeze Okafor', role: 'Team Lead', email: 'adaeze@example.com', joinedAt: '2025-06-15' },
+    { name: 'Tunde Bakare', role: 'Mentor', email: 'tunde@example.com', joinedAt: '2025-07-01' },
+    { name: 'Chioma Eze', role: 'Mentor', email: 'chioma@example.com', joinedAt: '2025-08-10' },
+    { name: 'David Osei', role: 'Mentor', email: 'david@example.com', joinedAt: '2025-09-20' }
+  ]
+};
+
+var DEMO_EVENTS = [
+  { title: 'Community Reading Day', date: '2026-04-12', location: 'Surulere Community Center', type: 'outreach' },
+  { title: 'Volunteer Appreciation Dinner', date: '2026-04-18', location: 'The Grand Hall, VI', type: 'fundraiser' },
+  { title: 'Safeguarding Workshop', date: '2026-04-25', location: 'BSF Office', type: 'workshop' }
+];
+
+var DEMO_IDEAS = [
+  { id: 'i1', title: 'After-school coding bootcamp', description: 'Partner with local tech companies to run a 6-week coding bootcamp for scholars aged 12-16.', status: 'in-progress', votes: 14, category: 'Programs', assignedTo: [{ email: 'adaeze@example.com', name: 'Adaeze Okafor' }], authorEmail: 'tunde@example.com', createdAt: { toDate: function() { return new Date('2026-02-15'); } } },
+  { id: 'i2', title: 'Monthly parent engagement session', description: 'Host monthly sessions where parents/guardians meet with mentors and the team.', status: 'planned', votes: 9, category: 'Community', assignedTo: [{ email: 'adaeze@example.com', name: 'Adaeze Okafor' }], authorEmail: 'adaeze@example.com', createdAt: { toDate: function() { return new Date('2026-01-20'); } } },
+  { id: 'i3', title: 'Scholar art exhibition', description: 'Showcase creative works by our scholars at a public exhibition to raise awareness.', status: 'open', votes: 21, category: 'Fundraising', assignedTo: [{ email: 'adaeze@example.com', name: 'Adaeze Okafor' }], authorEmail: 'chioma@example.com', createdAt: { toDate: function() { return new Date('2026-03-01'); } } }
+];
+
+var DEMO_FORUM_POSTS = [
+  { title: 'Welcome to the Mentorship Team Forum!', body: 'Use this space to share updates, ask questions, and coordinate with your fellow mentors.', authorName: 'Adaeze Okafor', authorEmail: 'adaeze@example.com', teamId: 'team-mentorship', createdAt: { toDate: function() { return new Date('2025-07-01'); } } },
+  { title: 'Session feedback template', body: 'I created a simple template for session feedback. Please use it after each mentoring session so we can track progress consistently.', authorName: 'Tunde Bakare', authorEmail: 'tunde@example.com', teamId: 'team-mentorship', createdAt: { toDate: function() { return new Date('2026-03-10'); } } },
+  { title: 'Need sub for Thursday Apr 10', body: 'I have a scheduling conflict this Thursday. Can someone cover my session with Scholar #12?', authorName: 'Chioma Eze', authorEmail: 'chioma@example.com', teamId: 'team-mentorship', createdAt: { toDate: function() { return new Date('2026-04-03'); } } }
+];
+
+function loadDemoData() {
+  volunteerDoc = DEMO_VOLUNTEER;
+  volunteerId = 'demo-vol-1';
+  tasksData = DEMO_TASKS;
+  logsData = DEMO_LOGS;
+  teamData = DEMO_TEAM;
+  ideasData = DEMO_IDEAS;
+  forumPosts = DEMO_FORUM_POSTS;
+  eventsData = DEMO_EVENTS;
+  currentPermissions = computePermissions(['admin'], null);
+}
+
+// ========== NAVIGATION ==========
+var PAGE_TITLES = {
+  dashboard: 'Dashboard', tasks: 'My Tasks', ideas: 'Assigned Ideas',
+  reports: 'My Reports & Performance', team: 'Team', approvals: 'Pending Approvals', sponsor: 'Sponsor View'
+};
+
+function navigateTo(page) {
+  currentPage = page;
+  document.querySelectorAll('.page-section').forEach(function(s) { s.classList.remove('active'); });
+  var el = document.getElementById('page-' + page);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+  var nav = document.querySelector('[data-page="' + page + '"]');
+  if (nav) nav.classList.add('active');
+  document.getElementById('page-title').textContent = PAGE_TITLES[page] || page;
+  document.getElementById('breadcrumb-current').textContent = PAGE_TITLES[page] || page;
+  // Close sidebar on mobile
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-backdrop').classList.remove('open');
+
+  // Load section data
+  if (page === 'tasks') loadTasks();
+  else if (page === 'ideas') loadIdeas();
+  else if (page === 'reports') loadReports();
+  else if (page === 'team') loadTeam();
+  else if (page === 'approvals') loadApprovals();
+  else if (page === 'sponsor') loadSponsorView();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-backdrop').classList.toggle('open');
+}
+
+// ========== UTILITY ==========
+function showToast(msg, type) {
+  var c = document.getElementById('toast-container');
+  var t = document.createElement('div');
+  t.className = 'toast toast-' + (type || 'success');
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(function() { t.remove(); }, 4000);
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function formatDate(d) {
+  if (!d) return '--';
+  var date = typeof d === 'string' ? new Date(d) : (d.toDate ? d.toDate() : new Date(d));
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function timeAgo(d) {
+  var date = typeof d === 'string' ? new Date(d) : (d.toDate ? d.toDate() : new Date(d));
+  var diff = (Date.now() - date.getTime()) / 1000;
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+  if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+  return formatDate(date);
+}
+
+function getWeekNumber(d) {
+  var date = new Date(d);
+  date.setHours(0, 0, 0, 0);
+  date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+  var week1 = new Date(date.getFullYear(), 0, 4);
+  return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+}
+
+function statusBadge(status) {
+  var cls = (status || '').replace(/[\s-]/g, '_').toLowerCase();
+  return '<span class="badge badge-' + cls + '">' + (status || 'unknown').replace(/_/g, ' ') + '</span>';
+}
+
+function priorityBadge(p) {
+  return '<span class="badge badge-' + (p || 'low') + '">' + (p || 'low') + '</span>';
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ========== DASHBOARD ==========
+function loadDashboard() {
+  // Welcome banner
+  var firstName = volunteerDoc ? (volunteerDoc.firstName || volunteerDoc.name || 'Volunteer') : 'Volunteer';
+  document.getElementById('welcome-text').textContent = 'Welcome back, ' + firstName.split(' ')[0];
+
+  var teamName = volunteerDoc && volunteerDoc.teamId ? volunteerDoc.teamId.replace(/-/g, ' ').replace(/\bteam\b/gi, 'Team') : '';
+  document.getElementById('welcome-team').textContent = teamName ? 'Team: ' + teamName : '';
+
+  var since = volunteerDoc ? (volunteerDoc.joinedAt || (volunteerDoc.createdAt ? formatDate(volunteerDoc.createdAt) : '')) : '';
+  document.getElementById('welcome-since').textContent = since ? 'Member since ' + formatDate(since) : '';
+
+  // Role badges
+  var rolesEl = document.getElementById('welcome-roles');
+  rolesEl.innerHTML = '';
+  var roles = [];
+  if (userDoc && userDoc.roles) roles = Array.isArray(userDoc.roles) ? userDoc.roles : [userDoc.roles];
+  else if (userDoc && userDoc.role) roles = [userDoc.role];
+  else if (volunteerDoc && volunteerDoc.role) roles = [volunteerDoc.role];
+  else roles = ['volunteer'];
+  roles.forEach(function(r) {
+    var b = document.createElement('span');
+    b.className = 'role-badge';
+    b.textContent = r.replace(/_/g, ' ');
+    rolesEl.appendChild(b);
+  });
+
+  // Load tasks for stat cards
+  loadTasksData(function() {
+    var open = tasksData.filter(function(t) { return t.status === 'open' || t.status === 'in_progress'; }).length;
+    var completed = tasksData.filter(function(t) { return t.status === 'completed'; }).length;
+    var total = tasksData.length;
+    var rate = total > 0 ? Math.round((completed / total) * 100) : 0;
+    document.getElementById('dash-tasks').textContent = open;
+    document.getElementById('dash-rate').textContent = rate + '%';
+  });
+
+  // Load ideas count
+  loadIdeasData(function() {
+    document.getElementById('dash-ideas').textContent = ideasData.length;
+  });
+
+  // Load hours this month
+  loadLogsData(function() {
+    var now = new Date();
+    var monthHours = 0;
+    logsData.forEach(function(l) {
+      if (l.type === 'hours') {
+        var ld = new Date(l.date);
+        if (ld.getMonth() === now.getMonth() && ld.getFullYear() === now.getFullYear()) {
+          monthHours += (l.hours || 0);
+        }
+      }
+    });
+    document.getElementById('dash-hours').textContent = monthHours.toFixed(1);
+  });
+
+  // Recent activity
+  loadRecentActivity();
+
+  // Upcoming events
+  loadUpcomingEvents();
+}
+
+function loadRecentActivity() {
+  var el = document.getElementById('dash-activity');
+  var loading = document.getElementById('dash-activity-loading');
+
+  // Build from tasks + ideas
+  var items = [];
+  tasksData.forEach(function(t) {
+    items.push({ text: 'Task: ' + t.title + ' (' + (t.status || '').replace(/_/g, ' ') + ')', time: t.createdAt });
+  });
+  ideasData.forEach(function(i) {
+    items.push({ text: 'Idea assigned: ' + i.title, time: i.createdAt });
+  });
+  forumPosts.forEach(function(f) {
+    items.push({ text: 'Forum: ' + f.title + ' by ' + (f.authorName || 'Unknown'), time: f.createdAt });
+  });
+
+  items.sort(function(a, b) {
+    var ta = a.time && a.time.toDate ? a.time.toDate().getTime() : new Date(a.time || 0).getTime();
+    var tb = b.time && b.time.toDate ? b.time.toDate().getTime() : new Date(b.time || 0).getTime();
+    return tb - ta;
+  });
+
+  items = items.slice(0, 10);
+  loading.style.display = 'none';
+
+  if (items.length === 0) {
+    el.innerHTML = '<li style="color:var(--gray-400);padding:20px 0;text-align:center">No recent activity</li>';
+    return;
+  }
+
+  el.innerHTML = items.map(function(it) {
+    return '<li><div class="activity-dot"></div><div style="flex:1">' + escapeHtml(it.text) + '</div><div class="activity-time">' + timeAgo(it.time) + '</div></li>';
+  }).join('');
+}
+
+function loadUpcomingEvents() {
+  var el = document.getElementById('dash-events-list');
+  var loading = document.getElementById('dash-events-loading');
+  var empty = document.getElementById('dash-events-empty');
+
+  var today = new Date().toISOString().slice(0, 10);
+
+  db.collection('events').where('date', '>=', today).orderBy('date').limit(3).get()
+    .then(function(snap) {
+      loading.style.display = 'none';
+      if (snap.empty && eventsData.length === 0) {
+        empty.style.display = 'block';
+        return;
+      }
+      var events = [];
+      snap.forEach(function(d) { events.push(d.data()); });
+      if (events.length === 0) events = eventsData.filter(function(e) { return e.date >= today; }).slice(0, 3);
+      if (events.length === 0) { empty.style.display = 'block'; return; }
+
+      el.innerHTML = events.map(function(e) {
+        return '<div style="padding:12px 0;border-bottom:1px solid var(--gray-100)">' +
+          '<div style="font-size:14px;font-weight:700;color:var(--gray-900)">' + escapeHtml(e.title) + '</div>' +
+          '<div style="font-size:12px;color:var(--gray-500)">' + formatDate(e.date) + ' &middot; ' + escapeHtml(e.location || '') + '</div>' +
+          '<span class="tag">' + escapeHtml(e.type || 'event') + '</span>' +
+          '</div>';
+      }).join('');
+    })
+    .catch(function() {
+      loading.style.display = 'none';
+      var events = eventsData.filter(function(e) { return e.date >= today; }).slice(0, 3);
+      if (events.length === 0) { empty.style.display = 'block'; return; }
+      el.innerHTML = events.map(function(e) {
+        return '<div style="padding:12px 0;border-bottom:1px solid var(--gray-100)">' +
+          '<div style="font-size:14px;font-weight:700;color:var(--gray-900)">' + escapeHtml(e.title) + '</div>' +
+          '<div style="font-size:12px;color:var(--gray-500)">' + formatDate(e.date) + ' &middot; ' + escapeHtml(e.location || '') + '</div>' +
+          '<span class="tag">' + escapeHtml(e.type || 'event') + '</span>' +
+          '</div>';
+      }).join('');
+    });
+}
+
+// ========== DATA LOADERS ==========
+function loadTasksData(cb) {
+  if (!volunteerDoc) { if (cb) cb(); return; }
+  var email = volunteerDoc.email || (currentUser ? currentUser.email.toLowerCase() : '');
+  db.collection('tasks').where('assigneeEmail', '==', email).get()
+    .then(function(snap) {
+      tasksData = [];
+      snap.forEach(function(d) { var data = d.data(); data.id = d.id; tasksData.push(data); });
+      if (cb) cb();
+    })
+    .catch(function() {
+      if (tasksData.length === 0) tasksData = DEMO_TASKS;
+      if (cb) cb();
+    });
+}
+
+function loadIdeasData(cb) {
+  if (!volunteerDoc) { if (cb) cb(); return; }
+  var email = volunteerDoc.email || (currentUser ? currentUser.email.toLowerCase() : '');
+  // Fetch all non-completed ideas and filter client-side
+  db.collection('ideas').where('status', 'in', ['open', 'planned', 'in-progress']).get()
+    .then(function(snap) {
+      ideasData = [];
+      snap.forEach(function(d) {
+        var data = d.data();
+        data.id = d.id;
+        if (data.assignedTo && Array.isArray(data.assignedTo)) {
+          var found = data.assignedTo.some(function(a) { return a.email === email; });
+          if (found) ideasData.push(data);
+        }
+      });
+      if (cb) cb();
+    })
+    .catch(function() {
+      if (ideasData.length === 0) ideasData = DEMO_IDEAS;
+      if (cb) cb();
+    });
+}
+
+function loadLogsData(cb) {
+  if (!volunteerDoc) { if (cb) cb(); return; }
+  var email = volunteerDoc.email || (currentUser ? currentUser.email.toLowerCase() : '');
+  db.collection('volunteer_logs').where('volunteerEmail', '==', email).get()
+    .then(function(snap) {
+      logsData = [];
+      snap.forEach(function(d) { logsData.push(d.data()); });
+      if (cb) cb();
+    })
+    .catch(function() {
+      if (logsData.length === 0) logsData = DEMO_LOGS;
+      if (cb) cb();
+    });
+}
+
+// ========== TASKS SECTION ==========
+function loadTasks() {
+  document.getElementById('tasks-loading').style.display = 'flex';
+  document.getElementById('tasks-list').innerHTML = '';
+  document.getElementById('tasks-empty').style.display = 'none';
+  loadTasksData(function() {
+    document.getElementById('tasks-loading').style.display = 'none';
+    renderTasks();
+  });
+}
+
+function renderTasks() {
+  var filter = document.getElementById('task-filter').value;
+  var sort = document.getElementById('task-sort').value;
+  var list = tasksData.slice();
+
+  if (filter) list = list.filter(function(t) { return t.status === filter; });
+
+  var priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3 };
+  if (sort === 'dueDate') {
+    list.sort(function(a, b) { return (a.dueDate || 'z').localeCompare(b.dueDate || 'z'); });
+  } else if (sort === 'priority') {
+    list.sort(function(a, b) { return (priorityOrder[a.priority] || 3) - (priorityOrder[b.priority] || 3); });
+  } else {
+    list.sort(function(a, b) {
+      var ta = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate().getTime() : new Date(a.createdAt || 0).getTime();
+      var tb = b.createdAt && b.createdAt.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt || 0).getTime();
+      return tb - ta;
+    });
+  }
+
+  var el = document.getElementById('tasks-list');
+  var empty = document.getElementById('tasks-empty');
+
+  if (list.length === 0) { el.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  var today = new Date().toISOString().slice(0, 10);
+  el.innerHTML = list.map(function(t) {
+    var isOverdue = t.dueDate && t.dueDate < today && t.status !== 'completed';
+    var dueClass = isOverdue ? ' overdue' : '';
+    var statusButtons = '';
+    if (t.status === 'open') {
+      statusButtons = '<button class="btn btn-info btn-xs" onclick="updateTaskStatus(\'' + t.id + '\',\'in_progress\')">Start</button>';
+    } else if (t.status === 'in_progress') {
+      statusButtons = '<button class="btn btn-primary btn-xs" onclick="updateTaskStatus(\'' + t.id + '\',\'completed\')">Complete</button>';
+    }
+    return '<div class="task-card">' +
+      '<div class="task-card-top"><div class="task-card-title">' + escapeHtml(t.title) + '</div><div>' + priorityBadge(t.priority) + '</div></div>' +
+      '<div class="task-card-desc">' + escapeHtml(t.description || '') + '</div>' +
+      '<div class="task-card-footer">' +
+        statusBadge(t.status) +
+        (t.dueDate ? '<span class="due' + dueClass + '">Due: ' + formatDate(t.dueDate) + '</span>' : '') +
+        (t.sourceType ? '<span class="tag">' + escapeHtml(t.sourceType) + '</span>' : '') +
+      '</div>' +
+      '<div class="task-actions">' + statusButtons + '</div>' +
+      '</div>';
+  }).join('');
+}
+
+function updateTaskStatus(taskId, newStatus) {
+  var update = { status: newStatus, lastEditedAt: firebase.firestore.FieldValue.serverTimestamp() };
+  if (newStatus === 'completed') update.completedAt = firebase.firestore.FieldValue.serverTimestamp();
+
+  db.collection('tasks').doc(taskId).update(update)
+    .then(function() {
+      showToast('Task updated!', 'success');
+      // Update local data
+      tasksData.forEach(function(t) {
+        if (t.id === taskId) {
+          t.status = newStatus;
+          if (newStatus === 'completed') t.completedAt = { toDate: function() { return new Date(); } };
+        }
+      });
+      renderTasks();
+    })
+    .catch(function(err) {
+      // Demo fallback
+      tasksData.forEach(function(t) {
+        if (t.id === taskId) {
+          t.status = newStatus;
+          if (newStatus === 'completed') t.completedAt = { toDate: function() { return new Date(); } };
+        }
+      });
+      renderTasks();
+      showToast('Task updated (local)', 'success');
+    });
+}
+
+function openTaskModal() {
+  document.getElementById('task-title').value = '';
+  document.getElementById('task-desc').value = '';
+  document.getElementById('task-priority').value = 'medium';
+  document.getElementById('task-due').value = '';
+  document.getElementById('task-source-type').value = '';
+  document.getElementById('task-source-group').style.display = 'none';
+  openModal('modal-task');
+}
+
+function toggleSourceSelector() {
+  var st = document.getElementById('task-source-type').value;
+  document.getElementById('task-source-group').style.display = st ? 'block' : 'none';
+}
+
+function saveTask() {
+  var title = document.getElementById('task-title').value.trim();
+  if (!title) { showToast('Title is required', 'error'); return; }
+
+  var email = volunteerDoc ? volunteerDoc.email : (currentUser ? currentUser.email.toLowerCase() : '');
+  var name = volunteerDoc ? (volunteerDoc.name || volunteerDoc.firstName || '') : '';
+
+  var task = {
+    title: title,
+    description: document.getElementById('task-desc').value.trim(),
+    status: 'open',
+    priority: document.getElementById('task-priority').value,
+    assigneeEmail: email,
+    assigneeName: name,
+    assigneeId: volunteerId || '',
+    createdBy: email,
+    teamId: volunteerDoc ? (volunteerDoc.teamId || '') : '',
+    sourceType: document.getElementById('task-source-type').value || '',
+    sourceId: document.getElementById('task-source-id').value || '',
+    dueDate: document.getElementById('task-due').value || '',
+    completedAt: null,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    lastEditedAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  db.collection('tasks').add(task)
+    .then(function(ref) {
+      task.id = ref.id;
+      task.createdAt = { toDate: function() { return new Date(); } };
+      tasksData.push(task);
+      renderTasks();
+      closeModal('modal-task');
+      showToast('Task created!', 'success');
+    })
+    .catch(function() {
+      task.id = 't-' + Date.now();
+      task.createdAt = { toDate: function() { return new Date(); } };
+      tasksData.push(task);
+      renderTasks();
+      closeModal('modal-task');
+      showToast('Task created (local)', 'success');
+    });
+}
+
+// ========== IDEAS SECTION ==========
+function loadIdeas() {
+  document.getElementById('ideas-loading').style.display = 'flex';
+  document.getElementById('ideas-list').innerHTML = '';
+  document.getElementById('ideas-empty').style.display = 'none';
+  loadIdeasData(function() {
+    document.getElementById('ideas-loading').style.display = 'none';
+    renderIdeasList();
+  });
+}
+
+function renderIdeasList() {
+  var el = document.getElementById('ideas-list');
+  var empty = document.getElementById('ideas-empty');
+
+  if (ideasData.length === 0) { el.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  el.innerHTML = ideasData.map(function(idea) {
+    return '<div class="idea-card" onclick="toggleIdeaExpand(this)">' +
+      '<div class="idea-card-title">' + escapeHtml(idea.title) + '</div>' +
+      '<div class="idea-card-desc collapsed">' + escapeHtml(idea.description || '') + '</div>' +
+      '<div class="idea-card-meta">' +
+        statusBadge(idea.status) +
+        '<span class="vote-count"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 00-6 0v4"/><path d="M18 8h-2a2 2 0 00-2 2v6a2 2 0 002 2h.5a.5.5 0 00.5-.5V14h1.5a1.5 1.5 0 001.3-2.25l-1.5-2.5A1.5 1.5 0 0018 8z"/></svg>' + (idea.votes || 0) + ' votes</span>' +
+        (idea.category ? '<span class="tag">' + escapeHtml(idea.category) + '</span>' : '') +
+      '</div>' +
+      '</div>';
+  }).join('');
+}
+
+function toggleIdeaExpand(card) {
+  var desc = card.querySelector('.idea-card-desc');
+  if (desc) desc.classList.toggle('collapsed');
+}
+
+// ========== REPORTS SECTION ==========
+function loadReports() {
+  loadTasksData(function() {
+    loadLogsData(function() {
+      loadIdeasData(function() {
+        renderReports();
+      });
+    });
+  });
+}
+
+function renderReports() {
+  // Total hours
+  var totalHours = 0;
+  var hourLogs = logsData.filter(function(l) { return l.type === 'hours'; });
+  hourLogs.forEach(function(l) { totalHours += (l.hours || 0); });
+  document.getElementById('rpt-hours').textContent = totalHours.toFixed(1);
+
+  // Tasks completed
+  var completed = tasksData.filter(function(t) { return t.status === 'completed'; }).length;
+  document.getElementById('rpt-completed').textContent = completed;
+
+  // Current streak (consecutive weeks with logged hours)
+  var weekSet = {};
+  hourLogs.forEach(function(l) { if (l.weekNumber) weekSet[l.weekNumber] = true; });
+  var now = new Date();
+  var currentWeek = getWeekNumber(now);
+  var streak = 0;
+  for (var w = currentWeek; w > 0; w--) {
+    if (weekSet[w]) streak++;
+    else break;
+  }
+  document.getElementById('rpt-streak').textContent = streak + ' weeks';
+
+  // Average rating
+  var feedbacks = logsData.filter(function(l) { return l.type === 'feedback' && l.rating; });
+  if (feedbacks.length > 0) {
+    var avgRating = feedbacks.reduce(function(s, f) { return s + f.rating; }, 0) / feedbacks.length;
+    document.getElementById('rpt-rating').textContent = avgRating.toFixed(1) + '/5';
+  } else {
+    document.getElementById('rpt-rating').textContent = 'N/A';
+  }
+
+  // Hours chart
+  renderHoursChart(hourLogs);
+
+  // Task performance
+  var total = tasksData.length;
+  var compRate = total > 0 ? Math.round((completed / total) * 100) : 0;
+  var bar = document.getElementById('rpt-completion-bar');
+  bar.style.width = compRate + '%';
+  bar.textContent = compRate + '%';
+
+  // On-time rate
+  var completedTasks = tasksData.filter(function(t) { return t.status === 'completed'; });
+  var onTime = completedTasks.filter(function(t) {
+    if (!t.dueDate || !t.completedAt) return true;
+    var due = new Date(t.dueDate);
+    var comp = t.completedAt.toDate ? t.completedAt.toDate() : new Date(t.completedAt);
+    return comp <= due;
+  }).length;
+  var onTimeRate = completedTasks.length > 0 ? Math.round((onTime / completedTasks.length) * 100) : 0;
+  var otBar = document.getElementById('rpt-ontime-bar');
+  otBar.style.width = onTimeRate + '%';
+  otBar.textContent = onTimeRate + '%';
+
+  // Avg completion time
+  var totalDays = 0;
+  var countDays = 0;
+  completedTasks.forEach(function(t) {
+    if (t.createdAt && t.completedAt) {
+      var start = t.createdAt.toDate ? t.createdAt.toDate() : new Date(t.createdAt);
+      var end = t.completedAt.toDate ? t.completedAt.toDate() : new Date(t.completedAt);
+      totalDays += (end - start) / 86400000;
+      countDays++;
+    }
+  });
+  document.getElementById('rpt-avg-time').textContent = countDays > 0 ? (totalDays / countDays).toFixed(1) + ' days' : '--';
+
+  // Task donut
+  var statusCounts = { open: 0, in_progress: 0, completed: 0, blocked: 0 };
+  tasksData.forEach(function(t) { if (statusCounts.hasOwnProperty(t.status)) statusCounts[t.status]++; });
+  renderTaskDonut(statusCounts, total);
+
+  // Ideas impact
+  var email = volunteerDoc ? volunteerDoc.email : '';
+  var myIdeas = ideasData.filter(function(i) { return i.authorEmail === email; });
+  var allAssigned = ideasData;
+  document.getElementById('rpt-ideas-count').textContent = myIdeas.length;
+  document.getElementById('rpt-ideas-votes').textContent = myIdeas.reduce(function(s, i) { return s + (i.votes || 0); }, 0);
+  document.getElementById('rpt-ideas-progress').textContent = allAssigned.filter(function(i) { return i.status === 'in-progress'; }).length;
+  document.getElementById('rpt-ideas-done').textContent = allAssigned.filter(function(i) { return i.status === 'completed'; }).length;
+
+  // Attendance
+  var attendanceLogs = logsData.filter(function(l) { return l.type === 'attendance'; });
+  var totalEvents = eventsData.length || 10;
+  var attRate = totalEvents > 0 ? Math.round((attendanceLogs.length / totalEvents) * 100) : 0;
+  if (attRate > 100) attRate = 100;
+  var attBar = document.getElementById('rpt-attendance-bar');
+  attBar.style.width = attRate + '%';
+  attBar.textContent = attRate + '%';
+
+  var thisMonth = now.getMonth();
+  var thisYear = now.getFullYear();
+  var sessionsThis = attendanceLogs.filter(function(l) {
+    var d = new Date(l.date);
+    return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
+  }).length;
+  var lastMonth = thisMonth === 0 ? 11 : thisMonth - 1;
+  var lastYear = thisMonth === 0 ? thisYear - 1 : thisYear;
+  var sessionsLast = attendanceLogs.filter(function(l) {
+    var d = new Date(l.date);
+    return d.getMonth() === lastMonth && d.getFullYear() === lastYear;
+  }).length;
+  document.getElementById('rpt-sessions-this').textContent = sessionsThis;
+  document.getElementById('rpt-sessions-last').textContent = sessionsLast;
+
+  // Recognition badges
+  renderBadges(totalHours, completed, streak, hourLogs, myIdeas, forumPosts, tasksData);
+}
+
+function renderHoursChart(hourLogs) {
+  var now = new Date();
+  var weeks = [];
+  for (var i = 7; i >= 0; i--) {
+    var d = new Date(now);
+    d.setDate(d.getDate() - (i * 7));
+    var wn = getWeekNumber(d);
+    var hrs = 0;
+    hourLogs.forEach(function(l) {
+      if (l.weekNumber === wn) hrs += (l.hours || 0);
+    });
+    weeks.push({ week: 'W' + wn, hours: hrs });
+  }
+
+  var maxHrs = Math.max.apply(null, weeks.map(function(w) { return w.hours; }));
+  if (maxHrs === 0) maxHrs = 1;
+
+  var container = document.getElementById('hours-chart-container');
+  container.innerHTML = '<div class="hours-chart">' + weeks.map(function(w) {
+    var h = Math.max((w.hours / maxHrs) * 140, 4);
+    return '<div class="hours-bar-wrap">' +
+      '<div class="hours-bar-value">' + w.hours + '</div>' +
+      '<div class="hours-bar" style="height:' + h + 'px"></div>' +
+      '<div class="hours-bar-label">' + w.week + '</div>' +
+      '</div>';
+  }).join('') + '</div>';
+}
+
+function renderTaskDonut(counts, total) {
+  if (total === 0) {
+    document.getElementById('rpt-task-donut').style.background = 'var(--gray-200)';
+    document.getElementById('rpt-task-legend').innerHTML = '<li>No tasks yet</li>';
+    return;
+  }
+  var colors = { open: '#2D5E40', in_progress: '#D4A96A', completed: '#2563eb', blocked: '#dc2626' };
+  var labels = { open: 'Open', in_progress: 'In Progress', completed: 'Completed', blocked: 'Blocked' };
+  var segments = [];
+  var angle = 0;
+  Object.keys(counts).forEach(function(k) {
+    if (counts[k] > 0) {
+      var pct = (counts[k] / total) * 100;
+      segments.push(colors[k] + ' ' + angle + 'deg ' + (angle + (pct * 3.6)) + 'deg');
+      angle += pct * 3.6;
+    }
+  });
+
+  document.getElementById('rpt-task-donut').style.background = 'conic-gradient(' + segments.join(',') + ')';
+
+  var legendHtml = '';
+  Object.keys(counts).forEach(function(k) {
+    legendHtml += '<li><span class="dot" style="background:' + colors[k] + '"></span>' + labels[k] + ': ' + counts[k] + '</li>';
+  });
+  document.getElementById('rpt-task-legend').innerHTML = legendHtml;
+}
+
+function renderBadges(totalHours, completed, streak, hourLogs, myIdeas, posts, allTasks) {
+  var badges = [
+    { name: 'First Week', icon: '🌱', earned: hourLogs.length > 0, desc: 'Logged at least 1 hour' },
+    { name: 'Consistent', icon: '🔥', earned: streak >= 4, desc: '4+ consecutive active weeks' },
+    { name: 'Task Master', icon: '✅', earned: completed >= 10, desc: 'Completed 10+ tasks' },
+    { name: 'Idea Champion', icon: '💡', earned: myIdeas.length >= 5, desc: 'Submitted 5+ ideas' },
+    { name: 'Team Player', icon: '🤝', earned: posts.length >= 20, desc: '20+ forum posts' },
+    { name: '50 Hours', icon: '⏱️', earned: totalHours >= 50, desc: '50+ total hours logged' },
+    { name: '100 Hours', icon: '🏆', earned: totalHours >= 100, desc: '100+ total hours logged' },
+    { name: 'Century', icon: '💯', earned: completed >= 100, desc: 'Completed 100+ tasks' },
+    { name: 'Perfect Month', icon: '⭐', earned: checkPerfectMonth(allTasks), desc: 'All tasks completed in a month' }
+  ];
+
+  var el = document.getElementById('rpt-badges');
+  el.innerHTML = badges.map(function(b) {
+    var cls = b.earned ? 'earned' : 'locked';
+    return '<div class="rec-badge ' + cls + '" title="' + escapeHtml(b.desc) + '"><span class="icon">' + b.icon + '</span>' + escapeHtml(b.name) + '</div>';
+  }).join('');
+}
+
+function checkPerfectMonth(tasks) {
+  if (tasks.length === 0) return false;
+  var now = new Date();
+  var month = now.getMonth();
+  var year = now.getFullYear();
+  var monthTasks = tasks.filter(function(t) {
+    if (!t.dueDate) return false;
+    var d = new Date(t.dueDate);
+    return d.getMonth() === month && d.getFullYear() === year;
+  });
+  if (monthTasks.length === 0) return false;
+  return monthTasks.every(function(t) { return t.status === 'completed'; });
+}
+
+// ========== LOG HOURS ==========
+function openLogHoursModal() {
+  document.getElementById('hours-date').value = new Date().toISOString().slice(0, 10);
+  document.getElementById('hours-amount').value = '1';
+  document.getElementById('hours-notes').value = '';
+  openModal('modal-hours');
+}
+
+function logHours() {
+  var date = document.getElementById('hours-date').value;
+  var hours = parseFloat(document.getElementById('hours-amount').value);
+  var notes = document.getElementById('hours-notes').value.trim();
+
+  if (!date || !hours || hours <= 0) { showToast('Please fill in date and hours', 'error'); return; }
+
+  var email = volunteerDoc ? volunteerDoc.email : (currentUser ? currentUser.email.toLowerCase() : '');
+  var log = {
+    volunteerId: volunteerId || '',
+    volunteerEmail: email,
+    type: 'hours',
+    hours: hours,
+    notes: notes,
+    date: date,
+    weekNumber: getWeekNumber(new Date(date)),
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  db.collection('volunteer_logs').add(log)
+    .then(function() {
+      log.createdAt = { toDate: function() { return new Date(); } };
+      logsData.push(log);
+      closeModal('modal-hours');
+      showToast('Hours logged!', 'success');
+      if (currentPage === 'reports') renderReports();
+    })
+    .catch(function() {
+      log.createdAt = { toDate: function() { return new Date(); } };
+      logsData.push(log);
+      closeModal('modal-hours');
+      showToast('Hours logged (local)', 'success');
+      if (currentPage === 'reports') renderReports();
+    });
+}
+
+// ========== TEAM SECTION ==========
+function loadTeam() {
+  document.getElementById('team-loading').style.display = 'flex';
+  document.getElementById('team-info').style.display = 'none';
+  document.getElementById('team-none').style.display = 'none';
+  document.getElementById('team-forum-panel').style.display = 'none';
+
+  var teamId = volunteerDoc ? volunteerDoc.teamId : '';
+  if (!teamId) {
+    if (teamData) {
+      renderTeamInfo(teamData);
+    } else {
+      document.getElementById('team-loading').style.display = 'none';
+      document.getElementById('team-none').style.display = 'block';
+    }
+    return;
+  }
+
+  db.collection('teams').doc(teamId).get()
+    .then(function(doc) {
+      document.getElementById('team-loading').style.display = 'none';
+      if (doc.exists) {
+        teamData = doc.data();
+        renderTeamInfo(teamData);
+        loadForumPosts(teamId);
+      } else {
+        if (teamData) {
+          renderTeamInfo(teamData);
+          loadForumPosts(teamId);
+        } else {
+          document.getElementById('team-none').style.display = 'block';
+        }
+      }
+    })
+    .catch(function() {
+      document.getElementById('team-loading').style.display = 'none';
+      if (teamData) {
+        renderTeamInfo(teamData);
+        loadForumPostsLocal();
+      } else {
+        document.getElementById('team-none').style.display = 'block';
+      }
+    });
+}
+
+function renderTeamInfo(team) {
+  document.getElementById('team-info').style.display = 'block';
+  document.getElementById('team-title').textContent = team.name || 'My Team';
+  document.getElementById('team-name').textContent = team.name || '';
+  document.getElementById('team-desc').textContent = team.description || '';
+  document.getElementById('team-focus').textContent = 'Focus: ' + (team.focusArea || 'General');
+  document.getElementById('team-schedule').textContent = 'Meetings: ' + (team.meetingSchedule || 'TBD');
+
+  var members = team.members || [];
+  var tbody = document.getElementById('team-members-tbody');
+  tbody.innerHTML = members.map(function(m) {
+    return '<tr><td>' + escapeHtml(m.name) + '</td><td>' + escapeHtml(m.role || 'Member') + '</td><td>' + escapeHtml(m.email) + '</td><td>' + formatDate(m.joinedAt) + '</td></tr>';
+  }).join('');
+}
+
+function loadForumPosts(teamId) {
+  document.getElementById('team-forum-panel').style.display = 'block';
+  document.getElementById('forum-loading').style.display = 'flex';
+  document.getElementById('forum-list').innerHTML = '';
+  document.getElementById('forum-empty').style.display = 'none';
+
+  db.collection('team_forums').where('teamId', '==', teamId).orderBy('createdAt', 'desc').limit(20).get()
+    .then(function(snap) {
+      document.getElementById('forum-loading').style.display = 'none';
+      forumPosts = [];
+      snap.forEach(function(d) { var data = d.data(); data.id = d.id; forumPosts.push(data); });
+      if (forumPosts.length === 0) forumPosts = DEMO_FORUM_POSTS;
+      renderForumPosts();
+    })
+    .catch(function() {
+      document.getElementById('forum-loading').style.display = 'none';
+      if (forumPosts.length === 0) forumPosts = DEMO_FORUM_POSTS;
+      renderForumPosts();
+    });
+}
+
+function loadForumPostsLocal() {
+  document.getElementById('team-forum-panel').style.display = 'block';
+  document.getElementById('forum-loading').style.display = 'none';
+  renderForumPosts();
+}
+
+function renderForumPosts() {
+  var el = document.getElementById('forum-list');
+  var empty = document.getElementById('forum-empty');
+
+  if (forumPosts.length === 0) { el.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  el.innerHTML = forumPosts.map(function(p) {
+    return '<div class="forum-card">' +
+      '<div class="forum-card-title">' + escapeHtml(p.title) + '</div>' +
+      '<div class="forum-card-meta">' + escapeHtml(p.authorName || 'Unknown') + ' &middot; ' + timeAgo(p.createdAt) + '</div>' +
+      '<div class="forum-card-body">' + escapeHtml(p.body || '') + '</div>' +
+      '</div>';
+  }).join('');
+}
+
+function submitForumPost() {
+  var title = document.getElementById('forum-title').value.trim();
+  var body = document.getElementById('forum-body').value.trim();
+  if (!title || !body) { showToast('Title and message are required', 'error'); return; }
+
+  var email = volunteerDoc ? volunteerDoc.email : (currentUser ? currentUser.email.toLowerCase() : '');
+  var name = volunteerDoc ? (volunteerDoc.name || volunteerDoc.firstName || '') : '';
+  var teamId = volunteerDoc ? (volunteerDoc.teamId || '') : '';
+
+  var post = {
+    title: title,
+    body: body,
+    authorEmail: email,
+    authorName: name,
+    teamId: teamId,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  db.collection('team_forums').add(post)
+    .then(function() {
+      post.createdAt = { toDate: function() { return new Date(); } };
+      forumPosts.unshift(post);
+      renderForumPosts();
+      document.getElementById('forum-title').value = '';
+      document.getElementById('forum-body').value = '';
+      showToast('Post published!', 'success');
+    })
+    .catch(function() {
+      post.createdAt = { toDate: function() { return new Date(); } };
+      forumPosts.unshift(post);
+      renderForumPosts();
+      document.getElementById('forum-title').value = '';
+      document.getElementById('forum-body').value = '';
+      showToast('Post published (local)', 'success');
+    });
+}
+
+// ========== APPROVALS SECTION ==========
+function loadApprovals() {
+  var hasLedger = hasPermission('ledger.approve');
+  var hasVol = hasPermission('volunteer_requests.approve');
+  var anyPanel = false;
+
+  document.getElementById('approvals-none').style.display = 'block';
+  document.getElementById('approvals-ledger-panel').style.display = 'none';
+  document.getElementById('approvals-vol-panel').style.display = 'none';
+
+  if (hasLedger) {
+    anyPanel = true;
+    document.getElementById('approvals-ledger-panel').style.display = 'block';
+    loadLedgerRequests();
+  }
+
+  if (hasVol) {
+    anyPanel = true;
+    document.getElementById('approvals-vol-panel').style.display = 'block';
+    loadVolunteerRequests();
+  }
+
+  if (anyPanel) document.getElementById('approvals-none').style.display = 'none';
+}
+
+function loadLedgerRequests() {
+  var el = document.getElementById('approvals-ledger-list');
+  var empty = document.getElementById('approvals-ledger-empty');
+
+  db.collection('ledger_requests').where('status', '==', 'pending').get()
+    .then(function(snap) {
+      if (snap.empty) { empty.style.display = 'block'; return; }
+      empty.style.display = 'none';
+      var html = '';
+      snap.forEach(function(d) {
+        var data = d.data();
+        html += '<div class="approval-card">' +
+          '<div class="approval-card-header"><div class="approval-card-title">' + escapeHtml(data.type || 'Ledger Request') + '</div>' + statusBadge('pending') + '</div>' +
+          '<div class="approval-card-body"><strong>Amount:</strong> $' + (data.amount || 0).toLocaleString() + '<br>' +
+          '<strong>Description:</strong> ' + escapeHtml(data.description || '') + '<br>' +
+          '<strong>Requested by:</strong> ' + escapeHtml(data.requestedBy || '') + '</div>' +
+          '<div class="approval-actions">' +
+          '<button class="btn btn-primary btn-xs" onclick="handleApproval(\'ledger_requests\',\'' + d.id + '\',\'approved\')">Approve</button>' +
+          '<button class="btn btn-danger btn-xs" onclick="handleApproval(\'ledger_requests\',\'' + d.id + '\',\'rejected\')">Reject</button>' +
+          '</div></div>';
+      });
+      el.innerHTML = html;
+    })
+    .catch(function() {
+      empty.style.display = 'block';
+    });
+}
+
+function loadVolunteerRequests() {
+  var el = document.getElementById('approvals-vol-list');
+  var empty = document.getElementById('approvals-vol-empty');
+
+  db.collection('volunteer_requests').where('status', '==', 'pending').get()
+    .then(function(snap) {
+      if (snap.empty) { empty.style.display = 'block'; return; }
+      empty.style.display = 'none';
+      var html = '';
+      snap.forEach(function(d) {
+        var data = d.data();
+        html += '<div class="approval-card">' +
+          '<div class="approval-card-header"><div class="approval-card-title">' + escapeHtml(data.name || 'Applicant') + '</div>' + statusBadge('pending') + '</div>' +
+          '<div class="approval-card-body"><strong>Email:</strong> ' + escapeHtml(data.email || '') + '<br>' +
+          '<strong>Motivation:</strong> ' + escapeHtml((data.motivation || '').substring(0, 200)) + (data.motivation && data.motivation.length > 200 ? '...' : '') + '</div>' +
+          '<div class="approval-actions">' +
+          '<button class="btn btn-primary btn-xs" onclick="handleApproval(\'volunteer_requests\',\'' + d.id + '\',\'approved\')">Approve</button>' +
+          '<button class="btn btn-danger btn-xs" onclick="handleApproval(\'volunteer_requests\',\'' + d.id + '\',\'rejected\')">Reject</button>' +
+          '</div></div>';
+      });
+      el.innerHTML = html;
+    })
+    .catch(function() {
+      empty.style.display = 'block';
+    });
+}
+
+function handleApproval(collection, docId, newStatus) {
+  var email = currentUser ? currentUser.email : 'unknown';
+  db.collection(collection).doc(docId).update({
+    status: newStatus,
+    reviewedBy: email,
+    reviewedAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(function() {
+    // Write audit log
+    db.collection('audit_log').add({
+      action: 'update',
+      collection: collection,
+      documentId: docId,
+      changes: { status: newStatus },
+      user: email,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    showToast('Request ' + newStatus + '!', 'success');
+    loadApprovals();
+  }).catch(function(err) {
+    showToast('Error: ' + err.message, 'error');
+  });
+}
+
+// ========== SPONSOR VIEW ==========
+function loadSponsorView() {
+  document.getElementById('sponsor-loading').style.display = 'flex';
+  document.getElementById('sponsor-content').style.display = 'none';
+  document.getElementById('sponsor-none').style.display = 'none';
+
+  if (!sponsorData) {
+    document.getElementById('sponsor-loading').style.display = 'none';
+    document.getElementById('sponsor-none').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('sponsor-loading').style.display = 'none';
+  document.getElementById('sponsor-content').style.display = 'block';
+
+  // Render stats
+  var tierClass = (sponsorData.tier || 'seedling').toLowerCase();
+  document.getElementById('sponsor-stats').innerHTML =
+    '<div class="stat-card"><div class="label">Sponsor Tier</div><div class="value"><span class="badge badge-' + tierClass + '">' + escapeHtml(sponsorData.tier || 'Seedling') + '</span></div></div>' +
+    '<div class="stat-card"><div class="label">Total Donated</div><div class="value green">$' + (sponsorData.totalDonated || 0).toLocaleString() + '</div></div>' +
+    '<div class="stat-card"><div class="label">Donations</div><div class="value blue">' + (sponsorData.donationCount || 0) + '</div></div>' +
+    '<div class="stat-card"><div class="label">Joined</div><div class="value" style="font-size:16px">' + formatDate(sponsorData.joinedAt || sponsorData.createdAt) + '</div></div>';
+
+  // Load scholars
+  loadSponsoredScholars(sponsorData._id);
+}
+
+function loadSponsoredScholars(sponsorId) {
+  var el = document.getElementById('sponsor-scholars-list');
+  var empty = document.getElementById('sponsor-scholars-empty');
+
+  db.collection('scholars').where('sponsorId', '==', sponsorId).get()
+    .then(function(snap) {
+      if (snap.empty) { empty.style.display = 'block'; return; }
+      empty.style.display = 'none';
+      var html = '';
+      snap.forEach(function(d) {
+        var s = d.data();
+        var stars = '';
+        var rating = s.performanceRating || 3;
+        for (var i = 1; i <= 5; i++) stars += i <= rating ? '★' : '☆';
+        html += '<div class="scholar-card">' +
+          '<div class="scholar-card-name">' + escapeHtml(s.name || 'Scholar') + '</div>' +
+          '<div class="scholar-card-meta">' + escapeHtml(s.school || '') + '</div>' +
+          '<div class="stars">' + stars + '</div>' +
+          '<div style="margin-top:6px">' + statusBadge(s.status || 'Active') + '</div>' +
+          '</div>';
+      });
+      el.innerHTML = html;
+    })
+    .catch(function() {
+      empty.style.display = 'block';
+    });
+}
+
+// ========== INIT ON LOAD ==========
+// Set default date for hours modal
+document.getElementById('hours-date').value = new Date().toISOString().slice(0, 10);
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>
