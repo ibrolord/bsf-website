@@ -82,25 +82,13 @@ match /goals/{goalId} {
 ---
 
 ## 7. Set Up Email Routing for thebigsisterfoundation.org
-**Status:** All pages updated to use BSF emails. Need to CREATE the actual mailboxes.
-**Emails configured on site:** `hello@thebigsisterfoundation.org` (general) + `give@thebigsisterfoundation.org` (donations)
-**Quickest setup — Cloudflare Email Routing (FREE):**
-1. Add thebigsisterfoundation.org to Cloudflare (free plan)
-2. Go to Email → Email Routing → Enable
-3. Add: `hello@` → forwards to princebolajibreeze@gmail.com
-4. Add: `give@` → forwards to princebolajibreeze@gmail.com
-5. Done — emails arrive in your Gmail, donors see the professional address
-
-**Alternative — Zoho Mail (FREE, up to 5 users, own inbox):**
-1. Go to zoho.com/mail → Sign up → Add domain thebigsisterfoundation.org
-2. Verify domain via DNS TXT record
-3. Create mailboxes: hello@, give@
-4. Access at mail.zoho.com
+**Status:** DONE — Cloudflare Email Routing configured
+**Routes:** `hello@thebigsisterfoundation.org` + `give@thebigsisterfoundation.org` → `bolajiagunbiade1@gmail.com`
 
 ---
 
 ## 8. Deploy to Vercel
-**Status:** Running on localhost only
+**Status:** DONE — pushed to feat/bsf-website, Vercel auto-deploying
 **Why:** Nobody can see the site yet
 **Steps:**
 1. Tell Claude to commit and push
