@@ -1178,13 +1178,8 @@
       document.getElementById('app').style.display = 'block';
       loadPortal(user);
     } else {
-      currentUser = null;
-      volunteerDoc = null;
-      teamDoc = null;
-      document.getElementById('login-gate').style.display = 'flex';
-      document.getElementById('app').style.display = 'none';
-      loginBtn.disabled = false;
-      loginBtn.textContent = 'Sign In';
+      // Redirect to unified sign-in
+      window.location.href = '/signin/';
     }
   });
 
