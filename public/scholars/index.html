@@ -1140,10 +1140,19 @@
           </div>
         </div>
 
+        <!-- COMMUNITY CONTEXT BANNER -->
+        <div id="community-banner" style="display:none;background:rgba(45,94,64,0.06);border:1.5px solid rgba(45,94,64,0.12);border-radius:12px;padding:0.85rem 1.25rem;margin-bottom:1.25rem;display:none;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
+          <span style="font-size:0.88rem;color:var(--green);font-weight:600;" id="community-banner-text"></span>
+          <button onclick="clearCommunityFilter()" style="font-size:0.78rem;color:var(--terra);font-weight:600;background:none;border:none;cursor:pointer;text-decoration:underline;">Clear filter</button>
+        </div>
+
         <!-- TOOLBAR -->
         <div class="toolbar">
           <div class="filter-group">
             <label>Filters:</label>
+            <select class="filter-select" id="filter-community">
+              <option value="">All Communities</option>
+            </select>
             <select class="filter-select" id="filter-pathway">
               <option value="">All Pathways</option>
               <option value="difficult-backgrounds">Difficult Backgrounds</option>
@@ -1514,6 +1523,7 @@
       var editingSchoolId = null;
       var activeSchoolTab = 'notes';
       var allCommunities = [];
+      var filterCommunity = null; // set from URL or dropdown
 
       var expenseCategories = ['tuition', 'books', 'uniform', 'transport', 'feeding', 'medical', 'other'];
       var expenseCategoryLabels = {
@@ -2382,13 +2392,30 @@
 
       // --- FILTERING & SORTING ---
 
+      function getSchoolsInCommunity(communityId) {
+        var names = [];
+        allSchools.forEach(function (sch) {
+          if (sch.communityId === communityId) names.push(sch.name);
+        });
+        return names;
+      }
+
       function getFilteredScholars() {
         var pw = filterPathway.value;
         var st = filterStatus.value;
         var pf = filterPerformance.value;
         var q = searchInput.value.toLowerCase().trim();
+        var fc = document.getElementById('filter-community');
+        var commId = fc ? fc.value : '';
+
+        // Community filter: find school names in that community
+        var commSchoolNames = null;
+        if (commId) {
+          commSchoolNames = getSchoolsInCommunity(commId);
+        }
 
         return allScholars.filter(function (s) {
+          if (commSchoolNames && commSchoolNames.indexOf(s.school) === -1) return false;
           if (pw) {
             if (pw === '__other') {
               if (isStandardPathway(s.pathway)) return false;
@@ -2904,8 +2931,66 @@
         }
       });
 
+      // --- COMMUNITY FILTER SETUP ---
+
+      function populateCommunityFilter() {
+        var fc = document.getElementById('filter-community');
+        if (!fc) return;
+        var val = fc.value;
+        fc.innerHTML = '<option value="">All Communities</option>';
+        allCommunities.forEach(function (c) {
+          var opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = c.name;
+          fc.appendChild(opt);
+        });
+        fc.value = val;
+      }
+
+      function applyCommunityUrlParams() {
+        var params = new URLSearchParams(window.location.search);
+        var commParam = params.get('community');
+        var schoolParam = params.get('school');
+        var fc = document.getElementById('filter-community');
+        var banner = document.getElementById('community-banner');
+        var bannerText = document.getElementById('community-banner-text');
+
+        if (commParam && fc) {
+          fc.value = commParam;
+          var commName = commParam;
+          allCommunities.forEach(function (c) { if (c.id === commParam) commName = c.name; });
+          if (banner && bannerText) {
+            bannerText.textContent = 'Showing scholars in ' + commName;
+            banner.style.display = 'flex';
+          }
+        }
+        if (schoolParam) {
+          searchInput.value = schoolParam;
+          if (banner && bannerText) {
+            bannerText.textContent = 'Filtered by school: ' + schoolParam;
+            banner.style.display = 'flex';
+          }
+        }
+      }
+
+      window.clearCommunityFilter = function () {
+        var fc = document.getElementById('filter-community');
+        if (fc) fc.value = '';
+        searchInput.value = '';
+        var banner = document.getElementById('community-banner');
+        if (banner) banner.style.display = 'none';
+        // Clean URL
+        var url = new URL(window.location);
+        url.searchParams.delete('community');
+        url.searchParams.delete('school');
+        window.history.replaceState({}, '', url);
+        renderScholars();
+      };
+
       // --- FILTER & SEARCH EVENTS ---
 
+      var fcEl = document.getElementById('filter-community');
+      if (fcEl) fcEl.addEventListener('change', renderScholars);
       filterPathway.addEventListener('change', renderScholars);
       filterStatus.addEventListener('change', renderScholars);
       filterPerformance.addEventListener('change', renderScholars);
@@ -3826,6 +3911,8 @@
             });
           })
           .then(function () {
+            populateCommunityFilter();
+            applyCommunityUrlParams();
             updateDashboard();
             renderScholars();
           })
