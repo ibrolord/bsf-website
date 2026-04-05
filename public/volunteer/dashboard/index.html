@@ -660,6 +660,14 @@ tbody tr:hover{background:var(--gray-50)}
           <div id="approvals-blog-empty" class="no-data" style="display:none">No pending blog posts.</div>
         </div>
       </div>
+      <!-- Event Proposals -->
+      <div class="panel" id="approvals-events-panel" style="display:none">
+        <div class="panel-header"><h2>Pending Event Proposals</h2></div>
+        <div class="panel-body padded">
+          <div id="approvals-events-list"></div>
+          <div id="approvals-events-empty" class="no-data" style="display:none">No pending event proposals.</div>
+        </div>
+      </div>
       <div id="approvals-none" class="no-data">No pending approvals to review, or you don't have approval permissions.</div>
     </section>
 
@@ -775,7 +783,7 @@ var ROLE_PRESETS = {
   },
   program_lead: {
     permissions: ['tasks.view','tasks.edit','ideas.view','team.view','reports.view','forums.view','forums.post',
-      'volunteer_requests.view','volunteer_requests.approve','ledger.view','sponsor.view']
+      'volunteer_requests.view','volunteer_requests.approve','ledger.view','sponsor.view','events.approve']
   },
   finance: {
     permissions: ['tasks.view','tasks.edit','ideas.view','team.view','reports.view','forums.view','forums.post',
@@ -788,7 +796,7 @@ var ROLE_PRESETS = {
   admin: {
     permissions: ['tasks.view','tasks.edit','ideas.view','team.view','reports.view','forums.view','forums.post',
       'volunteer_requests.view','volunteer_requests.approve','ledger.view','ledger.approve',
-      'forums.moderate','sponsor.view']
+      'forums.moderate','sponsor.view','events.approve']
   }
 };
 
@@ -816,7 +824,7 @@ function applyNavVisibility() {
   // Approvals: only if can approve ledger or volunteer requests
   var approvalsNav = document.querySelector('[data-page="approvals"]');
   if (approvalsNav) {
-    if (!hasPermission('ledger.approve') && !hasPermission('volunteer_requests.approve')) {
+    if (!hasPermission('ledger.approve') && !hasPermission('volunteer_requests.approve') && !hasPermission('events.approve')) {
       approvalsNav.classList.add('role-hidden');
     } else {
       approvalsNav.classList.remove('role-hidden');
@@ -1931,11 +1939,13 @@ function submitForumPost() {
 function loadApprovals() {
   var hasLedger = hasPermission('ledger.approve');
   var hasVol = hasPermission('volunteer_requests.approve');
+  var hasEvents = hasPermission('events.approve');
   var anyPanel = false;
 
   document.getElementById('approvals-none').style.display = 'block';
   document.getElementById('approvals-ledger-panel').style.display = 'none';
   document.getElementById('approvals-vol-panel').style.display = 'none';
+  document.getElementById('approvals-events-panel').style.display = 'none';
 
   if (hasLedger) {
     anyPanel = true;
@@ -1954,6 +1964,12 @@ function loadApprovals() {
     anyPanel = true;
     document.getElementById('approvals-blog-panel').style.display = 'block';
     loadPendingBlogPosts();
+  }
+
+  if (hasEvents) {
+    anyPanel = true;
+    document.getElementById('approvals-events-panel').style.display = 'block';
+    loadPendingEvents();
   }
 
   if (anyPanel) document.getElementById('approvals-none').style.display = 'none';
@@ -2048,6 +2064,138 @@ function loadPendingBlogPosts() {
       });
     })
     .catch(function(e) { console.warn('Blog approvals error:', e); empty.style.display = 'block'; });
+}
+
+function loadPendingEvents() {
+  var el = document.getElementById('approvals-events-list');
+  var empty = document.getElementById('approvals-events-empty');
+
+  db.collection('events').where('status', '==', 'pending').get()
+    .then(function(snap) {
+      if (snap.empty) { empty.style.display = 'block'; el.textContent = ''; return; }
+      empty.style.display = 'none';
+      while (el.firstChild) el.removeChild(el.firstChild);
+
+      snap.forEach(function(doc) {
+        var d = doc.data();
+        var card = document.createElement('div');
+        card.className = 'approval-card';
+
+        // Header with title and type badge
+        var header = document.createElement('div');
+        header.className = 'approval-card-header';
+        var title = document.createElement('div');
+        title.className = 'approval-card-title';
+        title.textContent = d.title || 'Untitled Event';
+        header.appendChild(title);
+
+        var typeBadge = document.createElement('span');
+        typeBadge.className = 'badge badge-planned';
+        typeBadge.style.cssText = 'font-size:11px;margin-left:8px';
+        typeBadge.textContent = d.type || 'event';
+        header.appendChild(typeBadge);
+        card.appendChild(header);
+
+        // Meta info: date, location, proposed by
+        var meta = document.createElement('div');
+        meta.style.cssText = 'font-size:12px;color:var(--gray-400);margin-bottom:8px';
+        var metaParts = [];
+        if (d.date) {
+          var dt = d.date.toDate ? d.date.toDate() : new Date(d.date);
+          metaParts.push(formatDate(dt));
+        }
+        if (d.location) metaParts.push(d.location);
+        if (d.proposedBy) metaParts.push('by ' + d.proposedBy);
+        if (d.proposedAt) {
+          var pat = d.proposedAt.toDate ? d.proposedAt.toDate() : new Date(d.proposedAt);
+          metaParts.push('proposed ' + formatDate(pat));
+        }
+        meta.textContent = metaParts.join(' \u00b7 ');
+        card.appendChild(meta);
+
+        // Description
+        if (d.description) {
+          var body = document.createElement('div');
+          body.className = 'approval-card-body';
+          body.textContent = d.description.length > 200 ? d.description.substring(0, 200) + '...' : d.description;
+          card.appendChild(body);
+        }
+
+        // Capacity note
+        if (d.capacity) {
+          var capNote = document.createElement('div');
+          capNote.style.cssText = 'font-size:12px;color:var(--gray-500);margin-bottom:8px';
+          capNote.textContent = 'Capacity: ' + d.capacity;
+          card.appendChild(capNote);
+        }
+
+        // Action buttons
+        var actions = document.createElement('div');
+        actions.className = 'approval-actions';
+
+        var approveBtn = document.createElement('button');
+        approveBtn.className = 'btn btn-sm';
+        approveBtn.style.cssText = 'background:var(--green);color:#fff;padding:6px 16px;font-size:13px;border-radius:6px;border:none;cursor:pointer';
+        approveBtn.textContent = 'Approve';
+
+        var rejectBtn = document.createElement('button');
+        rejectBtn.className = 'btn btn-sm';
+        rejectBtn.style.cssText = 'background:var(--red,#dc2626);color:#fff;padding:6px 16px;font-size:13px;border-radius:6px;border:none;cursor:pointer';
+        rejectBtn.textContent = 'Reject';
+
+        approveBtn.onclick = function() {
+          db.collection('events').doc(doc.id).update({
+            status: 'upcoming',
+            approvedBy: currentUser ? currentUser.email : '',
+            approvedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }).then(function() {
+            // Log to audit trail
+            db.collection('audit_log').add({
+              action: 'approve_event',
+              collection: 'events',
+              documentId: doc.id,
+              changes: { status: 'upcoming' },
+              user: currentUser ? currentUser.email : '',
+              timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            showToast('Event approved!', 'success');
+            card.style.opacity = '0.5';
+            approveBtn.disabled = true;
+            rejectBtn.disabled = true;
+            loadPendingEvents();
+          }).catch(function(e) { showToast(e.message, 'error'); });
+        };
+        actions.appendChild(approveBtn);
+
+        rejectBtn.onclick = function() {
+          var reason = prompt('Rejection reason (optional):');
+          db.collection('events').doc(doc.id).update({
+            status: 'rejected',
+            rejectedBy: currentUser ? currentUser.email : '',
+            rejectedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            rejectionReason: reason || ''
+          }).then(function() {
+            // Log to audit trail
+            db.collection('audit_log').add({
+              action: 'reject_event',
+              collection: 'events',
+              documentId: doc.id,
+              changes: { status: 'rejected', reason: reason || '' },
+              user: currentUser ? currentUser.email : '',
+              timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            showToast('Event rejected.', 'success');
+            card.remove();
+            loadPendingEvents();
+          }).catch(function(e) { showToast(e.message, 'error'); });
+        };
+        actions.appendChild(rejectBtn);
+
+        card.appendChild(actions);
+        el.appendChild(card);
+      });
+    })
+    .catch(function(e) { console.warn('Event approvals error:', e); empty.style.display = 'block'; });
 }
 
 function loadLedgerRequests() {

@@ -1107,7 +1107,96 @@
         }
       });
 
-      // Form is read-only on public page — all editing via admin panel
+      // ── Form submit: propose (volunteer) or create (lead/admin) ──
+      (function() {
+        var form = document.getElementById('eventForm');
+        if (!form) return;
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          if (!userCanCreateEvents) return;
+
+          var user = auth.currentUser;
+          if (!user) { showToast('Please sign in first.'); return; }
+
+          var title = document.getElementById('eventTitle').value.trim();
+          var type = document.getElementById('eventType').value;
+          var date = document.getElementById('eventDate').value;
+          var time = document.getElementById('eventTime').value;
+          var location = document.getElementById('eventLocation').value.trim();
+          var capacity = document.getElementById('eventCapacity').value;
+          var desc = document.getElementById('eventDesc').value.trim();
+
+          if (!title || !date) { showToast('Title and date are required.'); return; }
+
+          // Build a combined date+time timestamp
+          var dateObj;
+          if (time) {
+            dateObj = new Date(date + 'T' + time + ':00');
+          } else {
+            dateObj = new Date(date + 'T00:00:00');
+          }
+
+          var isLeadOrAdmin = currentUserRoles.some(function(r) {
+            return ['admin', 'superadmin', 'program_lead'].indexOf(r) > -1;
+          });
+
+          var eventData = {
+            title: title,
+            type: type,
+            date: firebase.firestore.Timestamp.fromDate(dateObj),
+            location: location,
+            capacity: capacity ? parseInt(capacity, 10) : null,
+            description: desc,
+            status: isLeadOrAdmin ? 'upcoming' : 'pending',
+            proposedBy: user.email.toLowerCase(),
+            proposedAt: firebase.firestore.FieldValue.serverTimestamp()
+          };
+
+          var btn = document.getElementById('submitBtn');
+          btn.disabled = true;
+          btn.textContent = 'Saving...';
+
+          db.collection('events').add(eventData)
+            .then(function(ref) {
+              if (isLeadOrAdmin) {
+                // Add to local list and re-render
+                var ev = normaliseEvent(ref.id, eventData);
+                ev.date = date;
+                ev.time = time;
+                events.push(ev);
+                renderCalendar();
+                renderEvents();
+                showToast('Event added!');
+              } else {
+                showToast('Event proposed! It will be reviewed by a lead.');
+              }
+              // Clear form
+              form.reset();
+              btn.textContent = isLeadOrAdmin ? 'Add Event' : 'Propose Event';
+              btn.disabled = false;
+            })
+            .catch(function(err) {
+              console.error('Error saving event:', err);
+              showToast('Error saving event. Please try again.');
+              btn.textContent = isLeadOrAdmin ? 'Add Event' : 'Propose Event';
+              btn.disabled = false;
+            });
+        });
+      })();
+
+      // ── Update submit button text based on role ──
+      auth.onAuthStateChanged(function(user) {
+        if (!user) return;
+        // Wait a tick for roles to be resolved
+        setTimeout(function() {
+          var btn = document.getElementById('submitBtn');
+          if (!btn) return;
+          var isLeadOrAdmin = currentUserRoles.some(function(r) {
+            return ['admin', 'superadmin', 'program_lead'].indexOf(r) > -1;
+          });
+          btn.textContent = isLeadOrAdmin ? 'Add Event' : 'Propose Event';
+        }, 1200);
+      });
 
       // ── Share ──
       function showShareMenu(ev, anchorEl) {
@@ -1206,7 +1295,8 @@
           events = [];
           snap.forEach(function(doc) {
             var ev = normaliseEvent(doc.id, doc.data());
-            if (ev.date) events.push(ev);
+            // Only show approved/upcoming events on public page (hide pending)
+            if (ev.date && ev.status !== 'pending') events.push(ev);
           });
           renderCalendar();
           renderEvents();
