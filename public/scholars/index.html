@@ -1390,6 +1390,12 @@
           <input type="text" id="school-location" placeholder="e.g. Agbara, Ogun State" required>
         </div>
         <div class="form-group">
+          <label for="school-community">Community</label>
+          <select id="school-community">
+            <option value="">— Unassigned —</option>
+          </select>
+        </div>
+        <div class="form-group">
           <label for="school-contactPerson">Contact Person</label>
           <input type="text" id="school-contactPerson" placeholder="e.g. Mrs. Adeyemi">
         </div>
@@ -1507,6 +1513,7 @@
       var activeSchoolId = null;
       var editingSchoolId = null;
       var activeSchoolTab = 'notes';
+      var allCommunities = [];
 
       var expenseCategories = ['tuition', 'books', 'uniform', 'transport', 'feeding', 'medical', 'other'];
       var expenseCategoryLabels = {
@@ -2137,6 +2144,35 @@
 
       // --- SCHOOL CRUD ---
 
+      function fetchCommunities() {
+        return db.collection('communities').orderBy('name', 'asc').get()
+          .then(function (snapshot) {
+            allCommunities = [];
+            snapshot.forEach(function (doc) {
+              var data = doc.data();
+              data.id = doc.id;
+              allCommunities.push(data);
+            });
+            populateCommunityDropdown();
+            return allCommunities;
+          })
+          .catch(function () { allCommunities = []; populateCommunityDropdown(); return []; });
+      }
+
+      function populateCommunityDropdown() {
+        var sel = document.getElementById('school-community');
+        if (!sel) return;
+        var val = sel.value;
+        sel.innerHTML = '<option value="">— Unassigned —</option>';
+        allCommunities.forEach(function (c) {
+          var opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = c.name;
+          sel.appendChild(opt);
+        });
+        sel.value = val;
+      }
+
       function fetchSchools() {
         return db.collection('schools').orderBy('name', 'asc').get()
           .then(function (snapshot) {
@@ -2176,6 +2212,8 @@
         document.getElementById('school-contactPerson').value = school.contactPerson || '';
         document.getElementById('school-contactPhone').value = school.contactPhone || '';
         document.getElementById('school-contactEmail').value = school.contactEmail || '';
+        var commSel = document.getElementById('school-community');
+        if (commSel) commSel.value = school.communityId || '';
         modalSchool.classList.add('is-open');
       }
 
@@ -2202,13 +2240,22 @@
         var scholarCount = 0;
         allScholars.forEach(function (s) { if (s.school === name) scholarCount++; });
 
+        var commSelect = document.getElementById('school-community');
+        var communityId = commSelect ? commSelect.value : '';
+        var communityName = '';
+        if (communityId) {
+          allCommunities.forEach(function (c) { if (c.id === communityId) communityName = c.name; });
+        }
+
         var schoolData = {
           name: name,
           location: location,
           contactPerson: contactPerson,
           contactPhone: contactPhone,
           contactEmail: contactEmail,
-          scholarCount: scholarCount
+          scholarCount: scholarCount,
+          communityId: communityId || null,
+          communityName: communityName || null
         };
 
         if (editingSchoolId) {
@@ -3767,13 +3814,15 @@
             }
           })
           .then(function () {
-            // Fetch schools (and seed if empty)
-            return fetchSchools().then(function () {
-              if (allSchools.length === 0 && allScholars.length > 0) {
-                return seedSchoolsFirestore().then(function () {
-                  return fetchSchools();
-                });
-              }
+            // Fetch communities + schools
+            return fetchCommunities().then(function () {
+              return fetchSchools().then(function () {
+                if (allSchools.length === 0 && allScholars.length > 0) {
+                  return seedSchoolsFirestore().then(function () {
+                    return fetchSchools();
+                  });
+                }
+              });
             });
           })
           .then(function () {

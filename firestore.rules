@@ -119,6 +119,12 @@ service cloud.firestore {
       }
     }
 
+    // ── Communities ──
+    match /communities/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     // ── Sponsor dashboard ──
     match /sponsors/{docId} {
       // Anyone can create a sponsor profile (sign-up flow)
