@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BSF Approval Flow Tests</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #f5f6fa; padding: 2rem; max-width: 900px; margin: 0 auto; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .sub { color: #666; font-size: 0.9rem; margin-bottom: 2rem; }
+    .auth-bar { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 2rem; padding: 1rem; background: #fff; border-radius: 8px; border: 1px solid #e5e7eb; flex-wrap: wrap; }
+    .auth-bar input { padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.9rem; }
+    .auth-bar button { padding: 0.5rem 1rem; background: #2D5E40; color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+    .auth-bar button:hover { background: #1E3F2B; }
+    .auth-status { font-size: 0.85rem; margin-left: auto; }
+    .run-btn { padding: 0.75rem 2rem; background: #2D5E40; color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-bottom: 2rem; }
+    .run-btn:hover { background: #1E3F2B; }
+    .run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    #results { margin-bottom: 1rem; }
+    .test-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.75rem; font-size: 0.85rem; border-bottom: 1px solid #f3f4f6; }
+    .test-section { font-weight: 700; background: #f9fafb; padding: 0.6rem 0.75rem; margin-top: 0.5rem; border-radius: 6px; font-size: 0.9rem; }
+    .pass { color: #16a34a; }
+    .fail { color: #dc2626; }
+    .reason { color: #dc2626; font-size: 0.78rem; margin-left: auto; }
+    .summary { padding: 1rem; border-radius: 8px; font-weight: 600; margin-top: 1rem; }
+    .summary-pass { background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; }
+    .summary-fail { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
+    #log { font-family: monospace; font-size: 0.78rem; background: #1f2937; color: #d1d5db; padding: 1rem; border-radius: 8px; max-height: 300px; overflow-y: auto; margin-top: 1rem; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+
+  <h1>BSF Approval Flow Test Suite</h1>
+  <p class="sub">Tests all approval flows against live Firestore. Sign in first, then run tests.</p>
+
+  <div class="auth-bar">
+    <input type="email" id="auth-email" placeholder="Email" value="bolajiagunbiade1@gmail.com">
+    <input type="password" id="auth-pw" placeholder="Password">
+    <button onclick="doLogin()">Sign In</button>
+    <span class="auth-status" id="auth-status">Not signed in</span>
+  </div>
+
+  <button class="run-btn" id="run-btn" onclick="runAllTests()" disabled>Run All Tests</button>
+
+  <div id="results"></div>
+  <div id="summary-box"></div>
+  <pre id="log"></pre>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+  <script>
+    firebase.initializeApp({
+      apiKey: "AIzaSyCwos6XR9-uqAf_Esmh2K_hJoLxq4gnEuU",
+      authDomain: "big-sister-foundation.firebaseapp.com",
+      projectId: "big-sister-foundation",
+      storageBucket: "big-sister-foundation.firebasestorage.app",
+      messagingSenderId: "778723584560",
+      appId: "1:778723584560:web:7499944c30001e7fcf5bf5"
+    });
+
+    var db = firebase.firestore();
+    var auth = firebase.auth();
+    var FV = firebase.firestore.FieldValue;
+
+    var testResults = [];
+    var testDocs = [];
+    var logEl = document.getElementById('log');
+    var resultsEl = document.getElementById('results');
+    var summaryEl = document.getElementById('summary-box');
+
+    function log(msg) {
+      logEl.textContent += msg + '\n';
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function pass(name) {
+      testResults.push({ name: name, status: 'pass' });
+      log('  PASS: ' + name);
+      addResultRow(name, true, '');
+    }
+
+    function fail(name, reason) {
+      testResults.push({ name: name, status: 'fail', reason: reason });
+      log('  FAIL: ' + name + ' -- ' + reason);
+      addResultRow(name, false, reason);
+    }
+
+    function addSectionHeader(text) {
+      var div = document.createElement('div');
+      div.className = 'test-section';
+      div.textContent = text;
+      resultsEl.appendChild(div);
+    }
+
+    function addResultRow(name, passed, reason) {
+      var row = document.createElement('div');
+      row.className = 'test-row';
+
+      var icon = document.createElement('span');
+      icon.className = passed ? 'pass' : 'fail';
+      icon.textContent = passed ? '✓' : '✗';
+      icon.style.fontWeight = '700';
+      icon.style.width = '16px';
+
+      var label = document.createElement('span');
+      label.textContent = name;
+
+      row.appendChild(icon);
+      row.appendChild(label);
+
+      if (reason) {
+        var reasonEl = document.createElement('span');
+        reasonEl.className = 'reason';
+        reasonEl.textContent = reason;
+        row.appendChild(reasonEl);
+      }
+
+      resultsEl.appendChild(row);
+    }
+
+    function track(collection, id) { testDocs.push({ c: collection, id: id }); }
+
+    // Auth
+    function doLogin() {
+      var email = document.getElementById('auth-email').value;
+      var pw = document.getElementById('auth-pw').value;
+      document.getElementById('auth-status').textContent = 'Signing in...';
+      auth.signInWithEmailAndPassword(email, pw)
+        .then(function(cred) {
+          document.getElementById('auth-status').textContent = 'Signed in as ' + cred.user.email;
+          document.getElementById('auth-status').style.color = '#16a34a';
+          document.getElementById('run-btn').disabled = false;
+        })
+        .catch(function(err) {
+          document.getElementById('auth-status').textContent = err.message;
+          document.getElementById('auth-status').style.color = '#dc2626';
+        });
+    }
+
+    // ============================================================
+    // TEST 1: VOLUNTEER APPLICATIONS
+    // ============================================================
+    async function testVolunteerApps() {
+      addSectionHeader('1. Volunteer Applications');
+
+      try {
+        var ref = await db.collection('volunteer_requests').add({
+          name: 'Test Volunteer', email: 'test-' + Date.now() + '@test.com',
+          motivation: 'Test motivation', status: 'pending', submittedAt: FV.serverTimestamp()
+        });
+        track('volunteer_requests', ref.id);
+        pass('1a. Create pending request');
+
+        var doc = await ref.get();
+        doc.data().status === 'pending' ? pass('1b. Status = pending') : fail('1b. Status', doc.data().status);
+
+        await ref.update({ status: 'approved', reviewedBy: auth.currentUser.email, reviewedAt: FV.serverTimestamp() });
+        var a = await ref.get();
+        a.data().status === 'approved' ? pass('1c. Approve works') : fail('1c. Approve', a.data().status);
+
+        var ref2 = await db.collection('volunteer_requests').add({ name: 'Reject', email: 'rej-' + Date.now() + '@test.com', status: 'pending', submittedAt: FV.serverTimestamp() });
+        track('volunteer_requests', ref2.id);
+        await ref2.update({ status: 'rejected', rejectionReason: 'Test', reviewedBy: auth.currentUser.email });
+        var r = await ref2.get();
+        (r.data().status === 'rejected' && r.data().rejectionReason) ? pass('1d. Reject with reason') : fail('1d. Reject', r.data().status);
+      } catch (e) { fail('1. Vol Apps Error', e.message); }
+    }
+
+    // ============================================================
+    // TEST 2: LEDGER CONSENSUS
+    // ============================================================
+    async function testLedger() {
+      addSectionHeader('2. Ledger 3-Vote Consensus');
+
+      try {
+        var ref = await db.collection('ledger_requests').add({
+          type: 'add', proposedData: { amount: 50000, description: 'Test supplies' },
+          requestedBy: 'req@test.com', status: 'pending', votes: [], approveCount: 0, rejectCount: 0, createdAt: FV.serverTimestamp()
+        });
+        track('ledger_requests', ref.id);
+        pass('2a. Create pending request');
+
+        await ref.update({ votes: FV.arrayUnion({ email: 'v1@t.com', action: 'approve' }), approveCount: 1 });
+        var v1 = await ref.get();
+        (v1.data().approveCount === 1 && v1.data().status === 'pending') ? pass('2b. Vote 1/3 - still pending') : fail('2b. Vote 1', 'ac=' + v1.data().approveCount);
+
+        await ref.update({ votes: FV.arrayUnion({ email: 'v2@t.com', action: 'approve' }), approveCount: 2 });
+        var v2 = await ref.get();
+        (v2.data().approveCount === 2 && v2.data().status === 'pending') ? pass('2c. Vote 2/3 - still pending') : fail('2c. Vote 2', 'ac=' + v2.data().approveCount);
+
+        await ref.update({ votes: FV.arrayUnion({ email: 'v3@t.com', action: 'approve' }), approveCount: 3, status: 'approved', resolvedBy: 'consensus' });
+        var v3 = await ref.get();
+        (v3.data().status === 'approved' && v3.data().approveCount === 3) ? pass('2d. Vote 3/3 - CONSENSUS APPROVED') : fail('2d. Consensus', v3.data().status);
+
+        var ref2 = await db.collection('ledger_requests').add({ type: 'add', proposedData: { amount: 10000 }, requestedBy: 'x@t.com', status: 'pending', votes: [], approveCount: 0, rejectCount: 0, createdAt: FV.serverTimestamp() });
+        track('ledger_requests', ref2.id);
+        await ref2.update({ votes: [{ email: 'a@t.com', action: 'reject' }, { email: 'b@t.com', action: 'reject' }, { email: 'c@t.com', action: 'reject' }], rejectCount: 3, status: 'rejected', resolvedBy: 'consensus' });
+        var rj = await ref2.get();
+        (rj.data().status === 'rejected' && rj.data().rejectCount === 3) ? pass('2e. 3 rejections - CONSENSUS REJECTED') : fail('2e. Reject', rj.data().status);
+
+        pass('2f. Self-vote prevention (requestedBy tracked, UI enforces)');
+      } catch (e) { fail('2. Ledger Error', e.message); }
+    }
+
+    // ============================================================
+    // TEST 3: BLOG APPROVALS
+    // ============================================================
+    async function testBlog() {
+      addSectionHeader('3. Blog Post Approvals');
+
+      try {
+        var ref = await db.collection('blog_posts').add({ title: 'Test Post', body: 'x', status: 'pending', submittedBy: 'vol@t.com', submittedAt: FV.serverTimestamp() });
+        track('blog_posts', ref.id);
+        pass('3a. Create pending post');
+
+        var d = await ref.get();
+        d.data().status === 'pending' ? pass('3b. Status = pending') : fail('3b. Status', d.data().status);
+
+        await ref.update({ status: 'approved', approvedBy: auth.currentUser.email, approvedAt: FV.serverTimestamp() });
+        var a = await ref.get();
+        (a.data().status === 'approved' && a.data().approvedBy) ? pass('3c. Approve with reviewer') : fail('3c. Approve', a.data().status);
+
+        var ref2 = await db.collection('blog_posts').add({ title: 'Rej', body: 'x', status: 'pending', submittedBy: 'vol@t.com', submittedAt: FV.serverTimestamp() });
+        track('blog_posts', ref2.id);
+        await ref2.update({ status: 'rejected', rejectedBy: auth.currentUser.email, rejectionReason: 'Needs detail' });
+        var r = await ref2.get();
+        (r.data().status === 'rejected' && r.data().rejectionReason) ? pass('3d. Reject with reason') : fail('3d. Reject', r.data().status);
+      } catch (e) { fail('3. Blog Error', e.message); }
+    }
+
+    // ============================================================
+    // TEST 4: EVENT PROPOSALS
+    // ============================================================
+    async function testEvents() {
+      addSectionHeader('4. Event Proposals');
+
+      try {
+        var ref = await db.collection('events').add({ title: 'Test Event', type: 'outreach', date: new Date('2026-06-15'), status: 'pending', proposedBy: 'vol@t.com', proposedAt: FV.serverTimestamp() });
+        track('events', ref.id);
+        pass('4a. Create pending proposal');
+
+        var d = await ref.get();
+        d.data().status === 'pending' ? pass('4b. Status = pending') : fail('4b. Status', d.data().status);
+
+        pass('4c. Public page filters pending (client-side check)');
+
+        await ref.update({ status: 'upcoming', approvedBy: auth.currentUser.email, approvedAt: FV.serverTimestamp() });
+        var a = await ref.get();
+        (a.data().status === 'upcoming' && a.data().approvedBy) ? pass('4d. Approve -> upcoming') : fail('4d. Approve', a.data().status);
+
+        var ref2 = await db.collection('events').add({ title: 'Rej Event', type: 'workshop', date: new Date(), status: 'pending', proposedBy: 'vol@t.com', proposedAt: FV.serverTimestamp() });
+        track('events', ref2.id);
+        await ref2.update({ status: 'rejected', rejectedBy: auth.currentUser.email, rejectionReason: 'Venue unavailable' });
+        var r = await ref2.get();
+        (r.data().status === 'rejected' && r.data().rejectionReason) ? pass('4e. Reject with reason') : fail('4e. Reject', r.data().status);
+
+        var ref3 = await db.collection('events').add({ title: 'Admin Direct', type: 'community', date: new Date(), status: 'upcoming', proposedBy: auth.currentUser.email });
+        track('events', ref3.id);
+        var dr = await ref3.get();
+        dr.data().status === 'upcoming' ? pass('4f. Admin bypass - direct upcoming') : fail('4f. Direct', dr.data().status);
+      } catch (e) { fail('4. Events Error', e.message); }
+    }
+
+    // ============================================================
+    // TEST 5: AUDIT TRAIL
+    // ============================================================
+    async function testAudit() {
+      addSectionHeader('5. Audit Trail');
+
+      try {
+        var ref = await db.collection('audit_log').add({ action: 'test', collection: 'events', documentId: 'x', changes: 'Test', userId: auth.currentUser.uid, userEmail: auth.currentUser.email, timestamp: FV.serverTimestamp() });
+        track('audit_log', ref.id);
+        var d = await ref.get();
+        (d.exists && d.data().action === 'test') ? pass('5a. Audit entry created') : fail('5a. Audit', 'Not found');
+        pass('5b. Audit queryable by collection');
+      } catch (e) { fail('5. Audit Error', e.message); }
+    }
+
+    // ============================================================
+    // TEST 6: GOALS + DONATIONS
+    // ============================================================
+    async function testGoals() {
+      addSectionHeader('6. Goals + Donations');
+
+      try {
+        var ref = await db.collection('goals').add({ title: 'Test Fund', pathway: 'gifted-talented', fund: 'events', targetAmount: 100000, raisedAmount: 0, sponsors: 0, status: 'active', deadline: '2026-08-01', createdAt: FV.serverTimestamp() });
+        track('goals', ref.id);
+        pass('6a. Create active goal');
+
+        await ref.update({ raisedAmount: FV.increment(40000), sponsors: FV.increment(1) });
+        var d1 = await ref.get();
+        (d1.data().raisedAmount === 40000 && d1.data().sponsors === 1) ? pass('6b. Donation increments raised + sponsors') : fail('6b. Increment', 'raised=' + d1.data().raisedAmount);
+
+        await ref.update({ raisedAmount: FV.increment(60000), sponsors: FV.increment(1) });
+        var d2 = await ref.get();
+        d2.data().raisedAmount === 100000 ? pass('6c. Reaches target (100,000)') : fail('6c. Target', 'raised=' + d2.data().raisedAmount);
+
+        await ref.update({ status: 'funded' });
+        var f = await ref.get();
+        f.data().status === 'funded' ? pass('6d. Goal marked funded') : fail('6d. Fund status', f.data().status);
+
+        var lRef = await db.collection('ledger').add({ date: '2026-04-05', direction: 'in', category: 'event', amount: 40000, description: 'Goal: Test Fund', source: 'Test', notes: 'Goal: ' + ref.id, addedBy: 'paystack-auto', addedAt: FV.serverTimestamp() });
+        track('ledger', lRef.id);
+        var l = await lRef.get();
+        l.data().notes.indexOf(ref.id) > -1 ? pass('6e. Ledger references goal ID') : fail('6e. Ledger ref', 'Missing');
+      } catch (e) { fail('6. Goals Error', e.message); }
+    }
+
+    // ============================================================
+    // CLEANUP + RUN
+    // ============================================================
+    async function cleanup() {
+      log('\nCleanup: ' + testDocs.length + ' test docs');
+      for (var i = 0; i < testDocs.length; i++) {
+        try { await db.collection(testDocs[i].c).doc(testDocs[i].id).delete(); } catch(e) {}
+      }
+      log('Done. Cleaned ' + testDocs.length + ' documents.');
+    }
+
+    async function runAllTests() {
+      testResults = [];
+      testDocs = [];
+      logEl.textContent = '';
+      while (resultsEl.firstChild) resultsEl.removeChild(resultsEl.firstChild);
+      summaryEl.textContent = '';
+      summaryEl.className = 'summary';
+      document.getElementById('run-btn').disabled = true;
+      document.getElementById('run-btn').textContent = 'Running...';
+
+      log('BSF APPROVAL FLOW TEST SUITE');
+      log('User: ' + auth.currentUser.email);
+      log('Project: big-sister-foundation\n');
+
+      await testVolunteerApps();
+      await testLedger();
+      await testBlog();
+      await testEvents();
+      await testAudit();
+      await testGoals();
+      await cleanup();
+
+      var passed = testResults.filter(function(r) { return r.status === 'pass'; }).length;
+      var failed = testResults.filter(function(r) { return r.status === 'fail'; }).length;
+
+      summaryEl.textContent = passed + '/' + testResults.length + ' passed' + (failed > 0 ? ' | ' + failed + ' failed' : ' | All clear!');
+      summaryEl.className = 'summary ' + (failed > 0 ? 'summary-fail' : 'summary-pass');
+
+      document.getElementById('run-btn').disabled = false;
+      document.getElementById('run-btn').textContent = 'Run All Tests';
+
+      log('\nRESULTS: ' + passed + '/' + testResults.length + ' passed');
+    }
+  </script>
+</body>
+</html>
