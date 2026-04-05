@@ -1184,7 +1184,7 @@
     </button>
     <ul class="nav__links">
       <li><a href="/">Home</a></li>
-      <li><a href="/scholars/" class="is-active">Scholars</a></li>
+      <li><a href="/scholars/" class="is-active">Our Impact</a></li>
       <li><a href="/ledger/">Ledger</a></li>
       <li><a href="/events/">Events</a></li>
       <li><a href="/volunteer/">Volunteer</a></li>
@@ -4536,14 +4536,23 @@
     return count > 0 ? count : (c.scholarCount || 0);
   }
 
+  // Demo communities — used as fallback when Firestore is empty
+  var demoCommunities = [
+    {id:'makoko',name:'Makoko Community',location:'Yaba, Lagos Mainland',area:'mainland',description:'One of Lagos\u2019s most resilient waterside communities. BSF supports children here with education, food security, and vocational training for older youth. Makoko is where our work began.',scholarCount:28,totalInvestment:4200000,schools:[{name:'Makoko Community Primary School',type:'Primary',scholars:15},{name:'Whanyinna Nursery & Primary',type:'Nursery/Primary',scholars:8},{name:'Makoko Junior Secondary',type:'Junior Secondary',scholars:5}],trades:[{name:'Boat Building & Repair',description:'Traditional craft training for youth aged 15-19',enrolled:6,graduates:12},{name:'Fish Smoking & Processing',description:'Value-add skills for the local fishing economy',enrolled:8,graduates:15},{name:'Tailoring & Fashion',description:'Sewing, design, and small business skills',enrolled:10,graduates:8}],events:[{title:'Saturday Tutoring Session',date:'2026-04-12',type:'Education',location:'Community Center'},{title:'Health Screening Day',date:'2026-04-20',type:'Healthcare',location:'Makoko Clinic'}]},
+    {id:'ajegunle',name:'Ajegunle Community',location:'Ajeromi-Ifelodun, Lagos Mainland',area:'mainland',description:'A densely populated community with incredible potential. BSF focuses on education access, after-school programs, and skills training for out-of-school youth.',scholarCount:22,totalInvestment:3100000,schools:[{name:'Ajeromi Community School',type:'Primary',scholars:12},{name:'Hope Academy Ajegunle',type:'Secondary',scholars:10}],trades:[{name:'Barbing & Hairstyling',description:'Professional grooming skills with business training',enrolled:7,graduates:20},{name:'Mobile Phone Repair',description:'Electronics repair and entrepreneurship',enrolled:5,graduates:10},{name:'Catering & Baking',description:'Culinary skills for events and small business',enrolled:9,graduates:6}],events:[{title:'After-School Reading Club',date:'2026-04-08',type:'Education',location:'Hope Academy'}]},
+    {id:'iwaya',name:'Iwaya Community',location:'Yaba, Lagos Mainland',area:'mainland',description:'Neighboring Makoko, Iwaya faces similar challenges but with a growing creative energy. BSF supports education and connects youth with mentors in tech and the arts.',scholarCount:14,totalInvestment:1900000,schools:[{name:'Iwaya Community Primary',type:'Primary',scholars:9},{name:'St. Jude\u2019s Grammar School',type:'Secondary',scholars:5}],trades:[{name:'Digital Literacy & Coding',description:'Basic computing, web design, and intro to coding',enrolled:12,graduates:4},{name:'Art & Craft Production',description:'Visual arts, crafts, and selling on local markets',enrolled:6,graduates:3}],events:[{title:'Coding Saturday Workshop',date:'2026-04-19',type:'Education',location:'Tech Hub Iwaya'}]},
+    {id:'ajah',name:'Ajah/Sangotedo Community',location:'Eti-Osa, Lagos Island',area:'island',description:'A rapidly growing suburban area where many families have relocated from inner Lagos. BSF supports the peri-urban schools and runs weekend programs for children of market traders.',scholarCount:11,totalInvestment:1500000,schools:[{name:'Sangotedo Community School',type:'Primary/Secondary',scholars:7},{name:'Graceland Academy Ajah',type:'Primary',scholars:4}],trades:[{name:'Solar Panel Installation',description:'Renewable energy skills for the growing housing market',enrolled:4,graduates:2},{name:'Plumbing & Pipefitting',description:'Essential trade skills for construction',enrolled:3,graduates:0}],events:[{title:'Weekend Mentorship Circle',date:'2026-04-13',type:'Mentorship',location:'Sangotedo Community School'}]},
+    {id:'ikorodu',name:'Ikorodu Community',location:'Ikorodu, Lagos Suburban',area:'suburban',description:'A historic town on the outskirts of Lagos with deep cultural roots. BSF works with local artisans to create apprenticeship pipelines for young people who have dropped out of formal education.',scholarCount:9,totalInvestment:1100000,schools:[{name:'Ikorodu Grammar School',type:'Secondary',scholars:5},{name:'Little Stars Nursery',type:'Nursery',scholars:4}],trades:[{name:'Adire Textile Dyeing',description:'Traditional Yoruba textile art and modern fashion',enrolled:8,graduates:14},{name:'Carpentry & Woodwork',description:'Furniture making and construction woodwork',enrolled:5,graduates:7}],events:[{title:'Adire Workshop Open Day',date:'2026-04-26',type:'Culture',location:'Ikorodu Artisan Market'}]}
+  ];
+
   // Render communities using data from the parent IIFE (exposed on window)
   function renderCommunities() {
     if (!commGrid) return;
     var communities = window._bsfAllCommunities || [];
 
+    // Fall back to demo data if Firestore is empty
     if (communities.length === 0) {
-      commGrid.innerHTML = '<div style="text-align:center;padding:3rem;color:rgba(58,42,31,0.4);">No communities data available yet.</div>';
-      return;
+      communities = demoCommunities;
     }
 
     var filtered = communities.slice();
