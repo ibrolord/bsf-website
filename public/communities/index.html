@@ -523,6 +523,8 @@
 
       // State
       var communities = [];
+      var allSchools = [];    // schools from the 'schools' collection, keyed by communityId
+      var allScholars = [];   // scholars from the 'scholars' collection
       var currentFilter = 'all';
       var searchQuery = '';
       var grid = document.getElementById('communities-grid');
@@ -649,18 +651,74 @@
         };
       }
 
-      // Load
+      // Get schools for a community: prefer allSchools from 'schools' collection, fall back to embedded c.schools
+      function getSchoolsForCommunity(c) {
+        var fromCollection = allSchools.filter(function (s) { return s.communityId === c.id; });
+        if (fromCollection.length > 0) return fromCollection;
+        return (c.schools || []);
+      }
+
+      // Get scholar count for a community based on school names matched against allScholars
+      function getScholarCountForCommunity(c) {
+        var schools = getSchoolsForCommunity(c);
+        var schoolNames = schools.map(function (s) { return s.name; });
+        if (schoolNames.length === 0) return c.scholarCount || 0;
+        var count = allScholars.filter(function (s) {
+          return schoolNames.indexOf(s.school) !== -1;
+        }).length;
+        // If no scholars found in collection, fall back to embedded count
+        return count > 0 ? count : (c.scholarCount || 0);
+      }
+
+      // Load communities, schools from 'schools' collection, and scholars in parallel
       function loadCommunities() {
-        db.collection('communities').get().then(function (snap) {
-          if (snap.empty) return seedAndRender();
+        var communitiesPromise = db.collection('communities').get();
+        var scholarsPromise = db.collection('scholars').get();
+
+        Promise.all([communitiesPromise, scholarsPromise]).then(function (results) {
+          var commSnap = results[0];
+          var scholarsSnap = results[1];
+
+          // Parse scholars
+          allScholars = [];
+          scholarsSnap.forEach(function (doc) {
+            var data = doc.data();
+            data.id = doc.id;
+            allScholars.push(data);
+          });
+
+          if (commSnap.empty) return seedAndRender();
+
           communities = [];
-          snap.forEach(function (doc) {
+          commSnap.forEach(function (doc) {
             var data = doc.data();
             data.id = doc.id;
             communities.push(data);
           });
-          updateStats();
-          renderCommunities();
+
+          // Load schools from 'schools' collection for all communities
+          var schoolPromises = communities.map(function (c) {
+            return db.collection('schools').where('communityId', '==', c.id).get();
+          });
+
+          Promise.all(schoolPromises).then(function (schoolSnaps) {
+            allSchools = [];
+            schoolSnaps.forEach(function (snap) {
+              snap.forEach(function (doc) {
+                var data = doc.data();
+                data.id = doc.id;
+                allSchools.push(data);
+              });
+            });
+            updateStats();
+            renderCommunities();
+          }).catch(function () {
+            // If schools collection query fails, proceed with embedded schools
+            allSchools = [];
+            updateStats();
+            renderCommunities();
+          });
+
         }).catch(function () {
           loadLocal();
         });
@@ -668,6 +726,8 @@
 
       function loadLocal() {
         communities = demoCommunities.slice();
+        allSchools = [];
+        allScholars = [];
         updateStats();
         renderCommunities();
       }
@@ -675,30 +735,46 @@
       function seedAndRender() {
         var batch = db.batch();
         demoCommunities.forEach(function (c) {
+          // Seed community metadata (no embedded schools array)
           var ref = db.collection('communities').doc(c.id);
           batch.set(ref, {
             name: c.name, location: c.location, area: c.area,
             description: c.description, scholarCount: c.scholarCount,
             totalInvestment: c.totalInvestment,
-            schools: c.schools, trades: c.trades, events: c.events,
+            trades: c.trades, events: c.events,
             createdAt: new Date()
+          });
+
+          // Seed each school into the 'schools' collection
+          (c.schools || []).forEach(function (s) {
+            var schoolRef = db.collection('schools').doc();
+            batch.set(schoolRef, {
+              name: s.name,
+              type: s.type,
+              scholars: s.scholars,
+              contact: s.contact || '',
+              phone: s.phone || '',
+              communityId: c.id,
+              communityName: c.name,
+              createdAt: new Date()
+            });
           });
         });
         batch.commit().then(function () { loadLocal(); }).catch(function () { loadLocal(); });
       }
 
-      // Stats
+      // Stats — computed from fetched schools and scholars data
       function updateStats() {
         document.getElementById('stat-communities').textContent = communities.length;
-        var schools = 0, trades = 0, scholars = 0;
+        var totalSchools = 0, totalTrades = 0, totalScholars = 0;
         communities.forEach(function (c) {
-          schools += (c.schools || []).length;
-          trades += (c.trades || []).length;
-          scholars += c.scholarCount || 0;
+          totalSchools += getSchoolsForCommunity(c).length;
+          totalTrades += (c.trades || []).length;
+          totalScholars += getScholarCountForCommunity(c);
         });
-        document.getElementById('stat-schools').textContent = schools;
-        document.getElementById('stat-trades').textContent = trades;
-        document.getElementById('stat-scholars').textContent = scholars;
+        document.getElementById('stat-schools').textContent = totalSchools;
+        document.getElementById('stat-trades').textContent = totalTrades;
+        document.getElementById('stat-scholars').textContent = totalScholars;
       }
 
       // Render
@@ -715,7 +791,8 @@
           var q = searchQuery.toLowerCase();
           filtered = filtered.filter(function (c) {
             var text = (c.name + ' ' + c.location + ' ' + c.description).toLowerCase();
-            var schoolMatch = (c.schools || []).some(function (s) { return s.name.toLowerCase().indexOf(q) !== -1; });
+            var schools = getSchoolsForCommunity(c);
+            var schoolMatch = schools.some(function (s) { return s.name.toLowerCase().indexOf(q) !== -1; });
             var tradeMatch = (c.trades || []).some(function (t) { return t.name.toLowerCase().indexOf(q) !== -1; });
             return text.indexOf(q) !== -1 || schoolMatch || tradeMatch;
           });
@@ -728,7 +805,9 @@
 
         var html = '';
         filtered.forEach(function (c) {
-          var schoolCount = (c.schools || []).length;
+          var schools = getSchoolsForCommunity(c);
+          var scholarCount = getScholarCountForCommunity(c);
+          var schoolCount = schools.length;
           var tradeCount = (c.trades || []).length;
           var eventCount = (c.events || []).length;
 
@@ -745,7 +824,7 @@
           html += '</div>';
           html += '<div style="display:flex;align-items:center;gap:0.75rem;">';
           html += '<div class="community-badges">';
-          html += '<span class="community-badge badge--scholars">' + c.scholarCount + ' scholars</span>';
+          html += '<span class="community-badge badge--scholars">' + scholarCount + ' scholars</span>';
           html += '<span class="community-badge badge--schools">' + schoolCount + ' schools</span>';
           html += '<span class="community-badge badge--trades">' + tradeCount + ' trades</span>';
           if (eventCount > 0) html += '<span class="community-badge badge--events">' + eventCount + ' events</span>';
@@ -762,7 +841,7 @@
 
           // Impact summary
           html += '<div class="impact-row">';
-          html += '<div class="impact-card"><div class="impact-card__number">' + c.scholarCount + '</div><div class="impact-card__label">Scholars</div></div>';
+          html += '<div class="impact-card"><div class="impact-card__number">' + scholarCount + '</div><div class="impact-card__label">Scholars</div></div>';
           html += '<div class="impact-card"><div class="impact-card__number">' + schoolCount + '</div><div class="impact-card__label">Schools</div></div>';
           html += '<div class="impact-card"><div class="impact-card__number">' + tradeCount + '</div><div class="impact-card__label">Vocational Trades</div></div>';
           html += '<div class="impact-card"><div class="impact-card__number">' + formatNaira(c.totalInvestment) + '</div><div class="impact-card__label">Total Investment</div></div>';
@@ -780,16 +859,21 @@
           if (schoolCount === 0) {
             html += '<div class="empty-state"><p>No schools registered yet.</p></div>';
           } else {
-            (c.schools || []).forEach(function (s) {
+            schools.forEach(function (s) {
+              var schoolScholarCount = allScholars.filter(function (sc) { return sc.school === s.name; }).length;
+              var displayScholars = schoolScholarCount > 0 ? schoolScholarCount : (s.scholars || 0);
               html += '<div class="sub-card">';
               html += '<div class="sub-card__header"><div class="sub-card__name">' + escapeHtml(s.name) + '</div></div>';
               html += '<div class="sub-card__meta">' + escapeHtml(s.type) + (s.contact ? ' &middot; Contact: ' + escapeHtml(s.contact) : '') + '</div>';
               html += '<div class="sub-card__stats">';
-              html += '<span class="sub-stat"><span class="sub-stat__val">' + s.scholars + '</span> scholars</span>';
+              html += '<span class="sub-stat"><span class="sub-stat__val">' + displayScholars + '</span> scholars</span>';
               html += '</div>';
+              html += '<a href="/scholars/?school=' + encodeURIComponent(s.name) + '" style="display:inline-block;margin-top:0.5rem;font-size:0.8rem;font-weight:600;color:var(--green);text-decoration:none;">View scholars &rarr;</a>';
               html += '</div>';
             });
           }
+          // Community-level scholars link
+          html += '<a href="/scholars/?community=' + encodeURIComponent(c.id) + '" style="display:inline-block;margin-top:0.75rem;font-size:0.85rem;font-weight:600;color:var(--terra);text-decoration:none;">View all scholars &rarr;</a>';
           html += '</div>';
 
           // Trades panel

@@ -164,8 +164,25 @@ service cloud.firestore {
     }
     match /team_forums/{docId} {
       allow read, write: if hasAnyRole();
+
+      match /replies/{replyId} {
+        allow read, write: if hasAnyRole();
+      }
     }
     match /team_forum_replies/{docId} {
+      allow read, write: if hasAnyRole();
+    }
+    match /tasks/{docId} {
+      allow read, write: if hasAnyRole();
+    }
+    match /volunteer_logs/{docId} {
+      allow read, write: if hasAnyRole();
+    }
+    match /shoutouts/{docId} {
+      allow read: if isAuth();
+      allow write: if hasAnyRole();
+    }
+    match /notifications/{docId} {
       allow read, write: if hasAnyRole();
     }
     match /scholar_expenses/{docId} {
