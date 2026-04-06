@@ -1004,6 +1004,174 @@
     .scholars-table tr[data-scholar-id]:hover td { background: rgba(45,94,64,0.05); }
     .scholar-card[data-scholar-id] { cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; border: 1.5px solid transparent; }
     .scholar-card[data-scholar-id]:hover { border-color: rgba(45,94,64,0.2); box-shadow: 0 6px 28px rgba(0,0,0,0.07); }
+
+    /* =============================================
+       COMMUNITY CARDS (ported from communities page)
+    ============================================= */
+    .community-card {
+      background: #fff; border-radius: 16px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+      overflow: hidden; transition: box-shadow 0.3s var(--ease);
+      margin-bottom: 1.25rem;
+    }
+    .community-card:hover { box-shadow: 0 6px 28px rgba(0,0,0,0.07); }
+
+    .community-header {
+      padding: 1.5rem 1.75rem; cursor: pointer; user-select: none;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background 0.2s;
+    }
+    .community-header:hover { background: rgba(45,94,64,0.02); }
+    .community-header__left { display: flex; align-items: center; gap: 1rem; }
+
+    .community-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; flex-shrink: 0;
+      background: rgba(45,94,64,0.08); color: var(--green);
+    }
+    .community-name {
+      font-family: var(--font-serif);
+      font-size: 1.2rem; font-weight: 600; line-height: 1.2;
+    }
+    .community-location {
+      font-size: 0.8rem; color: rgba(58,42,31,0.5); margin-top: 0.15rem;
+    }
+
+    .community-badges { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .community-badge {
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.04em; padding: 0.2rem 0.5rem;
+      border-radius: 100px;
+    }
+    .badge--scholars { background: rgba(45,94,64,0.08); color: var(--green); }
+    .badge--schools { background: rgba(194,115,76,0.08); color: var(--terra); }
+    .badge--trades { background: rgba(212,169,106,0.1); color: #8a6d2f; }
+    .badge--events { background: rgba(139,175,142,0.12); color: #3d6b42; }
+
+    .community-toggle {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(58,42,31,0.06); font-size: 0.85rem;
+      transition: transform 0.3s var(--ease); flex-shrink: 0;
+    }
+    .community-card.is-open .community-toggle { transform: rotate(180deg); }
+
+    .community-body {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.5s var(--ease);
+    }
+    .community-card.is-open .community-body { max-height: 4000px; }
+
+    .community-content { padding: 0 1.75rem 1.75rem; }
+    .community-desc {
+      font-size: 0.92rem; color: rgba(58,42,31,0.7);
+      line-height: 1.7; margin-bottom: 1.5rem;
+    }
+
+    /* Tabs inside community */
+    .community-tabs {
+      display: flex; gap: 0; border-radius: 100px;
+      background: rgba(58,42,31,0.05); padding: 3px; margin-bottom: 1.25rem;
+    }
+    .community-tab {
+      padding: 0.45rem 1.1rem; border-radius: 100px;
+      font-size: 0.8rem; font-weight: 600;
+      color: rgba(58,42,31,0.5); transition: all 0.3s var(--ease);
+      cursor: pointer; border: none; background: none; font-family: inherit;
+    }
+    .community-tab.is-active { background: var(--green); color: var(--cream); }
+    .community-tab:hover:not(.is-active) { color: var(--brown); }
+
+    .tab-panel { display: none; }
+    .tab-panel.is-visible { display: block; }
+
+    /* School sub-cards */
+    .sub-card {
+      background: var(--cream); border-radius: 12px; padding: 1rem 1.25rem;
+      margin-bottom: 0.6rem; border: 1px solid rgba(58,42,31,0.06);
+    }
+    .sub-card__header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
+    .sub-card__name {
+      font-family: var(--font-serif);
+      font-size: 1rem; font-weight: 600; line-height: 1.3;
+    }
+    .sub-card__meta {
+      font-size: 0.78rem; color: rgba(58,42,31,0.5); margin-top: 0.25rem;
+    }
+    .sub-card__stats {
+      display: flex; gap: 1rem; margin-top: 0.6rem; flex-wrap: wrap;
+    }
+    .sub-stat {
+      font-size: 0.75rem; color: rgba(58,42,31,0.45);
+      display: flex; align-items: center; gap: 0.2rem;
+    }
+    .sub-stat__val { font-weight: 700; color: var(--green); }
+
+    /* Trade cards */
+    .trade-card {
+      background: var(--cream); border-radius: 12px; padding: 1rem 1.25rem;
+      margin-bottom: 0.6rem; border: 1px solid rgba(58,42,31,0.06);
+      display: flex; align-items: flex-start; gap: 1rem;
+    }
+    .trade-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+      background: rgba(212,169,106,0.1); color: #8a6d2f;
+    }
+    .trade-info { flex: 1; min-width: 0; }
+    .trade-name { font-family: var(--font-serif); font-size: 0.95rem; font-weight: 600; }
+    .trade-desc { font-size: 0.8rem; color: rgba(58,42,31,0.55); margin-top: 0.15rem; }
+    .trade-stats { display: flex; gap: 0.75rem; margin-top: 0.4rem; }
+
+    /* Event mini cards */
+    .event-mini {
+      background: var(--cream); border-radius: 12px; padding: 1rem 1.25rem;
+      margin-bottom: 0.6rem; border: 1px solid rgba(58,42,31,0.06);
+      display: flex; align-items: flex-start; gap: 1rem;
+    }
+    .event-date-box {
+      width: 48px; text-align: center; flex-shrink: 0;
+      background: rgba(45,94,64,0.06); border-radius: 8px; padding: 0.4rem;
+    }
+    .event-date-box__month {
+      font-size: 0.55rem; font-weight: 700; text-transform: uppercase;
+      color: var(--green); letter-spacing: 0.05em;
+    }
+    .event-date-box__day {
+      font-family: var(--font-serif); font-size: 1.2rem; font-weight: 600;
+      color: var(--green-dark); line-height: 1;
+    }
+    .event-info { flex: 1; min-width: 0; }
+    .event-title { font-family: var(--font-serif); font-size: 0.95rem; font-weight: 600; }
+    .event-detail { font-size: 0.78rem; color: rgba(58,42,31,0.5); margin-top: 0.15rem; }
+    .event-type-badge {
+      font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
+      padding: 0.15rem 0.4rem; border-radius: 100px;
+      background: rgba(139,175,142,0.12); color: #3d6b42;
+    }
+
+    /* Impact summary */
+    .impact-row {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.75rem; margin-bottom: 1.5rem;
+    }
+    .impact-card {
+      background: var(--cream); border-radius: 10px; padding: 0.85rem 1rem;
+      border: 1px solid rgba(58,42,31,0.06); text-align: center;
+    }
+    .impact-card__number {
+      font-family: var(--font-serif); font-size: 1.5rem; font-weight: 500;
+      color: var(--green);
+    }
+    .impact-card__label { font-size: 0.72rem; color: rgba(58,42,31,0.45); margin-top: 0.1rem; }
+
+    /* View tab active pill (not scholar-specific) */
+    .comm-pill.is-active {
+      background: var(--green) !important; color: var(--cream) !important;
+      border-color: var(--green) !important;
+    }
   </style>
 </head>
 <body>
@@ -1016,7 +1184,7 @@
     </button>
     <ul class="nav__links">
       <li><a href="/">Home</a></li>
-      <li><a href="/scholars/" class="is-active">Scholars</a></li>
+      <li><a href="/scholars/" class="is-active">Our Impact</a></li>
       <li><a href="/ledger/">Ledger</a></li>
       <li><a href="/events/">Events</a></li>
       <li><a href="/volunteer/">Volunteer</a></li>
@@ -1117,6 +1285,33 @@
         </div>
       </div>
 
+      <!-- VIEW TOGGLE -->
+      <div style="display:flex;gap:0;border-radius:100px;background:rgba(58,42,31,0.05);padding:3px;margin-bottom:2rem;max-width:380px;" id="view-toggle">
+        <button class="view-tab is-active" data-view="scholars" style="flex:1;padding:0.6rem 1.5rem;border-radius:100px;font-size:0.88rem;font-weight:600;color:var(--cream);background:var(--green);border:none;cursor:pointer;transition:all 0.3s;font-family:inherit;">Scholars</button>
+        <button class="view-tab" data-view="communities" style="flex:1;padding:0.6rem 1.5rem;border-radius:100px;font-size:0.88rem;font-weight:600;color:rgba(58,42,31,0.5);background:none;border:none;cursor:pointer;transition:all 0.3s;font-family:inherit;">Communities</button>
+      </div>
+
+      <!-- COMMUNITIES VIEW (hidden by default) -->
+      <div id="communities-view" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
+          <div style="display:flex;align-items:center;gap:0.5rem;background:#fff;border:1.5px solid rgba(58,42,31,0.12);border-radius:100px;padding:0.5rem 1.25rem;flex:1;max-width:360px;">
+            <span style="font-size:0.9rem;color:rgba(58,42,31,0.35);">&#128269;</span>
+            <input type="text" id="comm-search" placeholder="Search communities, schools, trades..." style="border:none;background:none;outline:none;width:100%;font-family:var(--font-sans);font-size:0.88rem;color:var(--brown);">
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:0.4rem;" id="comm-area-filters">
+            <button class="comm-pill is-active" data-area="all" style="padding:0.4rem 1rem;border-radius:100px;font-size:0.78rem;font-weight:600;background:var(--green);color:var(--cream);border:none;cursor:pointer;font-family:inherit;">All</button>
+            <button class="comm-pill" data-area="mainland" style="padding:0.4rem 1rem;border-radius:100px;font-size:0.78rem;font-weight:600;background:rgba(58,42,31,0.04);color:rgba(58,42,31,0.6);border:1.5px solid transparent;cursor:pointer;font-family:inherit;">Mainland</button>
+            <button class="comm-pill" data-area="island" style="padding:0.4rem 1rem;border-radius:100px;font-size:0.78rem;font-weight:600;background:rgba(58,42,31,0.04);color:rgba(58,42,31,0.6);border:1.5px solid transparent;cursor:pointer;font-family:inherit;">Island</button>
+            <button class="comm-pill" data-area="suburban" style="padding:0.4rem 1rem;border-radius:100px;font-size:0.78rem;font-weight:600;background:rgba(58,42,31,0.04);color:rgba(58,42,31,0.6);border:1.5px solid transparent;cursor:pointer;font-family:inherit;">Suburban</button>
+          </div>
+        </div>
+        <div id="comm-grid"></div>
+        <div id="comm-empty" style="display:none;text-align:center;padding:3rem;color:rgba(58,42,31,0.4);font-size:0.9rem;">No communities found.</div>
+      </div>
+
+      <!-- SCHOLARS VIEW -->
+      <div id="scholars-view">
+
       <!-- SCHOOL OVERVIEW -->
       <div class="school-overview" id="school-overview">
         <div class="school-overview__header">
@@ -1139,10 +1334,19 @@
           </div>
         </div>
 
+        <!-- COMMUNITY CONTEXT BANNER -->
+        <div id="community-banner" style="display:none;background:rgba(45,94,64,0.06);border:1.5px solid rgba(45,94,64,0.12);border-radius:12px;padding:0.85rem 1.25rem;margin-bottom:1.25rem;display:none;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
+          <span style="font-size:0.88rem;color:var(--green);font-weight:600;" id="community-banner-text"></span>
+          <button onclick="clearCommunityFilter()" style="font-size:0.78rem;color:var(--terra);font-weight:600;background:none;border:none;cursor:pointer;text-decoration:underline;">Clear filter</button>
+        </div>
+
         <!-- TOOLBAR -->
         <div class="toolbar">
           <div class="filter-group">
             <label>Filters:</label>
+            <select class="filter-select" id="filter-community">
+              <option value="">All Communities</option>
+            </select>
             <select class="filter-select" id="filter-pathway">
               <option value="">All Pathways</option>
               <option value="difficult-backgrounds">Difficult Backgrounds</option>
@@ -1211,6 +1415,9 @@
           <button class="btn btn--ghost-dark" id="btn-login">Volunteer Sign In</button>
         </div>
       </div>
+
+      </div><!-- /scholars-view -->
+
     </div>
   </section>
 
@@ -1225,16 +1432,16 @@
         </div>
         <div class="footer__right">
           <ul class="footer__links">
-            <li><a href="/scholars/">Scholars</a></li>
+            <li><a href="/scholars/">Our Impact</a></li>
             <li><a href="/ledger/">Ledger</a></li>
             <li><a href="/events/">Events</a></li>
             <li><a href="/volunteer/">Volunteer</a></li>
-
             <li><a href="/forums/">Forums</a></li>
             <li><a href="/ideas/">Ideas</a></li>
             <li><a href="/donate/">Give</a></li>
             <li><a href="/sponsor/">Sponsor</a></li>
             <li><a href="mailto:hello@thebigsisterfoundation.org">Email</a></li>
+            <li><a href="/signin/">Sign In</a></li>
           </ul>
           <p class="footer__copy">&copy; 2026 Big Sister Foundation. All rights reserved.</p>
         </div>
@@ -1388,6 +1595,12 @@
           <input type="text" id="school-location" placeholder="e.g. Agbara, Ogun State" required>
         </div>
         <div class="form-group">
+          <label for="school-community">Community</label>
+          <select id="school-community">
+            <option value="">— Unassigned —</option>
+          </select>
+        </div>
+        <div class="form-group">
           <label for="school-contactPerson">Contact Person</label>
           <input type="text" id="school-contactPerson" placeholder="e.g. Mrs. Adeyemi">
         </div>
@@ -1505,6 +1718,8 @@
       var activeSchoolId = null;
       var editingSchoolId = null;
       var activeSchoolTab = 'notes';
+      var allCommunities = [];
+      var filterCommunity = null; // set from URL or dropdown
 
       var expenseCategories = ['tuition', 'books', 'uniform', 'transport', 'feeding', 'medical', 'other'];
       var expenseCategoryLabels = {
@@ -2135,6 +2350,35 @@
 
       // --- SCHOOL CRUD ---
 
+      function fetchCommunities() {
+        return db.collection('communities').orderBy('name', 'asc').get()
+          .then(function (snapshot) {
+            allCommunities = [];
+            snapshot.forEach(function (doc) {
+              var data = doc.data();
+              data.id = doc.id;
+              allCommunities.push(data);
+            });
+            populateCommunityDropdown();
+            return allCommunities;
+          })
+          .catch(function () { allCommunities = []; populateCommunityDropdown(); return []; });
+      }
+
+      function populateCommunityDropdown() {
+        var sel = document.getElementById('school-community');
+        if (!sel) return;
+        var val = sel.value;
+        sel.innerHTML = '<option value="">— Unassigned —</option>';
+        allCommunities.forEach(function (c) {
+          var opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = c.name;
+          sel.appendChild(opt);
+        });
+        sel.value = val;
+      }
+
       function fetchSchools() {
         return db.collection('schools').orderBy('name', 'asc').get()
           .then(function (snapshot) {
@@ -2174,6 +2418,8 @@
         document.getElementById('school-contactPerson').value = school.contactPerson || '';
         document.getElementById('school-contactPhone').value = school.contactPhone || '';
         document.getElementById('school-contactEmail').value = school.contactEmail || '';
+        var commSel = document.getElementById('school-community');
+        if (commSel) commSel.value = school.communityId || '';
         modalSchool.classList.add('is-open');
       }
 
@@ -2200,13 +2446,22 @@
         var scholarCount = 0;
         allScholars.forEach(function (s) { if (s.school === name) scholarCount++; });
 
+        var commSelect = document.getElementById('school-community');
+        var communityId = commSelect ? commSelect.value : '';
+        var communityName = '';
+        if (communityId) {
+          allCommunities.forEach(function (c) { if (c.id === communityId) communityName = c.name; });
+        }
+
         var schoolData = {
           name: name,
           location: location,
           contactPerson: contactPerson,
           contactPhone: contactPhone,
           contactEmail: contactEmail,
-          scholarCount: scholarCount
+          scholarCount: scholarCount,
+          communityId: communityId || null,
+          communityName: communityName || null
         };
 
         if (editingSchoolId) {
@@ -2333,13 +2588,30 @@
 
       // --- FILTERING & SORTING ---
 
+      function getSchoolsInCommunity(communityId) {
+        var names = [];
+        allSchools.forEach(function (sch) {
+          if (sch.communityId === communityId) names.push(sch.name);
+        });
+        return names;
+      }
+
       function getFilteredScholars() {
         var pw = filterPathway.value;
         var st = filterStatus.value;
         var pf = filterPerformance.value;
         var q = searchInput.value.toLowerCase().trim();
+        var fc = document.getElementById('filter-community');
+        var commId = fc ? fc.value : '';
+
+        // Community filter: find school names in that community
+        var commSchoolNames = null;
+        if (commId) {
+          commSchoolNames = getSchoolsInCommunity(commId);
+        }
 
         return allScholars.filter(function (s) {
+          if (commSchoolNames && commSchoolNames.indexOf(s.school) === -1) return false;
           if (pw) {
             if (pw === '__other') {
               if (isStandardPathway(s.pathway)) return false;
@@ -2855,8 +3127,66 @@
         }
       });
 
+      // --- COMMUNITY FILTER SETUP ---
+
+      function populateCommunityFilter() {
+        var fc = document.getElementById('filter-community');
+        if (!fc) return;
+        var val = fc.value;
+        fc.innerHTML = '<option value="">All Communities</option>';
+        allCommunities.forEach(function (c) {
+          var opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = c.name;
+          fc.appendChild(opt);
+        });
+        fc.value = val;
+      }
+
+      function applyCommunityUrlParams() {
+        var params = new URLSearchParams(window.location.search);
+        var commParam = params.get('community');
+        var schoolParam = params.get('school');
+        var fc = document.getElementById('filter-community');
+        var banner = document.getElementById('community-banner');
+        var bannerText = document.getElementById('community-banner-text');
+
+        if (commParam && fc) {
+          fc.value = commParam;
+          var commName = commParam;
+          allCommunities.forEach(function (c) { if (c.id === commParam) commName = c.name; });
+          if (banner && bannerText) {
+            bannerText.textContent = 'Showing scholars in ' + commName;
+            banner.style.display = 'flex';
+          }
+        }
+        if (schoolParam) {
+          searchInput.value = schoolParam;
+          if (banner && bannerText) {
+            bannerText.textContent = 'Filtered by school: ' + schoolParam;
+            banner.style.display = 'flex';
+          }
+        }
+      }
+
+      window.clearCommunityFilter = function () {
+        var fc = document.getElementById('filter-community');
+        if (fc) fc.value = '';
+        searchInput.value = '';
+        var banner = document.getElementById('community-banner');
+        if (banner) banner.style.display = 'none';
+        // Clean URL
+        var url = new URL(window.location);
+        url.searchParams.delete('community');
+        url.searchParams.delete('school');
+        window.history.replaceState({}, '', url);
+        renderScholars();
+      };
+
       // --- FILTER & SEARCH EVENTS ---
 
+      var fcEl = document.getElementById('filter-community');
+      if (fcEl) fcEl.addEventListener('change', renderScholars);
       filterPathway.addEventListener('change', renderScholars);
       filterStatus.addEventListener('change', renderScholars);
       filterPerformance.addEventListener('change', renderScholars);
@@ -3765,18 +4095,29 @@
             }
           })
           .then(function () {
-            // Fetch schools (and seed if empty)
-            return fetchSchools().then(function () {
-              if (allSchools.length === 0 && allScholars.length > 0) {
-                return seedSchoolsFirestore().then(function () {
-                  return fetchSchools();
-                });
-              }
+            // Fetch communities + schools
+            return fetchCommunities().then(function () {
+              return fetchSchools().then(function () {
+                if (allSchools.length === 0 && allScholars.length > 0) {
+                  return seedSchoolsFirestore().then(function () {
+                    return fetchSchools();
+                  });
+                }
+              });
             });
           })
           .then(function () {
+            populateCommunityFilter();
+            applyCommunityUrlParams();
             updateDashboard();
             renderScholars();
+            // Expose data for communities view IIFE
+            window._bsfAllCommunities = allCommunities;
+            window._bsfAllSchools = allSchools;
+            window._bsfAllScholars = allScholars;
+            window._bsfRenderScholars = renderScholars;
+            // Notify communities view that data is ready
+            window.dispatchEvent(new Event('bsf-data-ready'));
           })
           .catch(function (err) {
             console.error('Error fetching scholars:', err);
@@ -3812,6 +4153,12 @@
             populateSchoolDropdown();
             updateDashboard();
             renderScholars();
+            // Expose data for communities view IIFE (fallback path)
+            window._bsfAllCommunities = allCommunities;
+            window._bsfAllSchools = allSchools;
+            window._bsfAllScholars = allScholars;
+            window._bsfRenderScholars = renderScholars;
+            window.dispatchEvent(new Event('bsf-data-ready'));
             showToast('Loaded offline data (Firestore unavailable)', 'error');
           });
       }
@@ -4138,6 +4485,361 @@
       link.style.color = "var(--gold)";
     }
   });
+})();
+
+// ── Communities View (integrated into scholars page) ──
+(function () {
+  'use strict';
+
+  var commGrid = document.getElementById('comm-grid');
+  var commSearch = document.getElementById('comm-search');
+  var commArea = 'all';
+  var commQuery = '';
+  var commDataLoaded = false;
+
+  // Helpers
+  function esc(s) { var d = document.createElement('div'); d.appendChild(document.createTextNode(s || '')); return d.innerHTML; }
+
+  function fmtNaira(n) {
+    if (!n) return '\u20A60';
+    if (n >= 1000000) return '\u20A6' + (n / 1000000).toFixed(1) + 'M';
+    if (n >= 1000) return '\u20A6' + Math.round(n / 1000) + 'K';
+    return '\u20A6' + n;
+  }
+
+  function getMonthDay(dateStr) {
+    if (!dateStr) return { month: '', day: '' };
+    var d = new Date(dateStr);
+    return {
+      month: d.toLocaleDateString('en-NG', { month: 'short' }).toUpperCase(),
+      day: d.getDate()
+    };
+  }
+
+  // Get schools for a community: prefer allSchools from 'schools' collection, fall back to embedded c.schools
+  function getSchoolsForCommunity(c) {
+    var allSchools = window._bsfAllSchools || [];
+    var fromCollection = allSchools.filter(function (s) { return s.communityId === c.id; });
+    if (fromCollection.length > 0) return fromCollection;
+    return (c.schools || []);
+  }
+
+  // Get scholar count for a community based on school names matched against allScholars
+  function getScholarCountForCommunity(c) {
+    var allScholars = window._bsfAllScholars || [];
+    var schools = getSchoolsForCommunity(c);
+    var schoolNames = schools.map(function (s) { return s.name; });
+    if (schoolNames.length === 0) return c.scholarCount || 0;
+    var count = allScholars.filter(function (s) {
+      return schoolNames.indexOf(s.school) !== -1;
+    }).length;
+    return count > 0 ? count : (c.scholarCount || 0);
+  }
+
+  // Demo communities — used as fallback when Firestore is empty
+  var demoCommunities = [
+    {id:'makoko',name:'Makoko Community',location:'Yaba, Lagos Mainland',area:'mainland',description:'One of Lagos\u2019s most resilient waterside communities. BSF supports children here with education, food security, and vocational training for older youth. Makoko is where our work began.',scholarCount:28,totalInvestment:4200000,schools:[{name:'Makoko Community Primary School',type:'Primary',scholars:15},{name:'Whanyinna Nursery & Primary',type:'Nursery/Primary',scholars:8},{name:'Makoko Junior Secondary',type:'Junior Secondary',scholars:5}],trades:[{name:'Boat Building & Repair',description:'Traditional craft training for youth aged 15-19',enrolled:6,graduates:12},{name:'Fish Smoking & Processing',description:'Value-add skills for the local fishing economy',enrolled:8,graduates:15},{name:'Tailoring & Fashion',description:'Sewing, design, and small business skills',enrolled:10,graduates:8}],events:[{title:'Saturday Tutoring Session',date:'2026-04-12',type:'Education',location:'Community Center'},{title:'Health Screening Day',date:'2026-04-20',type:'Healthcare',location:'Makoko Clinic'}]},
+    {id:'ajegunle',name:'Ajegunle Community',location:'Ajeromi-Ifelodun, Lagos Mainland',area:'mainland',description:'A densely populated community with incredible potential. BSF focuses on education access, after-school programs, and skills training for out-of-school youth.',scholarCount:22,totalInvestment:3100000,schools:[{name:'Ajeromi Community School',type:'Primary',scholars:12},{name:'Hope Academy Ajegunle',type:'Secondary',scholars:10}],trades:[{name:'Barbing & Hairstyling',description:'Professional grooming skills with business training',enrolled:7,graduates:20},{name:'Mobile Phone Repair',description:'Electronics repair and entrepreneurship',enrolled:5,graduates:10},{name:'Catering & Baking',description:'Culinary skills for events and small business',enrolled:9,graduates:6}],events:[{title:'After-School Reading Club',date:'2026-04-08',type:'Education',location:'Hope Academy'}]},
+    {id:'iwaya',name:'Iwaya Community',location:'Yaba, Lagos Mainland',area:'mainland',description:'Neighboring Makoko, Iwaya faces similar challenges but with a growing creative energy. BSF supports education and connects youth with mentors in tech and the arts.',scholarCount:14,totalInvestment:1900000,schools:[{name:'Iwaya Community Primary',type:'Primary',scholars:9},{name:'St. Jude\u2019s Grammar School',type:'Secondary',scholars:5}],trades:[{name:'Digital Literacy & Coding',description:'Basic computing, web design, and intro to coding',enrolled:12,graduates:4},{name:'Art & Craft Production',description:'Visual arts, crafts, and selling on local markets',enrolled:6,graduates:3}],events:[{title:'Coding Saturday Workshop',date:'2026-04-19',type:'Education',location:'Tech Hub Iwaya'}]},
+    {id:'ajah',name:'Ajah/Sangotedo Community',location:'Eti-Osa, Lagos Island',area:'island',description:'A rapidly growing suburban area where many families have relocated from inner Lagos. BSF supports the peri-urban schools and runs weekend programs for children of market traders.',scholarCount:11,totalInvestment:1500000,schools:[{name:'Sangotedo Community School',type:'Primary/Secondary',scholars:7},{name:'Graceland Academy Ajah',type:'Primary',scholars:4}],trades:[{name:'Solar Panel Installation',description:'Renewable energy skills for the growing housing market',enrolled:4,graduates:2},{name:'Plumbing & Pipefitting',description:'Essential trade skills for construction',enrolled:3,graduates:0}],events:[{title:'Weekend Mentorship Circle',date:'2026-04-13',type:'Mentorship',location:'Sangotedo Community School'}]},
+    {id:'ikorodu',name:'Ikorodu Community',location:'Ikorodu, Lagos Suburban',area:'suburban',description:'A historic town on the outskirts of Lagos with deep cultural roots. BSF works with local artisans to create apprenticeship pipelines for young people who have dropped out of formal education.',scholarCount:9,totalInvestment:1100000,schools:[{name:'Ikorodu Grammar School',type:'Secondary',scholars:5},{name:'Little Stars Nursery',type:'Nursery',scholars:4}],trades:[{name:'Adire Textile Dyeing',description:'Traditional Yoruba textile art and modern fashion',enrolled:8,graduates:14},{name:'Carpentry & Woodwork',description:'Furniture making and construction woodwork',enrolled:5,graduates:7}],events:[{title:'Adire Workshop Open Day',date:'2026-04-26',type:'Culture',location:'Ikorodu Artisan Market'}]}
+  ];
+
+  // Render communities using data from the parent IIFE (exposed on window)
+  function renderCommunities() {
+    if (!commGrid) return;
+    var communities = window._bsfAllCommunities || [];
+
+    // Fall back to demo data if Firestore is empty
+    if (communities.length === 0) {
+      communities = demoCommunities;
+    }
+
+    var filtered = communities.slice();
+
+    // Area filter
+    if (commArea !== 'all') {
+      filtered = filtered.filter(function (c) { return c.area === commArea; });
+    }
+    // Search filter
+    if (commQuery) {
+      var q = commQuery.toLowerCase();
+      filtered = filtered.filter(function (c) {
+        var text = (c.name + ' ' + c.location + ' ' + (c.description || '')).toLowerCase();
+        var schools = getSchoolsForCommunity(c);
+        var schoolMatch = schools.some(function (s) { return s.name.toLowerCase().indexOf(q) !== -1; });
+        var tradeMatch = (c.trades || []).some(function (t) { return t.name.toLowerCase().indexOf(q) !== -1; });
+        return text.indexOf(q) !== -1 || schoolMatch || tradeMatch;
+      });
+    }
+
+    if (filtered.length === 0) {
+      commGrid.innerHTML = '<div class="empty-state"><p style="font-size:1.5rem;margin-bottom:0.5rem;">&#127966;</p><p>No communities match your search.</p></div>';
+      return;
+    }
+
+    var allScholars = window._bsfAllScholars || [];
+    var html = '';
+    filtered.forEach(function (c) {
+      var schools = getSchoolsForCommunity(c);
+      var scholarCount = getScholarCountForCommunity(c);
+      var schoolCount = schools.length;
+      var tradeCount = (c.trades || []).length;
+      var eventCount = (c.events || []).length;
+
+      html += '<div class="community-card" data-id="' + c.id + '">';
+
+      // Header
+      html += '<div class="community-header">';
+      html += '<div class="community-header__left">';
+      html += '<div class="community-icon">&#127966;</div>';
+      html += '<div>';
+      html += '<div class="community-name">' + esc(c.name) + '</div>';
+      html += '<div class="community-location">' + esc(c.location) + '</div>';
+      html += '</div>';
+      html += '</div>';
+      html += '<div style="display:flex;align-items:center;gap:0.75rem;">';
+      html += '<div class="community-badges">';
+      html += '<span class="community-badge badge--scholars">' + scholarCount + ' scholars</span>';
+      html += '<span class="community-badge badge--schools">' + schoolCount + ' schools</span>';
+      html += '<span class="community-badge badge--trades">' + tradeCount + ' trades</span>';
+      if (eventCount > 0) html += '<span class="community-badge badge--events">' + eventCount + ' events</span>';
+      html += '</div>';
+      html += '<div class="community-toggle">&#9660;</div>';
+      html += '</div>';
+      html += '</div>';
+
+      // Body
+      html += '<div class="community-body"><div class="community-content">';
+
+      // Description
+      html += '<p class="community-desc">' + esc(c.description) + '</p>';
+
+      // Impact summary
+      html += '<div class="impact-row">';
+      html += '<div class="impact-card"><div class="impact-card__number">' + scholarCount + '</div><div class="impact-card__label">Scholars</div></div>';
+      html += '<div class="impact-card"><div class="impact-card__number">' + schoolCount + '</div><div class="impact-card__label">Schools</div></div>';
+      html += '<div class="impact-card"><div class="impact-card__number">' + tradeCount + '</div><div class="impact-card__label">Vocational Trades</div></div>';
+      html += '<div class="impact-card"><div class="impact-card__number">' + fmtNaira(c.totalInvestment) + '</div><div class="impact-card__label">Total Investment</div></div>';
+      html += '</div>';
+
+      // Tabs
+      html += '<div class="community-tabs">';
+      html += '<button class="community-tab is-active" data-tab="schools" data-community="' + c.id + '">Schools (' + schoolCount + ')</button>';
+      html += '<button class="community-tab" data-tab="trades" data-community="' + c.id + '">Vocational Trades (' + tradeCount + ')</button>';
+      html += '<button class="community-tab" data-tab="events" data-community="' + c.id + '">Events (' + eventCount + ')</button>';
+      html += '</div>';
+
+      // Schools panel
+      html += '<div class="tab-panel is-visible" data-panel="schools" data-community="' + c.id + '">';
+      if (schoolCount === 0) {
+        html += '<div class="empty-state"><p>No schools registered yet.</p></div>';
+      } else {
+        schools.forEach(function (s) {
+          var schoolScholarCount = allScholars.filter(function (sc) { return sc.school === s.name; }).length;
+          var displayScholars = schoolScholarCount > 0 ? schoolScholarCount : (s.scholars || s.scholarCount || 0);
+          html += '<div class="sub-card">';
+          html += '<div class="sub-card__header"><div class="sub-card__name">' + esc(s.name) + '</div></div>';
+          html += '<div class="sub-card__meta">' + esc(s.type || '') + (s.contact || s.contactPerson ? ' &middot; Contact: ' + esc(s.contact || s.contactPerson || '') : '') + '</div>';
+          html += '<div class="sub-card__stats">';
+          html += '<span class="sub-stat"><span class="sub-stat__val">' + displayScholars + '</span> scholars</span>';
+          html += '</div>';
+          html += '<a href="javascript:void(0)" onclick="window._bsfSwitchToScholarsWithSchool(\'' + esc(s.name).replace(/'/g, "\\'") + '\')" style="display:inline-block;margin-top:0.5rem;font-size:0.8rem;font-weight:600;color:var(--green);text-decoration:none;">View scholars &rarr;</a>';
+          html += '</div>';
+        });
+      }
+      // Community-level scholars link
+      html += '<a href="javascript:void(0)" onclick="window._bsfSwitchToScholarsWithCommunity(\'' + esc(c.id) + '\')" style="display:inline-block;margin-top:0.75rem;font-size:0.85rem;font-weight:600;color:var(--terra);text-decoration:none;">View all scholars in ' + esc(c.name) + ' &rarr;</a>';
+      html += '</div>';
+
+      // Trades panel
+      html += '<div class="tab-panel" data-panel="trades" data-community="' + c.id + '">';
+      if (tradeCount === 0) {
+        html += '<div class="empty-state"><p>No vocational programs yet.</p></div>';
+      } else {
+        (c.trades || []).forEach(function (t) {
+          html += '<div class="trade-card">';
+          html += '<div class="trade-icon">' + (t.icon || '&#128736;') + '</div>';
+          html += '<div class="trade-info">';
+          html += '<div class="trade-name">' + esc(t.name) + '</div>';
+          html += '<div class="trade-desc">' + esc(t.description || t.desc || '') + '</div>';
+          html += '<div class="trade-stats">';
+          html += '<span class="sub-stat"><span class="sub-stat__val">' + (t.enrolled || 0) + '</span> enrolled</span>';
+          html += '<span class="sub-stat"><span class="sub-stat__val">' + (t.graduates || 0) + '</span> graduates</span>';
+          html += '</div>';
+          html += '</div>';
+          html += '</div>';
+        });
+      }
+      html += '</div>';
+
+      // Events panel
+      html += '<div class="tab-panel" data-panel="events" data-community="' + c.id + '">';
+      if (eventCount === 0) {
+        html += '<div class="empty-state"><p>No upcoming events.</p></div>';
+      } else {
+        (c.events || []).forEach(function (ev) {
+          var md = getMonthDay(ev.date);
+          html += '<div class="event-mini">';
+          html += '<div class="event-date-box"><div class="event-date-box__month">' + md.month + '</div><div class="event-date-box__day">' + md.day + '</div></div>';
+          html += '<div class="event-info">';
+          html += '<div class="event-title">' + esc(ev.title) + '</div>';
+          html += '<div class="event-detail">' + esc(ev.location) + ' &middot; <span class="event-type-badge">' + esc(ev.type) + '</span></div>';
+          html += '</div>';
+          html += '</div>';
+        });
+      }
+      html += '</div>';
+
+      html += '</div></div>'; // community-content, community-body
+      html += '</div>'; // community-card
+    });
+
+    commGrid.innerHTML = html;
+
+    // Attach toggle handlers (accordion open/close)
+    commGrid.querySelectorAll('.community-header').forEach(function (header) {
+      header.addEventListener('click', function () {
+        header.parentElement.classList.toggle('is-open');
+      });
+    });
+
+    // Attach tab handlers (Schools/Trades/Events)
+    commGrid.querySelectorAll('.community-tab').forEach(function (tab) {
+      tab.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var communityId = tab.getAttribute('data-community');
+        var tabName = tab.getAttribute('data-tab');
+        commGrid.querySelectorAll('.community-tab[data-community="' + communityId + '"]').forEach(function (t) { t.classList.remove('is-active'); });
+        tab.classList.add('is-active');
+        commGrid.querySelectorAll('.tab-panel[data-community="' + communityId + '"]').forEach(function (p) {
+          p.classList.toggle('is-visible', p.getAttribute('data-panel') === tabName);
+        });
+      });
+    });
+
+    commDataLoaded = true;
+  }
+
+  // --- View toggle logic ---
+  function activateView(viewName) {
+    var scholarsView = document.getElementById('scholars-view');
+    var commView = document.getElementById('communities-view');
+    if (!scholarsView || !commView) return;
+
+    document.querySelectorAll('.view-tab').forEach(function (t) {
+      var isTarget = t.getAttribute('data-view') === viewName;
+      t.style.background = isTarget ? 'var(--green)' : 'none';
+      t.style.color = isTarget ? 'var(--cream)' : 'rgba(58,42,31,0.5)';
+      if (isTarget) t.classList.add('is-active'); else t.classList.remove('is-active');
+    });
+
+    scholarsView.style.display = viewName === 'scholars' ? '' : 'none';
+    commView.style.display = viewName === 'communities' ? '' : 'none';
+
+    if (viewName === 'communities' && !commDataLoaded) {
+      renderCommunities();
+    }
+  }
+
+  // Wire up view toggle buttons
+  document.querySelectorAll('.view-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      activateView(tab.getAttribute('data-view'));
+    });
+  });
+
+  // Wire up area filter pills
+  document.querySelectorAll('.comm-pill').forEach(function (pill) {
+    pill.addEventListener('click', function () {
+      document.querySelectorAll('.comm-pill').forEach(function (p) {
+        p.classList.remove('is-active');
+        p.style.background = 'rgba(58,42,31,0.04)';
+        p.style.color = 'rgba(58,42,31,0.6)';
+        p.style.borderColor = 'transparent';
+      });
+      pill.classList.add('is-active');
+      pill.style.background = 'var(--green)';
+      pill.style.color = 'var(--cream)';
+      pill.style.borderColor = 'var(--green)';
+      commArea = pill.getAttribute('data-area');
+      renderCommunities();
+    });
+  });
+
+  // Wire up community search
+  if (commSearch) {
+    var searchTimeout;
+    commSearch.addEventListener('input', function () {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(function () {
+        commQuery = commSearch.value.trim();
+        renderCommunities();
+      }, 250);
+    });
+  }
+
+  // --- switchToScholars functions (called from community card links) ---
+  window._bsfSwitchToScholarsWithCommunity = function (communityId) {
+    // Set the community filter dropdown
+    var fc = document.getElementById('filter-community');
+    if (fc) fc.value = communityId;
+    // Show community banner
+    var banner = document.getElementById('community-banner');
+    var bannerText = document.getElementById('community-banner-text');
+    if (banner && bannerText) {
+      var commName = communityId;
+      (window._bsfAllCommunities || []).forEach(function (c) { if (c.id === communityId) commName = c.name; });
+      bannerText.textContent = 'Showing scholars in ' + commName;
+      banner.style.display = 'flex';
+    }
+    // Switch to scholars view
+    activateView('scholars');
+    // Trigger render
+    if (typeof window._bsfRenderScholars === 'function') window._bsfRenderScholars();
+    // Scroll to top of listing
+    var listingSection = document.getElementById('listing-section');
+    if (listingSection) listingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  window._bsfSwitchToScholarsWithSchool = function (schoolName) {
+    // Set the search input to the school name
+    var searchInput = document.getElementById('search-input');
+    if (searchInput) searchInput.value = schoolName;
+    // Show community banner
+    var banner = document.getElementById('community-banner');
+    var bannerText = document.getElementById('community-banner-text');
+    if (banner && bannerText) {
+      bannerText.textContent = 'Filtered by school: ' + schoolName;
+      banner.style.display = 'flex';
+    }
+    // Switch to scholars view
+    activateView('scholars');
+    // Trigger render
+    if (typeof window._bsfRenderScholars === 'function') window._bsfRenderScholars();
+    // Scroll to top of listing
+    var listingSection = document.getElementById('listing-section');
+    if (listingSection) listingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  // --- Check URL params for ?view=communities ---
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('view') === 'communities') {
+    // Wait for DOM to settle, then switch
+    setTimeout(function () { activateView('communities'); }, 0);
+  }
+
+  // --- Listen for data-ready event from main IIFE ---
+  window.addEventListener('bsf-data-ready', function () {
+    // If we're currently showing communities view, re-render with fresh data
+    var commView = document.getElementById('communities-view');
+    if (commView && commView.style.display !== 'none') {
+      renderCommunities();
+    }
+    // Also mark data as needing re-render next time communities tab is shown
+    commDataLoaded = false;
+  });
+
 })();
 </script>
 <script defer src="/_vercel/insights/script.js"></script>

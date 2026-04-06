@@ -732,7 +732,7 @@
     /* Ensure sections sit above the fixed tree */
     .hero, .problem, .pathways, .different, .founder, .vision, .footer {
       position: relative;
-      z-index: 1;
+      z-index: 2;
     }
     .problem .container,
     .pathways .container,
@@ -741,25 +741,27 @@
     .vision .container,
     .footer .container {
       position: relative;
-      z-index: 2;
+      z-index: 3;
     }
 
     .tree-bg {
       position: fixed;
       top: 0;
-      left: 0;
-      width: 100vw;
+      right: 3%;
+      width: 320px;
       height: 100vh;
       pointer-events: none;
-      z-index: 50;
+      z-index: 1;
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: center;
+      overflow: visible;
     }
 
     .tree-bg svg {
       width: 100%;
-      height: 100vh;
+      height: 90vh;
+      overflow: visible;
     }
 
     /* Forest companion trees — sprout from edges */
@@ -1054,120 +1056,89 @@
 
   <!-- CONTINUOUS TREE — grows from seeds to full canopy as user scrolls -->
   <div class="tree-bg" aria-hidden="true">
-    <svg viewBox="0 0 800 1000" fill="none" preserveAspectRatio="xMidYMid meet">
+    <svg viewBox="0 0 200 1000" fill="none" preserveAspectRatio="xMidYMid meet">
 
-      <!-- STAGE 1: Seeds (0-5% scroll) — three small seeds in the soil -->
+      <!-- STAGE 1: Seeds (0-5% scroll) -->
       <ellipse class="tree-seed" cx="92" cy="970" rx="4" ry="5.5"/>
       <ellipse class="tree-seed" cx="100" cy="975" rx="3.5" ry="5"/>
       <ellipse class="tree-seed" cx="108" cy="968" rx="4" ry="5.5"/>
 
-      <!-- STAGE 2: Sprout (5-15%) — tiny stem with two cotyledon leaves -->
+      <!-- STAGE 2: Sprout (5-15%) -->
       <line class="tree-sprout-stem" x1="100" y1="960" x2="100" y2="940"/>
       <ellipse class="tree-sprout-leaf" cx="93" cy="938" rx="8" ry="4" transform="rotate(-30 93 938)"/>
       <ellipse class="tree-sprout-leaf" cx="107" cy="938" rx="8" ry="4" transform="rotate(30 107 938)"/>
 
-      <!-- STAGE 3: Thin stem (15-30%) — grows upward from sprout -->
+      <!-- STAGE 3: Thin stem (15-30%) -->
       <path class="tree-stem" d="M100,940 C99,930 101,920 100,910 C99,900 101,890 100,880 C99,870 101,860 100,850 C99,840 101,830 100,820"/>
 
-      <!-- STAGE 4: Roots spread (15-30%) — as stem grows, roots anchor below -->
+      <!-- STAGE 4: Roots spread (15-30%) -->
       <path class="tree-root" d="M100,960 C94,970 82,980 66,988 C56,993 46,994 40,991"/>
       <path class="tree-root" d="M100,960 C106,970 118,980 134,988 C144,993 154,994 160,991"/>
       <path class="tree-root" d="M100,962 C96,974 88,984 78,990"/>
       <path class="tree-root" d="M100,962 C104,974 112,984 122,990"/>
 
-      <!-- STAGE 5: Trunk thickens (30-55%) — main trunk grows tall with organic wobble -->
+      <!-- STAGE 5: Trunk (30-55%) -->
       <path class="tree-trunk" d="M100,820 C98,800 102,780 100,760 C97,740 103,720 100,700 C98,680 102,660 100,640 C103,620 97,600 100,580 C101,560 99,540 100,520 C98,500 102,480 100,460 C101,440 99,420 100,400 C102,380 98,360 100,340 C99,320 101,300 100,280"/>
 
-      <!-- STAGE 6: Branches fork out (50-75%) — staggered emergence -->
+      <!-- STAGE 6: Branches (50-75%) -->
       <path class="tree-branch" d="M100,700 C112,694 128,690 148,694 C162,697 172,706 178,718"/>
       <path class="tree-branch" d="M100,580 C88,572 68,566 48,570 C34,574 24,584 20,596"/>
       <path class="tree-branch" d="M100,460 C116,452 138,444 158,438 C172,434 182,432 188,436"/>
       <path class="tree-branch" d="M100,360 C84,352 62,348 44,354 C32,360 26,372 30,386"/>
       <path class="tree-branch" d="M100,300 C118,292 140,286 158,282 C170,280 178,282 182,290"/>
 
-      <!-- STAGE 7: Leaf buds at branch tips (65-80%) — small dots that pop in -->
+      <!-- STAGE 7: Leaf buds (65-80%) -->
       <circle class="tree-bud" cx="178" cy="718" r="5"/>
       <circle class="tree-bud" cx="20" cy="596" r="4.5"/>
       <circle class="tree-bud" cx="188" cy="436" r="5"/>
       <circle class="tree-bud" cx="30" cy="386" r="4.5"/>
       <circle class="tree-bud" cx="182" cy="290" r="5"/>
 
-      <!-- STAGE 8: Full canopy (80-100%) — large overlapping leaf clusters bloom -->
+      <!-- STAGE 8: Full canopy (80-100%) -->
       <ellipse class="tree-leaf" cx="178" cy="712" rx="20" ry="16"/>
       <ellipse class="tree-leaf" cx="22" cy="590" rx="18" ry="15"/>
       <ellipse class="tree-leaf" cx="186" cy="430" rx="19" ry="15"/>
       <ellipse class="tree-leaf" cx="32" cy="378" rx="17" ry="14"/>
       <ellipse class="tree-leaf" cx="180" cy="282" rx="18" ry="15"/>
-
-      <!-- Crown canopy at the very top -->
       <ellipse class="tree-leaf" cx="100" cy="250" rx="45" ry="34"/>
       <ellipse class="tree-leaf" cx="70" cy="264" rx="34" ry="28"/>
       <ellipse class="tree-leaf" cx="132" cy="260" rx="36" ry="30"/>
       <ellipse class="tree-leaf" cx="100" cy="274" rx="30" ry="24"/>
 
-      <!-- ═══ STAGE 9: FOREST — companion trees sprout as scroll nears end ═══ -->
-
-      <!-- Forest tree 1: left near, medium -->
+      <!-- STAGE 9: FOREST — smaller companion trees sprout nearby -->
       <g class="forest-tree" data-forest="1">
-        <path class="forest-trunk" d="M42,990 C41,970 43,950 42,930 C41,910 43,890 42,870 C43,850 41,830 42,810 C41,790 43,770 42,750"/>
-        <ellipse class="forest-canopy" cx="42" cy="730" rx="30" ry="24"/>
-        <ellipse class="forest-canopy" cx="28" cy="742" rx="22" ry="18"/>
-        <ellipse class="forest-canopy" cx="56" cy="738" rx="24" ry="20"/>
+        <path class="forest-trunk" d="M40,990 C39,972 41,954 40,936 C39,918 41,900 40,882 C41,864 39,846 40,828"/>
+        <ellipse class="forest-canopy" cx="40" cy="810" rx="24" ry="20"/>
+        <ellipse class="forest-canopy" cx="28" cy="820" rx="18" ry="15"/>
+        <ellipse class="forest-canopy" cx="52" cy="816" rx="20" ry="16"/>
       </g>
-
-      <!-- Forest tree 2: far left, small -->
       <g class="forest-tree" data-forest="2">
-        <path class="forest-trunk" d="M-20,992 C-21,978 -19,964 -20,950 C-21,936 -19,922 -20,908 C-19,894 -21,880 -20,866"/>
-        <ellipse class="forest-canopy" cx="-20" cy="850" rx="24" ry="20"/>
-        <ellipse class="forest-canopy" cx="-34" cy="860" rx="18" ry="15"/>
-        <ellipse class="forest-canopy" cx="-6" cy="856" rx="20" ry="16"/>
+        <path class="forest-trunk" d="M165,988 C164,968 166,948 165,928 C164,908 166,888 165,868 C166,848 164,828 165,808 C164,788 166,768 165,748"/>
+        <ellipse class="forest-canopy" cx="165" cy="730" rx="28" ry="22"/>
+        <ellipse class="forest-canopy" cx="150" cy="742" rx="20" ry="17"/>
+        <ellipse class="forest-canopy" cx="180" cy="738" rx="22" ry="18"/>
       </g>
-
-      <!-- Forest tree 3: right near, tall -->
       <g class="forest-tree" data-forest="3">
-        <path class="forest-trunk" d="M168,988 C167,965 169,942 168,920 C167,898 169,876 168,854 C169,832 167,810 168,788 C167,766 169,744 168,722 C169,700 167,680 168,660"/>
-        <ellipse class="forest-canopy" cx="168" cy="640" rx="34" ry="28"/>
-        <ellipse class="forest-canopy" cx="148" cy="654" rx="26" ry="22"/>
-        <ellipse class="forest-canopy" cx="188" cy="650" rx="28" ry="24"/>
-        <ellipse class="forest-canopy" cx="168" cy="660" rx="24" ry="20"/>
+        <path class="forest-trunk" d="M-10,994 C-11,978 -9,962 -10,946 C-9,930 -11,914 -10,898"/>
+        <ellipse class="forest-canopy" cx="-10" cy="882" rx="20" ry="16"/>
+        <ellipse class="forest-canopy" cx="-22" cy="890" rx="15" ry="13"/>
       </g>
-
-      <!-- Forest tree 4: far right, medium-small -->
       <g class="forest-tree" data-forest="4">
-        <path class="forest-trunk" d="M228,990 C227,972 229,954 228,936 C227,918 229,900 228,882 C229,864 227,846 228,828"/>
-        <ellipse class="forest-canopy" cx="228" cy="812" rx="26" ry="22"/>
-        <ellipse class="forest-canopy" cx="214" cy="822" rx="20" ry="16"/>
-        <ellipse class="forest-canopy" cx="242" cy="818" rx="22" ry="18"/>
+        <path class="forest-trunk" d="M210,992 C209,976 211,960 210,944 C209,928 211,912 210,896"/>
+        <ellipse class="forest-canopy" cx="210" cy="880" rx="20" ry="16"/>
+        <ellipse class="forest-canopy" cx="222" cy="888" rx="15" ry="13"/>
       </g>
-
-      <!-- Forest tree 5: left edge, tiny sapling -->
       <g class="forest-tree" data-forest="5">
-        <path class="forest-trunk" d="M-52,994 C-53,980 -51,966 -52,952 C-51,938 -53,924 -52,910"/>
-        <ellipse class="forest-canopy" cx="-52" cy="898" rx="18" ry="15"/>
-        <ellipse class="forest-canopy" cx="-62" cy="906" rx="14" ry="12"/>
+        <path class="forest-trunk" d="M70,992 C69,978 71,964 70,950 C71,936 69,922 70,908 C69,894 71,880 70,866"/>
+        <ellipse class="forest-canopy" cx="70" cy="850" rx="20" ry="16"/>
+        <ellipse class="forest-canopy" cx="58" cy="858" rx="14" ry="12"/>
+        <ellipse class="forest-canopy" cx="82" cy="856" rx="16" ry="14"/>
       </g>
-
-      <!-- Forest tree 6: right edge, tiny sapling -->
       <g class="forest-tree" data-forest="6">
-        <path class="forest-trunk" d="M264,993 C263,980 265,967 264,954 C265,941 263,928 264,916"/>
-        <ellipse class="forest-canopy" cx="264" cy="904" rx="18" ry="15"/>
-        <ellipse class="forest-canopy" cx="276" cy="912" rx="14" ry="12"/>
-      </g>
-
-      <!-- Forest tree 7: behind center-left, background depth -->
-      <g class="forest-tree" data-forest="7" style="opacity:0;">
-        <path class="forest-trunk" d="M66,992 C65,975 67,958 66,941 C67,924 65,907 66,890 C65,873 67,856 66,840"/>
-        <ellipse class="forest-canopy" cx="66" cy="824" rx="22" ry="18"/>
-        <ellipse class="forest-canopy" cx="54" cy="834" rx="16" ry="14"/>
-        <ellipse class="forest-canopy" cx="78" cy="830" rx="18" ry="15"/>
-      </g>
-
-      <!-- Forest tree 8: behind center-right, background depth -->
-      <g class="forest-tree" data-forest="8" style="opacity:0;">
-        <path class="forest-trunk" d="M140,991 C139,976 141,961 140,946 C141,931 139,916 140,901 C139,886 141,871 140,856"/>
-        <ellipse class="forest-canopy" cx="140" cy="840" rx="22" ry="18"/>
-        <ellipse class="forest-canopy" cx="128" cy="850" rx="16" ry="14"/>
-        <ellipse class="forest-canopy" cx="152" cy="846" rx="18" ry="15"/>
+        <path class="forest-trunk" d="M138,991 C137,975 139,959 138,943 C137,927 139,911 138,895 C139,879 137,863 138,848"/>
+        <ellipse class="forest-canopy" cx="138" cy="832" rx="22" ry="18"/>
+        <ellipse class="forest-canopy" cx="124" cy="842" rx="16" ry="14"/>
+        <ellipse class="forest-canopy" cx="152" cy="838" rx="18" ry="15"/>
       </g>
     </svg>
   </div>
@@ -1179,14 +1150,13 @@
       <span></span><span></span><span></span>
     </button>
     <ul class="nav__links">
-      <li><a href="/">Home</a></li>
-      <li><a href="/scholars/">Scholars</a></li>
+      <li><a href="/" class="is-active">Home</a></li>
+      <li><a href="/scholars/">Our Impact</a></li>
       <li><a href="/ledger/">Ledger</a></li>
       <li><a href="/events/">Events</a></li>
       <li><a href="/volunteer/">Volunteer</a></li>
       <li><a href="/donate/">Give</a></li>
     </ul>
-    <div class="progress-bar" aria-hidden="true"></div>
   </nav>
 
   <!-- HERO -->
@@ -1434,17 +1404,16 @@
         </div>
         <div class="footer__right">
           <ul class="footer__links">
-            <li><a href="/scholars/">Scholars</a></li>
+            <li><a href="/scholars/">Our Impact</a></li>
             <li><a href="/ledger/">Ledger</a></li>
             <li><a href="/events/">Events</a></li>
             <li><a href="/volunteer/">Volunteer</a></li>
-
             <li><a href="/forums/">Forums</a></li>
             <li><a href="/ideas/">Ideas</a></li>
             <li><a href="/donate/">Give</a></li>
             <li><a href="/sponsor/">Sponsor</a></li>
-
             <li><a href="mailto:hello@thebigsisterfoundation.org">Email</a></li>
+            <li><a href="/signin/">Sign In</a></li>
           </ul>
           <p class="footer__copy">&copy; 2026 Big Sister Foundation. All rights reserved.</p>
         </div>
