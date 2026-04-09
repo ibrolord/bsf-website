@@ -1283,6 +1283,34 @@
         window.location.href = '/signin/';
       });
     };
+    window.BSFGetStoredSponsorProfile = function() {
+      try {
+        if (window.BSFStore && typeof BSFStore.getSponsor === 'function') {
+          return BSFStore.getSponsor();
+        }
+        var raw = localStorage.getItem('bsf_sponsor_profile');
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) {
+        return null;
+      }
+    };
+    function loadSponsorByEmail(email) {
+      var normalized = String(email || '').trim().toLowerCase();
+      if (!db || !normalized) return Promise.resolve(null);
+      return db.collection('sponsors').doc(normalized).get().then(function(doc) {
+        if (doc.exists) {
+          var direct = doc.data();
+          direct._id = doc.id;
+          return direct;
+        }
+        return db.collection('sponsors').where('email', '==', normalized).limit(1).get().then(function(snap) {
+          if (snap.empty) return null;
+          var fallback = snap.docs[0].data();
+          fallback._id = snap.docs[0].id;
+          return fallback;
+        });
+      });
+    }
     var hasBooted = false;
     firebase.auth().onAuthStateChanged(function(user) {
       var gate = document.getElementById('loading-gate');
@@ -1292,12 +1320,8 @@
         if (signoutBtn) signoutBtn.style.display = '';
         // Load sponsor data from Firestore by email, then boot
         if (db && user.email) {
-          db.collection('sponsors').where('email', '==', user.email).limit(1).get().then(function(snap) {
-            if (!snap.empty) {
-              var sData = snap.docs[0].data();
-              sData._id = snap.docs[0].id;
-              BSFStore.saveSponsor(sData);
-            }
+          loadSponsorByEmail(user.email).then(function(sData) {
+            if (sData) BSFStore.saveSponsor(sData);
             if (!hasBooted) { hasBooted = true; boot(); }
           }).catch(function() {
             if (!hasBooted) { hasBooted = true; boot(); }
@@ -1919,7 +1943,7 @@
       var updates = {
         name: document.getElementById('prof-name').value.trim(),
         fullName: document.getElementById('prof-name').value.trim(),
-        email: document.getElementById('prof-email').value.trim(),
+        email: document.getElementById('prof-email').value.trim().toLowerCase(),
         phone: document.getElementById('prof-phone').value.trim(),
         recurringAmount: Number(document.getElementById('prof-recurring').value) || 0,
         currency: document.getElementById('prof-currency').value,
@@ -2110,25 +2134,21 @@
     var notesSaveStatus = document.getElementById('notes-save-status');
     var notesTimer = null;
     var sponsorKey = 'bsf_sponsor_notes';
+    var extrasBooted = false;
 
     var savedNotes = localStorage.getItem(sponsorKey) || '';
     notesArea.value = savedNotes;
 
-    if (db) {
-      var sponsorData = localStorage.getItem('bsf_sponsor');
-      if (sponsorData) {
-        try {
-          var sp = JSON.parse(sponsorData);
-          if (sp.email) {
-            db.collection('sponsor_notes').doc(sp.email).get().then(function(doc) {
-              if (doc.exists && doc.data().notes && !savedNotes) {
-                notesArea.value = doc.data().notes;
-                localStorage.setItem(sponsorKey, doc.data().notes);
-              }
-            }).catch(function() {});
-          }
-        } catch(e) {}
-      }
+    function loadSponsorNotes() {
+      if (!db) return;
+      var sponsorData = window.BSFGetStoredSponsorProfile ? window.BSFGetStoredSponsorProfile() : null;
+      if (!sponsorData || !sponsorData.email) return;
+      db.collection('sponsor_notes').doc(String(sponsorData.email).toLowerCase()).get().then(function(doc) {
+        if (doc.exists && doc.data().notes && !savedNotes) {
+          notesArea.value = doc.data().notes;
+          localStorage.setItem(sponsorKey, doc.data().notes);
+        }
+      }).catch(function() {});
     }
 
     notesArea.addEventListener('input', function() {
@@ -2138,18 +2158,13 @@
         notesSaveStatus.textContent = 'Saved';
         notesSaveStatus.style.opacity = '1';
         setTimeout(function() { notesSaveStatus.style.opacity = '0'; }, 1500);
-        if (db) {
-          var sp2 = localStorage.getItem('bsf_sponsor');
-          if (sp2) {
-            try {
-              var parsed = JSON.parse(sp2);
-              if (parsed.email) {
-                db.collection('sponsor_notes').doc(parsed.email).set({
-                  notes: notesArea.value,
-                  updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true }).catch(function() {});
-              }
-            } catch(e) {}
+        if (db && firebase.auth().currentUser) {
+          var parsed = window.BSFGetStoredSponsorProfile ? window.BSFGetStoredSponsorProfile() : null;
+          if (parsed && parsed.email) {
+            db.collection('sponsor_notes').doc(String(parsed.email).toLowerCase()).set({
+              notes: notesArea.value,
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true }).catch(function() {});
           }
         }
       }, 800);
@@ -2228,8 +2243,12 @@
           desc.textContent = goal.description || '';
           card.appendChild(desc);
           var isNonFinancial = goal.goalType && goal.goalType !== 'financial';
-          var target = isNonFinancial ? (goal.targetCapacity || 0) : (goal.targetAmount || 0);
-          var raised = isNonFinancial ? (goal.raisedCapacity || 0) : (goal.raisedAmount || 0);
+          var target = isNonFinancial
+            ? (goal.targetCapacity || 0)
+            : Number(goal.targetAmount || goal.targetValue || goal.target || 0);
+          var raised = isNonFinancial
+            ? (goal.raisedCapacity || 0)
+            : Number(goal.raisedAmount || goal.currentValue || goal.raised || 0);
           var pct = target > 0 ? Math.min(100, Math.round((raised / target) * 100)) : 0;
           var progress = document.createElement('div');
           progress.className = 'goal-card__progress';
@@ -2284,9 +2303,22 @@
       }).catch(function() { empty.style.display = 'block'; });
     }
 
-    function bootExtras() { loadIdeas(); loadGoals(); }
-    if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', bootExtras); }
-    else { bootExtras(); }
+    function bootExtras() {
+      if (extrasBooted) return;
+      extrasBooted = true;
+      loadSponsorNotes();
+      loadIdeas();
+      loadGoals();
+    }
+
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (!user) return;
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bootExtras, { once: true });
+      } else {
+        bootExtras();
+      }
+    });
   })();
   </script>
 <div class="nav__backdrop" id="nav-backdrop"></div>

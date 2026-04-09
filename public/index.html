@@ -8,8 +8,8 @@
   <title>Big Sister Foundation — Rooted. Present. Protective.</title>
   <meta name="description" content="Big Sister Foundation invests in vulnerable children in Lagos — not as recipients, but as future leaders who will lift the communities around them.">
   <meta name="theme-color" content="#2D5E40">
-  <link rel="canonical" href="https://public-mu-steel.vercel.app/">
-  <meta property="og:url" content="https://public-mu-steel.vercel.app/">
+  <link rel="canonical" href="https://thebigsisterfoundation.org/">
+  <meta property="og:url" content="https://thebigsisterfoundation.org/">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Big Sister Foundation — Rooted. Present. Protective.">
   <meta name="twitter:description" content="Big Sister Foundation invests in vulnerable children in Lagos — not as recipients, but as future leaders who will lift the communities around them.">
@@ -1037,8 +1037,8 @@
   "@type": "NGO",
   "name": "Big Sister Foundation",
   "description": "Big Sister Foundation invests in vulnerable children in Lagos — not as recipients, but as future leaders who will lift the communities around them.",
-  "url": "https://public-mu-steel.vercel.app",
-  "logo": "https://public-mu-steel.vercel.app/og-image.svg",
+  "url": "https://thebigsisterfoundation.org",
+  "logo": "https://thebigsisterfoundation.org/og-image.svg",
   "foundingLocation": {
     "@type": "Place",
     "name": "Lagos, Nigeria"
@@ -1546,11 +1546,13 @@
 
       window.addEventListener('scroll', function () {
         var scrollY = window.scrollY || window.pageYOffset;
-        if (scrollY > 100) { nav.classList.add('is-visible'); }
-        else { nav.classList.remove('is-visible'); }
+        if (nav) {
+          if (scrollY > 100) { nav.classList.add('is-visible'); }
+          else { nav.classList.remove('is-visible'); }
+        }
         var docH = document.documentElement.scrollHeight - window.innerHeight;
         var scrollPct = docH > 0 ? scrollY / docH : 0;
-        if (docH > 0) { progressBar.style.width = (scrollPct * 100) + '%'; }
+        if (progressBar && docH > 0) { progressBar.style.width = (scrollPct * 100) + '%'; }
         updateTree(scrollPct);
       }, { passive: true });
 

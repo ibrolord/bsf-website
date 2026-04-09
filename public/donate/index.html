@@ -12,8 +12,8 @@
   <meta property="og:type" content="website">
   <meta property="og:image" content="/og-image.svg">
   <meta name="theme-color" content="#2D5E40">
-  <link rel="canonical" href="https://public-mu-steel.vercel.app/donate/">
-  <meta property="og:url" content="https://public-mu-steel.vercel.app/donate/">
+  <link rel="canonical" href="https://thebigsisterfoundation.org/donate/">
+  <meta property="og:url" content="https://thebigsisterfoundation.org/donate/">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Give — Big Sister Foundation">
   <meta name="twitter:description" content="Every naira goes somewhere specific. Choose where your support lands — school fees, food, healthcare, events, or reserves.">
@@ -807,6 +807,43 @@
         { id: 'local-goal-6', title: 'Community Outreach Drive', description: 'Reach 500 families across underserved communities with information about BSF programmes, enrollment support, and resource packs.', pathway: 'difficult-backgrounds', fund: 'food', goalType: 'outreach', targetCapacity: 500, raisedCapacity: 120, unit: 'families', status: 'active', deadline: '2026-08-15', sponsors: 6, child: '' }
       ];
 
+      function toNumber(value, fallback) {
+        var num = Number(value);
+        return isFinite(num) ? num : fallback;
+      }
+
+      function isNonFinancialGoal(goal) {
+        return !!(
+          (goal.goalType && goal.goalType !== 'financial') ||
+          goal.targetCapacity != null ||
+          goal.raisedCapacity != null
+        );
+      }
+
+      function normalizeGoal(rawGoal) {
+        var goal = Object.assign({}, rawGoal || {});
+        goal.id = goal.id || ('goal-' + Math.random().toString(36).slice(2, 8));
+        goal.title = goal.title || 'Untitled Goal';
+        goal.description = goal.description || '';
+        goal.child = goal.child || '';
+        goal.fund = goal.fund || 'school-fees';
+        goal.status = goal.status || 'active';
+        goal.sponsors = toNumber(goal.sponsors, 0);
+        goal.targetAmount = toNumber(
+          goal.targetAmount != null ? goal.targetAmount :
+          (goal.targetValue != null ? goal.targetValue : goal.target),
+          0
+        );
+        goal.raisedAmount = toNumber(
+          goal.raisedAmount != null ? goal.raisedAmount :
+          (goal.currentValue != null ? goal.currentValue : goal.raised),
+          0
+        );
+        goal.targetCapacity = goal.targetCapacity == null ? null : toNumber(goal.targetCapacity, 0);
+        goal.raisedCapacity = goal.raisedCapacity == null ? null : toNumber(goal.raisedCapacity, 0);
+        return goal;
+      }
+
       // ── Load active goals ──
       function loadGoals() {
         var grid = document.getElementById('goals-grid');
@@ -814,10 +851,10 @@
           while (grid.firstChild) grid.removeChild(grid.firstChild);
           var goals = [];
           if (snap.empty) {
-            goals = localGoals.slice();
+            goals = localGoals.slice().map(normalizeGoal);
           } else {
             snap.forEach(function (doc) {
-              var data = doc.data();
+              var data = normalizeGoal(doc.data());
               data.id = doc.id;
               goals.push(data);
             });
@@ -826,7 +863,7 @@
         }).catch(function (err) {
           console.warn('Firestore goals unavailable, using local data:', err.message);
           while (grid.firstChild) grid.removeChild(grid.firstChild);
-          renderGoalsGrid(localGoals.slice(), grid);
+          renderGoalsGrid(localGoals.slice().map(normalizeGoal), grid);
         });
       }
 
@@ -882,7 +919,7 @@
         var card = document.createElement('div');
         card.className = 'goal-card' + (goal.status === 'funded' ? ' is-funded' : '');
 
-        var isNonFinancial = goal.goalType && goal.goalType !== 'financial';
+        var isNonFinancial = isNonFinancialGoal(goal);
         var effectiveTarget = isNonFinancial ? (goal.targetCapacity || 0) : (goal.targetAmount || 0);
         var effectiveRaised = isNonFinancial ? (goal.raisedCapacity || 0) : (goal.raisedAmount || 0);
         var pct = effectiveTarget > 0 ? Math.min(100, Math.round((effectiveRaised / effectiveTarget) * 100)) : 0;
@@ -1007,6 +1044,8 @@
 
       // Select a goal for funding
       function selectGoal(goal) {
+        goal = normalizeGoal(goal);
+        if (isNonFinancialGoal(goal)) return;
         selectedGoal = goal;
         var remaining = Math.max(0, goal.targetAmount - goal.raisedAmount);
 
@@ -1126,7 +1165,10 @@
       });
 
       // ── Format currency ──
-      function fmt(n) { return '\u20A6' + n.toLocaleString('en-NG'); }
+      function fmt(n) {
+        var amount = toNumber(n, 0);
+        return '\u20A6' + amount.toLocaleString('en-NG');
+      }
 
       // ── Update allocation sidebar ──
       function updateAllocation() {

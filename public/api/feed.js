@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 export default function handler(req, res) {
-  const BASE_URL = 'https://public-mu-steel.vercel.app';
+  const BASE_URL = 'https://thebigsisterfoundation.org';
 
   // Read blog posts
   let posts = [];
