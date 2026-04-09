@@ -13,6 +13,11 @@ import {
 
 const ALLOWED_METHODS = ['POST'];
 const ROUTE = 'api/admin/mutate';
+const MAX_BLOG_TEXT = 50000;
+const blogLegacyLocalIdSchema = z.union([
+  z.string().trim().max(200),
+  z.number().int().safe()
+]).optional();
 
 const schemas = {
   'volunteer.save': z.object({
@@ -309,6 +314,27 @@ const schemas = {
   'user.delete': z.object({
     action: z.literal('user.delete'),
     email: z.string().trim().email().max(320)
+  }),
+  'blog.editor.save': z.object({
+    action: z.literal('blog.editor.save'),
+    firestoreId: z.string().trim().max(200).optional().default(''),
+    legacyLocalId: blogLegacyLocalIdSchema,
+    title: z.string().trim().min(1).max(200),
+    category: z.string().trim().min(1).max(80),
+    author: z.string().trim().min(1).max(200),
+    excerpt: z.string().trim().max(1000).optional().default(''),
+    body: z.string().trim().min(1).max(MAX_BLOG_TEXT),
+    keywords: z.array(z.string().trim().min(1).max(120)).max(50).optional().default([]),
+    metaDescription: z.string().trim().max(500).optional().default(''),
+    status: z.enum(['published', 'draft', 'pending', 'approved', 'rejected']).optional().default('published'),
+    readTime: z.number().int().min(1).max(1000),
+    date: z.string().trim().max(40).optional().default('')
+  }),
+  'blog.editor.delete': z.object({
+    action: z.literal('blog.editor.delete'),
+    firestoreId: z.string().trim().max(200).optional().default(''),
+    legacyLocalId: blogLegacyLocalIdSchema,
+    title: z.string().trim().max(200).optional().default('')
   })
 
 };
@@ -379,6 +405,95 @@ function parseOptionalDate(value, code, label) {
     throw error(400, code, label + ' must be in YYYY-MM-DD format');
   }
   return trimmed;
+}
+
+function normalizeLegacyLocalId(value) {
+  if (value === undefined || value === null || value === '') {
+    return '';
+  }
+  return String(value).trim();
+}
+
+function todayIsoDate() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function buildCanonicalBlogData(input, existingData, actorEmail, legacyLocalId) {
+  const now = new Date();
+  const base = existingData && typeof existingData === 'object' ? existingData : {};
+  const nextData = {
+    title: input.title,
+    category: input.category,
+    author: input.author || base.author || actorEmail,
+    excerpt: input.excerpt || '',
+    body: input.body,
+    keywords: Array.isArray(input.keywords) ? input.keywords : [],
+    metaDescription: input.metaDescription || '',
+    status: input.status || base.status || 'published',
+    readTime: Math.max(1, Number(input.readTime || 1)),
+    date: input.date || base.date || todayIsoDate(),
+    aiGenerated: false,
+    updatedAt: now,
+    updatedBy: actorEmail
+  };
+
+  if (base.createdAt) {
+    nextData.createdAt = base.createdAt;
+  } else {
+    nextData.createdAt = now;
+  }
+
+  if (base.createdBy) {
+    nextData.createdBy = base.createdBy;
+  } else {
+    nextData.createdBy = actorEmail;
+  }
+
+  if (base.submittedBy !== undefined) {
+    nextData.submittedBy = base.submittedBy;
+  }
+  if (base.submittedAt !== undefined) {
+    nextData.submittedAt = base.submittedAt;
+  }
+  if (base.approvedBy !== undefined) {
+    nextData.approvedBy = base.approvedBy;
+  }
+  if (base.approvedAt !== undefined) {
+    nextData.approvedAt = base.approvedAt;
+  }
+  if (base.rejectedBy !== undefined) {
+    nextData.rejectedBy = base.rejectedBy;
+  }
+  if (base.rejectedAt !== undefined) {
+    nextData.rejectedAt = base.rejectedAt;
+  }
+  if (base.rejectionReason !== undefined) {
+    nextData.rejectionReason = base.rejectionReason;
+  }
+  if (legacyLocalId) {
+    nextData.migratedFromLegacyId = legacyLocalId;
+  } else if (base.migratedFromLegacyId !== undefined) {
+    nextData.migratedFromLegacyId = base.migratedFromLegacyId;
+  }
+
+  return nextData;
+}
+
+function buildBlogAuditChanges(payload) {
+  const details = [];
+  if (payload.title) {
+    details.push('Title: ' + String(payload.title));
+  }
+  if (payload.status) {
+    details.push('Status: ' + String(payload.status));
+  }
+  if (payload.legacyLocalId) {
+    details.push('Legacy local id: ' + String(payload.legacyLocalId));
+  }
+  if (payload.note) {
+    details.push(String(payload.note));
+  }
+  return details.join('; ') || 'blog.editor';
 }
 
 function parseRequiredDate(value, code, label) {
@@ -1722,6 +1837,134 @@ async function handleUserDelete(request, data) {
   }
 }
 
+async function handleBlogEditorSave(request, data) {
+  let context;
+  try {
+    context = await requirePermission(request, 'blog.edit_any');
+  } catch (authError) {
+    return errorFromException(authError, 'blog_editor_save_failed', 'Blog save failed');
+  }
+
+  const firestoreId = String(data.firestoreId || '').trim();
+  const legacyLocalId = normalizeLegacyLocalId(data.legacyLocalId);
+
+  try {
+    if (firestoreId) {
+      const existing = await getDocument(context.idToken, 'blog_posts/' + firestoreId);
+      if (!existing.exists || !existing.document) {
+        return error(404, 'not_found', 'Blog post not found', { firestoreId: firestoreId });
+      }
+
+      const nextData = buildCanonicalBlogData(data, existing.document.data || {}, context.identity.email, legacyLocalId);
+      await patchDocument(context.idToken, 'blog_posts/' + firestoreId, nextData, Object.keys(nextData));
+      const changes = buildBlogAuditChanges({
+        title: data.title,
+        status: nextData.status,
+        legacyLocalId: legacyLocalId,
+        note: 'Updated admin blog post'
+      });
+      await writeAudit(context, {
+        adminAction: 'blog.editor.save',
+        action: 'update',
+        collection: 'blog_posts',
+        documentId: firestoreId,
+        changes: changes
+      });
+      return json({ ok: true, action: 'blog.editor.save', mode: 'update', firestoreId: firestoreId, legacyLocalId: legacyLocalId, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+    }
+
+    const created = await createDocument(context.idToken, 'blog_posts', buildCanonicalBlogData(data, null, context.identity.email, legacyLocalId));
+    const changes = buildBlogAuditChanges({
+      title: data.title,
+      status: data.status,
+      legacyLocalId: legacyLocalId,
+      note: legacyLocalId ? 'Created canonical Firestore post from legacy local post' : 'Created admin blog post'
+    });
+    await writeAudit(context, {
+      adminAction: 'blog.editor.save',
+      action: 'create',
+      collection: 'blog_posts',
+      documentId: created.id,
+      changes: changes
+    });
+    return json({ ok: true, action: 'blog.editor.save', mode: 'create', firestoreId: created.id, legacyLocalId: legacyLocalId, migrated: Boolean(legacyLocalId), reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (writeError) {
+    log('admin-mutate-blog-editor-save', 'error', {
+      code: 'blog_editor_save_failed',
+      action: 'blog.editor.save',
+      actor: context.identity.email,
+      status: writeError.status || 500,
+      message: writeError.message,
+      body: writeError.body || ''
+    });
+    return errorFromException(writeError, 'blog_editor_save_failed', 'Blog save failed');
+  }
+}
+
+async function handleBlogEditorDelete(request, data) {
+  let context;
+  try {
+    context = await requirePermission(request, 'blog.edit_any');
+  } catch (authError) {
+    return errorFromException(authError, 'blog_editor_delete_failed', 'Blog delete failed');
+  }
+
+  const firestoreId = String(data.firestoreId || '').trim();
+  const legacyLocalId = normalizeLegacyLocalId(data.legacyLocalId);
+
+  try {
+    if (firestoreId) {
+      const existing = await getDocument(context.idToken, 'blog_posts/' + firestoreId);
+      if (!existing.exists || !existing.document) {
+        return error(404, 'not_found', 'Blog post not found', { firestoreId: firestoreId });
+      }
+
+      await deleteDocument(context.idToken, 'blog_posts/' + firestoreId);
+      const changes = buildBlogAuditChanges({
+        title: data.title || (existing.document.data || {}).title || '',
+        legacyLocalId: legacyLocalId,
+        note: 'Deleted canonical blog post'
+      });
+      await writeAudit(context, {
+        adminAction: 'blog.editor.delete',
+        action: 'delete',
+        collection: 'blog_posts',
+        documentId: firestoreId,
+        changes: changes
+      });
+      return json({ ok: true, action: 'blog.editor.delete', firestoreId: firestoreId, legacyLocalId: legacyLocalId, deletedCanonical: true, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+    }
+
+    if (!legacyLocalId) {
+      return error(400, 'invalid_payload', 'Delete requires a canonical Firestore id or a legacy local id');
+    }
+
+    const changes = buildBlogAuditChanges({
+      title: data.title,
+      legacyLocalId: legacyLocalId,
+      note: 'Removed legacy local-only blog post reference'
+    });
+    await writeAudit(context, {
+      adminAction: 'blog.editor.delete',
+      action: 'delete',
+      collection: 'blog_posts',
+      documentId: '',
+      changes: changes
+    });
+    return json({ ok: true, action: 'blog.editor.delete', firestoreId: '', legacyLocalId: legacyLocalId, legacyOnly: true, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (writeError) {
+    log('admin-mutate-blog-editor-delete', 'error', {
+      code: 'blog_editor_delete_failed',
+      action: 'blog.editor.delete',
+      actor: context.identity.email,
+      status: writeError.status || 500,
+      message: writeError.message,
+      body: writeError.body || ''
+    });
+    return errorFromException(writeError, 'blog_editor_delete_failed', 'Blog delete failed');
+  }
+}
+
 async function handleAnnouncementSave(request, data) {
   const announcementId = String(data.announcementId || '').trim();
   const isUpdate = Boolean(announcementId);
@@ -2988,7 +3231,9 @@ const handlers = {
   'team.member.remove': handleTeamMemberRemove,
   'settings.save_all': handleSettingsSaveAll,
   'user.permissions.save': handleUserPermissionsSave,
-  'user.delete': handleUserDelete
+  'user.delete': handleUserDelete,
+  'blog.editor.save': handleBlogEditorSave,
+  'blog.editor.delete': handleBlogEditorDelete
 };
 
 export async function POST(request) {

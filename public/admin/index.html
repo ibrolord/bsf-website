@@ -2969,11 +2969,11 @@ function saveBlogPost(){
     date:existingPost&&existingPost.date?existingPost.date:new Date().toISOString().split('T')[0]
   };
   var payload=Object.assign({
-    action:'save',
+    action:'blog.editor.save',
     firestoreId:existingPost&&existingPost.firestoreId?existingPost.firestoreId:'',
     legacyLocalId:existingPost&&!existingPost.firestoreId?existingPost.id:''
   },postData);
-  callAdminJsonApi('/api/admin/blog/editor',payload).then(function(result){
+  callAdminJsonApi('/api/admin/mutate',payload).then(function(result){
     if(result&&result.legacyLocalId!==''){removeLegacyBlogLocalEntry(result.legacyLocalId);}
     closeModal('modal-blog-post');
     showToast(id?'Post updated!':'Post published!','success');
@@ -2992,8 +2992,8 @@ function deleteBlogPost(id){
   if(!hasPermission('blog.edit_any')){showToast('No permission to delete blog posts.','error');return;}
   if(!confirm('Delete this blog post?'))return;
   var existingPost=allBlogPosts.find(function(p){return String(p.id)===String(id);});
-  callAdminJsonApi('/api/admin/blog/editor',{
-    action:'delete',
+  callAdminJsonApi('/api/admin/mutate',{
+    action:'blog.editor.delete',
     firestoreId:existingPost&&existingPost.firestoreId?existingPost.firestoreId:(typeof id==='string'&&id.length>10?id:''),
     legacyLocalId:existingPost&&!existingPost.firestoreId?existingPost.id:'',
     title:existingPost&&existingPost.title?existingPost.title:''
