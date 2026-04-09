@@ -315,6 +315,11 @@ const schemas = {
     action: z.literal('user.delete'),
     email: z.string().trim().email().max(320)
   }),
+  'sponsor.status': z.object({
+    action: z.literal('sponsor.status'),
+    sponsorId: z.string().trim().min(1).max(200),
+    status: z.enum(['active', 'suspended'])
+  }),
   'blog.editor.save': z.object({
     action: z.literal('blog.editor.save'),
     firestoreId: z.string().trim().max(200).optional().default(''),
@@ -1837,6 +1842,68 @@ async function handleUserDelete(request, data) {
   }
 }
 
+async function handleSponsorStatus(request, data) {
+  let context;
+  try {
+    context = await requirePermission(request, 'sponsors.edit');
+  } catch (authError) {
+    return errorFromException(authError, 'sponsor_status_failed', 'Sponsor status update failed');
+  }
+
+  const sponsorId = String(data.sponsorId || '').trim();
+  const nextStatus = data.status;
+
+  let sponsorDocument;
+  try {
+    sponsorDocument = await getDocument(context.idToken, 'sponsors/' + sponsorId);
+  } catch (readError) {
+    log('admin-mutate-sponsor-status', 'error', {
+      code: 'sponsor_read_failed',
+      sponsorId: sponsorId,
+      actor: context.identity.email,
+      status: readError.status || 500,
+      message: readError.message
+    });
+    return error(500, 'sponsor_read_failed', 'Unable to load the sponsor record');
+  }
+
+  if (!sponsorDocument.exists || !sponsorDocument.document) {
+    return error(404, 'not_found', 'Sponsor not found', { sponsorId: sponsorId });
+  }
+
+  const existingData = sponsorDocument.document.data || {};
+  const previousStatus = String(existingData.status || 'active');
+  if (previousStatus === nextStatus) {
+    return json({ ok: true, action: 'sponsor.status', sponsorId: sponsorId, previousStatus: previousStatus, status: nextStatus, noChange: true, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  }
+
+  try {
+    await patchDocument(context.idToken, 'sponsors/' + sponsorId, {
+      status: nextStatus,
+      lastEditedAt: new Date()
+    }, ['status', 'lastEditedAt']);
+    const changes = 'Status: ' + previousStatus + ' -> ' + nextStatus;
+    await writeAudit(context, {
+      adminAction: 'sponsor.status',
+      action: 'update',
+      collection: 'sponsors',
+      documentId: sponsorId,
+      changes: changes
+    });
+    return json({ ok: true, action: 'sponsor.status', sponsorId: sponsorId, previousStatus: previousStatus, status: nextStatus, reviewedBy: context.identity.email, changes: changes, automation: Boolean(context.isAutomation) });
+  } catch (writeError) {
+    log('admin-mutate-sponsor-status', 'error', {
+      code: 'sponsor_status_write_failed',
+      sponsorId: sponsorId,
+      actor: context.identity.email,
+      status: writeError.status || 500,
+      message: writeError.message,
+      body: writeError.body || ''
+    });
+    return error(500, 'sponsor_status_write_failed', 'Unable to update the sponsor record', { sponsorId: sponsorId });
+  }
+}
+
 async function handleBlogEditorSave(request, data) {
   let context;
   try {
@@ -3232,6 +3299,7 @@ const handlers = {
   'settings.save_all': handleSettingsSaveAll,
   'user.permissions.save': handleUserPermissionsSave,
   'user.delete': handleUserDelete,
+  'sponsor.status': handleSponsorStatus,
   'blog.editor.save': handleBlogEditorSave,
   'blog.editor.delete': handleBlogEditorDelete
 };
