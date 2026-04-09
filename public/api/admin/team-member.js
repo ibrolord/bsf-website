@@ -146,10 +146,13 @@ async function handleRequest(request) {
 }
 
 export default async function handler(req, res) {
-  const request = new Request(req.url, {
+  const headers = nodeHeadersToWebHeaders(req.headers);
+  const body = nodeRequestBodyToString(req);
+  const requestUrl = new URL(req.url, 'https://' + (headers.get('host') || 'thebigsisterfoundation.org'));
+  const request = new Request(requestUrl.toString(), {
     method: req.method,
-    headers: nodeHeadersToWebHeaders(req.headers),
-    body: nodeRequestBodyToString(req)
+    headers: headers,
+    body: body
   });
 
   try {
