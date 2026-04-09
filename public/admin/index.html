@@ -1163,7 +1163,7 @@ function toggleSelectAll(s){var cb=document.getElementById(s+'-select-all');var 
 function toggleSelectOne(s,id){var set=getSelected(s);if(set.has(id))set.delete(id);else set.add(id);updateBulkBar(s);}
 function updateBulkBar(s){var set=getSelected(s);var bar=document.getElementById(s+'-bulk-bar');var cnt=document.getElementById(s+'-bulk-count');if(bar){if(set.size>0){bar.classList.add('visible');if(cnt)cnt.textContent=set.size;}else bar.classList.remove('visible');}}
 function clearSelection(s){if(selectedItems[s])selectedItems[s].clear();var sa=document.getElementById(s+'-select-all');if(sa)sa.checked=false;document.querySelectorAll('#'+s+'-tbody input[type=checkbox]').forEach(function(c){c.checked=false;});updateBulkBar(s);}
-function bulkDeleteSection(col){var map={'volunteer_requests':'vol','volunteers':'cvol','scholars':'sch','schools':'schools','ledger':'ledger','ideas':'ideas','outreach':'outreach'};var s=map[col]||col;var set=getSelected(s);if(!set.size)return;showConfirm('Bulk Delete','Delete '+set.size+' items?',function(){var b=db.batch();set.forEach(function(id){b.delete(db.collection(col).doc(id));});b.commit().then(function(){writeAudit('delete',col,'','Bulk deleted '+set.size);showToast(set.size+' deleted.');clearSelection(s);reloadSection(col);}).catch(function(e){showToast(e.message,'error');});});}
+function bulkDeleteSection(col){var map={'volunteer_requests':'vol','volunteers':'cvol','scholars':'sch','schools':'schools','ledger':'ledger','ideas':'ideas','outreach':'outreach'};var s=map[col]||col;var set=getSelected(s);if(!set.size)return;showConfirm('Bulk Delete','Delete '+set.size+' items?',function(){var ids=Array.from(set);var apiSupported={volunteers:1,schools:1,ledger:1,outreach:1,goals:1,communities:1,ideas:1};if(apiSupported[col]){callAdminJsonApi('/api/admin/mutate',{action:'bulk.delete',collection:col,ids:ids}).then(function(){showToast(set.size+' deleted.');clearSelection(s);reloadSection(col);if(col==='volunteers'||col==='schools'||col==='ledger'||col==='communities'||col==='ideas')loadDashboard();}).catch(function(e){showToast(e.message,'error');});return;}var b=db.batch();set.forEach(function(id){b.delete(db.collection(col).doc(id));});b.commit().then(function(){writeAudit('delete',col,'','Bulk deleted '+set.size);showToast(set.size+' deleted.');clearSelection(s);reloadSection(col);}).catch(function(e){showToast(e.message,'error');});});}
 function reloadSection(c){if(c==='volunteer_requests')loadVolunteers();else if(c==='volunteers')loadConfirmedVolunteers();else if(c==='scholars')loadScholars();else if(c==='schools')loadSchoolsList();else if(c==='ledger')loadLedger();else if(c==='ideas')loadIdeas();else if(c==='events')loadEvents();else if(c==='goals')loadGoals();else if(c==='outreach')loadOutreach();else if(c==='communities')loadCommunitiesList();}
 // CSV Export
 function exportCSV(type){var rows=[],fn=type+'_export.csv';
@@ -1668,7 +1668,10 @@ function renderCommunitiesList(){
   f.forEach(function(c){
     var tr=document.createElement('tr');
     var areaLabel=c.area?c.area.charAt(0).toUpperCase()+c.area.slice(1):'—';
-    tr.innerHTML='<td class="cb-cell"><input type="checkbox" value="'+c.id+'" onchange="toggleSelectOne(\'communities\',\''+c.id+'\')"></td><td>'+escHtml(c.name)+'</td><td>'+escHtml(c.location)+'</td><td>'+escHtml(areaLabel)+'</td><td>'+(c.scholarCount||0)+'</td><td>'+(c.totalInvestment?Number(c.totalInvestment).toLocaleString():'—')+'</td><td><button class="btn btn-secondary btn-xs" onclick="editCommunity(\''+c.id+'\')">Edit</button> <button class="btn btn-danger btn-xs" onclick="deleteCommunity(\''+c.id+'\',\''+escHtml(c.name).replace(/'/g,"\\'")+'\')">Del</button></td>';
+    var actions='';
+    if(hasPermission('communities.edit'))actions+='<button class="btn btn-secondary btn-xs" onclick="editCommunity(\''+c.id+'\')">Edit</button>';
+    if(hasPermission('communities.delete'))actions+=(actions?' ':'')+'<button class="btn btn-danger btn-xs" onclick="deleteCommunity(\''+c.id+'\',\''+escHtml(c.name).replace(/'/g,"\\'")+'\')">Del</button>';
+    tr.innerHTML='<td class="cb-cell"><input type="checkbox" value="'+c.id+'" onchange="toggleSelectOne(\'communities\',\''+c.id+'\')"></td><td>'+escHtml(c.name)+'</td><td>'+escHtml(c.location)+'</td><td>'+escHtml(areaLabel)+'</td><td>'+(c.scholarCount||0)+'</td><td>'+(c.totalInvestment?Number(c.totalInvestment).toLocaleString():'—')+'</td><td>'+(actions||'--')+'</td>';
     tb.appendChild(tr);
   });
 }
@@ -1688,31 +1691,17 @@ function saveCommunity(){
   var id=document.getElementById('community-edit-id').value;
   var nm=document.getElementById('community-name').value.trim();
   var loc=document.getElementById('community-location').value.trim();
+  if(id&&!hasPermission('communities.edit')){showToast('No permission to edit communities.','error');return;}
+  if(!id&&!hasPermission('communities.create')){showToast('No permission to create communities.','error');return;}
   if(!nm||!loc){showToast('Fill required fields.','error');return;}
-  var data={name:nm,location:loc,area:document.getElementById('community-area').value,description:document.getElementById('community-description').value.trim(),scholarCount:parseInt(document.getElementById('community-scholar-count').value)||0,totalInvestment:parseInt(document.getElementById('community-investment').value)||0};
-  if(id){
-    db.collection('communities').doc(id).get().then(function(s){var ch=diffFields(s.data(),data,{});return db.collection('communities').doc(id).update(data).then(function(){writeAudit('update','communities',id,ch);showToast('Updated.');closeModal('modal-community');loadCommunitiesList();});}).catch(function(e){showToast(e.message,'error');});
-  }else{
-    data.createdAt=FieldValue.serverTimestamp();
-    db.collection('communities').add(data).then(function(ref){writeAudit('create','communities',ref.id,'Created: '+nm);showToast('Added.');closeModal('modal-community');loadCommunitiesList();}).catch(function(e){showToast(e.message,'error');});
-  }
+  var payload={communityId:id||'',name:nm,location:loc,area:document.getElementById('community-area').value,description:document.getElementById('community-description').value.trim(),scholarCount:parseInt(document.getElementById('community-scholar-count').value,10)||0,totalInvestment:parseInt(document.getElementById('community-investment').value,10)||0};
+  callAdminJsonApi('/api/admin/mutate',Object.assign({action:'community.save'},payload)).then(function(result){showToast(id?'Updated.':'Added.');closeModal('modal-community');loadCommunitiesList();if(result&&result.mode==='create')loadDashboard();}).catch(function(e){showToast(e.message,'error');});
 }
-function deleteCommunity(id,nm){showConfirm('Delete','Delete community "'+nm+'"?',function(){db.collection('communities').doc(id).delete().then(function(){writeAudit('delete','communities',id,'Deleted: '+nm);showToast('Deleted.');loadCommunitiesList();}).catch(function(e){showToast(e.message,'error');});});}
+function deleteCommunity(id,nm){if(!hasPermission('communities.delete')){showToast('No permission to delete communities.','error');return;}showConfirm('Delete','Delete community "'+nm+'"?',function(){callAdminJsonApi('/api/admin/mutate',{action:'community.delete',communityId:id,name:nm||''}).then(function(){showToast('Deleted.');loadCommunitiesList();loadDashboard();}).catch(function(e){showToast(e.message,'error');});});}
 function seedDemoCommunities(){
+  if(!hasPermission('communities.create')){showToast('No permission to create communities.','error');return;}
   showConfirm('Seed Demo Communities','This will add 5 demo communities to Firestore (skips any with matching names). Continue?',function(){
-    var demos=[
-      {name:'Makoko Community',location:'Yaba, Lagos Mainland',area:'mainland',description:'One of Lagos\u2019s most resilient waterside communities. BSF supports children here with education, food security, and vocational training for older youth. Makoko is where our work began.',scholarCount:28,totalInvestment:4200000},
-      {name:'Ajegunle Community',location:'Ajeromi-Ifelodun, Lagos Mainland',area:'mainland',description:'A densely populated community with incredible potential. BSF focuses on education access, after-school programs, and skills training for out-of-school youth.',scholarCount:22,totalInvestment:3100000},
-      {name:'Iwaya Community',location:'Yaba, Lagos Mainland',area:'mainland',description:'Neighboring Makoko, Iwaya faces similar challenges but with a growing creative energy. BSF supports education and connects youth with mentors in tech and the arts.',scholarCount:14,totalInvestment:1900000},
-      {name:'Ajah/Sangotedo Community',location:'Eti-Osa, Lagos Island',area:'island',description:'A rapidly growing suburban area where many families have relocated from inner Lagos. BSF supports the peri-urban schools and runs weekend programs for children of market traders.',scholarCount:11,totalInvestment:1500000},
-      {name:'Ikorodu Community',location:'Ikorodu, Lagos Suburban',area:'suburban',description:'A historic town on the outskirts of Lagos with deep cultural roots. BSF works with local artisans to create apprenticeship pipelines for young people who have dropped out of formal education.',scholarCount:9,totalInvestment:1100000}
-    ];
-    var existingNames=allCommunities.map(function(c){return c.name.toLowerCase();});
-    var toAdd=demos.filter(function(d){return existingNames.indexOf(d.name.toLowerCase())===-1;});
-    if(!toAdd.length){showToast('All demo communities already exist.','info');return;}
-    var batch=db.batch();
-    toAdd.forEach(function(d){d.createdAt=FieldValue.serverTimestamp();batch.set(db.collection('communities').doc(),d);});
-    batch.commit().then(function(){writeAudit('create','communities','','Seeded '+toAdd.length+' demo communities');showToast('Seeded '+toAdd.length+' communities.');loadCommunitiesList();}).catch(function(e){showToast(e.message,'error');});
+    callAdminJsonApi('/api/admin/mutate',{action:'community.seed_demo'}).then(function(result){if(result&&result.noChange){showToast('All demo communities already exist.','info');loadCommunitiesList();return;}var seededCount=result&&typeof result.seededCount==='number'?result.seededCount:0;showToast('Seeded '+seededCount+' communities.');loadCommunitiesList();if(seededCount>0)loadDashboard();}).catch(function(e){showToast(e.message,'error');});
   });
 }
 
@@ -1895,24 +1884,24 @@ function notifyVolunteersFromAdmin(eventType, requestData) {
 
 // Ideas
 function loadIdeas(){var l=document.getElementById('ideas-loading'),t=document.getElementById('ideas-table'),e=document.getElementById('ideas-empty');l.style.display='flex';t.style.display='none';e.style.display='none';clearSelection('ideas');db.collection('ideas').get().then(function(s){allIdeas=[];s.forEach(function(d){var x=d.data();x._id=d.id;allIdeas.push(x);});allIdeas.sort(function(a,b){return(b.votes||0)-(a.votes||0);});renderIdeas();});}
-function renderIdeas(){var l=document.getElementById('ideas-loading'),t=document.getElementById('ideas-table'),e=document.getElementById('ideas-empty'),tb=document.getElementById('ideas-tbody');var sf=document.getElementById('ideas-status-filter').value,sr=(document.getElementById('ideas-search').value||'').toLowerCase();var f=allIdeas.filter(function(i){if(sf&&(i.status||'').toLowerCase().replace(/\s+/g,'-')!==sf.toLowerCase())return false;if(sr&&(i.title||'').toLowerCase().indexOf(sr)===-1&&(i.description||'').toLowerCase().indexOf(sr)===-1)return false;return true;});l.style.display='none';if(!f.length){t.style.display='none';e.style.display='block';return;}t.style.display='table';e.style.display='none';tb.innerHTML='';f.forEach(function(i){var tg=Array.isArray(i.tags)&&i.tags.length?i.tags.map(function(t){return'<span class="tag">'+escHtml(t)+'</span>';}).join(' '):'';var tr=document.createElement('tr');tr.innerHTML='<td class="cb-cell"><input type="checkbox" value="'+i._id+'" onchange="toggleSelectOne(\'ideas\',\''+i._id+'\')"></td><td><strong>'+escHtml(i.title)+'</strong><br><small style="color:var(--gray-400)">'+escHtml((i.description||'').substring(0,80))+'</small></td><td>'+statusBadge(i.status)+'</td><td>'+(i.votes||0)+'</td><td>'+tg+'</td><td>'+(i.estimatedCost?formatCurrency(i.estimatedCost):'')+'</td><td>'+(i.authorName?escHtml(i.authorName):'')+'</td><td><button class="btn btn-secondary btn-xs" onclick="editIdea(\''+i._id+'\')">Edit</button> <button class="btn btn-danger btn-xs" onclick="deleteIdea(\''+i._id+'\',\''+escHtml(i.title).replace(/'/g,"\\'")+'\')">Del</button></td>';tb.appendChild(tr);});}
+function renderIdeas(){var l=document.getElementById('ideas-loading'),t=document.getElementById('ideas-table'),e=document.getElementById('ideas-empty'),tb=document.getElementById('ideas-tbody');var sf=document.getElementById('ideas-status-filter').value,sr=(document.getElementById('ideas-search').value||'').toLowerCase();var f=allIdeas.filter(function(i){if(sf&&(i.status||'').toLowerCase().replace(/\s+/g,'-')!==sf.toLowerCase())return false;if(sr&&(i.title||'').toLowerCase().indexOf(sr)===-1&&(i.description||'').toLowerCase().indexOf(sr)===-1)return false;return true;});l.style.display='none';if(!f.length){t.style.display='none';e.style.display='block';return;}t.style.display='table';e.style.display='none';tb.innerHTML='';f.forEach(function(i){var tg=Array.isArray(i.tags)&&i.tags.length?i.tags.map(function(t){return'<span class="tag">'+escHtml(t)+'</span>';}).join(' '):'';var actions='';if(hasPermission('ideas.edit_any'))actions+='<button class="btn btn-secondary btn-xs" onclick="editIdea(\''+i._id+'\')">Edit</button>';if(hasPermission('ideas.delete_any'))actions+=(actions?' ':'')+'<button class="btn btn-danger btn-xs" onclick="deleteIdea(\''+i._id+'\',\''+escHtml(i.title).replace(/'/g,"\\'")+'\')">Del</button>';var tr=document.createElement('tr');tr.innerHTML='<td class="cb-cell"><input type="checkbox" value="'+i._id+'" onchange="toggleSelectOne(\'ideas\',\''+i._id+'\')"></td><td><strong>'+escHtml(i.title)+'</strong><br><small style="color:var(--gray-400)">'+escHtml((i.description||'').substring(0,80))+'</small></td><td>'+statusBadge(i.status)+'</td><td>'+(i.votes||0)+'</td><td>'+tg+'</td><td>'+(i.estimatedCost?formatCurrency(i.estimatedCost):'')+'</td><td>'+(i.authorName?escHtml(i.authorName):'')+'</td><td>'+(actions||'--')+'</td>';tb.appendChild(tr);});}
 function openIdeaModal(d){document.getElementById('idea-modal-title').textContent=d?'Edit Idea':'Add Idea';document.getElementById('idea-edit-id').value=d?d._id:'';document.getElementById('idea-title').value=d?d.title||'':'';document.getElementById('idea-description').value=d?d.description||'':'';document.getElementById('idea-status').value=d?d.status||'Open':'Open';document.getElementById('idea-tags').value=d&&Array.isArray(d.tags)?d.tags.join(', '):'';document.getElementById('idea-cost').value=d?d.estimatedCost||'':'';document.getElementById('idea-author').value=d?d.authorName||'':'';document.getElementById('idea-votes').value=d?d.votes||0:0;openModal('modal-idea');}
 function editIdea(id){var i=allIdeas.find(function(x){return x._id===id;});if(i)openIdeaModal(i);}
-function saveIdea(){var id=document.getElementById('idea-edit-id').value,tt=document.getElementById('idea-title').value.trim(),ds=document.getElementById('idea-description').value.trim();if(!tt||!ds){showToast('Fill required fields.','error');return;}var tg=document.getElementById('idea-tags').value.split(',').map(function(s){return s.trim()}).filter(Boolean);var cs=parseFloat(document.getElementById('idea-cost').value);var data={title:tt,description:ds,status:document.getElementById('idea-status').value,tags:tg,estimatedCost:isNaN(cs)?0:cs,authorName:document.getElementById('idea-author').value.trim(),votes:parseInt(document.getElementById('idea-votes').value)||0,lastEditedAt:FieldValue.serverTimestamp()};if(id){db.collection('ideas').doc(id).get().then(function(s){var ch=diffFields(s.data(),data,{});return db.collection('ideas').doc(id).update(data).then(function(){writeAudit('update','ideas',id,ch);showToast('Updated.');closeModal('modal-idea');loadIdeas();});}).catch(function(e){showToast(e.message,'error');});}else{data.createdAt=FieldValue.serverTimestamp();db.collection('ideas').add(data).then(function(ref){writeAudit('create','ideas',ref.id,'Created: '+tt);showToast('Added.');closeModal('modal-idea');loadIdeas();loadDashboard();}).catch(function(e){showToast(e.message,'error');});}}
-function deleteIdea(id,tt){showConfirm('Delete','Delete "'+tt+'"?',function(){db.collection('ideas').doc(id).delete().then(function(){writeAudit('delete','ideas',id,'Deleted: '+tt);showToast('Deleted.');loadIdeas();loadDashboard();}).catch(function(e){showToast(e.message,'error');});});}
+function saveIdea(){var id=document.getElementById('idea-edit-id').value,tt=document.getElementById('idea-title').value.trim(),ds=document.getElementById('idea-description').value.trim();if(!hasPermission('ideas.edit_any')){showToast('No permission to manage ideas.','error');return;}if(!tt||!ds){showToast('Fill required fields.','error');return;}var tg=document.getElementById('idea-tags').value.split(',').map(function(s){return s.trim()}).filter(Boolean);var cs=parseFloat(document.getElementById('idea-cost').value);var payload={ideaId:id||'',title:tt,description:ds,status:document.getElementById('idea-status').value,tags:tg,estimatedCost:isNaN(cs)?0:cs,authorName:document.getElementById('idea-author').value.trim(),votes:parseInt(document.getElementById('idea-votes').value,10)||0};callAdminJsonApi('/api/admin/mutate',Object.assign({action:'idea.save'},payload)).then(function(result){showToast(id?'Updated.':'Added.');closeModal('modal-idea');loadIdeas();if(result&&result.mode==='create')loadDashboard();}).catch(function(e){showToast(e.message,'error');});}
+function deleteIdea(id,tt){if(!hasPermission('ideas.delete_any')){showToast('No permission to delete ideas.','error');return;}showConfirm('Delete','Delete "'+tt+'"?',function(){callAdminJsonApi('/api/admin/mutate',{action:'idea.delete',ideaId:id,title:tt||''}).then(function(){showToast('Deleted.');loadIdeas();loadDashboard();}).catch(function(e){showToast(e.message,'error');});});}
 
 // Forums
 function loadForumPosts(){var l=document.getElementById('forums-loading'),li=document.getElementById('forums-list'),e=document.getElementById('forums-empty');l.style.display='flex';li.innerHTML='';e.style.display='none';db.collection('forums').get().then(function(s){allForumPosts=[];s.forEach(function(d){var x=d.data();x._id=d.id;allForumPosts.push(x);});allForumPosts.sort(function(a,b){if(a.pinned&&!b.pinned)return-1;if(!a.pinned&&b.pinned)return 1;var ta=a.createdAt?(a.createdAt.toDate?a.createdAt.toDate():new Date(a.createdAt)):new Date(0);var tb=b.createdAt?(b.createdAt.toDate?b.createdAt.toDate():new Date(b.createdAt)):new Date(0);return tb-ta;});renderForumPosts();});}
-function renderForumPosts(){var l=document.getElementById('forums-loading'),li=document.getElementById('forums-list'),e=document.getElementById('forums-empty');var sr=(document.getElementById('forums-search').value||'').toLowerCase(),cf=document.getElementById('forums-cat-filter').value;var f=allForumPosts.filter(function(p){if(cf&&p.category!==cf)return false;if(sr&&(p.title||'').toLowerCase().indexOf(sr)===-1&&(p.body||'').toLowerCase().indexOf(sr)===-1)return false;return true;});l.style.display='none';li.innerHTML='';if(!f.length){e.style.display='block';return;}e.style.display='none';f.forEach(function(p){var c=document.createElement('div');c.className='forum-card'+(p.pinned?' pinned':'');c.innerHTML='<div class="forum-card-header"><div><div class="forum-card-title">'+(p.pinned?'&#128204; ':'')+escHtml(p.title)+'</div><div class="forum-card-meta">'+escHtml(p.category||'General')+' &middot; by '+escHtml(p.authorName||'Admin')+' &middot; '+formatDateTime(p.createdAt)+'</div></div><div style="display:flex;gap:4px"><button class="btn btn-secondary btn-xs" onclick="editForumPost(\''+p._id+'\')">Edit</button><button class="btn btn-xs '+(p.pinned?'btn-warning':'btn-secondary')+'" onclick="togglePinPost(\''+p._id+'\','+!p.pinned+')">'+(p.pinned?'Unpin':'Pin')+'</button><button class="btn btn-danger btn-xs" onclick="deleteForumPost(\''+p._id+'\',\''+escHtml(p.title).replace(/'/g,"\\'")+'\')">Del</button></div></div><div class="forum-card-body">'+escHtml((p.body||'').substring(0,300))+'</div><div class="forum-card-footer"><button class="btn btn-secondary btn-xs" onclick="toggleReplies(\''+p._id+'\',this)">View Replies</button> <button class="btn btn-primary btn-xs" onclick="openReplyModal(\''+p._id+'\')">Reply</button></div><div class="forum-replies-section" id="replies-'+p._id+'"></div>';li.appendChild(c);});}
-function openForumPostModal(d){document.getElementById('forum-post-modal-title').textContent=d?'Edit Post':'New Post';document.getElementById('forum-post-edit-id').value=d?d._id:'';document.getElementById('forum-post-title').value=d?d.title||'':'';document.getElementById('forum-post-body').value=d?d.body||'':'';document.getElementById('forum-post-category').value=d?d.category||'General':'General';document.getElementById('forum-post-pinned').value=d?String(!!d.pinned):'false';openModal('modal-forum-post');}
+function renderForumPosts(){var teamFilter=document.getElementById('forums-team-filter');var tv=teamFilter?teamFilter.value:'';if(tv&&tv!=='_general'){var l2=document.getElementById('forums-loading'),li2=document.getElementById('forums-list'),e2=document.getElementById('forums-empty');var sr2=(document.getElementById('forums-search').value||'').toLowerCase();l2.style.display='none';li2.innerHTML='';db.collection('team_forums').where('teamId','==',tv).get().then(function(s){var posts=[];s.forEach(function(d){var x=d.data();x._id=d.id;posts.push(x);});posts.sort(function(a,b){if(a.pinned&&!b.pinned)return-1;if(!a.pinned&&b.pinned)return 1;var ta=a.createdAt?(a.createdAt.toDate?a.createdAt.toDate():new Date(a.createdAt)):new Date(0);var tb=b.createdAt?(b.createdAt.toDate?b.createdAt.toDate():new Date(b.createdAt)):new Date(0);return tb-ta;});if(sr2)posts=posts.filter(function(p){return(p.title||'').toLowerCase().indexOf(sr2)>-1||(p.body||'').toLowerCase().indexOf(sr2)>-1;});_currentTeamForumId=tv;allTeamForumPosts=posts;if(!posts.length){e2.style.display='block';return;}e2.style.display='none';var teamName='';var tg=allTeamGroups.find(function(x){return x._id===tv;});if(tg)teamName=tg.name;posts.forEach(function(p){var actions='';if(hasPermission('team_forums.edit'))actions+='<button class="btn btn-secondary btn-xs" onclick="editTeamForumPost(\''+p._id+'\')">Edit</button>';if(hasPermission('team_forums.moderate'))actions+=(actions?' ':'')+'<button class="btn btn-xs '+(p.pinned?'btn-warning':'btn-secondary')+'" onclick="toggleTeamForumPin(\''+p._id+'\','+!p.pinned+')">'+(p.pinned?'Unpin':'Pin')+'</button>';if(hasPermission('team_forums.delete'))actions+=(actions?' ':'')+'<button class="btn btn-danger btn-xs" onclick="deleteTeamForumPost(\''+p._id+'\',\''+escHtml(p.title).replace(/'/g,"\\'")+'\')">Del</button>';var footer='<button class="btn btn-secondary btn-xs" onclick="toggleTeamReplies(\''+p._id+'\',this)">View Replies</button>'+(hasPermission('team_forums.create')?' <button class="btn btn-primary btn-xs" onclick="openTeamForumReplyModal(\''+p._id+'\')">Reply</button>':'');var c=document.createElement('div');c.className='forum-card'+(p.pinned?' pinned':'');c.innerHTML='<div class="forum-card-header"><div><div class="forum-card-title">'+(p.pinned?'&#128204; ':'')+escHtml(p.title)+' <span class="badge badge-info" style="font-size:10px">'+escHtml(teamName)+'</span></div><div class="forum-card-meta">Team Forum &middot; by '+escHtml(p.authorName||'Admin')+' &middot; '+formatDateTime(p.createdAt)+'</div></div><div style="display:flex;gap:4px">'+(actions||'')+'</div></div><div class="forum-card-body">'+escHtml((p.body||'').substring(0,300))+'</div><div class="forum-card-footer">'+footer+'</div><div class="forum-replies-section" id="tf-replies-'+p._id+'"></div>';li2.appendChild(c);});}).catch(function(){e2.style.display='block';});return;}var l=document.getElementById('forums-loading'),li=document.getElementById('forums-list'),e=document.getElementById('forums-empty');var sr=(document.getElementById('forums-search').value||'').toLowerCase(),cf=document.getElementById('forums-cat-filter').value;var f=allForumPosts.filter(function(p){if(tv==='_general'&&p.teamId)return false;if(cf&&p.category!==cf)return false;if(sr&&(p.title||'').toLowerCase().indexOf(sr)===-1&&(p.body||'').toLowerCase().indexOf(sr)===-1)return false;return true;});l.style.display='none';li.innerHTML='';if(!f.length){e.style.display='block';return;}e.style.display='none';f.forEach(function(p){var actions='';if(hasPermission('forums.edit_any'))actions+='<button class="btn btn-secondary btn-xs" onclick="editForumPost(\''+p._id+'\')">Edit</button>';if(hasPermission('forums.moderate'))actions+=(actions?' ':'')+'<button class="btn btn-xs '+(p.pinned?'btn-warning':'btn-secondary')+'" onclick="togglePinPost(\''+p._id+'\','+!p.pinned+')">'+(p.pinned?'Unpin':'Pin')+'</button>';if(hasPermission('forums.delete_any'))actions+=(actions?' ':'')+'<button class="btn btn-danger btn-xs" onclick="deleteForumPost(\''+p._id+'\',\''+escHtml(p.title).replace(/'/g,"\\'")+'\')">Del</button>';var footer='<button class="btn btn-secondary btn-xs" onclick="toggleReplies(\''+p._id+'\',this)">View Replies</button>'+(hasPermission('forums.create')?' <button class="btn btn-primary btn-xs" onclick="openReplyModal(\''+p._id+'\')">Reply</button>':'');var c=document.createElement('div');c.className='forum-card'+(p.pinned?' pinned':'');c.innerHTML='<div class="forum-card-header"><div><div class="forum-card-title">'+(p.pinned?'&#128204; ':'')+escHtml(p.title)+'</div><div class="forum-card-meta">'+escHtml(p.category||'General')+' &middot; by '+escHtml(p.authorName||'Admin')+' &middot; '+formatDateTime(p.createdAt)+'</div></div><div style="display:flex;gap:4px">'+(actions||'')+'</div></div><div class="forum-card-body">'+escHtml((p.body||'').substring(0,300))+'</div><div class="forum-card-footer">'+footer+'</div><div class="forum-replies-section" id="replies-'+p._id+'"></div>';li.appendChild(c);});}
+function openForumPostModal(d){var openIt=function(){document.getElementById('forum-post-modal-title').textContent=d?'Edit Post':'New Post';document.getElementById('forum-post-edit-id').value=d?d._id:'';document.getElementById('forum-post-title').value=d?d.title||'':'';document.getElementById('forum-post-body').value=d?d.body||'':'';document.getElementById('forum-post-category').value=d?d.category||'General':'General';document.getElementById('forum-post-pinned').value=d?String(!!d.pinned):'false';populateForumPostTeamDropdown(d?d.teamId||'':'');var teamSel=document.getElementById('forum-post-team');if(teamSel)teamSel.value=d?d.teamId||'':'';document.getElementById('forum-team-notice').style.display=teamSel&&teamSel.value?'block':'none';openModal('modal-forum-post');};if(allTeamGroups.length){openIt();return;}db.collection('teams').get().then(function(s){allTeamGroups=[];s.forEach(function(dd){var x=dd.data();x._id=dd.id;allTeamGroups.push(x);});openIt();}).catch(function(){openIt();});}
 function editForumPost(id){var p=allForumPosts.find(function(x){return x._id===id;});if(p)openForumPostModal(p);}
-function saveForumPost(){var id=document.getElementById('forum-post-edit-id').value,tt=document.getElementById('forum-post-title').value.trim(),bd=document.getElementById('forum-post-body').value.trim();if(!tt||!bd){showToast('Title and body required.','error');return;}var data={title:tt,body:bd,category:document.getElementById('forum-post-category').value,pinned:document.getElementById('forum-post-pinned').value==='true',authorName:currentUser?currentUser.email.split('@')[0]:'Admin',authorEmail:currentUser?currentUser.email:'',lastEditedAt:FieldValue.serverTimestamp()};if(id){db.collection('forums').doc(id).get().then(function(s){var ch=diffFields(s.data(),data,{});return db.collection('forums').doc(id).update(data).then(function(){writeAudit('update','forums',id,ch);showToast('Updated.');closeModal('modal-forum-post');loadForumPosts();});}).catch(function(e){showToast(e.message,'error');});}else{data.createdAt=FieldValue.serverTimestamp();db.collection('forums').add(data).then(function(ref){writeAudit('create','forums',ref.id,'Created: '+tt);showToast('Created.');closeModal('modal-forum-post');loadForumPosts();loadDashboard();}).catch(function(e){showToast(e.message,'error');});}}
-function deleteForumPost(id,tt){showConfirm('Delete','Delete "'+tt+'" and replies?',function(){db.collection('forum_replies').where('postId','==',id).get().then(function(s){var b=db.batch();s.forEach(function(d){b.delete(d.ref);});b.delete(db.collection('forums').doc(id));return b.commit();}).then(function(){writeAudit('delete','forums',id,'Deleted: '+tt);showToast('Deleted.');loadForumPosts();loadDashboard();}).catch(function(e){showToast(e.message,'error');});});}
-function togglePinPost(id,pin){db.collection('forums').doc(id).update({pinned:pin}).then(function(){writeAudit('update','forums',id,'Pinned: '+pin);showToast(pin?'Pinned.':'Unpinned.');loadForumPosts();}).catch(function(e){showToast(e.message,'error');});}
-function toggleReplies(pid,btn){var sec=document.getElementById('replies-'+pid);if(sec.classList.contains('open')){sec.classList.remove('open');btn.textContent='View Replies';return;}sec.classList.add('open');btn.textContent='Hide Replies';sec.innerHTML='<div class="loading-wrap" style="padding:20px"><div class="spinner"></div> Loading...</div>';db.collection('forum_replies').where('postId','==',pid).get().then(function(s){var reps=[];s.forEach(function(d){var x=d.data();x._id=d.id;reps.push(x);});reps.sort(function(a,b){var ta=a.createdAt?(a.createdAt.toDate?a.createdAt.toDate():new Date(a.createdAt)):new Date(0);var tb=b.createdAt?(b.createdAt.toDate?b.createdAt.toDate():new Date(b.createdAt)):new Date(0);return ta-tb;});if(!reps.length){sec.innerHTML='<p style="color:var(--gray-400);font-size:13px;padding:10px">No replies yet.</p>';return;}sec.innerHTML='';reps.forEach(function(r){var div=document.createElement('div');div.className='forum-reply';div.innerHTML='<div class="forum-reply-meta"><strong>'+escHtml(r.authorName||'Anon')+'</strong> &middot; '+formatDateTime(r.createdAt)+' <button class="btn btn-danger btn-xs" style="float:right" onclick="deleteReply(\''+r._id+'\',\''+pid+'\')">Del</button></div><div>'+escHtml(r.body)+'</div>';sec.appendChild(div);});}).catch(function(){sec.innerHTML='<p style="color:var(--red);font-size:13px">Error loading.</p>';});}
+function saveForumPost(){var id=document.getElementById('forum-post-edit-id').value,tt=document.getElementById('forum-post-title').value.trim(),bd=document.getElementById('forum-post-body').value.trim(),teamSel=document.getElementById('forum-post-team'),teamId=teamSel?teamSel.value:'';if(id&&teamId&&!hasPermission('team_forums.edit')){showToast('No permission to edit team forum posts.','error');return;}if(id&&!teamId&&!hasPermission('forums.edit_any')){showToast('No permission to edit forum posts.','error');return;}if(!id&&teamId&&!hasPermission('team_forums.create')){showToast('No permission to create team forum posts.','error');return;}if(!id&&!teamId&&!hasPermission('forums.create')){showToast('No permission to create forum posts.','error');return;}if(!tt||!bd){showToast('Title and body required.','error');return;}var payload={postId:id||'',teamId:teamId||'',title:tt,body:bd,category:document.getElementById('forum-post-category').value,pinned:document.getElementById('forum-post-pinned').value==='true'};callAdminJsonApi('/api/admin/mutate',Object.assign({action:'forum.post.save'},payload)).then(function(result){showToast(id?'Updated.':(teamId?'Created in team forum.':'Created.'));closeModal('modal-forum-post');loadForumPosts();if(result&&result.mode==='create'&&!teamId)loadDashboard();}).catch(function(e){showToast(e.message,'error');});}
+function deleteForumPost(id,tt){if(!hasPermission('forums.delete_any')){showToast('No permission to delete forum posts.','error');return;}showConfirm('Delete','Delete "'+tt+'" and replies?',function(){callAdminJsonApi('/api/admin/mutate',{action:'forum.post.delete',postId:id,title:tt||''}).then(function(){showToast('Deleted.');loadForumPosts();loadDashboard();}).catch(function(e){showToast(e.message,'error');});});}
+function togglePinPost(id,pin){if(!hasPermission('forums.moderate')){showToast('No permission to pin forum posts.','error');return;}callAdminJsonApi('/api/admin/mutate',{action:'forum.post.pin',postId:id,pinned:!!pin}).then(function(){showToast(pin?'Pinned.':'Unpinned.');loadForumPosts();}).catch(function(e){showToast(e.message,'error');});}
+function toggleReplies(pid,btn){var sec=document.getElementById('replies-'+pid);if(sec.classList.contains('open')){sec.classList.remove('open');btn.textContent='View Replies';return;}sec.classList.add('open');btn.textContent='Hide Replies';sec.innerHTML='<div class="loading-wrap" style="padding:20px"><div class="spinner"></div> Loading...</div>';db.collection('forum_replies').where('postId','==',pid).get().then(function(s){var reps=[];s.forEach(function(d){var x=d.data();x._id=d.id;reps.push(x);});reps.sort(function(a,b){var ta=a.createdAt?(a.createdAt.toDate?a.createdAt.toDate():new Date(a.createdAt)):new Date(0);var tb=b.createdAt?(b.createdAt.toDate?b.createdAt.toDate():new Date(b.createdAt)):new Date(0);return ta-tb;});if(!reps.length){sec.innerHTML='<p style="color:var(--gray-400);font-size:13px;padding:10px">No replies yet.</p>';return;}sec.innerHTML='';reps.forEach(function(r){var deleteBtn=hasPermission('forums.delete_any')?' <button class="btn btn-danger btn-xs" style="float:right" onclick="deleteReply(\\''+r._id+'\\',\\''+pid+'\\')">Del</button>':'';var div=document.createElement('div');div.className='forum-reply';div.innerHTML='<div class="forum-reply-meta"><strong>'+escHtml(r.authorName||'Anon')+'</strong> &middot; '+formatDateTime(r.createdAt)+deleteBtn+'</div><div>'+escHtml(r.body)+'</div>';sec.appendChild(div);});}).catch(function(){sec.innerHTML='<p style="color:var(--red);font-size:13px">Error loading.</p>';});}
 function openReplyModal(pid){document.getElementById('forum-reply-post-id').value=pid;document.getElementById('forum-reply-body').value='';openModal('modal-forum-reply');}
-function saveForumReply(){var pid=document.getElementById('forum-reply-post-id').value,bd=document.getElementById('forum-reply-body').value.trim();if(!bd){showToast('Reply required.','error');return;}db.collection('forum_replies').add({postId:pid,body:bd,authorName:currentUser?currentUser.email.split('@')[0]:'Admin',authorEmail:currentUser?currentUser.email:'',createdAt:FieldValue.serverTimestamp()}).then(function(ref){writeAudit('create','forum_replies',ref.id,'Reply on '+pid);showToast('Posted.');closeModal('modal-forum-reply');var sec=document.getElementById('replies-'+pid);if(sec&&sec.classList.contains('open')){sec.classList.remove('open');var ft=sec.previousElementSibling;if(ft){var btn=ft.querySelector('button');if(btn)toggleReplies(pid,btn);}}}).catch(function(e){showToast(e.message,'error');});}
-function deleteReply(rid,pid){showConfirm('Delete','Delete reply?',function(){db.collection('forum_replies').doc(rid).delete().then(function(){writeAudit('delete','forum_replies',rid,'Deleted');showToast('Deleted.');var sec=document.getElementById('replies-'+pid);if(sec&&sec.classList.contains('open')){sec.classList.remove('open');var ft=sec.previousElementSibling;if(ft){var btn=ft.querySelector('button');if(btn)toggleReplies(pid,btn);}}}).catch(function(e){showToast(e.message,'error');});});}
+function saveForumReply(){var pid=document.getElementById('forum-reply-post-id').value,bd=document.getElementById('forum-reply-body').value.trim();if(!hasPermission('forums.create')){showToast('No permission to reply in forums.','error');return;}if(!bd){showToast('Reply required.','error');return;}callAdminJsonApi('/api/admin/mutate',{action:'forum.reply.save',postId:pid,body:bd}).then(function(){showToast('Posted.');closeModal('modal-forum-reply');var sec=document.getElementById('replies-'+pid);if(sec&&sec.classList.contains('open')){sec.classList.remove('open');var ft=sec.previousElementSibling;if(ft){var btn=ft.querySelector('button');if(btn)toggleReplies(pid,btn);}}}).catch(function(e){showToast(e.message,'error');});}
+function deleteReply(rid,pid){if(!hasPermission('forums.delete_any')){showToast('No permission to delete replies.','error');return;}showConfirm('Delete','Delete reply?',function(){callAdminJsonApi('/api/admin/mutate',{action:'forum.reply.delete',replyId:rid,postId:pid}).then(function(){showToast('Deleted.');var sec=document.getElementById('replies-'+pid);if(sec&&sec.classList.contains('open')){sec.classList.remove('open');var ft=sec.previousElementSibling;if(ft){var btn=ft.querySelector('button');if(btn)toggleReplies(pid,btn);}}}).catch(function(e){showToast(e.message,'error');});});}
 // Announcements
 function loadAnnouncements(){var l=document.getElementById('ann-loading'),li=document.getElementById('ann-list'),e=document.getElementById('ann-empty');l.style.display='flex';li.innerHTML='';e.style.display='none';db.collection('announcements').get().then(function(s){allAnnouncements=[];s.forEach(function(d){var x=d.data();x._id=d.id;allAnnouncements.push(x);});allAnnouncements.sort(function(a,b){var ta=a.publishedAt?(a.publishedAt.toDate?a.publishedAt.toDate():new Date(a.publishedAt)):new Date(0);var tb=b.publishedAt?(b.publishedAt.toDate?b.publishedAt.toDate():new Date(b.publishedAt)):new Date(0);return tb-ta;});renderAnnouncements();});}
 function renderAnnouncements(){var l=document.getElementById('ann-loading'),li=document.getElementById('ann-list'),e=document.getElementById('ann-empty');var sr=(document.getElementById('ann-search').value||'').toLowerCase(),tf=document.getElementById('ann-type-filter').value,af=document.getElementById('ann-audience-filter').value;var f=allAnnouncements.filter(function(a){if(tf&&a.type!==tf)return false;if(af&&a.audience!==af)return false;if(sr&&(a.title||'').toLowerCase().indexOf(sr)===-1&&(a.body||'').toLowerCase().indexOf(sr)===-1)return false;return true;});l.style.display='none';li.innerHTML='';if(!f.length){e.style.display='block';return;}e.style.display='none';f.forEach(function(a){var c=document.createElement('div');c.className='announce-card type-'+(a.type||'info')+(a.active===false?' inactive':'');c.innerHTML='<div class="announce-card-header"><div><div class="announce-card-title">'+escHtml(a.title)+'</div></div><div style="display:flex;gap:4px;align-items:center">'+statusBadge(a.type||'info')+' '+statusBadge(a.audience||'all')+(a.active===false?' <span class="badge badge-suspended">Inactive</span>':'')+'</div></div><div class="announce-card-body">'+escHtml(a.body)+'</div><div class="announce-card-meta">Published: '+formatDateTime(a.publishedAt)+(a.expiresAt?' &middot; Expires: '+formatDateTime(a.expiresAt):'')+(a.createdBy?' &middot; By: '+escHtml(a.createdBy):'')+'</div><div style="margin-top:10px;display:flex;gap:4px"><button class="btn btn-secondary btn-xs" onclick="editAnnouncement(\''+a._id+'\')">Edit</button><button class="btn btn-xs '+(a.active===false?'btn-primary':'btn-warning')+'" onclick="toggleAnnouncementActive(\''+a._id+'\','+(a.active===false)+')">'+(a.active===false?'Activate':'Deactivate')+'</button><button class="btn btn-danger btn-xs" onclick="deleteAnnouncement(\''+a._id+'\',\''+escHtml(a.title).replace(/'/g,"\\'")+'\')">Del</button></div>';li.appendChild(c);});}
@@ -1937,7 +1926,7 @@ if(!isAdmin&&overrideCount>0)permInfo+=' <small style="color:var(--blue)">('+ove
 var memberStatus=m.status||'active';
 var tr=document.createElement('tr');
 tr.innerHTML='<td>'+escHtml(m._email)+(self?' <small style="color:var(--gray-400)">(you)</small>':'')+'</td><td>'+roleLabel+'</td><td>'+permInfo+'</td><td>'+statusBadge(memberStatus)+'</td><td>'+formatDate(m.addedAt)+'</td><td></td>';
-var act=tr.querySelector('td:last-child');if(!self&&hasPermission('users.assign_permissions')){var be=document.createElement('button');be.className='btn btn-secondary btn-xs';be.textContent='Edit Permissions';be.onclick=function(){openTeamModal(m);};act.appendChild(be);var bpr=document.createElement('button');bpr.className='btn btn-warning btn-xs';bpr.textContent='Reset Password';bpr.style.marginLeft='4px';bpr.onclick=function(){sendTeamPasswordReset(m._email);};act.appendChild(bpr);var bd=document.createElement('button');bd.className='btn btn-danger btn-xs';bd.textContent='Remove';bd.style.marginLeft='4px';bd.onclick=function(){showConfirm('Remove','Remove '+m._email+'?',function(){db.collection('users').doc(m._email).delete().then(function(){writeAudit('delete','users',m._email,'Removed');showToast('Removed.');loadTeam();}).catch(function(e){showToast(e.message,'error');});});};act.appendChild(bd);}else if(!self){var bpr2=document.createElement('button');bpr2.className='btn btn-warning btn-xs';bpr2.textContent='Reset Password';bpr2.onclick=function(){sendTeamPasswordReset(m._email);};act.appendChild(bpr2);}tb.appendChild(tr);});}
+var act=tr.querySelector('td:last-child');if(!self&&hasPermission('users.assign_permissions')){var be=document.createElement('button');be.className='btn btn-secondary btn-xs';be.textContent='Edit Permissions';be.onclick=function(){openTeamModal(m);};act.appendChild(be);var bpr=document.createElement('button');bpr.className='btn btn-warning btn-xs';bpr.textContent='Reset Password';bpr.style.marginLeft='4px';bpr.onclick=function(){sendTeamPasswordReset(m._email);};act.appendChild(bpr);var bd=document.createElement('button');bd.className='btn btn-danger btn-xs';bd.textContent='Remove';bd.style.marginLeft='4px';bd.onclick=function(){showConfirm('Remove','Remove '+m._email+'?',function(){callAdminJsonApi('/api/admin/mutate',{action:'user.delete',email:m._email}).then(function(){showToast('Removed.');loadTeam();}).catch(function(e){showToast(e.message,'error');});});};act.appendChild(bd);}else if(!self){var bpr2=document.createElement('button');bpr2.className='btn btn-warning btn-xs';bpr2.textContent='Reset Password';bpr2.onclick=function(){sendTeamPasswordReset(m._email);};act.appendChild(bpr2);}tb.appendChild(tr);});}
 var _teamEditOverrides={};
 var _teamEditRoles=[];
 function openTeamModal(d){
@@ -2046,52 +2035,38 @@ function saveTeamMember(){
   var effectivePerms=computeEffectivePermissions(_teamEditRoles,_teamEditOverrides);
   var overridesClean={};
   Object.keys(_teamEditOverrides).forEach(function(k){overridesClean[k]=_teamEditOverrides[k];});
-  var ref=db.collection('users').doc(em);
   var roleLabels=_teamEditRoles.map(function(r){return ROLE_PRESETS[r]?ROLE_PRESETS[r].label:r;}).join(', ');
-  var userData={roles:_teamEditRoles,role:_teamEditRoles[0],email:em,permission_overrides:overridesClean,permissions:effectivePerms,lastEditedAt:FieldValue.serverTimestamp()};
+  var userPayload={email:em,roles:_teamEditRoles,permissionOverrides:overridesClean,permissions:effectivePerms};
   var authError=document.getElementById('team-auth-error');
   authError.textContent='';
   if(ee){
     // Editing existing member — no auth account creation
-    ref.get().then(function(s){
-      var old=s.exists?s.data():{};
-      var oldRoles=getRolesFromUser(old);
-      var changes='Groups: ['+oldRoles.join(', ')+'] -> ['+_teamEditRoles.join(', ')+']';
-      var addedPerms=effectivePerms.filter(function(p){return(old.permissions||[]).indexOf(p)===-1;});
-      var removedPerms=(old.permissions||[]).filter(function(p){return effectivePerms.indexOf(p)===-1;});
-      if(addedPerms.length)changes+='; +'+addedPerms.length+' permissions';
-      if(removedPerms.length)changes+='; -'+removedPerms.length+' permissions';
-      return ref.set(userData,{merge:true}).then(function(){
-        writeAudit('update','users',em,changes);
-        showToast('Updated: '+roleLabels);
-        closeModal('modal-team');loadTeam();
-      });
+    userPayload.status='active';
+    callAdminJsonApi('/api/admin/mutate',Object.assign({action:'user.permissions.save'},userPayload)).then(function(){
+      showToast('Updated: '+roleLabels);
+      closeModal('modal-team');loadTeam();
     }).catch(function(e){showToast(e.message,'error');});
   }else{
-    // Adding new member — also create Firebase Auth account if password provided
+    // Adding new member — optionally create Firebase Auth account server-side
     var tempPass=document.getElementById('team-temp-password').value;
     var sendReset=document.getElementById('team-send-reset').checked;
-    userData.addedAt=FieldValue.serverTimestamp();
-    userData.status='active';
-    userData.createdAt=FieldValue.serverTimestamp();
 
     if(tempPass&&tempPass.length>=6){
-      // Create auth account via secondary app
       document.getElementById('btn-save-team').disabled=true;
       document.getElementById('btn-save-team').textContent='Creating...';
-      var secondaryAuth=getSecondaryApp().auth();
-      secondaryAuth.createUserWithEmailAndPassword(em,tempPass).then(function(cred){
-        if(cred.user)cred.user.sendEmailVerification().catch(function(){});
-        return secondaryAuth.signOut().then(function(){return cred;});
-      }).then(function(){
-        var promises=[];
-        if(sendReset){
-          promises.push(auth.sendPasswordResetEmail(em).catch(function(e){console.warn('Reset email failed:',e);}));
+      callAdminJsonApi('/api/admin/team-member',{action:'create_auth_user',email:em,password:tempPass}).then(function(){
+        var saveUserDoc=callAdminJsonApi('/api/admin/mutate',Object.assign({action:'user.permissions.save',status:'active'},userPayload));
+        if(!sendReset){
+          return saveUserDoc;
         }
-        promises.push(ref.set(userData,{merge:true}));
-        return Promise.all(promises);
+        return Promise.all([
+          saveUserDoc,
+          callAdminJsonApi('/api/admin/team-member',{action:'send_password_reset',email:em}).catch(function(e){
+            console.warn('Reset email failed:',e);
+            return null;
+          })
+        ]);
       }).then(function(){
-        writeAudit('create','users',em,'Added as: '+roleLabels+' ('+effectivePerms.length+' permissions) + auth account'+(sendReset?' + reset email':''));
         showToast('Team member added with auth account.');
         document.getElementById('btn-save-team').disabled=false;
         document.getElementById('btn-save-team').textContent='Save';
@@ -2106,9 +2081,7 @@ function saveTeamMember(){
       return;
     }else{
       // No password provided — just create Firestore doc (no auth account)
-      userData.status='pending';
-      ref.set(userData,{merge:true}).then(function(){
-        writeAudit('create','users',em,'Added as: '+roleLabels+' ('+effectivePerms.length+' permissions)');
+      callAdminJsonApi('/api/admin/mutate',Object.assign({action:'user.permissions.save',status:'pending'},userPayload)).then(function(){
         showToast('Team member added (no auth account — pending).');
         closeModal('modal-team');loadTeam();
       }).catch(function(e){showToast(e.message,'error');});
@@ -2120,21 +2093,12 @@ function saveTeamMember(){
 // ── Password Reset & User Account Creation ──
 function sendTeamPasswordReset(email){
   showConfirm('Send Password Reset','Send a password reset email to <strong>'+email+'</strong>?',function(){
-    auth.sendPasswordResetEmail(email).then(function(){
-      writeAudit('update','users',email,'Sent password reset email');
+    callAdminJsonApi('/api/admin/team-member',{action:'send_password_reset',email:email}).then(function(){
       showToast('Password reset email sent to '+email);
     }).catch(function(err){
       showToast(err.message,'error');
     });
   });
-}
-
-// Secondary Firebase app for creating users without signing out the admin
-var _secondaryApp=null;
-function getSecondaryApp(){
-  if(_secondaryApp)return _secondaryApp;
-  _secondaryApp=firebase.initializeApp(firebaseConfig,'SecondaryApp');
-  return _secondaryApp;
 }
 
 // openCreateUserAccountModal and doCreateUserAccount removed — merged into saveTeamMember
@@ -2143,7 +2107,7 @@ function doCreateUserAccount(){saveTeamMember();}
 
 // Settings
 function loadSettings(){var l=document.getElementById('settings-loading'),f=document.getElementById('settings-form');l.style.display='flex';f.style.display='none';db.collection('settings').get().then(function(s){var st={};s.forEach(function(d){st[d.id]=d.data();});SETTINGS_KEYS.forEach(function(k){var inp=document.getElementById('set-'+k);if(inp&&st[k])inp.value=st[k].value||'';});l.style.display='none';f.style.display='block';}).catch(function(e){l.style.display='none';f.style.display='block';showToast(e.message,'error');});}
-function saveAllSettings(){var b=db.batch(),ch=[];SETTINGS_KEYS.forEach(function(k){var inp=document.getElementById('set-'+k);if(inp){var v=inp.value.trim();b.set(db.collection('settings').doc(k),{key:k,value:v,updatedAt:FieldValue.serverTimestamp(),updatedBy:currentUser?currentUser.email:''},{merge:true});ch.push(k+'='+v);}});b.commit().then(function(){writeAudit('update','settings','all','Updated: '+ch.join(', '));showToast('Settings saved.');}).catch(function(e){showToast(e.message,'error');});}
+function saveAllSettings(){if(!hasPermission('settings.edit')){showToast('No permission to edit settings.','error');return;}var entries=[];SETTINGS_KEYS.forEach(function(k){var inp=document.getElementById('set-'+k);if(inp)entries.push({key:k,value:inp.value.trim()});});callAdminJsonApi('/api/admin/mutate',{action:'settings.save_all',entries:entries}).then(function(){showToast('Settings saved.');}).catch(function(e){showToast(e.message,'error');});}
 
 // ── Events ──
 function loadEvents(){
@@ -2830,35 +2794,25 @@ function openTeamForumModal(teamId){var t=allTeamGroups.find(function(x){return 
 
 function loadTeamForumPosts(teamId){var loading=document.getElementById('tf-loading'),list=document.getElementById('tf-posts-list'),empty=document.getElementById('tf-empty');loading.style.display='flex';list.innerHTML='';empty.style.display='none';db.collection('team_forums').where('teamId','==',teamId).get().then(function(s){allTeamForumPosts=[];s.forEach(function(d){var x=d.data();x._id=d.id;allTeamForumPosts.push(x);});allTeamForumPosts.sort(function(a,b){if(a.pinned&&!b.pinned)return-1;if(!a.pinned&&b.pinned)return 1;var ta=a.createdAt?(a.createdAt.toDate?a.createdAt.toDate():new Date(a.createdAt)):new Date(0);var tb=b.createdAt?(b.createdAt.toDate?b.createdAt.toDate():new Date(b.createdAt)):new Date(0);return tb-ta;});renderTeamForumPosts();});}
 
-function renderTeamForumPosts(){var loading=document.getElementById('tf-loading'),list=document.getElementById('tf-posts-list'),empty=document.getElementById('tf-empty');loading.style.display='none';list.innerHTML='';if(!allTeamForumPosts.length){empty.style.display='block';return;}empty.style.display='none';allTeamForumPosts.forEach(function(p){var c=document.createElement('div');c.className='forum-card'+(p.pinned?' pinned':'');c.innerHTML='<div class="forum-card-header"><div><div class="forum-card-title">'+(p.pinned?'&#128204; ':'')+escHtml(p.title)+'</div><div class="forum-card-meta">by '+escHtml(p.authorName||'Admin')+' &middot; '+formatDateTime(p.createdAt)+'</div></div><div style="display:flex;gap:4px"><button class="btn btn-secondary btn-xs" onclick="editTeamForumPost(\''+p._id+'\')">Edit</button><button class="btn btn-xs '+(p.pinned?'btn-warning':'btn-secondary')+'" onclick="toggleTeamForumPin(\''+p._id+'\','+!p.pinned+')">'+(p.pinned?'Unpin':'Pin')+'</button><button class="btn btn-danger btn-xs" onclick="deleteTeamForumPost(\''+p._id+'\',\''+escHtml(p.title).replace(/'/g,"\\'")+'\')">Del</button></div></div><div class="forum-card-body">'+escHtml((p.body||'').substring(0,300))+'</div><div class="forum-card-footer"><button class="btn btn-secondary btn-xs" onclick="toggleTeamReplies(\''+p._id+'\',this)">View Replies</button> <button class="btn btn-primary btn-xs" onclick="openTeamForumReplyModal(\''+p._id+'\')">Reply</button></div><div class="forum-replies-section" id="tf-replies-'+p._id+'"></div>';list.appendChild(c);});}
+function renderTeamForumPosts(){var loading=document.getElementById('tf-loading'),list=document.getElementById('tf-posts-list'),empty=document.getElementById('tf-empty');loading.style.display='none';list.innerHTML='';if(!allTeamForumPosts.length){empty.style.display='block';return;}empty.style.display='none';allTeamForumPosts.forEach(function(p){var actions='';if(hasPermission('team_forums.edit'))actions+='<button class="btn btn-secondary btn-xs" onclick="editTeamForumPost(\''+p._id+'\')">Edit</button>';if(hasPermission('team_forums.moderate'))actions+=(actions?' ':'')+'<button class="btn btn-xs '+(p.pinned?'btn-warning':'btn-secondary')+'" onclick="toggleTeamForumPin(\''+p._id+'\','+!p.pinned+')">'+(p.pinned?'Unpin':'Pin')+'</button>';if(hasPermission('team_forums.delete'))actions+=(actions?' ':'')+'<button class="btn btn-danger btn-xs" onclick="deleteTeamForumPost(\''+p._id+'\',\''+escHtml(p.title).replace(/'/g,"\\'")+'\')">Del</button>';var footer='<button class="btn btn-secondary btn-xs" onclick="toggleTeamReplies(\''+p._id+'\',this)">View Replies</button>'+(hasPermission('team_forums.create')?' <button class="btn btn-primary btn-xs" onclick="openTeamForumReplyModal(\''+p._id+'\')">Reply</button>':'');var c=document.createElement('div');c.className='forum-card'+(p.pinned?' pinned':'');c.innerHTML='<div class="forum-card-header"><div><div class="forum-card-title">'+(p.pinned?'&#128204; ':'')+escHtml(p.title)+'</div><div class="forum-card-meta">by '+escHtml(p.authorName||'Admin')+' &middot; '+formatDateTime(p.createdAt)+'</div></div><div style="display:flex;gap:4px">'+(actions||'')+'</div></div><div class="forum-card-body">'+escHtml((p.body||'').substring(0,300))+'</div><div class="forum-card-footer">'+footer+'</div><div class="forum-replies-section" id="tf-replies-'+p._id+'"></div>';list.appendChild(c);});}
 
 function openTeamForumPostModal(d){document.getElementById('tf-post-modal-title').textContent=d?'Edit Team Post':'New Team Post';document.getElementById('tf-post-edit-id').value=d?d._id:'';document.getElementById('tf-post-title').value=d?d.title||'':'';document.getElementById('tf-post-body').value=d?d.body||'':'';document.getElementById('tf-post-pinned').value=d?String(!!d.pinned):'false';openModal('modal-team-forum-post');}
 
 function editTeamForumPost(id){var p=allTeamForumPosts.find(function(x){return x._id===id;});if(p)openTeamForumPostModal(p);}
 
-function saveTeamForumPost(){var id=document.getElementById('tf-post-edit-id').value,tt=document.getElementById('tf-post-title').value.trim(),bd=document.getElementById('tf-post-body').value.trim(),pinned=document.getElementById('tf-post-pinned').value==='true';if(!tt||!bd){showToast('Title and body required.','error');return;}var data={title:tt,body:bd,pinned:pinned,authorName:currentUser?currentUser.email.split('@')[0]:'Admin',authorEmail:currentUser?currentUser.email:'',lastEditedAt:FieldValue.serverTimestamp()};if(id){db.collection('team_forums').doc(id).get().then(function(s){var ch=diffFields(s.data(),data,{});return db.collection('team_forums').doc(id).update(data).then(function(){writeAudit('update','team_forums',id,ch);showToast('Updated.');closeModal('modal-team-forum-post');loadTeamForumPosts(_currentTeamForumId);});}).catch(function(e){showToast(e.message,'error');});}else{data.teamId=_currentTeamForumId;data.createdAt=FieldValue.serverTimestamp();db.collection('team_forums').add(data).then(function(ref){writeAudit('create','team_forums',ref.id,'Created: '+tt);showToast('Posted.');closeModal('modal-team-forum-post');loadTeamForumPosts(_currentTeamForumId);}).catch(function(e){showToast(e.message,'error');});}}
+function saveTeamForumPost(){var id=document.getElementById('tf-post-edit-id').value,tt=document.getElementById('tf-post-title').value.trim(),bd=document.getElementById('tf-post-body').value.trim(),pinned=document.getElementById('tf-post-pinned').value==='true';if(id&&!hasPermission('team_forums.edit')){showToast('No permission to edit team forum posts.','error');return;}if(!id&&!hasPermission('team_forums.create')){showToast('No permission to create team forum posts.','error');return;}if(!tt||!bd){showToast('Title and body required.','error');return;}callAdminJsonApi('/api/admin/mutate',{action:'team_forum.post.save',postId:id||'',teamId:_currentTeamForumId,title:tt,body:bd,pinned:pinned}).then(function(){showToast(id?'Updated.':'Posted.');closeModal('modal-team-forum-post');loadTeamForumPosts(_currentTeamForumId);}).catch(function(e){showToast(e.message,'error');});}
 
-function deleteTeamForumPost(id,tt){showConfirm('Delete','Delete "'+tt+'" and replies?',function(){db.collection('team_forum_replies').where('postId','==',id).get().then(function(s){var b=db.batch();s.forEach(function(d){b.delete(d.ref);});b.delete(db.collection('team_forums').doc(id));return b.commit();}).then(function(){writeAudit('delete','team_forums',id,'Deleted: '+tt);showToast('Deleted.');loadTeamForumPosts(_currentTeamForumId);}).catch(function(e){showToast(e.message,'error');});});}
+function deleteTeamForumPost(id,tt){if(!hasPermission('team_forums.delete')){showToast('No permission to delete team forum posts.','error');return;}showConfirm('Delete','Delete "'+tt+'" and replies?',function(){callAdminJsonApi('/api/admin/mutate',{action:'team_forum.post.delete',postId:id,title:tt||'',teamId:_currentTeamForumId}).then(function(){showToast('Deleted.');loadTeamForumPosts(_currentTeamForumId);}).catch(function(e){showToast(e.message,'error');});});}
 
-function toggleTeamForumPin(id,pin){db.collection('team_forums').doc(id).update({pinned:pin}).then(function(){writeAudit('update','team_forums',id,'Pinned: '+pin);showToast(pin?'Pinned.':'Unpinned.');loadTeamForumPosts(_currentTeamForumId);}).catch(function(e){showToast(e.message,'error');});}
+function toggleTeamForumPin(id,pin){if(!hasPermission('team_forums.moderate')){showToast('No permission to pin team forum posts.','error');return;}callAdminJsonApi('/api/admin/mutate',{action:'team_forum.post.pin',postId:id,pinned:!!pin,teamId:_currentTeamForumId}).then(function(){showToast(pin?'Pinned.':'Unpinned.');loadTeamForumPosts(_currentTeamForumId);}).catch(function(e){showToast(e.message,'error');});}
 
-function toggleTeamReplies(pid,btn){var sec=document.getElementById('tf-replies-'+pid);if(sec.classList.contains('open')){sec.classList.remove('open');btn.textContent='View Replies';return;}sec.classList.add('open');btn.textContent='Hide Replies';sec.innerHTML='<div class="loading-wrap" style="padding:20px"><div class="spinner"></div> Loading...</div>';db.collection('team_forum_replies').where('postId','==',pid).get().then(function(s){var reps=[];s.forEach(function(d){var x=d.data();x._id=d.id;reps.push(x);});reps.sort(function(a,b){var ta=a.createdAt?(a.createdAt.toDate?a.createdAt.toDate():new Date(a.createdAt)):new Date(0);var tb=b.createdAt?(b.createdAt.toDate?b.createdAt.toDate():new Date(b.createdAt)):new Date(0);return ta-tb;});if(!reps.length){sec.innerHTML='<p style="color:var(--gray-400);font-size:13px;padding:10px">No replies yet.</p>';return;}sec.innerHTML='';reps.forEach(function(r){var div=document.createElement('div');div.className='forum-reply';div.innerHTML='<div class="forum-reply-meta"><strong>'+escHtml(r.authorName||'Anon')+'</strong> &middot; '+formatDateTime(r.createdAt)+' <button class="btn btn-danger btn-xs" style="float:right" onclick="deleteTeamReply(\''+r._id+'\',\''+pid+'\')">Del</button></div><div>'+escHtml(r.body)+'</div>';sec.appendChild(div);});}).catch(function(){sec.innerHTML='<p style="color:var(--red);font-size:13px">Error loading.</p>';});}
+function toggleTeamReplies(pid,btn){var sec=document.getElementById('tf-replies-'+pid);if(sec.classList.contains('open')){sec.classList.remove('open');btn.textContent='View Replies';return;}sec.classList.add('open');btn.textContent='Hide Replies';sec.innerHTML='<div class="loading-wrap" style="padding:20px"><div class="spinner"></div> Loading...</div>';db.collection('team_forum_replies').where('postId','==',pid).get().then(function(s){var reps=[];s.forEach(function(d){var x=d.data();x._id=d.id;reps.push(x);});reps.sort(function(a,b){var ta=a.createdAt?(a.createdAt.toDate?a.createdAt.toDate():new Date(a.createdAt)):new Date(0);var tb=b.createdAt?(b.createdAt.toDate?b.createdAt.toDate():new Date(b.createdAt)):new Date(0);return ta-tb;});if(!reps.length){sec.innerHTML='<p style="color:var(--gray-400);font-size:13px;padding:10px">No replies yet.</p>';return;}sec.innerHTML='';reps.forEach(function(r){var deleteBtn=hasPermission('team_forums.delete')?' <button class="btn btn-danger btn-xs" style="float:right" onclick="deleteTeamReply(\\''+r._id+'\\',\\''+pid+'\\')">Del</button>':'';var div=document.createElement('div');div.className='forum-reply';div.innerHTML='<div class="forum-reply-meta"><strong>'+escHtml(r.authorName||'Anon')+'</strong> &middot; '+formatDateTime(r.createdAt)+deleteBtn+'</div><div>'+escHtml(r.body)+'</div>';sec.appendChild(div);});}).catch(function(){sec.innerHTML='<p style="color:var(--red);font-size:13px">Error loading.</p>';});}
 
 function openTeamForumReplyModal(pid){document.getElementById('tf-reply-post-id').value=pid;document.getElementById('tf-reply-body').value='';openModal('modal-team-forum-reply');}
 
-function saveTeamForumReply(){var pid=document.getElementById('tf-reply-post-id').value,bd=document.getElementById('tf-reply-body').value.trim();if(!bd){showToast('Reply required.','error');return;}db.collection('team_forum_replies').add({postId:pid,body:bd,authorName:currentUser?currentUser.email.split('@')[0]:'Admin',authorEmail:currentUser?currentUser.email:'',createdAt:FieldValue.serverTimestamp()}).then(function(ref){writeAudit('create','team_forum_replies',ref.id,'Reply on '+pid);showToast('Posted.');closeModal('modal-team-forum-reply');var sec=document.getElementById('tf-replies-'+pid);if(sec&&sec.classList.contains('open')){sec.classList.remove('open');var ft=sec.previousElementSibling;if(ft){var btn=ft.querySelector('button');if(btn)toggleTeamReplies(pid,btn);}}}).catch(function(e){showToast(e.message,'error');});}
+function saveTeamForumReply(){var pid=document.getElementById('tf-reply-post-id').value,bd=document.getElementById('tf-reply-body').value.trim();if(!hasPermission('team_forums.create')){showToast('No permission to reply in team forums.','error');return;}if(!bd){showToast('Reply required.','error');return;}callAdminJsonApi('/api/admin/mutate',{action:'team_forum.reply.save',postId:pid,teamId:_currentTeamForumId,body:bd}).then(function(){showToast('Posted.');closeModal('modal-team-forum-reply');var sec=document.getElementById('tf-replies-'+pid);if(sec&&sec.classList.contains('open')){sec.classList.remove('open');var ft=sec.previousElementSibling;if(ft){var btn=ft.querySelector('button');if(btn)toggleTeamReplies(pid,btn);}}}).catch(function(e){showToast(e.message,'error');});}
 
-function deleteTeamReply(rid,pid){showConfirm('Delete','Delete reply?',function(){db.collection('team_forum_replies').doc(rid).delete().then(function(){writeAudit('delete','team_forum_replies',rid,'Deleted');showToast('Deleted.');var sec=document.getElementById('tf-replies-'+pid);if(sec&&sec.classList.contains('open')){sec.classList.remove('open');var ft=sec.previousElementSibling;if(ft){var btn=ft.querySelector('button');if(btn)toggleTeamReplies(pid,btn);}}}).catch(function(e){showToast(e.message,'error');});});}
-
-// ── Update Forum Post to support team routing ──
-var _origOpenForumPostModal=openForumPostModal;
-openForumPostModal=function(d){db.collection('teams').get().then(function(s){allTeamGroups=[];s.forEach(function(dd){var x=dd.data();x._id=dd.id;allTeamGroups.push(x);});populateForumPostTeamDropdown(d?d.teamId||'':'');_origOpenForumPostModal(d);});};
-
-var _origSaveForumPost=saveForumPost;
-saveForumPost=function(){var teamSel=document.getElementById('forum-post-team');var teamId=teamSel?teamSel.value:'';var id=document.getElementById('forum-post-edit-id').value;var tt=document.getElementById('forum-post-title').value.trim();var bd=document.getElementById('forum-post-body').value.trim();if(!tt||!bd){showToast('Title and body required.','error');return;}if(teamId&&!id){var data={teamId:teamId,title:tt,body:bd,pinned:document.getElementById('forum-post-pinned').value==='true',authorName:currentUser?currentUser.email.split('@')[0]:'Admin',authorEmail:currentUser?currentUser.email:'',createdAt:FieldValue.serverTimestamp()};db.collection('team_forums').add(data).then(function(ref){writeAudit('create','team_forums',ref.id,'Created via forums: '+tt);showToast('Created in team forum.');closeModal('modal-forum-post');loadForumPosts();}).catch(function(e){showToast(e.message,'error');});return;}_origSaveForumPost();};
-
-var _origRenderForumPosts=renderForumPosts;
-renderForumPosts=function(){var teamFilter=document.getElementById('forums-team-filter');var tv=teamFilter?teamFilter.value:'';if(tv==='_general'){_origRenderForumPosts();return;}if(tv){var l=document.getElementById('forums-loading'),li=document.getElementById('forums-list'),e=document.getElementById('forums-empty');var sr=(document.getElementById('forums-search').value||'').toLowerCase();l.style.display='none';li.innerHTML='';db.collection('team_forums').where('teamId','==',tv).get().then(function(s){var posts=[];s.forEach(function(d){var x=d.data();x._id=d.id;posts.push(x);});posts.sort(function(a,b){if(a.pinned&&!b.pinned)return-1;if(!a.pinned&&b.pinned)return 1;var ta=a.createdAt?(a.createdAt.toDate?a.createdAt.toDate():new Date(a.createdAt)):new Date(0);var tb=b.createdAt?(b.createdAt.toDate?b.createdAt.toDate():new Date(b.createdAt)):new Date(0);return tb-ta;});if(sr)posts=posts.filter(function(p){return(p.title||'').toLowerCase().indexOf(sr)>-1||(p.body||'').toLowerCase().indexOf(sr)>-1;});if(!posts.length){e.style.display='block';return;}e.style.display='none';var teamName='';var tg=allTeamGroups.find(function(x){return x._id===tv;});if(tg)teamName=tg.name;posts.forEach(function(p){var c=document.createElement('div');c.className='forum-card'+(p.pinned?' pinned':'');c.innerHTML='<div class="forum-card-header"><div><div class="forum-card-title">'+(p.pinned?'&#128204; ':'')+escHtml(p.title)+' <span class="badge badge-info" style="font-size:10px">'+escHtml(teamName)+'</span></div><div class="forum-card-meta">Team Forum &middot; by '+escHtml(p.authorName||'Admin')+' &middot; '+formatDateTime(p.createdAt)+'</div></div></div><div class="forum-card-body">'+escHtml((p.body||'').substring(0,300))+'</div>';li.appendChild(c);});});return;}_origRenderForumPosts();};
+function deleteTeamReply(rid,pid){if(!hasPermission('team_forums.delete')){showToast('No permission to delete team forum replies.','error');return;}showConfirm('Delete','Delete reply?',function(){callAdminJsonApi('/api/admin/mutate',{action:'team_forum.reply.delete',replyId:rid,postId:pid,teamId:_currentTeamForumId}).then(function(){showToast('Deleted.');var sec=document.getElementById('tf-replies-'+pid);if(sec&&sec.classList.contains('open')){sec.classList.remove('open');var ft=sec.previousElementSibling;if(ft){var btn=ft.querySelector('button');if(btn)toggleTeamReplies(pid,btn);}}}).catch(function(e){showToast(e.message,'error');});});}
 
 // ═══════════════════════════════════════
 // BLOG & SEO MANAGEMENT
@@ -2986,6 +2940,7 @@ function renderBlogPosts(){
   empty.style.display='none';table.style.display='table';
 
   var canApprove=hasPermission('blog.approve')||hasPermission('blog.edit_any');
+  var canEditBlog=hasPermission('blog.edit_any');
 
   tbody.innerHTML=filtered.map(function(p){
     var catBadge='badge-'+(p.category==='story'?'active':p.category==='update'?'pending':p.category==='insight'?'info':'active');
@@ -3004,6 +2959,10 @@ function renderBlogPosts(){
         '<button class="btn btn-sm" style="background:var(--red);color:#fff;padding:3px 8px;font-size:11px" title="Reject" onclick="rejectBlogPost(\''+escHtml(p.firestoreId)+'\')">Reject</button>';
     }
 
+    var editDeleteHtml=canEditBlog
+      ? '<button class="btn-icon btn-xs" title="Edit" onclick="editBlogPost('+pIdArg+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>'+
+        '<button class="btn-icon btn-xs" title="Delete" onclick="deleteBlogPost('+pIdArg+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>'
+      : '';
     var pIdArg=typeof p.id==='string'?"'"+escHtml(p.id)+"'":p.id;
     return '<tr>'+
       '<td style="max-width:300px"><div style="font-weight:600">'+escHtml(p.title)+'</div><div style="font-size:12px;color:var(--gray-400);margin-top:2px">'+escHtml((p.excerpt||'').substring(0,80))+'</div></td>'+
@@ -3016,14 +2975,14 @@ function renderBlogPosts(){
       '<td><div style="display:flex;gap:4px;flex-wrap:wrap">'+
         approveRejectHtml+
         '<button class="btn-icon btn-xs" title="Preview" onclick="previewBlogPost('+pIdArg+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>'+
-        '<button class="btn-icon btn-xs" title="Edit" onclick="editBlogPost('+pIdArg+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>'+
-        '<button class="btn-icon btn-xs" title="Delete" onclick="deleteBlogPost('+pIdArg+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>'+
+        editDeleteHtml+
       '</div></td>'+
     '</tr>';
   }).join('');
 }
 
 function openBlogPostModal(data){
+  if(!hasPermission('blog.edit_any')){showToast('No permission to edit blog posts.','error');return;}
   document.getElementById('blog-modal-title').textContent=data?'Edit Blog Post':'Write Blog Post';
   document.getElementById('blog-edit-id').value=data?data.id:'';
   document.getElementById('blog-post-title').value=data?data.title:'';
@@ -3037,13 +2996,25 @@ function openBlogPostModal(data){
   openModal('modal-blog-post');
 }
 
+function removeLegacyBlogLocalEntry(id){
+  if(id===undefined||id===null||id==='')return;
+  var local=[];try{local=JSON.parse(localStorage.getItem(BLOG_STORAGE)||'[]');}catch(e){}
+  local=local.filter(function(p){return String(p.id)!==String(id);});
+  localStorage.setItem(BLOG_STORAGE,JSON.stringify(local));
+  var ai=[];try{ai=JSON.parse(localStorage.getItem(AI_POSTS_STORAGE)||'[]');}catch(e){}
+  ai=ai.filter(function(p){return String(p.id)!==String(id);});
+  localStorage.setItem(AI_POSTS_STORAGE,JSON.stringify(ai));
+}
+
 function saveBlogPost(){
+  if(!hasPermission('blog.edit_any')){showToast('No permission to edit blog posts.','error');return;}
   var id=document.getElementById('blog-edit-id').value;
   var title=document.getElementById('blog-post-title').value.trim();
   var body=document.getElementById('blog-post-body').value.trim();
   if(!title||!body){showToast('Title and body are required.','error');return;}
 
   var keywords=document.getElementById('blog-post-keywords').value.split(',').map(function(k){return k.trim();}).filter(Boolean);
+  var existingPost=id?allBlogPosts.find(function(p){return String(p.id)===String(id);}):null;
 
   var postData={
     title:title,
@@ -3054,50 +3025,22 @@ function saveBlogPost(){
     keywords:keywords,
     metaDescription:document.getElementById('blog-post-meta').value.trim(),
     status:document.getElementById('blog-post-status').value,
-    readTime:Math.max(1,Math.ceil(body.split(/\s+/).length/220))
+    readTime:Math.max(1,Math.ceil(body.split(/\s+/).length/220)),
+    date:existingPost&&existingPost.date?existingPost.date:new Date().toISOString().split('T')[0]
   };
-
-  // Check if editing a Firestore post
-  var existingPost=id?allBlogPosts.find(function(p){return String(p.id)===String(id);}):null;
-  if(existingPost&&existingPost.firestoreId){
-    // Update in Firestore
-    db.collection('blog_posts').doc(existingPost.firestoreId).update(postData).then(function(){
-      closeModal('modal-blog-post');
-      showToast('Post updated!','success');
-      loadBlogAdmin();
-    }).catch(function(err){
-      showToast('Error updating post: '+err.message,'error');
-    });
-    return;
-  }
-
-  // Save to localStorage (custom posts)
-  var local=[];try{local=JSON.parse(localStorage.getItem(BLOG_STORAGE)||'[]');}catch(e){}
-
-  if(id){
-    // Editing existing
-    var numId=parseInt(id,10);
-    var found=false;
-    local=local.map(function(p){if(p.id===numId){found=true;return Object.assign({},p,postData);}return p;});
-    if(!found){
-      // Might be editing an AI post — convert to custom
-      var aiPost=allBlogPosts.find(function(p){return p.id===numId;});
-      if(aiPost){
-        var updated=Object.assign({},aiPost,postData,{aiGenerated:false});
-        local.push(updated);
-      }
-    }
-  }else{
-    postData.id=Date.now();
-    postData.date=new Date().toISOString().split('T')[0];
-    postData.aiGenerated=false;
-    local.push(postData);
-  }
-
-  localStorage.setItem(BLOG_STORAGE,JSON.stringify(local));
-  closeModal('modal-blog-post');
-  showToast(id?'Post updated!':'Post published!','success');
-  loadBlogAdmin();
+  var payload=Object.assign({
+    action:'save',
+    firestoreId:existingPost&&existingPost.firestoreId?existingPost.firestoreId:'',
+    legacyLocalId:existingPost&&!existingPost.firestoreId?existingPost.id:''
+  },postData);
+  callAdminJsonApi('/api/admin/blog/editor',payload).then(function(result){
+    if(result&&result.legacyLocalId!==''){removeLegacyBlogLocalEntry(result.legacyLocalId);}
+    closeModal('modal-blog-post');
+    showToast(id?'Post updated!':'Post published!','success');
+    loadBlogAdmin();
+  }).catch(function(err){
+    showToast('Error saving post: '+err.message,'error');
+  });
 }
 
 function editBlogPost(id){
@@ -3106,24 +3049,22 @@ function editBlogPost(id){
 }
 
 function deleteBlogPost(id){
+  if(!hasPermission('blog.edit_any')){showToast('No permission to delete blog posts.','error');return;}
   if(!confirm('Delete this blog post?'))return;
-  // Remove from local storage
-  var local=[];try{local=JSON.parse(localStorage.getItem(BLOG_STORAGE)||'[]');}catch(e){}
-  local=local.filter(function(p){return p.id!==id;});
-  localStorage.setItem(BLOG_STORAGE,JSON.stringify(local));
-
-  // Also remove from AI cache if present
-  var ai=[];try{ai=JSON.parse(localStorage.getItem(AI_POSTS_STORAGE)||'[]');}catch(e){}
-  ai=ai.filter(function(p){return p.id!==id;});
-  localStorage.setItem(AI_POSTS_STORAGE,JSON.stringify(ai));
-
-  // If it's a Firestore post, delete from Firestore too
-  if(typeof id==='string'&&id.length>10){
-    db.collection('blog_posts').doc(id).delete().catch(function(err){console.log('Firestore delete error:',err);});
-  }
-
-  showToast('Post deleted.','success');
-  loadBlogAdmin();
+  var existingPost=allBlogPosts.find(function(p){return String(p.id)===String(id);});
+  callAdminJsonApi('/api/admin/blog/editor',{
+    action:'delete',
+    firestoreId:existingPost&&existingPost.firestoreId?existingPost.firestoreId:(typeof id==='string'&&id.length>10?id:''),
+    legacyLocalId:existingPost&&!existingPost.firestoreId?existingPost.id:'',
+    title:existingPost&&existingPost.title?existingPost.title:''
+  }).then(function(result){
+    if(existingPost&&!existingPost.firestoreId){removeLegacyBlogLocalEntry(existingPost.id);}
+    if(result&&result.legacyLocalId!==''){removeLegacyBlogLocalEntry(result.legacyLocalId);}
+    showToast('Post deleted.','success');
+    loadBlogAdmin();
+  }).catch(function(err){
+    showToast('Error deleting post: '+err.message,'error');
+  });
 }
 
 // ── Approve/Reject user-submitted blog posts in Firestore ──
