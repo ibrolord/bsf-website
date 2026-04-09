@@ -85,8 +85,23 @@ const schemas = {
     action: z.literal('event.delete'),
     eventId: z.string().trim().min(1).max(200),
     title: z.string().trim().max(200).optional().default('')
-  })
-  ,
+  }),
+  'ledger.save': z.object({
+    action: z.literal('ledger.save'),
+    ledgerId: z.string().trim().max(200).optional().default(''),
+    date: z.string().trim().min(1),
+    description: z.string().trim().min(1).max(500),
+    category: z.string().trim().min(1).max(120),
+    amount: z.number().min(0).max(1000000000),
+    direction: z.enum(['in', 'out']),
+    program: z.string().trim().max(200).optional().default(''),
+    sourceName: z.string().trim().max(200).optional().default(''),
+    notes: z.string().trim().max(5000).optional().default('')
+  }),
+  'ledger.delete': z.object({
+    action: z.literal('ledger.delete'),
+    ledgerId: z.string().trim().min(1).max(200)
+  }),
   'volunteer.bulk_status': z.object({
     action: z.literal('volunteer.bulk_status'),
     volunteerIds: z.array(z.string().trim().min(1).max(200)).min(1).max(100),
@@ -94,7 +109,7 @@ const schemas = {
   }),
   'bulk.delete': z.object({
     action: z.literal('bulk.delete'),
-    collection: z.enum(['volunteers', 'schools', 'goals', 'outreach']),
+    collection: z.enum(['volunteers', 'schools', 'ledger', 'goals', 'outreach']),
     ids: z.array(z.string().trim().min(1).max(200)).min(1).max(100)
   }),
   'event.signup': z.object({
@@ -242,6 +257,14 @@ function parseOptionalDate(value, code, label) {
   }
   if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
     throw error(400, code, label + ' must be in YYYY-MM-DD format');
+  }
+  return trimmed;
+}
+
+function parseRequiredDate(value, code, label) {
+  const trimmed = parseOptionalDate(value, code, label);
+  if (!trimmed) {
+    throw error(400, code, label + ' is required');
   }
   return trimmed;
 }
@@ -1018,6 +1041,168 @@ async function handleEventDelete(request, data) {
   }
 }
 
+async function handleLedgerSave(request, data) {
+  const ledgerId = String(data.ledgerId || '').trim();
+  const isUpdate = Boolean(ledgerId);
+  let context;
+  try {
+    context = await requireAnyPermission(request, isUpdate ? ['ledger.edit'] : ['ledger.create']);
+  } catch (authError) {
+    return errorFromException(authError, 'ledger_save_failed', 'Ledger save failed');
+  }
+
+  let ledgerData;
+  try {
+    ledgerData = {
+      date: parseRequiredDate(data.date, 'invalid_ledger_date', 'Ledger date'),
+      description: data.description,
+      category: data.category,
+      amount: data.amount,
+      direction: data.direction,
+      program: data.program,
+      sourceName: data.sourceName,
+      notes: data.notes,
+      lastEditedAt: new Date()
+    };
+  } catch (buildError) {
+    return errorFromException(buildError, 'ledger_save_failed', 'Ledger save failed');
+  }
+
+  if (!isUpdate) {
+    try {
+      const created = await createDocument(context.idToken, 'ledger', Object.assign({}, ledgerData, { createdAt: new Date() }));
+      await writeAudit(context, {
+        adminAction: 'ledger.save',
+        action: 'create',
+        collection: 'ledger',
+        documentId: created.id,
+        changes: 'Created: ' + data.description
+      });
+      log('admin-mutate-ledger-save', 'log', {
+        code: 'ledger_created',
+        ledgerId: created.id,
+        actor: context.identity.email,
+        automation: Boolean(context.isAutomation)
+      });
+      return json({ ok: true, action: 'ledger.save', mode: 'create', ledgerId: created.id, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+    } catch (createError) {
+      log('admin-mutate-ledger-save', 'error', {
+        code: 'ledger_create_failed',
+        actor: context.identity.email,
+        status: createError.status || 500,
+        message: createError.message,
+        body: createError.body || ''
+      });
+      return error(500, 'ledger_create_failed', 'Unable to create the ledger entry');
+    }
+  }
+
+  let ledgerDocument;
+  try {
+    ledgerDocument = await getDocument(context.idToken, 'ledger/' + ledgerId);
+  } catch (readError) {
+    log('admin-mutate-ledger-save', 'error', {
+      code: 'ledger_read_failed',
+      ledgerId: ledgerId,
+      actor: context.identity.email,
+      status: readError.status || 500,
+      message: readError.message
+    });
+    return error(500, 'ledger_read_failed', 'Unable to load the ledger entry');
+  }
+
+  if (!ledgerDocument.exists || !ledgerDocument.document) {
+    return error(404, 'not_found', 'Ledger entry not found', { ledgerId: ledgerId });
+  }
+
+  const changedFields = diffFields(ledgerDocument.document.data || {}, ledgerData, ['lastEditedAt']);
+  try {
+    await patchDocument(context.idToken, 'ledger/' + ledgerId, ledgerData, Object.keys(ledgerData));
+    await writeAudit(context, {
+      adminAction: 'ledger.save',
+      action: 'update',
+      collection: 'ledger',
+      documentId: ledgerId,
+      changes: changedFields.length ? 'Updated fields: ' + changedFields.join(', ') : 'No substantive field changes'
+    });
+    log('admin-mutate-ledger-save', 'log', {
+      code: 'ledger_updated',
+      ledgerId: ledgerId,
+      actor: context.identity.email,
+      changedFields: changedFields,
+      automation: Boolean(context.isAutomation)
+    });
+    return json({ ok: true, action: 'ledger.save', mode: 'update', ledgerId: ledgerId, changedFields: changedFields, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (writeError) {
+    log('admin-mutate-ledger-save', 'error', {
+      code: 'ledger_update_failed',
+      ledgerId: ledgerId,
+      actor: context.identity.email,
+      status: writeError.status || 500,
+      message: writeError.message,
+      body: writeError.body || ''
+    });
+    return error(500, 'ledger_update_failed', 'Unable to update the ledger entry', { ledgerId: ledgerId });
+  }
+}
+
+async function handleLedgerDelete(request, data) {
+  let context;
+  try {
+    context = await requirePermission(request, 'ledger.delete');
+  } catch (authError) {
+    return errorFromException(authError, 'ledger_delete_failed', 'Ledger delete failed');
+  }
+
+  let ledgerDocument;
+  try {
+    ledgerDocument = await getDocument(context.idToken, 'ledger/' + data.ledgerId);
+  } catch (readError) {
+    log('admin-mutate-ledger-delete', 'error', {
+      code: 'ledger_read_failed',
+      ledgerId: data.ledgerId,
+      actor: context.identity.email,
+      status: readError.status || 500,
+      message: readError.message
+    });
+    return error(500, 'ledger_read_failed', 'Unable to load the ledger entry');
+  }
+
+  if (!ledgerDocument.exists || !ledgerDocument.document) {
+    return error(404, 'not_found', 'Ledger entry not found', { ledgerId: data.ledgerId });
+  }
+
+  const ledgerData = ledgerDocument.document.data || {};
+  const entryLabel = String(ledgerData.description || data.ledgerId);
+  try {
+    await deleteDocument(context.idToken, 'ledger/' + data.ledgerId);
+    await writeAudit(context, {
+      adminAction: 'ledger.delete',
+      action: 'delete',
+      collection: 'ledger',
+      documentId: data.ledgerId,
+      changes: 'Deleted: ' + entryLabel
+    });
+    log('admin-mutate-ledger-delete', 'log', {
+      code: 'ledger_deleted',
+      ledgerId: data.ledgerId,
+      actor: context.identity.email,
+      automation: Boolean(context.isAutomation)
+    });
+    return json({ ok: true, action: 'ledger.delete', ledgerId: data.ledgerId, deletedLabel: entryLabel, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (writeError) {
+    log('admin-mutate-ledger-delete', 'error', {
+      code: 'ledger_delete_failed',
+      ledgerId: data.ledgerId,
+      actor: context.identity.email,
+      status: writeError.status || 500,
+      message: writeError.message,
+      body: writeError.body || ''
+    });
+    return error(500, 'ledger_delete_failed', 'Unable to delete the ledger entry', { ledgerId: data.ledgerId });
+  }
+}
+
 
 async function handleVolunteerBulkStatus(request, data) {
   let context;
@@ -1067,6 +1252,7 @@ async function handleBulkDelete(request, data) {
   const collectionPermissions = {
     volunteers: 'volunteers.delete',
     schools: 'schools.delete',
+    ledger: 'ledger.delete',
     goals: 'goals.delete',
     outreach: 'outreach.delete'
   };
@@ -1686,6 +1872,8 @@ async function handleTeamMemberRemove(request, data) {
 const handlers = {
   'volunteer.save': handleVolunteerSave,
   'volunteer.delete': handleVolunteerDelete,
+  'ledger.save': handleLedgerSave,
+  'ledger.delete': handleLedgerDelete,
   'volunteer.bulk_status': handleVolunteerBulkStatus,
   'bulk.delete': handleBulkDelete,
   'school.save': handleSchoolSave,
