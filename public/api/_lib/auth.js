@@ -11,6 +11,7 @@ const SUPERADMIN_EMAILS = new Set([
 ]);
 const AUTOMATION_KEY_HEADER = 'x-bsf-automation-key';
 const AUTOMATION_NAME_HEADER = 'x-bsf-automation-name';
+const PERMISSION_CONTEXT_TTL_MS = 2 * 60 * 1000;
 const DEFAULT_AUTOMATION_PERMISSIONS = new Set([
   'volunteer_requests.approve',
   'volunteers.create',
@@ -79,6 +80,7 @@ let automationSessionCache = {
   idToken: '',
   identity: null
 };
+const permissionContextCache = new Map();
 
 function getApiKey() {
   return process.env.FIREBASE_WEB_API_KEY || DEFAULT_FIREBASE_WEB_API_KEY;
@@ -132,6 +134,44 @@ function getRolesFromUserDoc(userDoc) {
     return [userDoc.role];
   }
   return [];
+}
+
+function getPermissionCacheKey(identity, requestedPermissions) {
+  return [
+    String(identity && identity.uid || ''),
+    String(identity && identity.email || ''),
+    requestedPermissions.slice().sort().join(',')
+  ].join('::');
+}
+
+function clonePermissionContext(context, idToken) {
+  return {
+    idToken: idToken,
+    identity: Object.assign({}, context.identity),
+    userDoc: context.userDoc ? JSON.parse(JSON.stringify(context.userDoc)) : null,
+    roles: Array.isArray(context.roles) ? context.roles.slice() : [],
+    isSuperAdmin: Boolean(context.isSuperAdmin),
+    permission: context.permission
+  };
+}
+
+function getCachedPermissionContext(identity, requestedPermissions, idToken) {
+  const cacheKey = getPermissionCacheKey(identity, requestedPermissions);
+  const cached = permissionContextCache.get(cacheKey);
+  if (!cached || cached.expiresAt <= Date.now()) {
+    if (cached) {
+      permissionContextCache.delete(cacheKey);
+    }
+    return null;
+  }
+  return clonePermissionContext(cached.value, idToken);
+}
+
+function setCachedPermissionContext(identity, requestedPermissions, context) {
+  permissionContextCache.set(getPermissionCacheKey(identity, requestedPermissions), {
+    expiresAt: Date.now() + PERMISSION_CONTEXT_TTL_MS,
+    value: clonePermissionContext(context, context.idToken)
+  });
 }
 
 function hasPermissionFromRoles(roles, permission) {
@@ -263,6 +303,11 @@ async function getAutomationSession(email, password) {
 }
 
 async function resolvePermissionContext(idToken, identity, requestedPermissions) {
+  const cachedContext = getCachedPermissionContext(identity, requestedPermissions, idToken);
+  if (cachedContext) {
+    return cachedContext;
+  }
+
   const isSuperAdmin = SUPERADMIN_EMAILS.has(identity.email);
   const userDocResult = await getDocument(idToken, 'users/' + identity.email);
   const userDoc = userDocResult.exists && userDocResult.document ? userDocResult.document.data : null;
@@ -293,7 +338,7 @@ async function resolvePermissionContext(idToken, identity, requestedPermissions)
     });
   }
 
-  return {
+  const context = {
     idToken: idToken,
     identity: identity,
     userDoc: userDoc,
@@ -301,6 +346,8 @@ async function resolvePermissionContext(idToken, identity, requestedPermissions)
     isSuperAdmin: isSuperAdmin,
     permission: matchedPermission
   };
+  setCachedPermissionContext(identity, requestedPermissions, context);
+  return context;
 }
 
 async function resolveAutomationContext(request, requestedPermissions) {
