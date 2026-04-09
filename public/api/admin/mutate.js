@@ -47,6 +47,107 @@ const schemas = {
     schoolId: z.string().trim().min(1).max(200),
     name: z.string().trim().max(200).optional().default('')
   }),
+  'community.save': z.object({
+    action: z.literal('community.save'),
+    communityId: z.string().trim().max(200).optional().default(''),
+    name: z.string().trim().min(1).max(200),
+    location: z.string().trim().min(1).max(200),
+    area: z.enum(['mainland', 'island', 'suburban']),
+    description: z.string().trim().max(10000).optional().default(''),
+    scholarCount: z.number().int().min(0).max(1000000),
+    totalInvestment: z.number().min(0).max(1000000000000)
+  }),
+  'community.delete': z.object({
+    action: z.literal('community.delete'),
+    communityId: z.string().trim().min(1).max(200),
+    name: z.string().trim().max(200).optional().default('')
+  }),
+  'community.seed_demo': z.object({
+    action: z.literal('community.seed_demo')
+  }),
+  'idea.save': z.object({
+    action: z.literal('idea.save'),
+    ideaId: z.string().trim().max(200).optional().default(''),
+    title: z.string().trim().min(1).max(200),
+    description: z.string().trim().min(1).max(10000),
+    status: z.string().trim().min(1).max(80),
+    tags: z.array(z.string().trim().min(1).max(80)).max(50).optional().default([]),
+    estimatedCost: z.number().min(0).max(1000000000000),
+    authorName: z.string().trim().max(200).optional().default(''),
+    votes: z.number().int().min(0).max(1000000).optional().default(0)
+  }),
+  'idea.delete': z.object({
+    action: z.literal('idea.delete'),
+    ideaId: z.string().trim().min(1).max(200),
+    title: z.string().trim().max(200).optional().default('')
+  }),
+  'forum.post.save': z.object({
+    action: z.literal('forum.post.save'),
+    postId: z.string().trim().max(200).optional().default(''),
+    teamId: z.string().trim().max(200).optional().default(''),
+    title: z.string().trim().min(1).max(200),
+    body: z.string().trim().min(1).max(20000),
+    category: z.string().trim().max(80).optional().default('General'),
+    pinned: z.boolean().optional().default(false)
+  }),
+  'forum.post.delete': z.object({
+    action: z.literal('forum.post.delete'),
+    postId: z.string().trim().min(1).max(200),
+    title: z.string().trim().max(200).optional().default(''),
+    teamId: z.string().trim().max(200).optional().default('')
+  }),
+  'forum.post.pin': z.object({
+    action: z.literal('forum.post.pin'),
+    postId: z.string().trim().min(1).max(200),
+    pinned: z.boolean(),
+    teamId: z.string().trim().max(200).optional().default('')
+  }),
+  'forum.reply.save': z.object({
+    action: z.literal('forum.reply.save'),
+    replyId: z.string().trim().max(200).optional().default(''),
+    postId: z.string().trim().min(1).max(200),
+    body: z.string().trim().min(1).max(10000),
+    teamId: z.string().trim().max(200).optional().default('')
+  }),
+  'forum.reply.delete': z.object({
+    action: z.literal('forum.reply.delete'),
+    replyId: z.string().trim().min(1).max(200),
+    postId: z.string().trim().max(200).optional().default(''),
+    teamId: z.string().trim().max(200).optional().default('')
+  }),
+  'team_forum.post.save': z.object({
+    action: z.literal('team_forum.post.save'),
+    postId: z.string().trim().max(200).optional().default(''),
+    teamId: z.string().trim().min(1).max(200),
+    title: z.string().trim().min(1).max(200),
+    body: z.string().trim().min(1).max(20000),
+    pinned: z.boolean().optional().default(false)
+  }),
+  'team_forum.post.delete': z.object({
+    action: z.literal('team_forum.post.delete'),
+    postId: z.string().trim().min(1).max(200),
+    title: z.string().trim().max(200).optional().default(''),
+    teamId: z.string().trim().max(200).optional().default('')
+  }),
+  'team_forum.post.pin': z.object({
+    action: z.literal('team_forum.post.pin'),
+    postId: z.string().trim().min(1).max(200),
+    pinned: z.boolean(),
+    teamId: z.string().trim().max(200).optional().default('')
+  }),
+  'team_forum.reply.save': z.object({
+    action: z.literal('team_forum.reply.save'),
+    replyId: z.string().trim().max(200).optional().default(''),
+    postId: z.string().trim().min(1).max(200),
+    teamId: z.string().trim().min(1).max(200),
+    body: z.string().trim().min(1).max(10000)
+  }),
+  'team_forum.reply.delete': z.object({
+    action: z.literal('team_forum.reply.delete'),
+    replyId: z.string().trim().min(1).max(200),
+    postId: z.string().trim().max(200).optional().default(''),
+    teamId: z.string().trim().max(200).optional().default('')
+  }),
   'announcement.save': z.object({
     action: z.literal('announcement.save'),
     announcementId: z.string().trim().max(200).optional().default(''),
@@ -109,7 +210,7 @@ const schemas = {
   }),
   'bulk.delete': z.object({
     action: z.literal('bulk.delete'),
-    collection: z.enum(['volunteers', 'schools', 'ledger', 'goals', 'outreach']),
+    collection: z.enum(['volunteers', 'schools', 'ledger', 'goals', 'outreach', 'communities', 'ideas']),
     ids: z.array(z.string().trim().min(1).max(200)).min(1).max(100)
   }),
   'event.signup': z.object({
@@ -189,6 +290,25 @@ const schemas = {
     action: z.literal('team.member.remove'),
     teamId: z.string().trim().min(1).max(200),
     volunteerId: z.string().trim().min(1).max(200)
+  }),
+  'settings.save_all': z.object({
+    action: z.literal('settings.save_all'),
+    entries: z.array(z.object({
+      key: z.string().trim().min(1).max(120),
+      value: z.string().trim().max(5000).optional().default('')
+    })).min(1).max(100)
+  }),
+  'user.permissions.save': z.object({
+    action: z.literal('user.permissions.save'),
+    email: z.string().trim().email().max(320),
+    roles: z.array(z.string().trim().min(1).max(80)).min(1).max(20),
+    permissionOverrides: z.record(z.string().trim().min(1).max(200), z.boolean()).optional().default({}),
+    permissions: z.array(z.string().trim().min(1).max(200)).max(500).optional().default([]),
+    status: z.string().trim().max(80).optional().default('')
+  }),
+  'user.delete': z.object({
+    action: z.literal('user.delete'),
+    email: z.string().trim().email().max(320)
   })
 
 };
@@ -284,6 +404,65 @@ function uniqueStrings(values) {
     return String(value || '').trim();
   }).filter(Boolean)));
 }
+
+function defaultAuthorName(email) {
+  const normalized = String(email || '').trim().toLowerCase();
+  if (!normalized) {
+    return 'Admin';
+  }
+  return normalized.split('@')[0] || 'Admin';
+}
+
+async function deleteDocumentsByField(idToken, collectionId, fieldPath, value) {
+  const matches = await queryCollectionByField(idToken, collectionId, fieldPath, value);
+  await Promise.all(matches.map(function(document) {
+    return deleteDocument(idToken, collectionId + '/' + document.id);
+  }));
+  return matches.length;
+}
+
+const DEMO_COMMUNITIES = [
+  {
+    name: 'Makoko Community',
+    location: 'Yaba, Lagos Mainland',
+    area: 'mainland',
+    description: 'One of Lagos\' most resilient waterside communities. BSF supports children here with education, food security, and vocational training for older youth. Makoko is where our work began.',
+    scholarCount: 28,
+    totalInvestment: 4200000
+  },
+  {
+    name: 'Ajegunle Community',
+    location: 'Ajeromi-Ifelodun, Lagos Mainland',
+    area: 'mainland',
+    description: 'A densely populated community with incredible potential. BSF focuses on education access, after-school programs, and skills training for out-of-school youth.',
+    scholarCount: 22,
+    totalInvestment: 3100000
+  },
+  {
+    name: 'Iwaya Community',
+    location: 'Yaba, Lagos Mainland',
+    area: 'mainland',
+    description: 'Neighboring Makoko, Iwaya faces similar challenges but with a growing creative energy. BSF supports education and connects youth with mentors in tech and the arts.',
+    scholarCount: 14,
+    totalInvestment: 1900000
+  },
+  {
+    name: 'Ajah/Sangotedo Community',
+    location: 'Eti-Osa, Lagos Island',
+    area: 'island',
+    description: 'A rapidly growing suburban area where many families have relocated from inner Lagos. BSF supports the peri-urban schools and runs weekend programs for children of market traders.',
+    scholarCount: 11,
+    totalInvestment: 1500000
+  },
+  {
+    name: 'Ikorodu Community',
+    location: 'Ikorodu, Lagos Suburban',
+    area: 'suburban',
+    description: 'A historic town on the outskirts of Lagos with deep cultural roots. BSF works with local artisans to create apprenticeship pipelines for young people who have dropped out of formal education.',
+    scholarCount: 9,
+    totalInvestment: 1100000
+  }
+];
 
 async function writeAudit(context, details) {
   await createDocument(context.idToken, 'audit_log', {
@@ -644,6 +823,902 @@ async function handleSchoolDelete(request, data) {
       body: writeError.body || ''
     });
     return error(500, 'school_delete_failed', 'Unable to delete the school record', { schoolId: data.schoolId });
+  }
+}
+
+async function handleCommunitySave(request, data) {
+  const communityId = String(data.communityId || '').trim();
+  const isUpdate = Boolean(communityId);
+  let context;
+  try {
+    context = await requireAnyPermission(request, isUpdate ? ['communities.edit'] : ['communities.create']);
+  } catch (authError) {
+    return errorFromException(authError, 'community_save_failed', 'Community save failed');
+  }
+
+  const communityData = {
+    name: data.name,
+    location: data.location,
+    area: data.area,
+    description: data.description,
+    scholarCount: data.scholarCount,
+    totalInvestment: data.totalInvestment,
+    lastEditedAt: new Date()
+  };
+
+  if (!isUpdate) {
+    try {
+      const created = await createDocument(context.idToken, 'communities', Object.assign({}, communityData, { createdAt: new Date() }));
+      await writeAudit(context, {
+        adminAction: 'community.save',
+        action: 'create',
+        collection: 'communities',
+        documentId: created.id,
+        changes: 'Created: ' + data.name
+      });
+      log('admin-mutate-community-save', 'log', {
+        code: 'community_created',
+        communityId: created.id,
+        actor: context.identity.email,
+        automation: Boolean(context.isAutomation)
+      });
+      return json({ ok: true, action: 'community.save', mode: 'create', communityId: created.id, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+    } catch (createError) {
+      log('admin-mutate-community-save', 'error', {
+        code: 'community_create_failed',
+        actor: context.identity.email,
+        status: createError.status || 500,
+        message: createError.message,
+        body: createError.body || ''
+      });
+      return error(500, 'community_create_failed', 'Unable to create the community record');
+    }
+  }
+
+  let communityDocument;
+  try {
+    communityDocument = await getDocument(context.idToken, 'communities/' + communityId);
+  } catch (readError) {
+    log('admin-mutate-community-save', 'error', {
+      code: 'community_read_failed',
+      communityId: communityId,
+      actor: context.identity.email,
+      status: readError.status || 500,
+      message: readError.message
+    });
+    return error(500, 'community_read_failed', 'Unable to load the community record');
+  }
+
+  if (!communityDocument.exists || !communityDocument.document) {
+    return error(404, 'not_found', 'Community not found', { communityId: communityId });
+  }
+
+  const changedFields = diffFields(communityDocument.document.data || {}, communityData, ['lastEditedAt']);
+  try {
+    await patchDocument(context.idToken, 'communities/' + communityId, communityData, Object.keys(communityData));
+    await writeAudit(context, {
+      adminAction: 'community.save',
+      action: 'update',
+      collection: 'communities',
+      documentId: communityId,
+      changes: changedFields.length ? 'Updated fields: ' + changedFields.join(', ') : 'No substantive field changes'
+    });
+    log('admin-mutate-community-save', 'log', {
+      code: 'community_updated',
+      communityId: communityId,
+      actor: context.identity.email,
+      changedFields: changedFields,
+      automation: Boolean(context.isAutomation)
+    });
+    return json({ ok: true, action: 'community.save', mode: 'update', communityId: communityId, changedFields: changedFields, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (writeError) {
+    log('admin-mutate-community-save', 'error', {
+      code: 'community_update_failed',
+      communityId: communityId,
+      actor: context.identity.email,
+      status: writeError.status || 500,
+      message: writeError.message,
+      body: writeError.body || ''
+    });
+    return error(500, 'community_update_failed', 'Unable to update the community record', { communityId: communityId });
+  }
+}
+
+async function handleCommunityDelete(request, data) {
+  let context;
+  try {
+    context = await requirePermission(request, 'communities.delete');
+  } catch (authError) {
+    return errorFromException(authError, 'community_delete_failed', 'Community delete failed');
+  }
+
+  let communityDocument;
+  try {
+    communityDocument = await getDocument(context.idToken, 'communities/' + data.communityId);
+  } catch (readError) {
+    log('admin-mutate-community-delete', 'error', {
+      code: 'community_read_failed',
+      communityId: data.communityId,
+      actor: context.identity.email,
+      status: readError.status || 500,
+      message: readError.message
+    });
+    return error(500, 'community_read_failed', 'Unable to load the community record');
+  }
+
+  if (!communityDocument.exists || !communityDocument.document) {
+    return error(404, 'not_found', 'Community not found', { communityId: data.communityId });
+  }
+
+  const communityName = String((communityDocument.document.data || {}).name || data.name || data.communityId);
+  try {
+    await deleteDocument(context.idToken, 'communities/' + data.communityId);
+    await writeAudit(context, {
+      adminAction: 'community.delete',
+      action: 'delete',
+      collection: 'communities',
+      documentId: data.communityId,
+      changes: 'Deleted: ' + communityName
+    });
+    log('admin-mutate-community-delete', 'log', {
+      code: 'community_deleted',
+      communityId: data.communityId,
+      actor: context.identity.email,
+      automation: Boolean(context.isAutomation)
+    });
+    return json({ ok: true, action: 'community.delete', communityId: data.communityId, deletedName: communityName, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (writeError) {
+    log('admin-mutate-community-delete', 'error', {
+      code: 'community_delete_failed',
+      communityId: data.communityId,
+      actor: context.identity.email,
+      status: writeError.status || 500,
+      message: writeError.message,
+      body: writeError.body || ''
+    });
+    return error(500, 'community_delete_failed', 'Unable to delete the community record', { communityId: data.communityId });
+  }
+}
+
+async function handleCommunitySeedDemo(request, data) {
+  void data;
+  let context;
+  try {
+    context = await requirePermission(request, 'communities.create');
+  } catch (authError) {
+    return errorFromException(authError, 'community_seed_demo_failed', 'Community demo seed failed');
+  }
+
+  let existingByName;
+  try {
+    const existingMatches = await Promise.all(DEMO_COMMUNITIES.map(function(community) {
+      return queryCollectionByField(context.idToken, 'communities', 'name', community.name);
+    }));
+    existingByName = new Set(existingMatches.filter(Boolean).flat().map(function(document) {
+      return String((document.data || {}).name || '').trim().toLowerCase();
+    }).filter(Boolean));
+  } catch (readError) {
+    log('admin-mutate-community-seed-demo', 'error', {
+      code: 'community_seed_existing_lookup_failed',
+      actor: context.identity.email,
+      status: readError.status || 500,
+      message: readError.message,
+      body: readError.body || ''
+    });
+    return error(500, 'community_seed_existing_lookup_failed', 'Unable to inspect existing communities before seeding');
+  }
+
+  const toCreate = DEMO_COMMUNITIES.filter(function(community) {
+    return !existingByName.has(String(community.name || '').trim().toLowerCase());
+  });
+  if (!toCreate.length) {
+    return json({
+      ok: true,
+      action: 'community.seed_demo',
+      seededCount: 0,
+      existingCount: DEMO_COMMUNITIES.length,
+      noChange: true,
+      reviewedBy: context.identity.email,
+      automation: Boolean(context.isAutomation)
+    });
+  }
+
+  try {
+    const created = await Promise.all(toCreate.map(function(community) {
+      return createDocument(context.idToken, 'communities', Object.assign({}, community, {
+        createdAt: new Date(),
+        lastEditedAt: new Date()
+      }));
+    }));
+    await writeAudit(context, {
+      adminAction: 'community.seed_demo',
+      action: 'create',
+      collection: 'communities',
+      documentId: '',
+      changes: 'Seeded ' + created.length + ' demo communities'
+    });
+    log('admin-mutate-community-seed-demo', 'log', {
+      code: 'community_demo_seeded',
+      actor: context.identity.email,
+      seededCount: created.length,
+      automation: Boolean(context.isAutomation)
+    });
+    return json({
+      ok: true,
+      action: 'community.seed_demo',
+      seededCount: created.length,
+      existingCount: DEMO_COMMUNITIES.length - created.length,
+      createdIds: created.map(function(document) { return document.id; }),
+      reviewedBy: context.identity.email,
+      automation: Boolean(context.isAutomation)
+    });
+  } catch (writeError) {
+    log('admin-mutate-community-seed-demo', 'error', {
+      code: 'community_seed_demo_failed',
+      actor: context.identity.email,
+      status: writeError.status || 500,
+      message: writeError.message,
+      body: writeError.body || ''
+    });
+    return error(500, 'community_seed_demo_failed', 'Unable to seed the demo communities');
+  }
+}
+
+async function handleIdeaSave(request, data) {
+  const ideaId = String(data.ideaId || '').trim();
+  const isUpdate = Boolean(ideaId);
+  let context;
+  try {
+    context = await requirePermission(request, 'ideas.edit_any');
+  } catch (authError) {
+    return errorFromException(authError, 'idea_save_failed', 'Idea save failed');
+  }
+
+  const ideaData = {
+    title: data.title,
+    description: data.description,
+    status: data.status,
+    tags: data.tags,
+    estimatedCost: data.estimatedCost,
+    authorName: data.authorName,
+    votes: data.votes,
+    lastEditedAt: new Date()
+  };
+
+  if (!isUpdate) {
+    try {
+      const created = await createDocument(context.idToken, 'ideas', Object.assign({}, ideaData, { createdAt: new Date() }));
+      await writeAudit(context, {
+        adminAction: 'idea.save',
+        action: 'create',
+        collection: 'ideas',
+        documentId: created.id,
+        changes: 'Created: ' + data.title
+      });
+      return json({ ok: true, action: 'idea.save', mode: 'create', ideaId: created.id, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+    } catch (createError) {
+      return error(500, 'idea_create_failed', 'Unable to create the idea', { message: createError.message });
+    }
+  }
+
+  let ideaDocument;
+  try {
+    ideaDocument = await getDocument(context.idToken, 'ideas/' + ideaId);
+  } catch (readError) {
+    return error(500, 'idea_read_failed', 'Unable to load the idea');
+  }
+  if (!ideaDocument.exists || !ideaDocument.document) {
+    return error(404, 'not_found', 'Idea not found', { ideaId: ideaId });
+  }
+
+  const changedFields = diffFields(ideaDocument.document.data || {}, ideaData, ['lastEditedAt']);
+  try {
+    await patchDocument(context.idToken, 'ideas/' + ideaId, ideaData, Object.keys(ideaData));
+    await writeAudit(context, {
+      adminAction: 'idea.save',
+      action: 'update',
+      collection: 'ideas',
+      documentId: ideaId,
+      changes: changedFields.length ? 'Updated fields: ' + changedFields.join(', ') : 'No substantive field changes'
+    });
+    return json({ ok: true, action: 'idea.save', mode: 'update', ideaId: ideaId, changedFields: changedFields, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (writeError) {
+    return error(500, 'idea_update_failed', 'Unable to update the idea', { ideaId: ideaId, message: writeError.message });
+  }
+}
+
+async function handleIdeaDelete(request, data) {
+  let context;
+  try {
+    context = await requirePermission(request, 'ideas.delete_any');
+  } catch (authError) {
+    return errorFromException(authError, 'idea_delete_failed', 'Idea delete failed');
+  }
+
+  let ideaDocument;
+  try {
+    ideaDocument = await getDocument(context.idToken, 'ideas/' + data.ideaId);
+  } catch (_readError) {
+    return error(500, 'idea_read_failed', 'Unable to load the idea');
+  }
+  if (!ideaDocument.exists || !ideaDocument.document) {
+    return error(404, 'not_found', 'Idea not found', { ideaId: data.ideaId });
+  }
+
+  const ideaTitle = String((ideaDocument.document.data || {}).title || data.title || data.ideaId);
+  try {
+    await deleteDocument(context.idToken, 'ideas/' + data.ideaId);
+    await writeAudit(context, {
+      adminAction: 'idea.delete',
+      action: 'delete',
+      collection: 'ideas',
+      documentId: data.ideaId,
+      changes: 'Deleted: ' + ideaTitle
+    });
+    return json({ ok: true, action: 'idea.delete', ideaId: data.ideaId, deletedTitle: ideaTitle, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (writeError) {
+    return error(500, 'idea_delete_failed', 'Unable to delete the idea', { ideaId: data.ideaId, message: writeError.message });
+  }
+}
+
+async function saveForumPostInCollection(request, config) {
+  const postId = String(config.data.postId || '').trim();
+  const isUpdate = Boolean(postId);
+  const requestedPermissions = isUpdate ? [config.updatePermission] : [config.createPermission];
+  let context;
+  try {
+    context = await requireAnyPermission(request, requestedPermissions);
+  } catch (authError) {
+    return errorFromException(authError, config.errorCode + '_failed', config.label + ' save failed');
+  }
+
+  const postData = {
+    title: config.data.title,
+    body: config.data.body,
+    pinned: Boolean(config.data.pinned),
+    authorName: defaultAuthorName(context.identity.email),
+    authorEmail: context.identity.email,
+    lastEditedAt: new Date()
+  };
+  if (config.includeCategory) {
+    postData.category = config.data.category || 'General';
+  }
+  if (config.teamId) {
+    postData.teamId = config.teamId;
+  }
+
+  if (!isUpdate) {
+    try {
+      const created = await createDocument(context.idToken, config.collection, Object.assign({}, postData, { createdAt: new Date() }));
+      await writeAudit(context, {
+        adminAction: config.auditAction,
+        action: 'create',
+        collection: config.collection,
+        documentId: created.id,
+        changes: 'Created: ' + config.data.title
+      });
+      return json({ ok: true, action: config.auditAction, mode: 'create', postId: created.id, collection: config.collection, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+    } catch (createError) {
+      return error(500, config.errorCode + '_create_failed', 'Unable to create the ' + config.label, { message: createError.message });
+    }
+  }
+
+  let postDocument;
+  try {
+    postDocument = await getDocument(context.idToken, config.collection + '/' + postId);
+  } catch (_readError) {
+    return error(500, config.errorCode + '_read_failed', 'Unable to load the ' + config.label);
+  }
+  if (!postDocument.exists || !postDocument.document) {
+    return error(404, 'not_found', config.label + ' not found', { postId: postId });
+  }
+
+  const existingData = postDocument.document.data || {};
+  postData.authorName = existingData.authorName || postData.authorName;
+  postData.authorEmail = existingData.authorEmail || postData.authorEmail;
+  if (config.teamId && !postData.teamId) {
+    postData.teamId = existingData.teamId || config.teamId;
+  }
+
+  const changedFields = diffFields(existingData, postData, ['lastEditedAt']);
+  try {
+    await patchDocument(context.idToken, config.collection + '/' + postId, postData, Object.keys(postData));
+    await writeAudit(context, {
+      adminAction: config.auditAction,
+      action: 'update',
+      collection: config.collection,
+      documentId: postId,
+      changes: changedFields.length ? 'Updated fields: ' + changedFields.join(', ') : 'No substantive field changes'
+    });
+    return json({ ok: true, action: config.auditAction, mode: 'update', postId: postId, changedFields: changedFields, collection: config.collection, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (writeError) {
+    return error(500, config.errorCode + '_update_failed', 'Unable to update the ' + config.label, { postId: postId, message: writeError.message });
+  }
+}
+
+async function deleteForumPostInCollection(request, config) {
+  let context;
+  try {
+    context = await requirePermission(request, config.deletePermission);
+  } catch (authError) {
+    return errorFromException(authError, config.errorCode + '_failed', config.label + ' delete failed');
+  }
+
+  let postDocument;
+  try {
+    postDocument = await getDocument(context.idToken, config.collection + '/' + config.data.postId);
+  } catch (_readError) {
+    return error(500, config.errorCode + '_read_failed', 'Unable to load the ' + config.label);
+  }
+  if (!postDocument.exists || !postDocument.document) {
+    return error(404, 'not_found', config.label + ' not found', { postId: config.data.postId });
+  }
+
+  const title = String((postDocument.document.data || {}).title || config.data.title || config.data.postId);
+  try {
+    const deletedReplies = await deleteDocumentsByField(context.idToken, config.replyCollection, 'postId', config.data.postId);
+    await deleteDocument(context.idToken, config.collection + '/' + config.data.postId);
+    await writeAudit(context, {
+      adminAction: config.auditAction,
+      action: 'delete',
+      collection: config.collection,
+      documentId: config.data.postId,
+      changes: 'Deleted: ' + title + (deletedReplies ? '; Replies deleted: ' + deletedReplies : '')
+    });
+    return json({ ok: true, action: config.auditAction, postId: config.data.postId, deletedReplies: deletedReplies, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (writeError) {
+    return error(500, config.errorCode + '_delete_failed', 'Unable to delete the ' + config.label, { postId: config.data.postId, message: writeError.message });
+  }
+}
+
+async function pinForumPostInCollection(request, config) {
+  let context;
+  try {
+    context = await requirePermission(request, config.moderatePermission);
+  } catch (authError) {
+    return errorFromException(authError, config.errorCode + '_failed', config.label + ' pin failed');
+  }
+
+  let postDocument;
+  try {
+    postDocument = await getDocument(context.idToken, config.collection + '/' + config.data.postId);
+  } catch (_readError) {
+    return error(500, config.errorCode + '_read_failed', 'Unable to load the ' + config.label);
+  }
+  if (!postDocument.exists || !postDocument.document) {
+    return error(404, 'not_found', config.label + ' not found', { postId: config.data.postId });
+  }
+
+  try {
+    await patchDocument(context.idToken, config.collection + '/' + config.data.postId, {
+      pinned: Boolean(config.data.pinned),
+      lastEditedAt: new Date()
+    }, ['pinned', 'lastEditedAt']);
+    await writeAudit(context, {
+      adminAction: config.auditAction,
+      action: 'update',
+      collection: config.collection,
+      documentId: config.data.postId,
+      changes: 'Pinned: ' + String(Boolean(config.data.pinned))
+    });
+    return json({ ok: true, action: config.auditAction, postId: config.data.postId, pinned: Boolean(config.data.pinned), reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (writeError) {
+    return error(500, config.errorCode + '_pin_failed', 'Unable to update the ' + config.label + ' pin state', { postId: config.data.postId, message: writeError.message });
+  }
+}
+
+async function saveForumReplyInCollection(request, config) {
+  let context;
+  try {
+    context = await requirePermission(request, config.createPermission);
+  } catch (authError) {
+    return errorFromException(authError, config.errorCode + '_failed', config.label + ' save failed');
+  }
+
+  let postDocument;
+  try {
+    postDocument = await getDocument(context.idToken, config.postCollection + '/' + config.data.postId);
+  } catch (_readError) {
+    return error(500, config.errorCode + '_post_read_failed', 'Unable to load the parent post');
+  }
+  if (!postDocument.exists || !postDocument.document) {
+    return error(404, 'not_found', 'Parent post not found', { postId: config.data.postId });
+  }
+
+  const replyId = String(config.data.replyId || '').trim();
+  const replyData = {
+    postId: config.data.postId,
+    body: config.data.body,
+    authorName: defaultAuthorName(context.identity.email),
+    authorEmail: context.identity.email
+  };
+
+  if (replyId) {
+    let replyDocument;
+    try {
+      replyDocument = await getDocument(context.idToken, config.collection + '/' + replyId);
+    } catch (_replyReadError) {
+      return error(500, config.errorCode + '_read_failed', 'Unable to load the reply');
+    }
+    if (!replyDocument.exists || !replyDocument.document) {
+      return error(404, 'not_found', 'Reply not found', { replyId: replyId });
+    }
+    const updateData = { body: replyData.body };
+    const changedFields = diffFields(replyDocument.document.data || {}, updateData, []);
+    try {
+      await patchDocument(context.idToken, config.collection + '/' + replyId, updateData, Object.keys(updateData));
+      await writeAudit(context, {
+        adminAction: config.auditAction,
+        action: 'update',
+        collection: config.collection,
+        documentId: replyId,
+        changes: changedFields.length ? 'Updated fields: ' + changedFields.join(', ') : 'No substantive field changes'
+      });
+      return json({ ok: true, action: config.auditAction, mode: 'update', replyId: replyId, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+    } catch (writeError) {
+      return error(500, config.errorCode + '_update_failed', 'Unable to update the reply', { replyId: replyId, message: writeError.message });
+    }
+  }
+
+  try {
+    const created = await createDocument(context.idToken, config.collection, Object.assign({}, replyData, { createdAt: new Date() }));
+    await writeAudit(context, {
+      adminAction: config.auditAction,
+      action: 'create',
+      collection: config.collection,
+      documentId: created.id,
+      changes: 'Reply on ' + config.data.postId
+    });
+    return json({ ok: true, action: config.auditAction, mode: 'create', replyId: created.id, postId: config.data.postId, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (createError) {
+    return error(500, config.errorCode + '_create_failed', 'Unable to create the reply', { message: createError.message });
+  }
+}
+
+async function deleteForumReplyInCollection(request, config) {
+  let context;
+  try {
+    context = await requirePermission(request, config.deletePermission);
+  } catch (authError) {
+    return errorFromException(authError, config.errorCode + '_failed', config.label + ' delete failed');
+  }
+
+  let replyDocument;
+  try {
+    replyDocument = await getDocument(context.idToken, config.collection + '/' + config.data.replyId);
+  } catch (_readError) {
+    return error(500, config.errorCode + '_read_failed', 'Unable to load the reply');
+  }
+  if (!replyDocument.exists || !replyDocument.document) {
+    return error(404, 'not_found', 'Reply not found', { replyId: config.data.replyId });
+  }
+
+  try {
+    await deleteDocument(context.idToken, config.collection + '/' + config.data.replyId);
+    await writeAudit(context, {
+      adminAction: config.auditAction,
+      action: 'delete',
+      collection: config.collection,
+      documentId: config.data.replyId,
+      changes: 'Deleted reply'
+    });
+    return json({ ok: true, action: config.auditAction, replyId: config.data.replyId, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (writeError) {
+    return error(500, config.errorCode + '_delete_failed', 'Unable to delete the reply', { replyId: config.data.replyId, message: writeError.message });
+  }
+}
+
+async function handleForumPostSave(request, data) {
+  const routedTeamId = String(data.teamId || '').trim();
+  if (routedTeamId) {
+    return saveForumPostInCollection(request, {
+      data: { postId: data.postId, title: data.title, body: data.body, pinned: data.pinned },
+      collection: 'team_forums',
+      label: 'team forum post',
+      errorCode: 'team_forum_post_save',
+      auditAction: 'forum.post.save',
+      createPermission: 'team_forums.create',
+      updatePermission: 'team_forums.edit',
+      teamId: routedTeamId
+    });
+  }
+  return saveForumPostInCollection(request, {
+    data: data,
+    collection: 'forums',
+    label: 'forum post',
+    errorCode: 'forum_post_save',
+    auditAction: 'forum.post.save',
+    createPermission: 'forums.create',
+    updatePermission: 'forums.edit_any',
+    includeCategory: true
+  });
+}
+
+async function handleForumPostDelete(request, data) {
+  if (String(data.teamId || '').trim()) {
+    return deleteForumPostInCollection(request, {
+      data: data,
+      collection: 'team_forums',
+      replyCollection: 'team_forum_replies',
+      label: 'team forum post',
+      errorCode: 'team_forum_post_delete',
+      auditAction: 'forum.post.delete',
+      deletePermission: 'team_forums.delete'
+    });
+  }
+  return deleteForumPostInCollection(request, {
+    data: data,
+    collection: 'forums',
+    replyCollection: 'forum_replies',
+    label: 'forum post',
+    errorCode: 'forum_post_delete',
+    auditAction: 'forum.post.delete',
+    deletePermission: 'forums.delete_any'
+  });
+}
+
+async function handleForumPostPin(request, data) {
+  if (String(data.teamId || '').trim()) {
+    return pinForumPostInCollection(request, {
+      data: data,
+      collection: 'team_forums',
+      label: 'team forum post',
+      errorCode: 'team_forum_post_pin',
+      auditAction: 'forum.post.pin',
+      moderatePermission: 'team_forums.moderate'
+    });
+  }
+  return pinForumPostInCollection(request, {
+    data: data,
+    collection: 'forums',
+    label: 'forum post',
+    errorCode: 'forum_post_pin',
+    auditAction: 'forum.post.pin',
+    moderatePermission: 'forums.moderate'
+  });
+}
+
+async function handleForumReplySave(request, data) {
+  if (String(data.teamId || '').trim()) {
+    return saveForumReplyInCollection(request, {
+      data: data,
+      collection: 'team_forum_replies',
+      postCollection: 'team_forums',
+      label: 'team forum reply',
+      errorCode: 'team_forum_reply_save',
+      auditAction: 'forum.reply.save',
+      createPermission: 'team_forums.create'
+    });
+  }
+  return saveForumReplyInCollection(request, {
+    data: data,
+    collection: 'forum_replies',
+    postCollection: 'forums',
+    label: 'forum reply',
+    errorCode: 'forum_reply_save',
+    auditAction: 'forum.reply.save',
+    createPermission: 'forums.create'
+  });
+}
+
+async function handleForumReplyDelete(request, data) {
+  if (String(data.teamId || '').trim()) {
+    return deleteForumReplyInCollection(request, {
+      data: data,
+      collection: 'team_forum_replies',
+      label: 'team forum reply',
+      errorCode: 'team_forum_reply_delete',
+      auditAction: 'forum.reply.delete',
+      deletePermission: 'team_forums.delete'
+    });
+  }
+  return deleteForumReplyInCollection(request, {
+    data: data,
+    collection: 'forum_replies',
+    label: 'forum reply',
+    errorCode: 'forum_reply_delete',
+    auditAction: 'forum.reply.delete',
+    deletePermission: 'forums.delete_any'
+  });
+}
+
+async function handleTeamForumPostSave(request, data) {
+  return saveForumPostInCollection(request, {
+    data: data,
+    collection: 'team_forums',
+    label: 'team forum post',
+    errorCode: 'team_forum_post_save',
+    auditAction: 'team_forum.post.save',
+    createPermission: 'team_forums.create',
+    updatePermission: 'team_forums.edit',
+    teamId: data.teamId
+  });
+}
+
+async function handleTeamForumPostDelete(request, data) {
+  return deleteForumPostInCollection(request, {
+    data: data,
+    collection: 'team_forums',
+    replyCollection: 'team_forum_replies',
+    label: 'team forum post',
+    errorCode: 'team_forum_post_delete',
+    auditAction: 'team_forum.post.delete',
+    deletePermission: 'team_forums.delete'
+  });
+}
+
+async function handleTeamForumPostPin(request, data) {
+  return pinForumPostInCollection(request, {
+    data: data,
+    collection: 'team_forums',
+    label: 'team forum post',
+    errorCode: 'team_forum_post_pin',
+    auditAction: 'team_forum.post.pin',
+    moderatePermission: 'team_forums.moderate'
+  });
+}
+
+async function handleTeamForumReplySave(request, data) {
+  return saveForumReplyInCollection(request, {
+    data: data,
+    collection: 'team_forum_replies',
+    postCollection: 'team_forums',
+    label: 'team forum reply',
+    errorCode: 'team_forum_reply_save',
+    auditAction: 'team_forum.reply.save',
+    createPermission: 'team_forums.create'
+  });
+}
+
+async function handleTeamForumReplyDelete(request, data) {
+  return deleteForumReplyInCollection(request, {
+    data: data,
+    collection: 'team_forum_replies',
+    label: 'team forum reply',
+    errorCode: 'team_forum_reply_delete',
+    auditAction: 'team_forum.reply.delete',
+    deletePermission: 'team_forums.delete'
+  });
+}
+
+async function handleSettingsSaveAll(request, data) {
+  let context;
+  try {
+    context = await requirePermission(request, 'settings.edit');
+  } catch (authError) {
+    return errorFromException(authError, 'settings_save_all_failed', 'Settings save failed');
+  }
+
+  const entries = data.entries.map(function(entry) {
+    return {
+      key: entry.key,
+      value: entry.value
+    };
+  });
+
+  try {
+    await Promise.all(entries.map(async function(entry) {
+      const documentPath = 'settings/' + entry.key;
+      const existing = await getDocument(context.idToken, documentPath);
+      const payload = {
+        key: entry.key,
+        value: entry.value,
+        updatedAt: new Date(),
+        updatedBy: context.identity.email
+      };
+      if (existing.exists) {
+        await patchDocument(context.idToken, documentPath, payload, Object.keys(payload));
+      } else {
+        await createDocument(context.idToken, 'settings', payload, entry.key);
+      }
+    }));
+    await writeAudit(context, {
+      adminAction: 'settings.save_all',
+      action: 'update',
+      collection: 'settings',
+      documentId: 'all',
+      changes: 'Updated: ' + entries.map(function(entry) { return entry.key + '=' + entry.value; }).join(', ')
+    });
+    return json({ ok: true, action: 'settings.save_all', count: entries.length, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (writeError) {
+    return error(500, 'settings_save_all_failed', 'Unable to save settings', { message: writeError.message });
+  }
+}
+
+async function handleUserPermissionsSave(request, data) {
+  let context;
+  try {
+    context = await requirePermission(request, 'users.assign_permissions');
+  } catch (authError) {
+    return errorFromException(authError, 'user_permissions_save_failed', 'User permission save failed');
+  }
+
+  const email = String(data.email || '').trim().toLowerCase();
+  let existingDocument;
+  try {
+    existingDocument = await getDocument(context.idToken, 'users/' + email);
+  } catch (_readError) {
+    return error(500, 'user_read_failed', 'Unable to load the user document');
+  }
+
+  const existingData = existingDocument.exists && existingDocument.document ? existingDocument.document.data || {} : null;
+  const isCreate = !existingData;
+  const nextStatus = String(data.status || '').trim() || (existingData ? String(existingData.status || 'active') : 'pending');
+  const userData = {
+    roles: data.roles,
+    role: data.roles[0],
+    email: email,
+    permission_overrides: data.permissionOverrides,
+    permissions: data.permissions,
+    status: nextStatus,
+    lastEditedAt: new Date()
+  };
+  if (existingData && existingData.addedAt) {
+    userData.addedAt = existingData.addedAt;
+  } else {
+    userData.addedAt = new Date();
+  }
+  if (existingData && existingData.createdAt) {
+    userData.createdAt = existingData.createdAt;
+  } else {
+    userData.createdAt = new Date();
+  }
+
+  const changedFields = diffFields(existingData || {}, userData, ['lastEditedAt']);
+  try {
+    if (isCreate) {
+      await createDocument(context.idToken, 'users', userData, email);
+    } else {
+      await patchDocument(context.idToken, 'users/' + email, userData, Object.keys(userData));
+    }
+    await writeAudit(context, {
+      adminAction: 'user.permissions.save',
+      action: isCreate ? 'create' : 'update',
+      collection: 'users',
+      documentId: email,
+      changes: isCreate ? 'Created user doc with roles: ' + data.roles.join(', ') : (changedFields.length ? 'Updated fields: ' + changedFields.join(', ') : 'No substantive field changes')
+    });
+    return json({ ok: true, action: 'user.permissions.save', mode: isCreate ? 'create' : 'update', email: email, status: nextStatus, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (writeError) {
+    return error(500, 'user_permissions_save_failed', 'Unable to save the user document', { email: email, message: writeError.message });
+  }
+}
+
+async function handleUserDelete(request, data) {
+  let context;
+  try {
+    context = await requirePermission(request, 'users.assign_permissions');
+  } catch (authError) {
+    return errorFromException(authError, 'user_delete_failed', 'User delete failed');
+  }
+
+  const email = String(data.email || '').trim().toLowerCase();
+  if (email === context.identity.email) {
+    return error(403, 'cannot_delete_self', 'You cannot delete your own user document');
+  }
+
+  let userDocument;
+  try {
+    userDocument = await getDocument(context.idToken, 'users/' + email);
+  } catch (_readError) {
+    return error(500, 'user_read_failed', 'Unable to load the user document');
+  }
+  if (!userDocument.exists || !userDocument.document) {
+    return error(404, 'not_found', 'User document not found', { email: email });
+  }
+
+  try {
+    await deleteDocument(context.idToken, 'users/' + email);
+    await writeAudit(context, {
+      adminAction: 'user.delete',
+      action: 'delete',
+      collection: 'users',
+      documentId: email,
+      changes: 'Removed user document'
+    });
+    return json({ ok: true, action: 'user.delete', email: email, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (writeError) {
+    return error(500, 'user_delete_failed', 'Unable to delete the user document', { email: email, message: writeError.message });
   }
 }
 
@@ -1254,7 +2329,9 @@ async function handleBulkDelete(request, data) {
     schools: 'schools.delete',
     ledger: 'ledger.delete',
     goals: 'goals.delete',
-    outreach: 'outreach.delete'
+    outreach: 'outreach.delete',
+    communities: 'communities.delete',
+    ideas: 'ideas.delete_any'
   };
   const permission = collectionPermissions[data.collection];
   if (!permission) {
@@ -1872,12 +2949,27 @@ async function handleTeamMemberRemove(request, data) {
 const handlers = {
   'volunteer.save': handleVolunteerSave,
   'volunteer.delete': handleVolunteerDelete,
+  'idea.save': handleIdeaSave,
+  'idea.delete': handleIdeaDelete,
+  'forum.post.save': handleForumPostSave,
+  'forum.post.delete': handleForumPostDelete,
+  'forum.post.pin': handleForumPostPin,
+  'forum.reply.save': handleForumReplySave,
+  'forum.reply.delete': handleForumReplyDelete,
+  'team_forum.post.save': handleTeamForumPostSave,
+  'team_forum.post.delete': handleTeamForumPostDelete,
+  'team_forum.post.pin': handleTeamForumPostPin,
+  'team_forum.reply.save': handleTeamForumReplySave,
+  'team_forum.reply.delete': handleTeamForumReplyDelete,
   'ledger.save': handleLedgerSave,
   'ledger.delete': handleLedgerDelete,
   'volunteer.bulk_status': handleVolunteerBulkStatus,
   'bulk.delete': handleBulkDelete,
   'school.save': handleSchoolSave,
   'school.delete': handleSchoolDelete,
+  'community.save': handleCommunitySave,
+  'community.delete': handleCommunityDelete,
+  'community.seed_demo': handleCommunitySeedDemo,
   'announcement.save': handleAnnouncementSave,
   'announcement.toggle': handleAnnouncementToggle,
   'announcement.delete': handleAnnouncementDelete,
@@ -1893,7 +2985,10 @@ const handlers = {
   'team.archive': handleTeamArchive,
   'team.delete': handleTeamDelete,
   'team.member.add': handleTeamMemberAdd,
-  'team.member.remove': handleTeamMemberRemove
+  'team.member.remove': handleTeamMemberRemove,
+  'settings.save_all': handleSettingsSaveAll,
+  'user.permissions.save': handleUserPermissionsSave,
+  'user.delete': handleUserDelete
 };
 
 export async function POST(request) {
