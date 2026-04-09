@@ -1170,7 +1170,7 @@ function toggleSelectAll(s){var cb=document.getElementById(s+'-select-all');var 
 function toggleSelectOne(s,id){var set=getSelected(s);if(set.has(id))set.delete(id);else set.add(id);updateBulkBar(s);}
 function updateBulkBar(s){var set=getSelected(s);var bar=document.getElementById(s+'-bulk-bar');var cnt=document.getElementById(s+'-bulk-count');if(bar){if(set.size>0){bar.classList.add('visible');if(cnt)cnt.textContent=set.size;}else bar.classList.remove('visible');}}
 function clearSelection(s){if(selectedItems[s])selectedItems[s].clear();var sa=document.getElementById(s+'-select-all');if(sa)sa.checked=false;document.querySelectorAll('#'+s+'-tbody input[type=checkbox]').forEach(function(c){c.checked=false;});updateBulkBar(s);}
-function bulkDeleteSection(col){var map={'volunteer_requests':'vol','volunteers':'cvol','scholars':'sch','schools':'schools','ledger':'ledger','ideas':'ideas','outreach':'outreach'};var s=map[col]||col;var set=getSelected(s);if(!set.size)return;showConfirm('Bulk Delete','Delete '+set.size+' items?',function(){var b=db.batch();set.forEach(function(id){b.delete(db.collection(col).doc(id));});b.commit().then(function(){writeAudit('delete',col,'','Bulk deleted '+set.size);showToast(set.size+' deleted.');clearSelection(s);reloadSection(col);}).catch(function(e){showToast(e.message,'error');});});}
+function bulkDeleteSection(col){var map={'volunteer_requests':'vol','volunteers':'cvol','scholars':'sch','schools':'schools','ledger':'ledger','ideas':'ideas','outreach':'outreach'};var s=map[col]||col;var set=getSelected(s);if(!set.size)return;showConfirm('Bulk Delete','Delete '+set.size+' items?',function(){var ids=Array.from(set);var apiSupported={volunteers:1,schools:1,outreach:1,goals:1};if(apiSupported[col]){callAdminJsonApi('/api/admin/mutate',{action:'bulk.delete',collection:col,ids:ids}).then(function(){showToast(set.size+' deleted.');clearSelection(s);reloadSection(col);if(col==='volunteers'||col==='schools')loadDashboard();}).catch(function(e){showToast(e.message,'error');});return;}var b=db.batch();set.forEach(function(id){b.delete(db.collection(col).doc(id));});b.commit().then(function(){writeAudit('delete',col,'','Bulk deleted '+set.size);showToast(set.size+' deleted.');clearSelection(s);reloadSection(col);}).catch(function(e){showToast(e.message,'error');});});}
 function reloadSection(c){if(c==='volunteer_requests')loadVolunteers();else if(c==='volunteers')loadConfirmedVolunteers();else if(c==='scholars')loadScholars();else if(c==='schools')loadSchoolsList();else if(c==='ledger')loadLedger();else if(c==='ideas')loadIdeas();else if(c==='events')loadEvents();else if(c==='goals')loadGoals();else if(c==='outreach')loadOutreach();else if(c==='communities')loadCommunitiesList();}
 // CSV Export
 function exportCSV(type){var rows=[],fn=type+'_export.csv';
@@ -1396,6 +1396,15 @@ function applyRolePermissions(){
   document.querySelectorAll('#page-events .toolbar .btn').forEach(function(btn){
     if(btn.textContent.indexOf('Add Event')>-1)btn.style.display=hasPermission('events.create')?'':'none';
   });
+  document.querySelectorAll('#page-goals .toolbar .btn').forEach(function(btn){
+    if(btn.textContent.indexOf('Add Goal')>-1)btn.style.display=hasPermission('goals.create')?'':'none';
+  });
+  document.querySelectorAll('#page-outreach .toolbar .btn').forEach(function(btn){
+    if(btn.textContent.indexOf('Add Outreach')>-1)btn.style.display=hasPermission('outreach.create')?'':'none';
+  });
+  document.querySelectorAll('#page-teams .toolbar .btn').forEach(function(btn){
+    if(btn.textContent.indexOf('Create Team')>-1)btn.style.display=hasPermission('teams.create')?'':'none';
+  });
   // Volunteer requests bulk bar: hide approve/reject for non-approvers
   var volBulkBar=document.getElementById('vol-bulk-bar');
   if(volBulkBar){volBulkBar.querySelectorAll('.btn').forEach(function(btn){var t=btn.textContent;if(t==='Approve'||t==='Reject')btn.style.display=hasPermission('volunteer_requests.approve')?'':'none';});}
@@ -1472,7 +1481,7 @@ function editConfirmedVolunteer(id){var v=allConfirmedVolunteers.find(function(x
 function saveConfirmedVolunteer(){var id=document.getElementById('cvol-edit-id').value,nm=document.getElementById('cvol-name').value.trim(),em=document.getElementById('cvol-email').value.trim();if(id&&!hasPermission('volunteers.edit')){showToast('No permission to edit volunteers.','error');return;}if(!id&&!hasPermission('volunteers.create')){showToast('No permission to create volunteers.','error');return;}if(!nm||!em){showToast('Name and email required.','error');return;}var sk=document.getElementById('cvol-skills').value.split(',').map(function(s){return s.trim()}).filter(Boolean);var payload={volunteerId:id||'',name:nm,email:em,phone:document.getElementById('cvol-phone').value.trim(),location:document.getElementById('cvol-location').value.trim(),role:document.getElementById('cvol-role').value.trim(),skills:sk,status:document.getElementById('cvol-status').value};callAdminJsonApi('/api/admin/mutate',Object.assign({action:'volunteer.save'},payload)).then(function(result){showToast(id?'Updated.':'Created.');closeModal('modal-create-volunteer');loadConfirmedVolunteers();if(result&&result.mode==='create'){loadDashboard();}}).catch(function(e){showToast(e.message,'error');});}
 function deleteConfirmedVolunteer(id,nm){if(!hasPermission('volunteers.delete')){showToast('No permission to delete volunteers.','error');return;}showConfirm('Delete','Delete "'+nm+'"?',function(){callAdminJsonApi('/api/admin/mutate',{action:'volunteer.delete',volunteerId:id,name:nm||''}).then(function(){showToast('Deleted.');loadConfirmedVolunteers();loadDashboard();}).catch(function(e){showToast(e.message,'error');});});}
 function sendVolunteerInvite(em,nm){if(!hasPermission('volunteers.edit')){showToast('No permission to invite volunteers.','error');return;}callAdminJsonApi('/api/admin/volunteer-invite',{email:em,name:nm||'',role:'volunteer'}).then(function(data){if(!data||!data.inviteLink){throw new Error('Invite link missing from server response.');}var inviteLink=data.inviteLink;if(emailReady&&typeof emailjs!=='undefined'){emailjs.send(EMAIL_CONFIG.emailjs.serviceId,EMAIL_CONFIG.emailjs.templateApprove,{to_name:nm||em.split('@')[0],to_email:em,message:'You have been invited to join Big Sister Foundation as a volunteer. Click the link below to fill out your application and get started.',registration_link:inviteLink,roles:'Volunteer'}).then(function(){showToast('Invite email sent to '+em);}).catch(function(err){showToast('Invite created but email failed: '+err.text,'error');});}else{showToast('Invite created for '+em+'. Share this link: '+inviteLink);}updateNotifBell();loadInvites();}).catch(function(e){showToast(e.message,'error');});}
-function bulkChangeConfVolStatus(ns){var s=getSelected('cvol');if(!s.size)return;var b=db.batch();s.forEach(function(id){b.update(db.collection('volunteers').doc(id),{status:ns,lastEditedAt:FieldValue.serverTimestamp()});});b.commit().then(function(){writeAudit('update','volunteers','','Bulk '+ns+' '+s.size);showToast(s.size+' updated.');clearSelection('cvol');loadConfirmedVolunteers();}).catch(function(e){showToast(e.message,'error');});}
+function bulkChangeConfVolStatus(ns){var s=getSelected('cvol');if(!s.size)return;callAdminJsonApi('/api/admin/mutate',{action:'volunteer.bulk_status',volunteerIds:Array.from(s),status:ns}).then(function(){showToast(s.size+' updated.');clearSelection('cvol');loadConfirmedVolunteers();}).catch(function(e){showToast(e.message,'error');});}
 // Scholars
 function loadScholars(){var l=document.getElementById('sch-loading'),t=document.getElementById('sch-table'),e=document.getElementById('sch-empty');l.style.display='flex';t.style.display='none';e.style.display='none';clearSelection('sch');db.collection('scholars').get().then(function(s){allScholars=[];s.forEach(function(d){var x=d.data();x._id=d.id;allScholars.push(x);});allScholars.sort(function(a,b){var ta=a.createdAt?(a.createdAt.toDate?a.createdAt.toDate():new Date(a.createdAt)):new Date(0);var tb=b.createdAt?(b.createdAt.toDate?b.createdAt.toDate():new Date(b.createdAt)):new Date(0);return tb-ta;});renderScholars();});}
 function renderScholars(){var l=document.getElementById('sch-loading'),t=document.getElementById('sch-table'),e=document.getElementById('sch-empty'),tb=document.getElementById('sch-tbody');var sr=(document.getElementById('sch-search').value||'').toLowerCase(),pf=document.getElementById('sch-pathway-filter').value,sf=document.getElementById('sch-status-filter').value,perf=document.getElementById('sch-perf-filter').value;var f=allScholars.filter(function(s){if(sr&&(s.name||'').toLowerCase().indexOf(sr)===-1)return false;if(pf&&(s.pathway||'').toLowerCase()!==pf.toLowerCase())return false;if(sf&&(s.status||'').toLowerCase()!==sf.toLowerCase())return false;if(perf&&(s.performance||'').toLowerCase().replace(/\s+/g,'-')!==perf.toLowerCase())return false;return true;});l.style.display='none';if(!f.length){t.style.display='none';e.style.display='block';return;}t.style.display='table';e.style.display='none';tb.innerHTML='';f.forEach(function(s){var tr=document.createElement('tr');tr.innerHTML='<td class="cb-cell"><input type="checkbox" value="'+s._id+'" onchange="toggleSelectOne(\'sch\',\''+s._id+'\')"></td><td>'+(s.name?escHtml(s.name):'<span style="color:var(--gray-400);font-style:italic">(No name)</span>')+'</td><td>'+escHtml(getSchoolName(s.school))+'</td><td>'+escHtml(pathwayLabel(s.pathway))+'</td><td>'+statusBadge(s.status)+'</td><td>'+escHtml(s.performance||'--')+'</td><td>'+formatDate(s.enrolledDate||s.createdAt)+'</td><td><button class="btn btn-info btn-xs" onclick="viewScholarProfile(\''+s._id+'\')">View</button> '+(hasPermission('scholars.edit')?'<button class="btn btn-secondary btn-xs" onclick="editScholar(\''+s._id+'\')">Edit</button> ':'')+''+(hasPermission('scholars.delete')?'<button class="btn btn-danger btn-xs" onclick="deleteScholar(\''+s._id+'\',\''+escHtml(s.name)+'\')">Del</button>':'')+'</td>';tb.appendChild(tr);});}
@@ -2396,9 +2405,8 @@ function signupForEvent(id){
   var email=currentUser.email;
   if(signups.indexOf(email)>-1){showToast('Already signed up.');return;}
   if(ev.capacity&&signups.length>=ev.capacity){showToast('Event is full.','error');return;}
-  signups.push(email);
-  db.collection('events').doc(id).update({signups:signups}).then(function(){
-    writeAudit('update','events',id,'Signup: '+email);showToast('Signed up!');loadEvents();
+  callAdminJsonApi('/api/admin/mutate',{action:'event.signup',eventId:id}).then(function(result){
+    showToast(result&&result.noChange?'Already signed up.':'Signed up!');loadEvents();
   }).catch(function(e){showToast(e.message,'error');});
 }
 
@@ -2476,37 +2484,16 @@ function openGoalModal(d){
 function editGoal(id){var g=allGoals.find(function(x){return x._id===id;});if(g)openGoalModal(g);}
 function saveGoal(){
   var id=document.getElementById('goal-edit-id').value;
+  if(id&&!hasPermission('goals.edit')){showToast('No permission to edit goals.','error');return;}
+  if(!id&&!hasPermission('goals.create')){showToast('No permission to create goals.','error');return;}
   var tt=document.getElementById('goal-title').value.trim();
   var tv=parseFloat(document.getElementById('goal-target').value);
   if(!tt||isNaN(tv)){showToast('Title and target required.','error');return;}
   var cv=parseFloat(document.getElementById('goal-current').value);
-  var data={
-    title:tt,
-    description:document.getElementById('goal-description').value.trim(),
-    targetValue:tv,
-    currentValue:isNaN(cv)?0:cv,
-    unit:document.getElementById('goal-unit').value.trim(),
-    deadline:document.getElementById('goal-deadline').value,
-    category:document.getElementById('goal-category').value,
-    status:document.getElementById('goal-status').value,
-    assignee:document.getElementById('goal-assignee').value.trim(),
-    lastEditedAt:FieldValue.serverTimestamp()
-  };
-  if(id){
-    db.collection('goals').doc(id).get().then(function(s){
-      var ch=diffFields(s.data(),data,{});
-      return db.collection('goals').doc(id).update(data).then(function(){
-        writeAudit('update','goals',id,ch);showToast('Updated.');closeModal('modal-goal');loadGoals();
-      });
-    }).catch(function(e){showToast(e.message,'error');});
-  }else{
-    data.createdAt=FieldValue.serverTimestamp();
-    db.collection('goals').add(data).then(function(ref){
-      writeAudit('create','goals',ref.id,'Created: '+tt);showToast('Created.');closeModal('modal-goal');loadGoals();
-    }).catch(function(e){showToast(e.message,'error');});
-  }
+  var payload={goalId:id||'',title:tt,description:document.getElementById('goal-description').value.trim(),targetValue:tv,currentValue:isNaN(cv)?0:cv,unit:document.getElementById('goal-unit').value.trim(),deadline:document.getElementById('goal-deadline').value,category:document.getElementById('goal-category').value,status:document.getElementById('goal-status').value,assignee:document.getElementById('goal-assignee').value.trim()};
+  callAdminJsonApi('/api/admin/mutate',Object.assign({action:'goal.save'},payload)).then(function(){showToast(id?'Updated.':'Created.');closeModal('modal-goal');loadGoals();}).catch(function(e){showToast(e.message,'error');});
 }
-function deleteGoal(id,tt){showConfirm('Delete','Delete "'+tt+'"?',function(){db.collection('goals').doc(id).delete().then(function(){writeAudit('delete','goals',id,'Deleted: '+tt);showToast('Deleted.');loadGoals();}).catch(function(e){showToast(e.message,'error');});});}
+function deleteGoal(id,tt){if(!hasPermission('goals.delete')){showToast('No permission to delete goals.','error');return;}showConfirm('Delete','Delete "'+tt+'"?',function(){callAdminJsonApi('/api/admin/mutate',{action:'goal.delete',goalId:id,title:tt||''}).then(function(){showToast('Deleted.');loadGoals();}).catch(function(e){showToast(e.message,'error');});});}
 function openGoalUpdateModal(id){
   var g=allGoals.find(function(x){return x._id===id;});
   if(!g)return;
@@ -2520,14 +2507,9 @@ function updateGoalProgress(){
   var id=document.getElementById('goal-update-id').value;
   var nv=parseFloat(document.getElementById('goal-update-value').value);
   var note=document.getElementById('goal-update-note').value.trim();
+  if(!hasPermission('goals.update_progress')){showToast('No permission to update goal progress.','error');return;}
   if(isNaN(nv)){showToast('Enter a value.','error');return;}
-  var g=allGoals.find(function(x){return x._id===id;});
-  var oldVal=g?g.currentValue:0;
-  db.collection('goals').doc(id).update({currentValue:nv,lastEditedAt:FieldValue.serverTimestamp()}).then(function(){
-    var ch='Progress: '+oldVal+' -> '+nv+(note?' ('+note+')':'');
-    writeAudit('update','goals',id,ch);
-    showToast('Progress updated.');closeModal('modal-goal-update');loadGoals();
-  }).catch(function(e){showToast(e.message,'error');});
+  callAdminJsonApi('/api/admin/mutate',{action:'goal.progress',goalId:id,currentValue:nv,note:note}).then(function(){showToast('Progress updated.');closeModal('modal-goal-update');loadGoals();}).catch(function(e){showToast(e.message,'error');});
 }
 
 // ── Kids ──
@@ -2734,40 +2716,16 @@ function openOutreachModal(d){
 function editOutreach(id){var o=allOutreachEntries.find(function(x){return x._id===id;});if(o)openOutreachModal(o);}
 function saveOutreach(){
   var id=document.getElementById('outreach-edit-id').value;
+  if(id&&!hasPermission('outreach.edit')){showToast('No permission to edit outreach.','error');return;}
+  if(!id&&!hasPermission('outreach.create')){showToast('No permission to create outreach.','error');return;}
   var tt=document.getElementById('outreach-title').value.trim();
-  var dt=document.getElementById('outreach-date').value;
   if(!tt){showToast('Title required.','error');return;}
   var photos=document.getElementById('outreach-photos').value.split('\n').map(function(s){return s.trim();}).filter(Boolean);
-  var att=parseInt(document.getElementById('outreach-attendees').value);
-  var data={
-    title:tt,
-    description:document.getElementById('outreach-description').value.trim(),
-    date:dt,
-    location:document.getElementById('outreach-location').value.trim(),
-    type:document.getElementById('outreach-type').value,
-    targetAudience:document.getElementById('outreach-audience').value.trim(),
-    attendees:isNaN(att)?null:att,
-    outcome:document.getElementById('outreach-outcome').value.trim(),
-    status:document.getElementById('outreach-status').value,
-    linkedEvent:document.getElementById('outreach-linked-event').value||null,
-    photos:photos,
-    lastEditedAt:FieldValue.serverTimestamp()
-  };
-  if(id){
-    db.collection('outreach').doc(id).get().then(function(s){
-      var ch=diffFields(s.data(),data,{});
-      return db.collection('outreach').doc(id).update(data).then(function(){
-        writeAudit('update','outreach',id,ch);showToast('Updated.');closeModal('modal-outreach');loadOutreach();
-      });
-    }).catch(function(e){showToast(e.message,'error');});
-  }else{
-    data.createdAt=FieldValue.serverTimestamp();
-    db.collection('outreach').add(data).then(function(ref){
-      writeAudit('create','outreach',ref.id,'Created: '+tt);showToast('Created.');closeModal('modal-outreach');loadOutreach();
-    }).catch(function(e){showToast(e.message,'error');});
-  }
+  var att=parseInt(document.getElementById('outreach-attendees').value,10);
+  var payload={outreachId:id||'',title:tt,description:document.getElementById('outreach-description').value.trim(),date:document.getElementById('outreach-date').value,location:document.getElementById('outreach-location').value.trim(),type:document.getElementById('outreach-type').value,targetAudience:document.getElementById('outreach-audience').value.trim(),attendees:isNaN(att)?null:att,outcome:document.getElementById('outreach-outcome').value.trim(),status:document.getElementById('outreach-status').value,linkedEvent:document.getElementById('outreach-linked-event').value||'',photos:photos};
+  callAdminJsonApi('/api/admin/mutate',Object.assign({action:'outreach.save'},payload)).then(function(result){showToast(id?'Updated.':'Created.');closeModal('modal-outreach');loadOutreach();if(result&&result.mode==='create')loadDashboard();}).catch(function(e){showToast(e.message,'error');});
 }
-function deleteOutreach(id,tt){showConfirm('Delete','Delete "'+tt+'"?',function(){db.collection('outreach').doc(id).delete().then(function(){writeAudit('delete','outreach',id,'Deleted: '+tt);showToast('Deleted.');loadOutreach();}).catch(function(e){showToast(e.message,'error');});});}
+function deleteOutreach(id,tt){if(!hasPermission('outreach.delete')){showToast('No permission to delete outreach.','error');return;}showConfirm('Delete','Delete "'+tt+'"?',function(){callAdminJsonApi('/api/admin/mutate',{action:'outreach.delete',outreachId:id,title:tt||''}).then(function(){showToast('Deleted.');loadOutreach();loadDashboard();}).catch(function(e){showToast(e.message,'error');});});}
 
 // ── Volunteer Teams ──
 var TEAM_AVATAR_COLORS=['#2D5E40','#C2734C','#D4A96A','#7c3aed','#2563eb','#ea580c','#dc2626','#16a34a'];
@@ -2786,26 +2744,26 @@ function loadTeamGroups(){var l=document.getElementById('teams-loading'),c=docum
 
 function updateTeamsStats(){var total=allTeamGroups.length,active=0,members=0;allTeamGroups.forEach(function(t){if((t.status||'').toLowerCase()==='active')active++;members+=Array.isArray(t.members)?t.members.length:0;});document.getElementById('stat-total-teams').textContent=total;document.getElementById('stat-active-teams').textContent=active;document.getElementById('stat-total-members').textContent=members;}
 
-function renderTeams(){var l=document.getElementById('teams-loading'),c=document.getElementById('teams-cards'),e=document.getElementById('teams-empty');var sr=(document.getElementById('teams-search').value||'').toLowerCase(),ff=document.getElementById('teams-focus-filter').value,sf=document.getElementById('teams-status-filter').value;var f=allTeamGroups.filter(function(t){if(ff&&t.focusArea!==ff)return false;if(sf&&(t.status||'').toLowerCase()!==sf)return false;if(sr&&(t.name||'').toLowerCase().indexOf(sr)===-1&&(t.description||'').toLowerCase().indexOf(sr)===-1&&(t.leadName||'').toLowerCase().indexOf(sr)===-1)return false;return true;});l.style.display='none';c.innerHTML='';if(!f.length){e.style.display='block';return;}e.style.display='none';f.forEach(function(t){var members=Array.isArray(t.members)?t.members:[];var avatarsHtml='';var show=Math.min(members.length,5);for(var i=0;i<show;i++){var col=TEAM_AVATAR_COLORS[i%TEAM_AVATAR_COLORS.length];avatarsHtml+='<div class="member-avatar" style="background:'+col+'" title="'+escHtml(members[i].name||'')+'">'+getInitials(members[i].name)+'</div>';}if(members.length>5)avatarsHtml+='<span class="member-count">+' +(members.length-5)+' more</span>';var card=document.createElement('div');card.className='team-card';card.innerHTML='<div class="team-card-top"><div><div class="team-card-name">'+escHtml(t.name)+'</div><div class="team-card-badges">'+focusBadge(t.focusArea)+' '+statusBadge(t.status||'active')+'</div></div></div>'+'<div class="team-card-desc">'+escHtml(t.description||'No description')+'</div>'+'<div class="team-card-lead">Lead: <strong>'+escHtml(t.leadName||'Unassigned')+'</strong></div>'+'<div class="team-card-schedule">'+(t.meetingSchedule?'&#128197; '+escHtml(t.meetingSchedule):'No schedule set')+'</div>'+'<div class="team-card-members">'+avatarsHtml+(members.length?'<span class="member-count">'+members.length+' member'+(members.length!==1?'s':'')+'</span>':'<span class="member-count" style="color:var(--gray-400)">No members</span>')+'</div>'+'<div class="team-card-actions"><button class="btn btn-secondary btn-xs" onclick="editTeamGroup(\''+t._id+'\')">Edit</button><button class="btn btn-info btn-xs" onclick="openTeamMembersModal(\''+t._id+'\')">Members</button><button class="btn btn-primary btn-xs" onclick="openTeamForumModal(\''+t._id+'\')">Forum</button>'+(t.status!=='archived'?'<button class="btn btn-warning btn-xs" onclick="archiveTeamGroup(\''+t._id+'\',\''+escHtml(t.name).replace(/'/g,"\\'")+'\')">Archive</button>':'')+'<button class="btn btn-danger btn-xs" onclick="deleteTeamGroup(\''+t._id+'\',\''+escHtml(t.name).replace(/'/g,"\\'")+'\')">Del</button></div>';c.appendChild(card);});}
+function renderTeams(){var l=document.getElementById('teams-loading'),c=document.getElementById('teams-cards'),e=document.getElementById('teams-empty');var sr=(document.getElementById('teams-search').value||'').toLowerCase(),ff=document.getElementById('teams-focus-filter').value,sf=document.getElementById('teams-status-filter').value;var f=allTeamGroups.filter(function(t){if(ff&&t.focusArea!==ff)return false;if(sf&&(t.status||'').toLowerCase()!==sf)return false;if(sr&&(t.name||'').toLowerCase().indexOf(sr)===-1&&(t.description||'').toLowerCase().indexOf(sr)===-1&&(t.leadName||'').toLowerCase().indexOf(sr)===-1)return false;return true;});l.style.display='none';c.innerHTML='';if(!f.length){e.style.display='block';return;}e.style.display='none';f.forEach(function(t){var members=Array.isArray(t.members)?t.members:[];var avatarsHtml='';var show=Math.min(members.length,5);for(var i=0;i<show;i++){var col=TEAM_AVATAR_COLORS[i%TEAM_AVATAR_COLORS.length];avatarsHtml+='<div class="member-avatar" style="background:'+col+'" title="'+escHtml(members[i].name||'')+'">'+getInitials(members[i].name)+'</div>';}if(members.length>5)avatarsHtml+='<span class="member-count">+' +(members.length-5)+' more</span>';var actions='';if(hasPermission('teams.edit'))actions+='<button class="btn btn-secondary btn-xs" onclick="editTeamGroup(\''+t._id+'\')">Edit</button>';if(hasPermission('teams.manage_members'))actions+=(actions?' ':'')+'<button class="btn btn-info btn-xs" onclick="openTeamMembersModal(\''+t._id+'\')">Members</button>';actions+=(actions?' ':'')+'<button class="btn btn-primary btn-xs" onclick="openTeamForumModal(\''+t._id+'\')">Forum</button>';if(hasPermission('teams.edit')&&t.status!=='archived')actions+=' <button class="btn btn-warning btn-xs" onclick="archiveTeamGroup(\''+t._id+'\',\''+escHtml(t.name).replace(/'/g,"\\'")+'\')">Archive</button>';if(hasPermission('teams.delete'))actions+=' <button class="btn btn-danger btn-xs" onclick="deleteTeamGroup(\''+t._id+'\',\''+escHtml(t.name).replace(/'/g,"\\'")+'\')">Del</button>';var card=document.createElement('div');card.className='team-card';card.innerHTML='<div class="team-card-top"><div><div class="team-card-name">'+escHtml(t.name)+'</div><div class="team-card-badges">'+focusBadge(t.focusArea)+' '+statusBadge(t.status||'active')+'</div></div></div>'+'<div class="team-card-desc">'+escHtml(t.description||'No description')+'</div>'+'<div class="team-card-lead">Lead: <strong>'+escHtml(t.leadName||'Unassigned')+'</strong></div>'+'<div class="team-card-schedule">'+(t.meetingSchedule?'&#128197; '+escHtml(t.meetingSchedule):'No schedule set')+'</div>'+'<div class="team-card-members">'+avatarsHtml+(members.length?'<span class="member-count">'+members.length+' member'+(members.length!==1?'s':'')+'</span>':'<span class="member-count" style="color:var(--gray-400)">No members</span>')+'</div>'+'<div class="team-card-actions">'+actions+'</div>';c.appendChild(card);});}
 
 function openTeamGroupModal(d){loadVolunteersForTeams(function(){document.getElementById('team-group-modal-title').textContent=d?'Edit Team':'Create Team';document.getElementById('tg-edit-id').value=d?d._id:'';document.getElementById('tg-name').value=d?d.name||'':'';document.getElementById('tg-description').value=d?d.description||'':'';document.getElementById('tg-focus').value=d?d.focusArea||'general':'general';document.getElementById('tg-schedule').value=d?d.meetingSchedule||'':'';document.getElementById('tg-status').value=d?d.status||'active':'active';populateTeamLeadDropdown(d?d.leadId||'':'');openModal('modal-team-group');});}
 
 function editTeamGroup(id){var t=allTeamGroups.find(function(x){return x._id===id;});if(t)openTeamGroupModal(t);}
 
-function saveTeamGroup(){var id=document.getElementById('tg-edit-id').value,nm=document.getElementById('tg-name').value.trim(),desc=document.getElementById('tg-description').value.trim(),focus=document.getElementById('tg-focus').value,sched=document.getElementById('tg-schedule').value.trim(),leadId=document.getElementById('tg-lead').value,status=document.getElementById('tg-status').value;if(!nm){showToast('Team name is required.','error');return;}if(!leadId){showToast('Please select a team lead.','error');return;}var leadVol=_volCacheForTeams.find(function(v){return v._id===leadId;});var data={name:nm,description:desc,focusArea:focus,meetingSchedule:sched,leadId:leadId,leadName:leadVol?leadVol.name:'',leadEmail:leadVol?leadVol.email:'',status:status,lastEditedAt:FieldValue.serverTimestamp()};if(id){db.collection('teams').doc(id).get().then(function(s){var ch=diffFields(s.exists?s.data():null,data,{});return db.collection('teams').doc(id).update(data).then(function(){writeAudit('update','teams',id,ch);showToast('Team updated.');closeModal('modal-team-group');loadTeamGroups();});}).catch(function(e){showToast(e.message,'error');});}else{data.members=[];data.createdAt=FieldValue.serverTimestamp();db.collection('teams').add(data).then(function(ref){writeAudit('create','teams',ref.id,'Created: '+nm);showToast('Team created.');closeModal('modal-team-group');loadTeamGroups();}).catch(function(e){showToast(e.message,'error');});}}
+function saveTeamGroup(){var id=document.getElementById('tg-edit-id').value,nm=document.getElementById('tg-name').value.trim(),desc=document.getElementById('tg-description').value.trim(),focus=document.getElementById('tg-focus').value,sched=document.getElementById('tg-schedule').value.trim(),leadId=document.getElementById('tg-lead').value,status=document.getElementById('tg-status').value;if(id&&!hasPermission('teams.edit')){showToast('No permission to edit teams.','error');return;}if(!id&&!hasPermission('teams.create')){showToast('No permission to create teams.','error');return;}if(!nm){showToast('Team name is required.','error');return;}if(!leadId){showToast('Please select a team lead.','error');return;}callAdminJsonApi('/api/admin/mutate',{action:'team.save',teamId:id||'',name:nm,description:desc,focusArea:focus,meetingSchedule:sched,leadId:leadId,status:status}).then(function(result){showToast(id?'Team updated.':'Team created.');closeModal('modal-team-group');loadTeamGroups();if(result&&result.mode==='create')loadDashboard();}).catch(function(e){showToast(e.message,'error');});}
 
-function archiveTeamGroup(id,nm){showConfirm('Archive Team','Archive "'+nm+'"?',function(){db.collection('teams').doc(id).update({status:'archived',lastEditedAt:FieldValue.serverTimestamp()}).then(function(){writeAudit('update','teams',id,'Archived: '+nm);showToast('Archived.');loadTeamGroups();}).catch(function(e){showToast(e.message,'error');});});}
+function archiveTeamGroup(id,nm){if(!hasPermission('teams.edit')){showToast('No permission to archive teams.','error');return;}showConfirm('Archive Team','Archive "'+nm+'"?',function(){callAdminJsonApi('/api/admin/mutate',{action:'team.archive',teamId:id,name:nm||''}).then(function(result){showToast(result&&result.noChange?'Already archived.':'Archived.');loadTeamGroups();}).catch(function(e){showToast(e.message,'error');});});}
 
-function deleteTeamGroup(id,nm){showConfirm('Delete Team','Permanently delete "'+nm+'" and all forum posts?',function(){db.collection('team_forums').where('teamId','==',id).get().then(function(snap){var b=db.batch();snap.forEach(function(d){b.delete(d.ref);});b.delete(db.collection('teams').doc(id));return b.commit();}).then(function(){writeAudit('delete','teams',id,'Deleted: '+nm);showToast('Deleted.');loadTeamGroups();}).catch(function(e){showToast(e.message,'error');});});}
+function deleteTeamGroup(id,nm){if(!hasPermission('teams.delete')){showToast('No permission to delete teams.','error');return;}showConfirm('Delete Team','Permanently delete "'+nm+'" and all forum posts?',function(){callAdminJsonApi('/api/admin/mutate',{action:'team.delete',teamId:id,name:nm||''}).then(function(){showToast('Deleted.');loadTeamGroups();loadDashboard();}).catch(function(e){showToast(e.message,'error');});});}
 
 // ── Manage Members ──
 function openTeamMembersModal(teamId){var t=allTeamGroups.find(function(x){return x._id===teamId;});if(!t){showToast('Team not found.','error');return;}document.getElementById('tm-team-id').value=teamId;document.getElementById('team-members-modal-title').textContent='Members: '+t.name;loadVolunteersForTeams(function(){renderTeamMembers(t);openModal('modal-team-members');});}
 
 function renderTeamMembers(t){var list=document.getElementById('tm-members-list');var members=Array.isArray(t.members)?t.members:[];document.getElementById('tm-member-count').textContent=members.length;list.innerHTML='';if(!members.length){list.innerHTML='<li style="color:var(--gray-400)">No members yet.</li>';}else{members.forEach(function(m){var li=document.createElement('li');li.innerHTML='<div><strong>'+escHtml(m.name||'')+'</strong> &middot; '+escHtml(m.email||'')+'<br><span style="font-size:11px;color:var(--gray-400)">Joined: '+formatDate(m.joinedAt)+'</span></div><button class="btn btn-danger btn-xs" onclick="removeTeamMember(\''+t._id+'\',\''+m.id+'\',\''+escHtml(m.name).replace(/'/g,"\\'")+'\')">Remove</button>';list.appendChild(li);});}var sel=document.getElementById('tm-add-volunteer');var memberIds=members.map(function(m){return m.id;});sel.innerHTML='<option value="">Select a volunteer...</option>';_volCacheForTeams.forEach(function(v){if(memberIds.indexOf(v._id)===-1){sel.innerHTML+='<option value="'+v._id+'">'+escHtml(v.name)+' ('+escHtml(v.email)+')</option>';}});}
 
-function addTeamMember(){var teamId=document.getElementById('tm-team-id').value;var volId=document.getElementById('tm-add-volunteer').value;if(!volId){showToast('Select a volunteer.','error');return;}var vol=_volCacheForTeams.find(function(v){return v._id===volId;});if(!vol)return;var member={id:vol._id,name:vol.name||'',email:vol.email||'',joinedAt:new Date().toISOString()};db.collection('teams').doc(teamId).update({members:FieldValue.arrayUnion(member),lastEditedAt:FieldValue.serverTimestamp()}).then(function(){writeAudit('update','teams',teamId,'Added member: '+vol.name);showToast(vol.name+' added.');var t=allTeamGroups.find(function(x){return x._id===teamId;});if(t){if(!Array.isArray(t.members))t.members=[];t.members.push(member);renderTeamMembers(t);updateTeamsStats();}}).catch(function(e){showToast(e.message,'error');});}
+function addTeamMember(){var teamId=document.getElementById('tm-team-id').value;var volId=document.getElementById('tm-add-volunteer').value;if(!hasPermission('teams.manage_members')){showToast('No permission to manage team members.','error');return;}if(!volId){showToast('Select a volunteer.','error');return;}callAdminJsonApi('/api/admin/mutate',{action:'team.member.add',teamId:teamId,volunteerId:volId}).then(function(result){var t=allTeamGroups.find(function(x){return x._id===teamId;});var member=result&&result.member?result.member:null;if(t&&member){if(!Array.isArray(t.members))t.members=[];t.members.push(member);renderTeamMembers(t);updateTeamsStats();showToast((member.name||'Member')+' added.');}else{showToast('Member added.');loadTeamGroups();}}).catch(function(e){showToast(e.message,'error');});}
 
-function removeTeamMember(teamId,volId,volName){showConfirm('Remove Member','Remove "'+volName+'" from team?',function(){var t=allTeamGroups.find(function(x){return x._id===teamId;});if(!t)return;var memberToRemove=null;if(Array.isArray(t.members)){memberToRemove=t.members.find(function(m){return m.id===volId;});}if(!memberToRemove){showToast('Member not found.','error');return;}db.collection('teams').doc(teamId).update({members:FieldValue.arrayRemove(memberToRemove),lastEditedAt:FieldValue.serverTimestamp()}).then(function(){writeAudit('update','teams',teamId,'Removed member: '+volName);showToast(volName+' removed.');t.members=t.members.filter(function(m){return m.id!==volId;});renderTeamMembers(t);updateTeamsStats();}).catch(function(e){showToast(e.message,'error');});});}
+function removeTeamMember(teamId,volId,volName){if(!hasPermission('teams.manage_members')){showToast('No permission to manage team members.','error');return;}showConfirm('Remove Member','Remove "'+volName+'" from team?',function(){var t=allTeamGroups.find(function(x){return x._id===teamId;});if(!t)return;callAdminJsonApi('/api/admin/mutate',{action:'team.member.remove',teamId:teamId,volunteerId:volId}).then(function(result){showToast(result&&result.noChange?'Member already removed.':volName+' removed.');t.members=(Array.isArray(t.members)?t.members:[]).filter(function(m){return m.id!==volId;});renderTeamMembers(t);updateTeamsStats();}).catch(function(e){showToast(e.message,'error');});});}
 
 // ── Team Forums ──
 function openTeamForumModal(teamId){var t=allTeamGroups.find(function(x){return x._id===teamId;});if(!t){showToast('Team not found.','error');return;}_currentTeamForumId=teamId;document.getElementById('team-forum-modal-title').textContent=t.name+' - Forum';document.getElementById('tf-team-name-label').textContent=t.name+' Private Forum';document.getElementById('tf-posts-list').innerHTML='';document.getElementById('tf-empty').style.display='none';document.getElementById('tf-loading').style.display='flex';openModal('modal-team-forum');loadTeamForumPosts(teamId);}

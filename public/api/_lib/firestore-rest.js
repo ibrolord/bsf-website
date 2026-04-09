@@ -227,3 +227,42 @@ export async function deleteDocument(idToken, documentPath) {
   });
   return true;
 }
+
+
+export async function queryCollectionByField(idToken, collectionId, fieldPath, value, parentPath) {
+  const base = 'https://firestore.googleapis.com/v1/projects/' + encodeURIComponent(getProjectId()) + '/databases/(default)/documents';
+  const parent = String(parentPath || '').trim();
+  const url = base + (parent ? '/' + encodeDocumentPath(parent) : '') + ':runQuery';
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      authorization: 'Bearer ' + idToken,
+      'content-type': 'application/json; charset=utf-8'
+    },
+    body: JSON.stringify({
+      structuredQuery: {
+        from: [{ collectionId: collectionId }],
+        where: {
+          fieldFilter: {
+            field: { fieldPath: fieldPath },
+            op: 'EQUAL',
+            value: toFirestoreValue(value)
+          }
+        }
+      }
+    })
+  });
+
+  if (!response.ok) {
+    const responseText = await response.text();
+    const error = new Error('Firestore query failed with status ' + response.status);
+    error.status = response.status;
+    error.body = responseText;
+    throw error;
+  }
+
+  const payload = await response.json();
+  return (Array.isArray(payload) ? payload : []).map(function(entry) {
+    return entry && entry.document ? decodeDocument(entry.document) : null;
+  }).filter(Boolean);
+}

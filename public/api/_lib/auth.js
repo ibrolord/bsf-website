@@ -31,14 +31,26 @@ const DEFAULT_AUTOMATION_PERMISSIONS = new Set([
   'events.create',
   'events.edit',
   'events.delete',
+  'events.signup',
+  'goals.create',
+  'goals.edit',
+  'goals.delete',
+  'goals.update_progress',
+  'outreach.create',
+  'outreach.edit',
+  'outreach.delete',
+  'teams.create',
+  'teams.edit',
+  'teams.delete',
+  'teams.manage_members',
   'kids.create',
   'kids.edit'
 ]);
 const ROLE_PERMISSIONS = {
-  admin: new Set(['volunteer_requests.approve', 'volunteers.create', 'volunteers.edit', 'volunteers.delete', 'ledger.approve', 'blog.approve', 'blog.edit_any', 'sponsors.edit', 'scholars.create', 'scholars.edit', 'schools.create', 'schools.edit', 'schools.delete', 'announcements.create', 'announcements.edit', 'announcements.delete', 'events.create', 'events.edit', 'events.delete', 'kids.create', 'kids.edit']),
-  program_lead: new Set(['volunteer_requests.approve', 'volunteers.create', 'volunteers.edit', 'volunteers.delete', 'blog.approve', 'blog.edit_any', 'scholars.create', 'scholars.edit', 'schools.create', 'schools.edit', 'schools.delete', 'events.create', 'events.edit', 'events.delete', 'kids.create', 'kids.edit']),
+  admin: new Set(['volunteer_requests.approve', 'volunteers.create', 'volunteers.edit', 'volunteers.delete', 'ledger.approve', 'blog.approve', 'blog.edit_any', 'sponsors.edit', 'scholars.create', 'scholars.edit', 'schools.create', 'schools.edit', 'schools.delete', 'announcements.create', 'announcements.edit', 'announcements.delete', 'events.create', 'events.edit', 'events.delete', 'events.signup', 'goals.create', 'goals.edit', 'goals.delete', 'goals.update_progress', 'outreach.create', 'outreach.edit', 'outreach.delete', 'teams.create', 'teams.edit', 'teams.delete', 'teams.manage_members', 'kids.create', 'kids.edit']),
+  program_lead: new Set(['volunteer_requests.approve', 'volunteers.create', 'volunteers.edit', 'volunteers.delete', 'blog.approve', 'blog.edit_any', 'scholars.create', 'scholars.edit', 'schools.create', 'schools.edit', 'schools.delete', 'events.create', 'events.edit', 'events.delete', 'events.signup', 'goals.create', 'goals.edit', 'goals.delete', 'goals.update_progress', 'outreach.create', 'outreach.edit', 'outreach.delete', 'teams.create', 'teams.edit', 'teams.delete', 'teams.manage_members', 'kids.create', 'kids.edit']),
   comms: new Set(['blog.approve', 'blog.edit_any', 'announcements.create', 'announcements.edit', 'announcements.delete']),
-  finance: new Set(['ledger.approve'])
+  finance: new Set(['ledger.approve', 'goals.create', 'goals.edit', 'goals.delete', 'goals.update_progress'])
 };
 let automationSessionCache = {
   email: '',
