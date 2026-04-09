@@ -1,7 +1,77 @@
 const DEFAULT_FIREBASE_PROJECT_ID = 'big-sister-foundation';
+const FIRESTORE_RETRYABLE_STATUS_CODES = [408, 409, 429, 500, 502, 503, 504];
+const FIRESTORE_MAX_ATTEMPTS = 4;
+const FIRESTORE_BASE_RETRY_MS = 250;
 
 function getProjectId() {
   return process.env.FIREBASE_PROJECT_ID || DEFAULT_FIREBASE_PROJECT_ID;
+}
+
+function sleep(ms) {
+  return new Promise(function(resolve) {
+    setTimeout(resolve, ms);
+  });
+}
+
+function parseRetryAfterMs(retryAfterHeader) {
+  if (!retryAfterHeader) {
+    return 0;
+  }
+
+  const seconds = Number(retryAfterHeader);
+  if (Number.isFinite(seconds) && seconds >= 0) {
+    return Math.round(seconds * 1000);
+  }
+
+  const absoluteTime = Date.parse(retryAfterHeader);
+  if (!Number.isFinite(absoluteTime)) {
+    return 0;
+  }
+
+  return Math.max(0, absoluteTime - Date.now());
+}
+
+function shouldRetryFirestoreStatus(status) {
+  return FIRESTORE_RETRYABLE_STATUS_CODES.indexOf(Number(status)) !== -1;
+}
+
+function getRetryDelayMs(attempt, response) {
+  const retryAfterMs = parseRetryAfterMs(response && response.headers ? response.headers.get('retry-after') : '');
+  if (retryAfterMs > 0) {
+    return retryAfterMs;
+  }
+
+  return FIRESTORE_BASE_RETRY_MS * Math.pow(2, attempt - 1);
+}
+
+async function fetchFirestoreJson(url, options, errorPrefix) {
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= FIRESTORE_MAX_ATTEMPTS; attempt += 1) {
+    const response = await fetch(url, options);
+
+    if (response.ok) {
+      if (response.status === 204) {
+        return null;
+      }
+      const responseText = await response.text();
+      return responseText ? JSON.parse(responseText) : null;
+    }
+
+    const responseText = await response.text();
+    const error = new Error(errorPrefix + response.status);
+    error.status = response.status;
+    error.body = responseText;
+    lastError = error;
+
+    if (attempt >= FIRESTORE_MAX_ATTEMPTS || !shouldRetryFirestoreStatus(response.status)) {
+      throw error;
+    }
+
+    await sleep(getRetryDelayMs(attempt, response));
+  }
+
+  throw lastError || new Error(errorPrefix + 'unknown');
 }
 
 function encodeDocumentPath(documentPath) {
@@ -153,28 +223,14 @@ export function decodeDocument(document) {
 
 async function firestoreFetch(idToken, documentPath, options) {
   const opts = options || {};
-  const response = await fetch(buildDocumentUrl(documentPath, opts.query), {
+  return fetchFirestoreJson(buildDocumentUrl(documentPath, opts.query), {
     method: opts.method || 'GET',
     headers: Object.assign({
       authorization: 'Bearer ' + idToken,
       'content-type': 'application/json; charset=utf-8'
     }, opts.headers || {}),
     body: opts.body ? JSON.stringify(opts.body) : undefined
-  });
-
-  if (response.ok) {
-    if (response.status === 204) {
-      return null;
-    }
-    const responseText = await response.text();
-    return responseText ? JSON.parse(responseText) : null;
-  }
-
-  const responseText = await response.text();
-  const error = new Error('Firestore request failed with status ' + response.status);
-  error.status = response.status;
-  error.body = responseText;
-  throw error;
+  }, 'Firestore request failed with status ');
 }
 
 export async function getDocument(idToken, documentPath) {
@@ -233,7 +289,7 @@ export async function queryCollectionByField(idToken, collectionId, fieldPath, v
   const base = 'https://firestore.googleapis.com/v1/projects/' + encodeURIComponent(getProjectId()) + '/databases/(default)/documents';
   const parent = String(parentPath || '').trim();
   const url = base + (parent ? '/' + encodeDocumentPath(parent) : '') + ':runQuery';
-  const response = await fetch(url, {
+  const payload = await fetchFirestoreJson(url, {
     method: 'POST',
     headers: {
       authorization: 'Bearer ' + idToken,
@@ -251,17 +307,7 @@ export async function queryCollectionByField(idToken, collectionId, fieldPath, v
         }
       }
     })
-  });
-
-  if (!response.ok) {
-    const responseText = await response.text();
-    const error = new Error('Firestore query failed with status ' + response.status);
-    error.status = response.status;
-    error.body = responseText;
-    throw error;
-  }
-
-  const payload = await response.json();
+  }, 'Firestore query failed with status ');
   return (Array.isArray(payload) ? payload : []).map(function(entry) {
     return entry && entry.document ? decodeDocument(entry.document) : null;
   }).filter(Boolean);
