@@ -807,7 +807,10 @@ var EMAIL_CONFIG = {
     publicKey: 'pDnM72TrZDasASLGj',
     serviceId: 'service_mx5iaor',
     templateApprove: 'template_dhwf5d4',
-    templateReject: 'template_71fvnoz'
+    templateReject: 'template_71fvnoz',
+    templateLedgerNew: '',
+    templateLedgerApproved: '',
+    templateLedgerRejected: ''
   },
   resend: {
     apiKey: 'YOUR_RESEND_API_KEY',
@@ -829,6 +832,10 @@ if (EMAIL_PROVIDER === 'emailjs' && typeof emailjs !== 'undefined' && EMAIL_CONF
   emailReady = true;
 } else if (EMAIL_PROVIDER === 'brevo' && EMAIL_CONFIG.brevo.apiKey !== 'YOUR_BREVO_API_KEY') {
   emailReady = true;
+}
+
+function canSendEmailJsTemplate(templateId) {
+  return EMAIL_PROVIDER === 'emailjs' && emailReady && typeof emailjs !== 'undefined' && !!templateId;
 }
 
 function sendVolunteerEmail(volunteer, status) {
@@ -1212,6 +1219,7 @@ function switchVolTab(tab){document.querySelectorAll('#page-volunteers .tab-btn'
 // Auth
 function doLogin(){var e=document.getElementById('login-email').value.trim(),p=document.getElementById('login-password').value;if(!e||!p){document.getElementById('login-error').textContent='Please enter email and password.';return;}document.getElementById('btn-login').disabled=true;document.getElementById('btn-login').textContent='Signing in...';auth.signInWithEmailAndPassword(e,p).then(function(){document.getElementById('login-error').textContent='';}).catch(function(err){document.getElementById('login-error').textContent=err.message;document.getElementById('btn-login').disabled=false;document.getElementById('btn-login').textContent='Sign In';});}
 function doLogout(){auth.signOut();}
+async function callAdminJsonApi(path,payload){if(!currentUser){throw new Error('Not signed in.');}var token=await currentUser.getIdToken();var res=await fetch(path,{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify(payload||{})});var data=null;try{data=await res.json();}catch(_err){}if(!res.ok){var msg=data&&data.error&&data.error.message?data.error.message:'Request failed ('+res.status+')';throw new Error(msg);}return data||{ok:true};}
 
 // Login mode switching
 function showLoginMode(mode){
@@ -1438,23 +1446,23 @@ function renderVolunteers(){var l=document.getElementById('vol-loading'),t=docum
     var expandWrap=document.createElement('div');expandWrap.className='expand-content';expandWrap.appendChild(expandDl);
     var expandTd=document.createElement('td');expandTd.setAttribute('colspan','8');expandTd.appendChild(expandWrap);
     xtr.appendChild(expandTd);tr.onclick=function(){xtr.classList.toggle('open');};tb.appendChild(tr);tb.appendChild(xtr);});}
-function updateVolStatus(id,st,vol){if(!hasPermission('volunteer_requests.approve')){showToast('No permission to approve/reject volunteers','error');return;}db.collection('volunteer_requests').doc(id).update({status:st}).then(function(){writeAudit('update','volunteer_requests',id,'Status: '+st);
+function updateVolStatus(id,st,vol){if(!hasPermission('volunteer_requests.approve')){showToast('No permission to approve/reject volunteers','error');return;}callAdminJsonApi('/api/admin/volunteer-request/decision',{requestId:id,status:st}).then(function(){
   if(vol&&vol.email&&emailReady){
     sendVolunteerEmail(vol,st).then(function(){showToast('Volunteer '+st+' — email sent to '+vol.email);}).catch(function(err){console.error('Email error:',err);showToast('Volunteer '+st+' but email failed.','error');});
   }else if(vol&&vol.email&&!emailReady){
     sendVolunteerEmail(vol,st);showToast('Volunteer '+st+' — email draft opened.');
   }else{showToast('Volunteer '+st+'.');}
   loadVolunteers();loadDashboard();updateNotifBell();}).catch(function(e){showToast(e.message,'error');});}
-function bulkVolStatus(st){if(!hasPermission('volunteer_requests.approve')){showToast('No permission to approve/reject volunteers.','error');return;}var s=getSelected('vol');if(!s.size)return;var b=db.batch();s.forEach(function(id){b.update(db.collection('volunteer_requests').doc(id),{status:st});});b.commit().then(function(){writeAudit('update','volunteer_requests','','Bulk '+st+' '+s.size);showToast(s.size+' '+st+'.');clearSelection('vol');loadVolunteers();updateNotifBell();}).catch(function(e){showToast(e.message,'error');});}
+function bulkVolStatus(st){if(!hasPermission('volunteer_requests.approve')){showToast('No permission to approve/reject volunteers.','error');return;}var s=getSelected('vol');if(!s.size)return;var ids=Array.from(s);Promise.allSettled(ids.map(function(id){return callAdminJsonApi('/api/admin/volunteer-request/decision',{requestId:id,status:st});})).then(function(results){var ok=results.filter(function(r){return r.status==='fulfilled';}).length;var fail=results.length-ok;if(fail){showToast(ok+' updated, '+fail+' failed.','error');}else{showToast(ok+' '+st+'.');}clearSelection('vol');loadVolunteers();updateNotifBell();});}
 
 // Confirmed Volunteers
 function loadConfirmedVolunteers(){var l=document.getElementById('cvol-loading'),t=document.getElementById('cvol-table'),e=document.getElementById('cvol-empty');l.style.display='flex';t.style.display='none';e.style.display='none';clearSelection('cvol');db.collection('volunteers').get().then(function(s){allConfirmedVolunteers=[];s.forEach(function(d){var x=d.data();x._id=d.id;allConfirmedVolunteers.push(x);});allConfirmedVolunteers.sort(function(a,b){var ta=a.createdAt?(a.createdAt.toDate?a.createdAt.toDate():new Date(a.createdAt)):new Date(0);var tb=b.createdAt?(b.createdAt.toDate?b.createdAt.toDate():new Date(b.createdAt)):new Date(0);return tb-ta;});renderConfirmedVolunteers();});}
-function renderConfirmedVolunteers(){var l=document.getElementById('cvol-loading'),t=document.getElementById('cvol-table'),e=document.getElementById('cvol-empty'),tb=document.getElementById('cvol-tbody');var sr=(document.getElementById('cvol-search').value||'').toLowerCase(),sf=document.getElementById('cvol-status-filter').value;var f=allConfirmedVolunteers.filter(function(v){if(sf&&(v.status||'').toLowerCase()!==sf)return false;if(sr&&(v.name||'').toLowerCase().indexOf(sr)===-1&&(v.email||'').toLowerCase().indexOf(sr)===-1)return false;return true;});l.style.display='none';if(!f.length){t.style.display='none';e.style.display='block';return;}t.style.display='table';e.style.display='none';tb.innerHTML='';f.forEach(function(v){var sk=Array.isArray(v.skills)?v.skills.map(function(s){return'<span class="tag">'+escHtml(s)+'</span>';}).join(' '):escHtml(v.skills||'');var tr=document.createElement('tr');tr.innerHTML='<td class="cb-cell"><input type="checkbox" value="'+v._id+'" onchange="toggleSelectOne(\'cvol\',\''+v._id+'\')"></td><td>'+escHtml(v.name)+'</td><td>'+escHtml(v.email)+'</td><td>'+escHtml(v.phone)+'</td><td>'+escHtml(v.location)+'</td><td>'+escHtml(v.role||'--')+'</td><td>'+sk+'</td><td>'+statusBadge(v.status||'active')+'</td><td>'+(hasPermission('volunteers.edit')?'<button class="btn btn-secondary btn-xs" onclick="editConfirmedVolunteer(\''+v._id+'\')">Edit</button> ':'')+' <button class="btn btn-info btn-xs" onclick="sendVolunteerInvite(\''+escHtml(v.email)+'\',\''+escHtml(v.name)+'\')">Invite</button>'+(hasPermission('volunteers.delete')?' <button class="btn btn-danger btn-xs" onclick="deleteConfirmedVolunteer(\''+v._id+'\',\''+escHtml(v.name)+'\')">Del</button>':'')+'</td>';tb.appendChild(tr);});}
+function renderConfirmedVolunteers(){var l=document.getElementById('cvol-loading'),t=document.getElementById('cvol-table'),e=document.getElementById('cvol-empty'),tb=document.getElementById('cvol-tbody');var sr=(document.getElementById('cvol-search').value||'').toLowerCase(),sf=document.getElementById('cvol-status-filter').value;var f=allConfirmedVolunteers.filter(function(v){if(sf&&(v.status||'').toLowerCase()!==sf)return false;if(sr&&(v.name||'').toLowerCase().indexOf(sr)===-1&&(v.email||'').toLowerCase().indexOf(sr)===-1)return false;return true;});l.style.display='none';if(!f.length){t.style.display='none';e.style.display='block';return;}t.style.display='table';e.style.display='none';tb.innerHTML='';f.forEach(function(v){var sk=Array.isArray(v.skills)?v.skills.map(function(s){return'<span class="tag">'+escHtml(s)+'</span>';}).join(' '):escHtml(v.skills||'');var tr=document.createElement('tr');tr.innerHTML='<td class="cb-cell"><input type="checkbox" value="'+v._id+'" onchange="toggleSelectOne(\'cvol\',\''+v._id+'\')"></td><td>'+escHtml(v.name)+'</td><td>'+escHtml(v.email)+'</td><td>'+escHtml(v.phone)+'</td><td>'+escHtml(v.location)+'</td><td>'+escHtml(v.role||'--')+'</td><td>'+sk+'</td><td>'+statusBadge(v.status||'active')+'</td><td>'+(hasPermission('volunteers.edit')?'<button class="btn btn-secondary btn-xs" onclick="editConfirmedVolunteer(\''+v._id+'\')">Edit</button> ':'')+(hasPermission('volunteers.edit')?' <button class="btn btn-info btn-xs" onclick="sendVolunteerInvite(\''+escHtml(v.email)+'\',\''+escHtml(v.name)+'\')">Invite</button> ':'')+(hasPermission('volunteers.delete')?' <button class="btn btn-danger btn-xs" onclick="deleteConfirmedVolunteer(\''+v._id+'\',\''+escHtml(v.name)+'\')">Del</button>':'')+'</td>';tb.appendChild(tr);});}
 function openVolunteerCreateModal(d){document.getElementById('cvol-modal-title').textContent=d?'Edit Volunteer':'Create Volunteer';document.getElementById('cvol-edit-id').value=d?d._id:'';document.getElementById('cvol-name').value=d?d.name||'':'';document.getElementById('cvol-email').value=d?d.email||'':'';document.getElementById('cvol-phone').value=d?d.phone||'':'';document.getElementById('cvol-location').value=d?d.location||'':'';document.getElementById('cvol-role').value=d?d.role||'':'';document.getElementById('cvol-skills').value=d&&Array.isArray(d.skills)?d.skills.join(', '):'';document.getElementById('cvol-status').value=d?d.status||'active':'active';openModal('modal-create-volunteer');}
 function editConfirmedVolunteer(id){var v=allConfirmedVolunteers.find(function(x){return x._id===id;});if(v)openVolunteerCreateModal(v);}
 function saveConfirmedVolunteer(){var id=document.getElementById('cvol-edit-id').value,nm=document.getElementById('cvol-name').value.trim(),em=document.getElementById('cvol-email').value.trim();if(!nm||!em){showToast('Name and email required.','error');return;}var sk=document.getElementById('cvol-skills').value.split(',').map(function(s){return s.trim()}).filter(Boolean);var data={name:nm,email:em,phone:document.getElementById('cvol-phone').value.trim(),location:document.getElementById('cvol-location').value.trim(),role:document.getElementById('cvol-role').value.trim(),skills:sk,status:document.getElementById('cvol-status').value,lastEditedAt:FieldValue.serverTimestamp()};if(id){db.collection('volunteers').doc(id).get().then(function(s){var ch=diffFields(s.data(),data,{});return db.collection('volunteers').doc(id).update(data).then(function(){writeAudit('update','volunteers',id,ch);showToast('Updated.');closeModal('modal-create-volunteer');loadConfirmedVolunteers();});}).catch(function(e){showToast(e.message,'error');});}else{data.createdAt=FieldValue.serverTimestamp();db.collection('volunteers').add(data).then(function(ref){writeAudit('create','volunteers',ref.id,'Created: '+nm);showToast('Created.');closeModal('modal-create-volunteer');loadConfirmedVolunteers();loadDashboard();}).catch(function(e){showToast(e.message,'error');});}}
 function deleteConfirmedVolunteer(id,nm){showConfirm('Delete','Delete "'+nm+'"?',function(){db.collection('volunteers').doc(id).delete().then(function(){writeAudit('delete','volunteers',id,'Deleted: '+nm);showToast('Deleted.');loadConfirmedVolunteers();loadDashboard();}).catch(function(e){showToast(e.message,'error');});});}
-function sendVolunteerInvite(em,nm){db.collection('invites').add({email:em,role:'volunteer',invitedBy:currentUser?currentUser.email:'',invitedAt:FieldValue.serverTimestamp(),status:'pending'}).then(function(ref){var inviteLink=window.location.origin+'/volunteer/?invite='+ref.id;writeAudit('create','invites',ref.id,'Invite: '+(nm||em));if(emailReady&&typeof emailjs!=='undefined'){emailjs.send(EMAIL_CONFIG.emailjs.serviceId,EMAIL_CONFIG.emailjs.templateApprove,{to_name:nm||em.split('@')[0],to_email:em,message:'You have been invited to join Big Sister Foundation as a volunteer. Click the link below to fill out your application and get started.',registration_link:inviteLink,roles:'Volunteer'}).then(function(){showToast('Invite email sent to '+em);}).catch(function(err){showToast('Invite created but email failed: '+err.text,'error');});}else{showToast('Invite created for '+em+'. Share this link: '+inviteLink);}updateNotifBell();loadInvites();}).catch(function(e){showToast(e.message,'error');});}
+function sendVolunteerInvite(em,nm){if(!hasPermission('volunteers.edit')){showToast('No permission to invite volunteers.','error');return;}callAdminJsonApi('/api/admin/volunteer-invite',{email:em,name:nm||'',role:'volunteer'}).then(function(data){if(!data||!data.inviteLink){throw new Error('Invite link missing from server response.');}var inviteLink=data.inviteLink;if(emailReady&&typeof emailjs!=='undefined'){emailjs.send(EMAIL_CONFIG.emailjs.serviceId,EMAIL_CONFIG.emailjs.templateApprove,{to_name:nm||em.split('@')[0],to_email:em,message:'You have been invited to join Big Sister Foundation as a volunteer. Click the link below to fill out your application and get started.',registration_link:inviteLink,roles:'Volunteer'}).then(function(){showToast('Invite email sent to '+em);}).catch(function(err){showToast('Invite created but email failed: '+err.text,'error');});}else{showToast('Invite created for '+em+'. Share this link: '+inviteLink);}updateNotifBell();loadInvites();}).catch(function(e){showToast(e.message,'error');});}
 function bulkChangeConfVolStatus(ns){var s=getSelected('cvol');if(!s.size)return;var b=db.batch();s.forEach(function(id){b.update(db.collection('volunteers').doc(id),{status:ns,lastEditedAt:FieldValue.serverTimestamp()});});b.commit().then(function(){writeAudit('update','volunteers','','Bulk '+ns+' '+s.size);showToast(s.size+' updated.');clearSelection('cvol');loadConfirmedVolunteers();}).catch(function(e){showToast(e.message,'error');});}
 // Scholars
 function loadScholars(){var l=document.getElementById('sch-loading'),t=document.getElementById('sch-table'),e=document.getElementById('sch-empty');l.style.display='flex';t.style.display='none';e.style.display='none';clearSelection('sch');db.collection('scholars').get().then(function(s){allScholars=[];s.forEach(function(d){var x=d.data();x._id=d.id;allScholars.push(x);});allScholars.sort(function(a,b){var ta=a.createdAt?(a.createdAt.toDate?a.createdAt.toDate():new Date(a.createdAt)):new Date(0);var tb=b.createdAt?(b.createdAt.toDate?b.createdAt.toDate():new Date(b.createdAt)):new Date(0);return tb-ta;});renderScholars();});}
@@ -1835,34 +1843,18 @@ function approveLedgerRequest(reqId){
   var req=allLedgerRequests.find(function(r){return r._id===reqId;});
   if(!req)return;
   showConfirm('Admin Override — Approve Request','Admin Override: Apply this '+req.type+' request from '+req.requestedBy+'? This bypasses the 3-vote system.',function(){
-    var done=function(){
-      db.collection('ledger_requests').doc(reqId).update({status:'approved',reviewedBy:currentUser?currentUser.email:'',reviewedAt:FieldValue.serverTimestamp(),resolvedBy:'admin_override'}).then(function(){
-        writeAudit('update','ledger_requests',reqId,'Approved '+req.type+' request from '+req.requestedBy+' (admin override)');
-        notifyVolunteersFromAdmin('approved', req);
-        showToast('Request approved and applied.');
-        loadLedger();loadLedgerRequests();loadDashboard();
-      });
-    };
-    if(req.type==='add'&&req.proposedData){
-      var data=req.proposedData;data.createdAt=FieldValue.serverTimestamp();data.lastEditedAt=FieldValue.serverTimestamp();data.notes='Added via approved request from '+req.requestedBy;
-      db.collection('ledger').add(data).then(function(ref){writeAudit('create','ledger',ref.id,'Via approved request: '+data.description);done();}).catch(function(e){showToast(e.message,'error');});
-    }else if(req.type==='edit'&&req.entryId&&req.proposedData){
-      var data=req.proposedData;data.lastEditedAt=FieldValue.serverTimestamp();data.notes=(data.notes||'')+' Updated via approved request from '+req.requestedBy;
-      db.collection('ledger').doc(req.entryId).get().then(function(s){
-        var ch=diffFields(s.data(),data,{});
-        return db.collection('ledger').doc(req.entryId).update(data).then(function(){writeAudit('update','ledger',req.entryId,'Via approved request: '+ch);done();});
-      }).catch(function(e){showToast(e.message,'error');});
-    }else if(req.type==='delete'&&req.entryId){
-      db.collection('ledger').doc(req.entryId).delete().then(function(){writeAudit('delete','ledger',req.entryId,'Via approved request from '+req.requestedBy);done();}).catch(function(e){showToast(e.message,'error');});
-    }else{done();}
+    callAdminJsonApi('/api/admin/ledger-request/resolve',{requestId:reqId,decision:'approved'}).then(function(){
+      notifyVolunteersFromAdmin('approved', req);
+      showToast('Request approved and applied.');
+      loadLedger();loadLedgerRequests();loadDashboard();
+    }).catch(function(e){showToast(e.message,'error');});
   });
 }
 
 function rejectLedgerRequest(reqId){
   var req=allLedgerRequests.find(function(r){return r._id===reqId;});
   showConfirm('Admin Override — Reject Request','Admin Override: Reject this request from '+(req?req.requestedBy:'')+'? This bypasses the 3-vote system.',function(){
-    db.collection('ledger_requests').doc(reqId).update({status:'rejected',reviewedBy:currentUser?currentUser.email:'',reviewedAt:FieldValue.serverTimestamp(),resolvedBy:'admin_override'}).then(function(){
-      writeAudit('update','ledger_requests',reqId,'Rejected request from '+(req?req.requestedBy:'')+' (admin override)');
+    callAdminJsonApi('/api/admin/ledger-request/resolve',{requestId:reqId,decision:'rejected'}).then(function(){
       notifyVolunteersFromAdmin('rejected', req);
       showToast('Request rejected.');
       loadLedgerRequests();
@@ -1871,13 +1863,17 @@ function rejectLedgerRequest(reqId){
 }
 
 function notifyVolunteersFromAdmin(eventType, requestData) {
-  if (typeof emailjs === 'undefined') return;
-  var templateId = eventType === 'new_request' ? 'template_ledger_new' : eventType === 'approved' ? 'template_ledger_approved' : 'template_ledger_rejected';
+  var templateId = eventType === 'new_request'
+    ? EMAIL_CONFIG.emailjs.templateLedgerNew
+    : eventType === 'approved'
+      ? EMAIL_CONFIG.emailjs.templateLedgerApproved
+      : EMAIL_CONFIG.emailjs.templateLedgerRejected;
+  if (!canSendEmailJsTemplate(templateId)) return;
   db.collection('volunteers').where('status', '==', 'active').get().then(function(snap) {
     snap.forEach(function(doc) {
       var vol = doc.data();
       if (!vol.email) return;
-      emailjs.send('service_mx5iaor', templateId, {
+      emailjs.send(EMAIL_CONFIG.emailjs.serviceId, templateId, {
         to_name: vol.firstName || vol.name || 'Volunteer',
         to_email: vol.email,
         request_type: requestData.type || 'ledger change',
@@ -1890,7 +1886,7 @@ function notifyVolunteersFromAdmin(eventType, requestData) {
         voter_summary: (requestData.votes || []).map(function(v) { return (v.name || v.email) + ' (' + v.action + ')'; }).join(', ') || 'N/A'
       }).catch(function(err) { console.error('Email failed:', err); });
     });
-  });
+  }).catch(function(err) { console.error('Volunteer email query failed:', err); });
 }
 
 // Ideas
@@ -3132,14 +3128,19 @@ function approveBlogPost(firestoreId){
     showToast('You do not have permission to approve posts.','error');return;
   }
   if(!confirm('Approve this post? It will become publicly visible on the blog.'))return;
-  db.collection('blog_posts').doc(firestoreId).update({
-    status:'approved',
-    approvedBy:currentUser?currentUser.email:'unknown',
-    approvedAt:FieldValue.serverTimestamp()
-  }).then(function(){
+  callAdminJsonApi('/api/admin/blog/review',{firestoreId:firestoreId,decision:'approved'}).then(function(data){
     showToast('Post approved and now publicly visible.','success');
     // Update local state
-    allBlogPosts.forEach(function(p){if(p.firestoreId===firestoreId)p.status='approved';});
+    allBlogPosts.forEach(function(p){
+      if(p.firestoreId===firestoreId){
+        p.status='approved';
+        p.approvedBy=data&&data.reviewedBy?data.reviewedBy:(currentUser?currentUser.email:'unknown');
+        p.approvedAt=new Date().toISOString();
+        p.rejectedBy='';
+        p.rejectedAt='';
+        p.rejectionReason='';
+      }
+    });
     renderBlogPosts();
     updateBlogStats();
   }).catch(function(err){
@@ -3152,14 +3153,19 @@ function rejectBlogPost(firestoreId){
     showToast('You do not have permission to reject posts.','error');return;
   }
   var reason=prompt('Reason for rejection (optional):');
-  db.collection('blog_posts').doc(firestoreId).update({
-    status:'rejected',
-    rejectedBy:currentUser?currentUser.email:'unknown',
-    rejectedAt:FieldValue.serverTimestamp(),
-    rejectionReason:reason||''
-  }).then(function(){
+  if(reason===null)return;
+  callAdminJsonApi('/api/admin/blog/review',{firestoreId:firestoreId,decision:'rejected',rejectionReason:reason||''}).then(function(data){
     showToast('Post rejected.','success');
-    allBlogPosts.forEach(function(p){if(p.firestoreId===firestoreId)p.status='rejected';});
+    allBlogPosts.forEach(function(p){
+      if(p.firestoreId===firestoreId){
+        p.status='rejected';
+        p.rejectedBy=data&&data.reviewedBy?data.reviewedBy:(currentUser?currentUser.email:'unknown');
+        p.rejectedAt=new Date().toISOString();
+        p.rejectionReason=data&&typeof data.rejectionReason==='string'?data.rejectionReason:(reason||'');
+        p.approvedBy='';
+        p.approvedAt='';
+      }
+    });
     renderBlogPosts();
     updateBlogStats();
   }).catch(function(err){
