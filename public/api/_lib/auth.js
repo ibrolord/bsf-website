@@ -13,20 +13,31 @@ const AUTOMATION_KEY_HEADER = 'x-bsf-automation-key';
 const AUTOMATION_NAME_HEADER = 'x-bsf-automation-name';
 const DEFAULT_AUTOMATION_PERMISSIONS = new Set([
   'volunteer_requests.approve',
+  'volunteers.create',
   'volunteers.edit',
+  'volunteers.delete',
   'ledger.approve',
   'blog.approve',
   'blog.edit_any',
   'sponsors.edit',
   'scholars.create',
   'scholars.edit',
+  'schools.create',
+  'schools.edit',
+  'schools.delete',
+  'announcements.create',
+  'announcements.edit',
+  'announcements.delete',
+  'events.create',
+  'events.edit',
+  'events.delete',
   'kids.create',
   'kids.edit'
 ]);
 const ROLE_PERMISSIONS = {
-  admin: new Set(['volunteer_requests.approve', 'volunteers.edit', 'ledger.approve', 'blog.approve', 'blog.edit_any', 'sponsors.edit', 'scholars.create', 'scholars.edit', 'kids.create', 'kids.edit']),
-  program_lead: new Set(['volunteer_requests.approve', 'volunteers.edit', 'blog.approve', 'blog.edit_any', 'scholars.create', 'scholars.edit', 'kids.create', 'kids.edit']),
-  comms: new Set(['blog.approve', 'blog.edit_any']),
+  admin: new Set(['volunteer_requests.approve', 'volunteers.create', 'volunteers.edit', 'volunteers.delete', 'ledger.approve', 'blog.approve', 'blog.edit_any', 'sponsors.edit', 'scholars.create', 'scholars.edit', 'schools.create', 'schools.edit', 'schools.delete', 'announcements.create', 'announcements.edit', 'announcements.delete', 'events.create', 'events.edit', 'events.delete', 'kids.create', 'kids.edit']),
+  program_lead: new Set(['volunteer_requests.approve', 'volunteers.create', 'volunteers.edit', 'volunteers.delete', 'blog.approve', 'blog.edit_any', 'scholars.create', 'scholars.edit', 'schools.create', 'schools.edit', 'schools.delete', 'events.create', 'events.edit', 'events.delete', 'kids.create', 'kids.edit']),
+  comms: new Set(['blog.approve', 'blog.edit_any', 'announcements.create', 'announcements.edit', 'announcements.delete']),
   finance: new Set(['ledger.approve'])
 };
 let automationSessionCache = {
