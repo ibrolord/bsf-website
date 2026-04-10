@@ -1918,7 +1918,34 @@ function loadAuditLog(){var l=document.getElementById('audit-loading'),t=documen
 function renderAuditLog(){var l=document.getElementById('audit-loading'),t=document.getElementById('audit-table'),e=document.getElementById('audit-empty');var cf=document.getElementById('audit-col-filter').value,af=document.getElementById('audit-action-filter').value,sr=(document.getElementById('audit-search').value||'').toLowerCase();var f=allAuditEntries.filter(function(e){var ch=e.changes||'';if(typeof ch==='object')ch=JSON.stringify(ch);ch=String(ch).toLowerCase();if(cf&&e.collection!==cf)return false;if(af&&e.action!==af)return false;if(sr&&(e.collection||'').toLowerCase().indexOf(sr)===-1&&(e.userEmail||'').toLowerCase().indexOf(sr)===-1&&ch.indexOf(sr)===-1&&(e.documentId||'').toLowerCase().indexOf(sr)===-1)return false;return true;});l.style.display='none';if(!f.length){t.style.display='none';e.style.display='block';document.getElementById('audit-pagination').innerHTML='';return;}var tp=Math.ceil(f.length/auditPageSize);if(auditPage>=tp)auditPage=tp-1;if(auditPage<0)auditPage=0;var st=auditPage*auditPageSize,pg=f.slice(st,st+auditPageSize);t.style.display='table';e.style.display='none';var tb=document.getElementById('audit-tbody');tb.innerHTML='';pg.forEach(function(e){var tr=document.createElement('tr');var ch=e.changes||'';if(typeof ch==='object')ch=JSON.stringify(ch);if(ch.length>80)ch=ch.substring(0,80)+'...';tr.innerHTML='<td style="white-space:nowrap">'+formatDateTime(e.timestamp)+'</td><td>'+statusBadge(e.action)+'</td><td>'+escHtml(e.collection)+'</td><td style="font-family:monospace;font-size:12px">'+escHtml(e.documentId?e.documentId.substring(0,12)+'...':'--')+'</td><td>'+escHtml(e.userEmail)+'</td><td style="font-size:12px;color:var(--gray-500)">'+escHtml(ch)+'</td>';tb.appendChild(tr);});var pag=document.getElementById('audit-pagination');pag.innerHTML='';var pb=document.createElement('button');pb.textContent='Previous';pb.disabled=auditPage===0;pb.onclick=function(){auditPage--;renderAuditLog();};pag.appendChild(pb);var inf=document.createElement('span');inf.textContent='Page '+(auditPage+1)+' of '+tp+' ('+f.length+')';pag.appendChild(inf);var nb=document.createElement('button');nb.textContent='Next';nb.disabled=auditPage>=tp-1;nb.onclick=function(){auditPage++;renderAuditLog();};pag.appendChild(nb);}
 
 // Team
-function loadTeam(){var l=document.getElementById('team-loading'),t=document.getElementById('team-table'),e=document.getElementById('team-empty');l.style.display='flex';t.style.display='none';e.style.display='none';db.collection('users').get().then(function(s){allTeamMembers=[];s.forEach(function(d){var x=d.data();x._email=d.id;allTeamMembers.push(x);});allTeamMembers.sort(function(a,b){var o={admin:0,coordinator:1,volunteer:2};return(o[a.role]||3)-(o[b.role]||3);});renderTeam();}).catch(function(e){l.style.display='none';showToast(e.message,'error');});}
+function sortTeamMembers(){allTeamMembers.sort(function(a,b){var o={admin:0,coordinator:1,volunteer:2};return(o[a.role]||3)-(o[b.role]||3);});}
+function upsertTeamMemberLocal(email,data){
+  var normalizedEmail=String(email||data&&data.email||'').trim().toLowerCase();
+  if(!normalizedEmail)return;
+  var idx=allTeamMembers.findIndex(function(member){return member&&member._email===normalizedEmail;});
+  var existing=idx>-1?allTeamMembers[idx]:null;
+  var roles=data&&Array.isArray(data.roles)&&data.roles.length?data.roles.slice():getRolesFromUser(existing||{});
+  var next=Object.assign({},existing||{},data||{});
+  next._email=normalizedEmail;
+  next.email=normalizedEmail;
+  next.roles=roles;
+  next.role=roles[0]||(next.role||'volunteer');
+  next.permission_overrides=next.permission_overrides||{};
+  next.permissions=Array.isArray(next.permissions)?next.permissions.slice():[];
+  next.status=next.status||'active';
+  next.lastEditedAt=next.lastEditedAt||new Date();
+  next.createdAt=existing&&existing.createdAt?existing.createdAt:(next.createdAt||new Date());
+  next.addedAt=existing&&existing.addedAt?existing.addedAt:(next.addedAt||new Date());
+  if(idx>-1)allTeamMembers[idx]=next;
+  else allTeamMembers.push(next);
+  sortTeamMembers();
+}
+function syncTeamAfterLocalSave(email,data){
+  upsertTeamMemberLocal(email,data);
+  renderTeam();
+  setTimeout(function(){loadTeam({silent:true});},0);
+}
+function loadTeam(opts){var options=opts||{};var silent=!!options.silent;var l=document.getElementById('team-loading'),t=document.getElementById('team-table'),e=document.getElementById('team-empty');if(!silent){l.style.display='flex';t.style.display='none';e.style.display='none';}db.collection('users').get().then(function(s){allTeamMembers=[];s.forEach(function(d){var x=d.data();x._email=d.id;allTeamMembers.push(x);});sortTeamMembers();renderTeam();}).catch(function(err){if(!silent){l.style.display='none';showToast(err.message,'error');}});}
 function renderTeam(){var l=document.getElementById('team-loading'),t=document.getElementById('team-table'),e=document.getElementById('team-empty'),tb=document.getElementById('team-tbody');var sr=(document.getElementById('team-search').value||'').toLowerCase();var f=allTeamMembers.filter(function(m){if(sr&&(m._email||'').toLowerCase().indexOf(sr)===-1&&(m.role||'').toLowerCase().indexOf(sr)===-1)return false;return true;});l.style.display='none';if(!f.length){tb.innerHTML='';t.style.display='none';e.style.display='block';return;}t.style.display='table';e.style.display='none';tb.innerHTML='';f.forEach(function(m){var self=currentUser&&m._email===currentUser.email.toLowerCase();var userRolesForPerm=getRolesFromUser(m);var effectivePerms=computeEffectivePermissions(userRolesForPerm,m.permission_overrides||{});var permCount=effectivePerms.length;var overrides=m.permission_overrides||{};var overrideCount=Object.keys(overrides).length;
 var userRoles=getRolesFromUser(m);
 var roleLabel=userRoles.length?userRoles.map(function(r){var p=ROLE_PRESETS[r];return'<span class="badge badge-'+(r||'default')+'">'+escHtml(p?p.label:r)+'</span>';}).join(' '):'<span class="badge badge-default">Pending</span>';
@@ -2046,7 +2073,7 @@ function saveTeamMember(){
     userPayload.status='active';
     callAdminJsonApi('/api/admin/mutate',Object.assign({action:'user.permissions.save'},userPayload)).then(function(){
       showToast('Updated: '+roleLabels);
-      closeModal('modal-team');loadTeam();
+      closeModal('modal-team');syncTeamAfterLocalSave(em,{roles:_teamEditRoles.slice(),permission_overrides:overridesClean,permissions:effectivePerms,status:'active'});
     }).catch(function(e){showToast(e.message,'error');});
   }else{
     // Adding new member — optionally create Firebase Auth account server-side
@@ -2072,7 +2099,7 @@ function saveTeamMember(){
         showToast('Team member added with auth account.');
         document.getElementById('btn-save-team').disabled=false;
         document.getElementById('btn-save-team').textContent='Save';
-        closeModal('modal-team');loadTeam();
+        closeModal('modal-team');syncTeamAfterLocalSave(em,{roles:_teamEditRoles.slice(),permission_overrides:overridesClean,permissions:effectivePerms,status:'active'});
       }).catch(function(e){
         authError.textContent=e.message;
         document.getElementById('btn-save-team').disabled=false;
@@ -2085,7 +2112,7 @@ function saveTeamMember(){
       // No password provided — just create Firestore doc (no auth account)
       callAdminJsonApi('/api/admin/mutate',Object.assign({action:'user.permissions.save',status:'pending'},userPayload)).then(function(){
         showToast('Team member added (no auth account — pending).');
-        closeModal('modal-team');loadTeam();
+        closeModal('modal-team');syncTeamAfterLocalSave(em,{roles:_teamEditRoles.slice(),permission_overrides:overridesClean,permissions:effectivePerms,status:'pending'});
       }).catch(function(e){showToast(e.message,'error');});
     }
   }
