@@ -3,14 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q4EYY24EDZ"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-Q4EYY24EDZ');</script>
   <title>Give — Big Sister Foundation</title>
-  <meta name="description" content="Every naira goes somewhere specific. Choose where your support lands — school fees, food, healthcare, events, or reserves. Online Paystack checkout is not live yet; use PayPal or direct bank transfer for now.">
+  <meta name="description" content="Every naira goes somewhere specific. Choose where your support lands — school fees, food, healthcare, events, or reserves. Paystack-powered. Auto-tracked on our public ledger.">
   <meta property="og:title" content="Give — Big Sister Foundation">
-  <meta property="og:description" content="Every naira goes somewhere specific. Choose where your support lands — school fees, food, healthcare, events, or reserves. Online Paystack checkout is not live yet; use PayPal or direct bank transfer for now.">
+  <meta property="og:description" content="Every naira goes somewhere specific. Choose where your support lands — school fees, food, healthcare, events, or reserves. Paystack-powered. Auto-tracked on our public ledger.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="/og-image.svg">
+  <meta property="og:image" content="https://thebigsisterfoundation.org/og-image.png">
   <meta name="theme-color" content="#2D5E40">
   <link rel="canonical" href="https://thebigsisterfoundation.org/donate/">
   <meta property="og:url" content="https://thebigsisterfoundation.org/donate/">
@@ -20,9 +18,8 @@
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cellipse cx='50' cy='35' rx='35' ry='30' fill='%232D5E40' opacity='0.85'/%3E%3Cellipse cx='30' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cellipse cx='70' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cpath d='M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z' fill='%233A2A1F' opacity='0.8'/%3E%3C/svg%3E">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/shared/bsf-fonts.css">
+  <script defer src="/shared/bsf-analytics.js"></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -138,17 +135,6 @@
     .checkout__form { max-width: 520px; }
     .checkout__title { font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 0.5rem; }
     .checkout__sub { font-size: 0.9rem; opacity: 0.55; margin-bottom: 2rem; }
-    .checkout__notice {
-      margin: -0.75rem 0 1.5rem;
-      padding: 0.95rem 1rem;
-      background: rgba(194,115,76,0.08);
-      border-left: 4px solid var(--terra);
-      border-radius: 8px;
-      font-size: 0.88rem;
-      line-height: 1.6;
-      color: rgba(58,42,31,0.8);
-    }
-    .checkout__notice strong { color: var(--brown); }
 
     .field { margin-bottom: 1.25rem; }
     .field label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.4rem; opacity: 0.7; }
@@ -447,7 +433,7 @@
       <div class="hero__content">
         <p class="hero__eyebrow">Give With Purpose</p>
         <h1>Every Naira Has a Name</h1>
-        <p class="hero__sub">Pick a fund. Online Paystack checkout is not live yet. For now, use <a href="#alt-pay" style="color:var(--gold);text-decoration:underline;">PayPal or direct bank transfer</a> and we'll confirm the donation on the <a href="/ledger/" style="color:var(--gold);text-decoration:underline;">public ledger</a>.</p>
+        <p class="hero__sub">Pick a fund. Pay instantly. Watch it land on the <a href="/ledger/" style="color:var(--gold);text-decoration:underline;">public ledger</a> in real time. No middleman. No black box.</p>
       </div>
     </div>
   </section>
@@ -458,15 +444,15 @@
       <div class="promise-bar__inner">
         <div class="promise-bar__item">
           <span class="promise-bar__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span>
-          Ledger updated after confirmation
+          Auto-logged to public ledger
         </div>
         <div class="promise-bar__item">
           <span class="promise-bar__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>
-          Use PayPal or bank transfer for now
+          Cards, bank transfer, USSD
         </div>
         <div class="promise-bar__item">
           <span class="promise-bar__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
-          Paystack online checkout coming soon
+          Secured by Paystack
         </div>
         <div class="promise-bar__item">
           <span class="promise-bar__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg></span>
@@ -493,7 +479,7 @@
     <div class="container">
       <p class="eyebrow" style="color: var(--terra);">Or Give to a General Fund</p>
       <h2>Pick a Fund</h2>
-      <p class="funds__intro">Prefer to support a category? Every fund has a budget and named children. Your money only goes to the category you choose.</p>
+      <p class="funds__intro">Prefer to support a category? Every fund has a budget and real children behind it. Your money only goes to the category you choose.</p>
 
       <div class="fund-picker" id="fund-picker">
         <button class="fund-pill is-active" data-fund="school-fees" type="button">
@@ -535,12 +521,9 @@
     <div class="container">
       <div class="checkout__layout">
         <div class="checkout__form">
-          <p class="eyebrow" style="color:var(--green);">Step 2 — Make It Happen</p>
+          <p class="eyebrow" style="color:var(--green);">Step 2 — Complete Your Gift</p>
           <h2 class="checkout__title">Give Now</h2>
-          <p class="checkout__sub">Online Paystack checkout is not live yet.</p>
-          <div class="checkout__notice" id="checkout-notice">
-            <strong>Use the live options below instead:</strong> PayPal and direct bank transfer are available now. After you send the payment, email <a href="mailto:hello@thebigsisterfoundation.org" style="color:var(--green);font-weight:600;">hello@thebigsisterfoundation.org</a> so BSF can confirm it and update the ledger.
-          </div>
+          <p class="checkout__sub">Pay instantly with card, bank transfer, or USSD. Your donation hits the ledger automatically.</p>
 
           <form id="give-form">
             <div class="field">
@@ -549,7 +532,7 @@
             </div>
 
             <div class="field">
-              <label for="donor-email">Email (for confirmation) *</label>
+              <label for="donor-email">Email (for receipt) *</label>
               <input type="email" id="donor-email" placeholder="you@example.com" required autocomplete="email">
             </div>
 
@@ -564,15 +547,17 @@
               <textarea id="donor-note" rows="2" placeholder="Any message for the team..."></textarea>
             </div>
 
-            <button type="submit" class="pay-btn" id="pay-btn" disabled title="Paystack is not live yet">
+            <button type="submit" class="pay-btn" id="pay-btn">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-              <span id="pay-btn-text">Paystack coming soon</span>
+              <span id="pay-btn-text">Pay with Paystack</span>
             </button>
 
             <div class="pay-methods">
-              <span>Online card checkout unavailable</span>
-              <span>Use PayPal</span>
-              <span>Use direct bank transfer</span>
+              <span>Visa</span>
+              <span>Mastercard</span>
+              <span>Bank Transfer</span>
+              <span>USSD</span>
+              <span>Verve</span>
             </div>
           </form>
         </div>
@@ -590,7 +575,7 @@
               <span class="alloc-total-amount" id="alloc-total">&#8358;0</span>
             </div>
             <div class="sidebar__note">
-              Paystack is not live yet. Use PayPal or direct bank transfer below, then email BSF with the amount and fund/goal so the donation can be confirmed on the <a href="/ledger/" style="color:var(--green);font-weight:600;">public ledger</a>.
+              On successful payment, this transaction is automatically recorded on the <a href="/ledger/" style="color:var(--green);font-weight:600;">public ledger</a> with your chosen fund, amount, and receipt reference.
             </div>
           </div>
 
@@ -609,8 +594,8 @@
   <!-- ALTERNATIVE PAYMENT METHODS -->
   <section class="alt-pay section-pad" id="alt-pay">
     <div class="container">
-      <p class="eyebrow" style="color:var(--terra);">Give Right Now</p>
-      <h2>These are the live payment options today</h2>
+      <p class="eyebrow" style="color:var(--terra);">Other Ways to Give</p>
+      <h2>More Payment Options</h2>
 
       <div class="alt-pay__grid">
 
@@ -641,7 +626,7 @@
               <div class="alt-card__sub">USDT / USDC — low fees, no forex markup</div>
             </div>
           </div>
-          <p class="alt-card__desc">Send stablecoins directly. No conversion fees. Best for tech-savvy donors who want maximum impact per dollar.</p>
+          <p class="alt-card__desc">Send stablecoins directly. No conversion fees. More of your money reaches the children.</p>
 
           <div class="alt-card__detail">
             <div>
@@ -706,13 +691,13 @@
         </div>
         <div class="how-step" data-animate data-animate-delay="2">
           <div class="how-step__number">2</div>
-          <h3>You Send</h3>
-          <p>Use PayPal or direct bank transfer while BSF finishes Paystack setup.</p>
+          <h3>You Pay</h3>
+          <p>Paystack handles your payment securely. Cards, bank transfer, or USSD.</p>
         </div>
         <div class="how-step" data-animate data-animate-delay="3">
           <div class="how-step__number">3</div>
-          <h3>We Confirm</h3>
-          <p>Once BSF verifies the payment details, the donation is added to the public ledger with the right fund and reference.</p>
+          <h3>We Record</h3>
+          <p>Your donation auto-logs to the public ledger with fund, amount, and reference.</p>
         </div>
         <div class="how-step" data-animate data-animate-delay="4">
           <div class="how-step__number">4</div>
@@ -788,9 +773,7 @@
       var db = firebase.firestore();
 
       // ── Paystack config ──
-      var PAYSTACK_ENABLED = false;
-      var PAYSTACK_PUBLIC_KEY = '';
-      var PAYSTACK_BUTTON_LABEL = 'Paystack coming soon';
+      var PAYSTACK_PUBLIC_KEY = 'pk_test_441d40d980617caac1cfbf3a36bcb66921047667';
 
       // ── Fund config ──
       var funds = {
@@ -821,43 +804,6 @@
         { id: 'local-goal-6', title: 'Community Outreach Drive', description: 'Reach 500 families across underserved communities with information about BSF programmes, enrollment support, and resource packs.', pathway: 'difficult-backgrounds', fund: 'food', goalType: 'outreach', targetCapacity: 500, raisedCapacity: 120, unit: 'families', status: 'active', deadline: '2026-08-15', sponsors: 6, child: '' }
       ];
 
-      function toNumber(value, fallback) {
-        var num = Number(value);
-        return isFinite(num) ? num : fallback;
-      }
-
-      function isNonFinancialGoal(goal) {
-        return !!(
-          (goal.goalType && goal.goalType !== 'financial') ||
-          goal.targetCapacity != null ||
-          goal.raisedCapacity != null
-        );
-      }
-
-      function normalizeGoal(rawGoal) {
-        var goal = Object.assign({}, rawGoal || {});
-        goal.id = goal.id || ('goal-' + Math.random().toString(36).slice(2, 8));
-        goal.title = goal.title || 'Untitled Goal';
-        goal.description = goal.description || '';
-        goal.child = goal.child || '';
-        goal.fund = goal.fund || 'school-fees';
-        goal.status = goal.status || 'active';
-        goal.sponsors = toNumber(goal.sponsors, 0);
-        goal.targetAmount = toNumber(
-          goal.targetAmount != null ? goal.targetAmount :
-          (goal.targetValue != null ? goal.targetValue : goal.target),
-          0
-        );
-        goal.raisedAmount = toNumber(
-          goal.raisedAmount != null ? goal.raisedAmount :
-          (goal.currentValue != null ? goal.currentValue : goal.raised),
-          0
-        );
-        goal.targetCapacity = goal.targetCapacity == null ? null : toNumber(goal.targetCapacity, 0);
-        goal.raisedCapacity = goal.raisedCapacity == null ? null : toNumber(goal.raisedCapacity, 0);
-        return goal;
-      }
-
       // ── Load active goals ──
       function loadGoals() {
         var grid = document.getElementById('goals-grid');
@@ -865,10 +811,10 @@
           while (grid.firstChild) grid.removeChild(grid.firstChild);
           var goals = [];
           if (snap.empty) {
-            goals = localGoals.slice().map(normalizeGoal);
+            goals = localGoals.slice();
           } else {
             snap.forEach(function (doc) {
-              var data = normalizeGoal(doc.data());
+              var data = doc.data();
               data.id = doc.id;
               goals.push(data);
             });
@@ -877,7 +823,7 @@
         }).catch(function (err) {
           console.warn('Firestore goals unavailable, using local data:', err.message);
           while (grid.firstChild) grid.removeChild(grid.firstChild);
-          renderGoalsGrid(localGoals.slice().map(normalizeGoal), grid);
+          renderGoalsGrid(localGoals.slice(), grid);
         });
       }
 
@@ -933,7 +879,7 @@
         var card = document.createElement('div');
         card.className = 'goal-card' + (goal.status === 'funded' ? ' is-funded' : '');
 
-        var isNonFinancial = isNonFinancialGoal(goal);
+        var isNonFinancial = goal.goalType && goal.goalType !== 'financial';
         var effectiveTarget = isNonFinancial ? (goal.targetCapacity || 0) : (goal.targetAmount || 0);
         var effectiveRaised = isNonFinancial ? (goal.raisedCapacity || 0) : (goal.raisedAmount || 0);
         var pct = effectiveTarget > 0 ? Math.min(100, Math.round((effectiveRaised / effectiveTarget) * 100)) : 0;
@@ -1058,8 +1004,6 @@
 
       // Select a goal for funding
       function selectGoal(goal) {
-        goal = normalizeGoal(goal);
-        if (isNonFinancialGoal(goal)) return;
         selectedGoal = goal;
         var remaining = Math.max(0, goal.targetAmount - goal.raisedAmount);
 
@@ -1125,7 +1069,7 @@
         rowsEl.appendChild(clearLink);
 
         totalEl.textContent = fmt(amount);
-        btnText.textContent = PAYSTACK_BUTTON_LABEL;
+        btnText.textContent = 'Pay ' + fmt(amount);
       }
 
       // ── Animations ──
@@ -1179,10 +1123,7 @@
       });
 
       // ── Format currency ──
-      function fmt(n) {
-        var amount = toNumber(n, 0);
-        return '\u20A6' + amount.toLocaleString('en-NG');
-      }
+      function fmt(n) { return '\u20A6' + n.toLocaleString('en-NG'); }
 
       // ── Update allocation sidebar ──
       function updateAllocation() {
@@ -1200,7 +1141,7 @@
           p.textContent = 'Pick a fund and enter an amount.';
           rowsEl.appendChild(p);
           totalEl.textContent = fmt(0);
-          btnText.textContent = PAYSTACK_BUTTON_LABEL;
+          btnText.textContent = 'Pay with Paystack';
           return;
         }
 
@@ -1224,7 +1165,7 @@
         rowsEl.appendChild(row);
 
         totalEl.textContent = fmt(amount);
-        btnText.textContent = PAYSTACK_BUTTON_LABEL;
+        btnText.textContent = 'Pay ' + fmt(amount);
       }
 
       // ── Generate receipt reference ──
@@ -1314,11 +1255,6 @@
         var name = document.getElementById('donor-name').value.trim() || 'Anonymous';
         var amount = parseInt(document.getElementById('total-amount').value) || 0;
         var note = document.getElementById('donor-note').value.trim();
-
-        if (!PAYSTACK_ENABLED) {
-          document.getElementById('alt-pay').scrollIntoView({ behavior: 'smooth', block: 'start' });
-          return;
-        }
 
         if (!email || amount < 500) {
           if (!email) document.getElementById('donor-email').focus();
@@ -1446,6 +1382,9 @@
     })();
   </script>
 
+  <!-- Paystack Inline JS -->
+  <script src="https://js.paystack.co/v2/inline.js"></script>
+
 <div class="nav__backdrop" id="nav-backdrop"></div>
 <script>
 (function() {
@@ -1487,6 +1426,5 @@
   });
 })();
 </script>
-<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

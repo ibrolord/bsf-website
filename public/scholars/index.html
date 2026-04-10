@@ -8,7 +8,7 @@
   <meta property="og:title" content="Scholars Tracker — Big Sister Foundation">
   <meta property="og:description" content="Tracking progress and celebrating every sponsored child. Big Sister Foundation's Scholars Tracker.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="/og-image.svg">
+  <meta property="og:image" content="https://thebigsisterfoundation.org/og-image.png">
   <meta name="theme-color" content="#2D5E40">
   <link rel="canonical" href="https://thebigsisterfoundation.org/scholars/">
   <meta property="og:url" content="https://thebigsisterfoundation.org/scholars/">
@@ -1196,8 +1196,8 @@
   <section class="scholars-hero" id="listing-hero">
     <div class="container">
       <p class="eyebrow">Our Scholars</p>
-      <h1>Every Child Has a Name.<br>Here, They Have a Future.</h1>
-      <p class="scholars-hero__sub">Tracking the progress, growth, and achievements of every child sponsored through the Big Sister Foundation. Anonymized for their protection, celebrated for their courage.</p>
+      <h1>Every Child Has a Name.<br>Every Name Has a Story.</h1>
+      <p class="scholars-hero__sub">Progress, results, and updates for every child sponsored through the Big Sister Foundation. Anonymized to protect them. Published so you can see exactly what your support does.</p>
     </div>
   </section>
 
@@ -1720,10 +1720,6 @@
       var activeSchoolTab = 'notes';
       var allCommunities = [];
       var filterCommunity = null; // set from URL or dropdown
-
-      function canAccessScholarExpenses() {
-        return !!currentUser;
-      }
 
       var expenseCategories = ['tuition', 'books', 'uniform', 'transport', 'feeding', 'medical', 'other'];
       var expenseCategoryLabels = {
@@ -3516,18 +3512,8 @@
       // --- AUTH ---
 
       auth.onAuthStateChanged(function (firebaseUser) {
-        var wasSignedIn = !!currentUser;
         currentUser = firebaseUser;
         updateAuthUI();
-        if (firebaseUser && !wasSignedIn) {
-          if (profileScholarId) {
-            loadProfileData(profileScholarId);
-          } else if (allScholars.length > 0) {
-            fetchExpenses().then(function () {
-              renderScholars();
-            });
-          }
-        }
       });
 
       document.getElementById('btn-do-login').addEventListener('click', function () {
@@ -3814,11 +3800,6 @@
       // --- FETCH EXPENSES ---
 
       function fetchExpenses() {
-        if (!canAccessScholarExpenses()) {
-          allExpenses = [];
-          buildExpenseIndex();
-          return Promise.resolve(allExpenses);
-        }
         return db.collection('scholar_expenses').get()
           .then(function (snapshot) {
             allExpenses = [];
@@ -3842,9 +3823,7 @@
             return allExpenses;
           })
           .catch(function (err) {
-            if (!/Missing or insufficient permissions/i.test((err && err.message) || '')) {
-              console.warn('Error fetching expenses:', err);
-            }
+            console.warn('Error fetching expenses:', err);
             allExpenses = [];
             buildExpenseIndex();
             return allExpenses;
@@ -4109,7 +4088,7 @@
           })
           .then(function () {
             // Seed expenses if none exist and scholars exist
-            if (canAccessScholarExpenses() && allExpenses.length === 0 && allScholars.length > 0 && scholarsSnapshot) {
+            if (allExpenses.length === 0 && allScholars.length > 0 && scholarsSnapshot) {
               return generateSeedExpenses(scholarsSnapshot).then(function () {
                 return fetchExpenses();
               });
@@ -4429,11 +4408,6 @@
               dateOfBirth: data.dateOfBirth || null,
               gender: data.gender || ''
             };
-
-            if (!canAccessScholarExpenses()) {
-              renderProfileView(scholar, []);
-              return;
-            }
 
             return db.collection('scholar_expenses')
               .where('scholarId', '==', scholarId)

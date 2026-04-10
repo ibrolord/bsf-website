@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Big Sister Foundation — Manifesto</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://thebigsisterfoundation.org/manifesto/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+  <style>
+    /*
+     * BSF MANIFESTO — EDITORIAL PRINT DOCUMENT
+     * Aesthetic: Nigerian luxury editorial. Iroko-green solemnity meets warm terracotta confidence.
+     * Open in browser → File → Print → Save as PDF (A4)
+     */
+
+    @page { size: A4; margin: 30mm 25mm 35mm 25mm; }
+    @page :first { margin: 0; }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #2D5E40;
+      --green-dark: #1E3F2B;
+      --brown: #3A2A1F;
+      --terra: #C2734C;
+      --zobo: #E4175B;
+      --gold: #D4A96A;
+      --sage: #8BAF8E;
+      --petal: #FDE8EE;
+      --cream: #FFF8F0;
+      --serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      --sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    }
+
+    html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+    body {
+      font-family: var(--sans);
+      font-size: 10.5pt;
+      line-height: 1.75;
+      color: var(--brown);
+      background: #c8c5c0;
+      margin: 0;
+    }
+
+    /* ═══════════════════════════════════════════
+       SCREEN PREVIEW — stacked A4 pages
+    ═══════════════════════════════════════════ */
+    @media screen {
+      .pg {
+        width: 210mm;
+        min-height: 297mm;
+        margin: 24px auto;
+        background: var(--cream);
+        box-shadow:
+          0 1px 3px rgba(0,0,0,0.08),
+          0 8px 32px rgba(0,0,0,0.12);
+        position: relative;
+        overflow: hidden;
+      }
+      .pg--dark { background: var(--green-dark); }
+      .pg--brown { background: var(--brown); }
+      .pg--petal { background: var(--petal); }
+      .cover { min-height: 297mm; }
+    }
+
+    @media print {
+      body { background: none; }
+      .pg {
+        box-shadow: none;
+        width: auto;
+        min-height: auto;
+        page-break-after: always;
+      }
+      .pg:last-child { page-break-after: auto; }
+    }
+
+    /* ═══════════════════════════════════════════
+       COVER
+    ═══════════════════════════════════════════ */
+    .cover {
+      background: var(--green-dark);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 60px 50px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Subtle radial glow */
+    .cover::before {
+      content: '';
+      position: absolute;
+      bottom: -25%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120%;
+      height: 60%;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(45,94,64,0.3) 0%, transparent 65%);
+    }
+
+    /* Decorative top line */
+    .cover::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--terra), var(--gold), var(--terra));
+    }
+
+    .cover__logo { width: 100px; margin-bottom: 44px; position: relative; }
+
+    .cover__title {
+      font-family: var(--serif);
+      font-size: 30pt;
+      font-weight: 500;
+      color: #fff;
+      line-height: 1.12;
+      letter-spacing: -0.025em;
+      max-width: 440px;
+      position: relative;
+    }
+
+    .cover__rule {
+      width: 40px;
+      height: 2px;
+      background: var(--terra);
+      margin: 32px auto;
+      position: relative;
+    }
+
+    .cover__subtitle {
+      font-family: var(--serif);
+      font-size: 15pt;
+      font-style: italic;
+      color: var(--gold);
+      position: relative;
+    }
+
+    .cover__tagline {
+      font-family: var(--sans);
+      font-size: 7pt;
+      font-weight: 600;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: rgba(255,248,240,0.3);
+      margin-top: 52px;
+      position: relative;
+    }
+
+    /* ═══════════════════════════════════════════
+       TYPOGRAPHY
+    ═══════════════════════════════════════════ */
+    h2 {
+      font-family: var(--serif);
+      font-size: 26pt;
+      font-weight: 500;
+      color: var(--green);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 14pt;
+    }
+
+    h3 {
+      font-family: var(--serif);
+      font-size: 13pt;
+      font-weight: 600;
+      color: var(--green);
+      line-height: 1.25;
+      margin-bottom: 5pt;
+    }
+
+    .eyebrow {
+      font-family: var(--sans);
+      font-size: 7pt;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--terra);
+      margin-bottom: 10pt;
+      display: block;
+    }
+
+    p { margin-bottom: 9pt; }
+    p:last-child { margin-bottom: 0; }
+    em { font-style: italic; }
+
+    /* ═══════════════════════════════════════════
+       PAGE CONTENT WRAPPER
+    ═══════════════════════════════════════════ */
+    .content {
+      padding: 52px 50px 48px;
+    }
+
+    @media print {
+      .content { padding: 0; }
+    }
+
+    /* ═══════════════════════════════════════════
+       SECTION SPACING
+    ═══════════════════════════════════════════ */
+    .sec { margin-bottom: 28pt; page-break-inside: avoid; }
+    .sec:last-child { margin-bottom: 0; }
+
+    /* ═══════════════════════════════════════════
+       DIVIDERS
+    ═══════════════════════════════════════════ */
+    .rule {
+      width: 40px;
+      height: 2px;
+      background: var(--terra);
+      border: none;
+      margin: 24pt 0;
+    }
+    .rule--gold { background: var(--gold); }
+    .rule--center { margin-left: auto; margin-right: auto; }
+    .rule--wide { width: 60px; }
+
+    /* ═══════════════════════════════════════════
+       PULL QUOTE
+    ═══════════════════════════════════════════ */
+    .pull {
+      font-family: var(--serif);
+      font-size: 14pt;
+      font-style: italic;
+      color: var(--brown);
+      line-height: 1.5;
+      padding: 14pt 0 14pt 18pt;
+      border-left: 3px solid var(--terra);
+      margin: 16pt 0;
+      page-break-inside: avoid;
+    }
+
+    /* ═══════════════════════════════════════════
+       STAT HERO
+    ═══════════════════════════════════════════ */
+    .stat-hero {
+      display: flex;
+      align-items: baseline;
+      gap: 12pt;
+      margin: 18pt 0 8pt;
+    }
+    .stat-hero__num {
+      font-family: var(--serif);
+      font-size: 52pt;
+      font-weight: 600;
+      color: var(--terra);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .stat-hero__unit {
+      font-family: var(--serif);
+      font-size: 22pt;
+      font-weight: 400;
+      color: var(--terra);
+      opacity: 0.7;
+    }
+    .stat-hero__label {
+      font-size: 9pt;
+      color: rgba(58,42,31,0.55);
+      margin-bottom: 14pt;
+      max-width: 360pt;
+    }
+
+    /* ═══════════════════════════════════════════
+       PATHWAY CARDS
+    ═══════════════════════════════════════════ */
+    .paths {
+      display: flex;
+      gap: 16pt;
+      margin: 20pt 0;
+      page-break-inside: avoid;
+    }
+    .path {
+      flex: 1;
+      padding: 16pt 14pt 14pt;
+      border-radius: 6pt;
+      background: rgba(45,94,64,0.04);
+      border-top: 3px solid var(--green);
+      position: relative;
+    }
+    .path:nth-child(2) { border-top-color: var(--terra); }
+    .path:nth-child(3) { border-top-color: var(--gold); }
+
+    .path__num {
+      font-family: var(--serif);
+      font-size: 28pt;
+      font-weight: 600;
+      color: var(--sage);
+      opacity: 0.25;
+      line-height: 1;
+      margin-bottom: 4pt;
+    }
+    .path h3 { font-size: 11pt; margin-bottom: 5pt; }
+    .path p { font-size: 9pt; line-height: 1.55; color: rgba(58,42,31,0.7); }
+
+    /* ═══════════════════════════════════════════
+       PROOF CALLOUT
+    ═══════════════════════════════════════════ */
+    .proof {
+      background: rgba(45,94,64,0.06);
+      border-left: 3px solid var(--green);
+      padding: 10pt 16pt;
+      border-radius: 0 4pt 4pt 0;
+      margin: 14pt 0;
+      font-size: 10pt;
+      font-weight: 600;
+      color: var(--green);
+      page-break-inside: avoid;
+    }
+
+    /* ═══════════════════════════════════════════
+       DARK PAGE OVERRIDES
+    ═══════════════════════════════════════════ */
+    .pg--dark h2 { color: var(--cream); }
+    .pg--dark h3 { color: var(--cream); }
+    .pg--dark .eyebrow { color: var(--gold); }
+    .pg--dark p { color: rgba(255,248,240,0.8); }
+    .pg--dark .pull { color: rgba(255,248,240,0.85); border-left-color: var(--gold); }
+    .pg--dark .rule { background: rgba(255,248,240,0.15); }
+
+    /* ═══════════════════════════════════════════
+       BROWN PAGE OVERRIDES
+    ═══════════════════════════════════════════ */
+    .pg--brown h2 { color: var(--cream); }
+    .pg--brown .eyebrow { color: var(--terra); }
+    .pg--brown p { color: rgba(255,248,240,0.75); }
+
+    /* ═══════════════════════════════════════════
+       WILL-NOT — solemn
+    ═══════════════════════════════════════════ */
+    .vow {
+      padding: 14pt 0 14pt 18pt;
+      border-left: 3px solid var(--zobo);
+      margin-bottom: 14pt;
+      page-break-inside: avoid;
+    }
+    .vow p {
+      font-size: 10.5pt;
+      line-height: 1.65;
+    }
+
+    /* ═══════════════════════════════════════════
+       CREED BLOCK
+    ═══════════════════════════════════════════ */
+    .creed {
+      background: var(--green-dark);
+      color: var(--cream);
+      padding: 20pt 24pt;
+      border-radius: 6pt;
+      text-align: center;
+      margin: 18pt 0;
+      page-break-inside: avoid;
+    }
+    .creed p {
+      font-family: var(--serif);
+      font-size: 14pt;
+      font-style: italic;
+      line-height: 1.55;
+      color: var(--cream);
+      margin: 0;
+    }
+
+    /* ═══════════════════════════════════════════
+       VALUES
+    ═══════════════════════════════════════════ */
+    .vals {
+      display: flex;
+      gap: 0;
+      margin: 24pt 0;
+      page-break-inside: avoid;
+    }
+    .val {
+      flex: 1;
+      text-align: center;
+      padding: 18pt 12pt;
+      position: relative;
+    }
+    .val + .val::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 20%;
+      height: 60%;
+      width: 1px;
+      background: rgba(255,248,240,0.15);
+    }
+    .val__word {
+      font-family: var(--serif);
+      font-size: 22pt;
+      font-weight: 500;
+      color: var(--gold);
+      margin-bottom: 6pt;
+      letter-spacing: -0.01em;
+    }
+    .val__desc {
+      font-size: 9pt;
+      line-height: 1.55;
+      color: rgba(255,248,240,0.55);
+    }
+
+    /* ═══════════════════════════════════════════
+       CLOSING
+    ═══════════════════════════════════════════ */
+    .close { text-align: center; }
+    .close h2 { color: var(--cream); margin-bottom: 16pt; }
+    .close p {
+      max-width: 380pt;
+      margin: 0 auto 9pt;
+      color: rgba(255,248,240,0.6);
+      font-size: 10pt;
+    }
+    .close__contact {
+      margin-top: 32pt;
+      padding-top: 14pt;
+      border-top: 1px solid rgba(255,248,240,0.1);
+    }
+    .close__url {
+      font-family: var(--sans);
+      font-size: 10pt;
+      font-weight: 700;
+      color: var(--terra);
+      letter-spacing: 0.5px;
+    }
+    .close__email {
+      font-size: 8.5pt;
+      color: rgba(255,248,240,0.35);
+      margin-top: 3pt;
+    }
+    .close__tagline {
+      font-family: var(--sans);
+      font-size: 7pt;
+      font-weight: 600;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.5;
+      margin-top: 36pt;
+    }
+
+    /* ═══════════════════════════════════════════
+       PLACEHOLDER
+    ═══════════════════════════════════════════ */
+    .placeholder {
+      font-style: italic;
+      color: var(--sage);
+      border: 1.5px dashed rgba(139,175,142,0.5);
+      padding: 8pt 14pt;
+      border-radius: 4pt;
+      font-size: 9pt;
+      margin: 8pt 0;
+    }
+
+    /* ═══════════════════════════════════════════
+       OPENING PARAGRAPH — large serif italic
+    ═══════════════════════════════════════════ */
+    .lede {
+      font-family: var(--serif);
+      font-size: 13pt;
+      font-style: italic;
+      color: var(--brown);
+      line-height: 1.6;
+      margin-bottom: 10pt;
+    }
+
+    /* ═══════════════════════════════════════════
+       PAGE HEADER STRIP (on content pages)
+    ═══════════════════════════════════════════ */
+    .pg__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 50px;
+      height: 36px;
+      font-family: var(--sans);
+      font-size: 6.5pt;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(58,42,31,0.2);
+      border-bottom: 1px solid rgba(58,42,31,0.06);
+    }
+    .pg--dark .pg__header {
+      color: rgba(255,248,240,0.15);
+      border-bottom-color: rgba(255,248,240,0.06);
+    }
+    .pg--brown .pg__header {
+      color: rgba(255,248,240,0.15);
+      border-bottom-color: rgba(255,248,240,0.06);
+    }
+
+    @media print {
+      .pg__header { padding: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════ COVER ═══════════════════════ -->
+  <div class="pg cover">
+    <svg class="cover__logo" viewBox="0 0 460 320" xmlns="http://www.w3.org/2000/svg">
+      <path d="M230 32 C 138 32, 72 72, 78 126 C 82 155, 110 176, 150 186 C 170 190, 192 192, 218 194 L 218 270 L 242 270 L 242 194 C 268 192, 290 190, 310 186 C 350 176, 378 155, 382 126 C 388 72, 322 32, 230 32 Z" fill="#FFFFFF"/>
+      <circle cx="148" cy="105" r="5" fill="#8BAF8E" opacity="0.25"/>
+      <circle cx="188" cy="82" r="4" fill="#8BAF8E" opacity="0.22"/>
+      <circle cx="230" cy="68" r="5.5" fill="#8BAF8E" opacity="0.28"/>
+      <circle cx="272" cy="82" r="4" fill="#8BAF8E" opacity="0.22"/>
+      <circle cx="312" cy="105" r="5" fill="#8BAF8E" opacity="0.25"/>
+      <path d="M218 270 Q212 280 204 286 L182 302" stroke="#FFFFFF" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <path d="M242 270 Q248 280 256 286 L278 302" stroke="#FFFFFF" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <line x1="230" y1="270" x2="230" y2="306" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <h1 class="cover__title">We Are Not a Charity in the Way You've Been Taught to Think About Charity</h1>
+    <div class="cover__rule"></div>
+    <p class="cover__subtitle">Our Manifesto</p>
+    <p class="cover__tagline">Rooted &middot; Present &middot; Protective</p>
+  </div>
+
+  <!-- ═══════════════════════ PAGE 2: THE IROKO + STATS ═══════════════════════ -->
+  <div class="pg">
+    <div class="pg__header"><span>Big Sister Foundation</span><span>Manifesto</span></div>
+    <div class="content">
+      <div class="sec">
+        <p class="lede">There is a tree native to West Africa called the iroko. It grows slowly. It grows in difficult soil. And when it reaches its full height, it doesn't just stand there. It shelters everything around it. Its roots hold the ground together for other plants. Its canopy creates shade where new things can grow.</p>
+        <p>We chose the iroko as our symbol because it describes exactly what a child can become when someone shows up for them at the right time.</p>
+      </div>
+
+      <hr class="rule rule--wide">
+
+      <div class="sec">
+        <span class="eyebrow">This Is What We Know</span>
+        <h2>The Reality</h2>
+
+        <div class="stat-hero">
+          <span class="stat-hero__num">13.2</span>
+          <span class="stat-hero__unit">million</span>
+        </div>
+        <p class="stat-hero__label">Nigerian children are out of school right now &mdash; the highest number in the world.</p>
+
+        <p>We know that most children with disabilities in Lagos will never sit in a classroom. We know that girls in this country are married off before they learn what they're capable of.</p>
+
+        <p class="pull">We also know that these are not just numbers. They are children with names, living in real neighbourhoods, dealing with real problems that direct action can address.</p>
+
+        <p>That distinction matters to us. It shapes everything we do. Including the part most organisations would rather you not look at too closely.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ PAGE 3: THREE PATHWAYS ═══════════════════════ -->
+  <div class="pg">
+    <div class="pg__header"><span>Big Sister Foundation</span><span>What We Do</span></div>
+    <div class="content">
+      <div class="sec">
+        <span class="eyebrow">What We Actually Do</span>
+        <h2>Three Pathways.<br>One Promise.</h2>
+
+        <p>We work across three pathways. Our scholarship programme is the furthest along, with over ten children currently in school on BSF-funded sponsorships. The other two are growing deliberately, not all at once, because doing each one well matters more than doing all three at scale.</p>
+
+        <div class="paths">
+          <div class="path">
+            <p class="path__num">01</p>
+            <h3>Difficult Backgrounds</h3>
+            <p>Single mothers. Survivors. People failed by every system that was supposed to protect them. We provide food, counselling, and safe spaces. We provide food, counselling, and safe spaces — ground to stand on, so they can stand on their own.</p>
+          </div>
+          <div class="path">
+            <p class="path__num">02</p>
+            <h3>Special Needs &amp; Disabilities</h3>
+            <p>Young people who deserve the same access, the same advocacy, the same shot as everyone else. We work to make that real, not theoretical.</p>
+          </div>
+          <div class="path">
+            <p class="path__num">03</p>
+            <h3>Gifted &amp; Talented</h3>
+            <p>Young people whose talent would be erased by their circumstances if no one intervened. We intervene. Scholarships. Mentorship. The practical support that keeps talent from going to waste.</p>
+          </div>
+        </div>
+
+        <p class="proof">Ten children are in school today because of this programme. Each one is proof the model works.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ PAGE 4: ACCOUNTABILITY ═══════════════════════ -->
+  <div class="pg">
+    <div class="pg__header"><span>Big Sister Foundation</span><span>Accountability</span></div>
+    <div class="content">
+      <div class="sec">
+        <span class="eyebrow">Accountability</span>
+        <h2>Every Naira<br>Has a Name</h2>
+
+        <p>Most organisations ask for your trust. We decided to make trust unnecessary.</p>
+        <p>When you give to Big Sister Foundation, you do not give to a general pot. You choose where your money goes. School fees. Food. Healthcare. A specific goal. Your naira enters with a destination, and it keeps that destination all the way through.</p>
+        <p>Then we write it down where everyone can read it.</p>
+        <p>Not in an annual report. Not in a PDF buried on a website. In a public ledger, updated in real time, open to anyone. Every inflow. Every outflow. Every ratio. If you want to know where the money went, you don't email us and wait. You look.</p>
+
+        <p class="pull">We built it this way because we think accountability should not require permission.</p>
+      </div>
+
+      <hr class="rule">
+
+      <div class="sec">
+        <span class="eyebrow">Visibility</span>
+        <h2>Names, Not Numbers</h2>
+
+        <p>Every child in our care has a story we track and protect. Their pathway. Their aspirations. The investment made in them. How they're progressing. You can see it, child by child, because we believe that "we help children" is not enough. You should be able to ask <em>which</em> children, and get an answer.</p>
+        <p>We anonymise details to protect them. But we do not hide them behind aggregate statistics. A child is not a data point. A child is a person whose name we know, whose progress we follow, whose future we are building alongside them.</p>
+        <p>If you sponsor a child, you do not wonder. You see where your support landed. You watch that child move forward. The record is there, open, any time you want to read it. No thank-you letter with a photograph. Just the truth, kept current.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ PAGE 5: GOVERNANCE + VOLUNTEERS ═══════════════════════ -->
+  <div class="pg pg--petal">
+    <div class="pg__header"><span>Big Sister Foundation</span><span>Governance</span></div>
+    <div class="content">
+      <div class="sec">
+        <span class="eyebrow">Governance</span>
+        <h2>The Community Decides<br>What Happens Next</h2>
+
+        <p>We did not build all of this just so you could watch. We built it so you could speak.</p>
+        <p>Anyone can propose an idea for what Big Sister Foundation should do next. The community votes. The priorities that rise are the ones we pursue. This is not a suggestion box that disappears into a back office. It is how we set direction.</p>
+        <p>And in the conversations where our volunteers, supporters, and community members talk to each other, nothing is curated. People share what they've seen. They challenge what isn't working. They shape what comes next. Because an organisation that only listens to itself will eventually stop hearing what matters.</p>
+      </div>
+
+      <hr class="rule">
+
+      <div class="sec">
+        <span class="eyebrow">Standards</span>
+        <h2>Who We Let In</h2>
+
+        <p>Not everyone who wants to help should. We learned that early.</p>
+        <p>Our volunteers are filtered, not collected. We screen for consistency, not enthusiasm. For presence, not performance. For people who will show up on the days when no one is watching and nothing is exciting.</p>
+
+        <div class="creed">
+          <p>Consistency over intensity.<br>Presence over performance.<br>Community over charity.</p>
+        </div>
+
+        <p>That is the creed, and we hold people to it, because these children have already been let down by adults who meant well and disappeared.</p>
+        <p>And then we bring it all together in person. Real gatherings. Real faces. Because accountability that only lives on a screen is not yet complete. When you sit in a room with the people doing the work and the people the work is for, you stop being an observer. No report does that.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ PAGE 6: WILL NOT DO + ORIGIN ═══════════════════════ -->
+  <div class="pg pg--brown">
+    <div class="pg__header"><span>Big Sister Foundation</span><span>Our Line</span></div>
+    <div class="content">
+      <div class="sec">
+        <span class="eyebrow">Our Line</span>
+        <h2 style="color: var(--cream);">What We Will Not Do</h2>
+
+        <div class="vow">
+          <p style="color: rgba(255,248,240,0.8);">We will not describe the people we work with as if they are problems to be solved.</p>
+        </div>
+        <div class="vow">
+          <p style="color: rgba(255,248,240,0.8);">We will not create dependency. The goal is to feed someone long enough that they can feed others. Every child we support is being prepared to become a person who raises the community around them. That is the model. Not a slogan. The model.</p>
+        </div>
+      </div>
+
+      <hr class="rule" style="background: rgba(255,248,240,0.12);">
+
+      <div class="sec">
+        <span class="eyebrow">Our Origin</span>
+        <h2 style="color: var(--cream);">Where This Comes From</h2>
+
+        <p>This started with one woman watching the girls in her neighbourhood disappear. Not dramatically. Quietly. One dropped out of school. Another got married at fourteen. Another just stopped showing up.</p>
+        <p>Bolaji noticed. Then she did something about it.</p>
+
+        <p class="placeholder">The founder's specific first action will appear here &mdash; the real moment that started everything.</p>
+
+        <p>That first act became a pattern. The pattern became a question: how do you make sure this doesn't depend on one person noticing forever? How do you build something where anyone can see the work, verify the money, track the children, and have a say in what happens next?</p>
+        <p>Big Sister Foundation is the answer to that question. It is still young. We are in our early years, building carefully. But the roots are in the ground, and the first branches are already holding weight.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ PAGE 7: VALUES + CLOSE ═══════════════════════ -->
+  <div class="pg pg--dark">
+    <div class="pg__header"><span>Big Sister Foundation</span><span>Our Values</span></div>
+    <div class="content">
+      <div class="sec" style="text-align: center;">
+        <span class="eyebrow" style="display: block;">Our Values</span>
+        <h2>What We Believe</h2>
+
+        <div class="vals">
+          <div class="val">
+            <p class="val__word">Rooted</p>
+            <p class="val__desc">In this place, in these communities, in the soil we grew from.</p>
+          </div>
+          <div class="val">
+            <p class="val__word">Present</p>
+            <p class="val__desc">Every week, in the moments that matter, when no one is watching and no camera is out.</p>
+          </div>
+          <div class="val">
+            <p class="val__word">Protective</p>
+            <p class="val__desc">Standing between vulnerable children and the systems that fail them. Not with anger. With action.</p>
+          </div>
+        </div>
+      </div>
+
+      <hr class="rule rule--gold rule--center">
+
+      <div class="close">
+        <h2>Come See the Work</h2>
+
+        <p>We would rather show you than tell you. The children are visible. The finances are open. The books are public. The community votes. All of it is there.</p>
+        <p>Come see the classrooms. Meet the children. Read the ledger. Then decide if you're in.</p>
+        <p>There are many ways in: as a volunteer, a sponsor, a mentor, or someone who simply pays attention to what we're building. The door is open.</p>
+
+        <div class="close__contact">
+          <p class="close__url">bigsisterfoundation.org</p>
+          <p class="close__email">hello@thebigsisterfoundation.org</p>
+        </div>
+
+        <p class="close__tagline">Rooted &middot; Present &middot; Protective</p>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
