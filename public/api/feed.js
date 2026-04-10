@@ -1,29 +1,9 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import { readAiPosts, sortPostsByDateDesc } from './_lib/ai-posts.js';
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   const BASE_URL = 'https://thebigsisterfoundation.org';
 
-  // Read blog posts
-  let posts = [];
-  try {
-    const filePath = join(process.cwd(), 'data', 'ai-posts.json');
-    posts = JSON.parse(readFileSync(filePath, 'utf-8'));
-  } catch (e) {
-    try {
-      const filePath = join(process.cwd(), 'public', 'data', 'ai-posts.json');
-      posts = JSON.parse(readFileSync(filePath, 'utf-8'));
-    } catch (e2) {
-      // No posts available
-    }
-  }
-
-  // Sort by date descending and take 20 most recent
-  if (Array.isArray(posts)) {
-    posts = posts
-      .sort(function(a, b) { return new Date(b.date) - new Date(a.date); })
-      .slice(0, 20);
-  }
+  let posts = sortPostsByDateDesc(await readAiPosts()).slice(0, 20);
 
   function escapeXml(str) {
     if (!str) return '';
@@ -44,21 +24,19 @@ export default function handler(req, res) {
   xml += '    <language>en</language>\n';
   xml += '    <atom:link href="' + BASE_URL + '/api/feed" rel="self" type="application/rss+xml" />\n';
 
-  if (Array.isArray(posts)) {
-    posts.forEach(function(post) {
-      var postUrl = BASE_URL + '/blog/?post=' + post.id;
-      var pubDate = new Date(post.date).toUTCString();
+  posts.forEach(function(post) {
+    var postUrl = BASE_URL + '/blog/?post=' + post.id;
+    var pubDate = new Date(post.date).toUTCString();
 
-      xml += '    <item>\n';
-      xml += '      <title>' + escapeXml(post.title) + '</title>\n';
-      xml += '      <link>' + postUrl + '</link>\n';
-      xml += '      <guid>' + postUrl + '</guid>\n';
-      xml += '      <description>' + escapeXml(post.excerpt || post.metaDescription || '') + '</description>\n';
-      xml += '      <pubDate>' + pubDate + '</pubDate>\n';
-      xml += '      <author>' + escapeXml(post.author || 'Big Sister Foundation') + '</author>\n';
-      xml += '    </item>\n';
-    });
-  }
+    xml += '    <item>\n';
+    xml += '      <title>' + escapeXml(post.title) + '</title>\n';
+    xml += '      <link>' + postUrl + '</link>\n';
+    xml += '      <guid>' + postUrl + '</guid>\n';
+    xml += '      <description>' + escapeXml(post.excerpt || post.metaDescription || '') + '</description>\n';
+    xml += '      <pubDate>' + pubDate + '</pubDate>\n';
+    xml += '      <author>' + escapeXml(post.author || 'Big Sister Foundation') + '</author>\n';
+    xml += '    </item>\n';
+  });
 
   xml += '  </channel>\n';
   xml += '</rss>';

@@ -1,7 +1,6 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import { readAiPosts } from './_lib/ai-posts.js';
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   const BASE_URL = 'https://thebigsisterfoundation.org';
 
   // Static pages
@@ -17,19 +16,7 @@ export default function handler(req, res) {
     { loc: '/blog/', changefreq: 'daily', priority: '0.8' },
   ];
 
-  // Read blog posts
-  let posts = [];
-  try {
-    const filePath = join(process.cwd(), 'data', 'ai-posts.json');
-    posts = JSON.parse(readFileSync(filePath, 'utf-8'));
-  } catch (e) {
-    try {
-      const filePath = join(process.cwd(), 'public', 'data', 'ai-posts.json');
-      posts = JSON.parse(readFileSync(filePath, 'utf-8'));
-    } catch (e2) {
-      // No posts available
-    }
-  }
+  const posts = await readAiPosts();
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -47,16 +34,14 @@ export default function handler(req, res) {
   });
 
   // Add blog posts
-  if (Array.isArray(posts)) {
-    posts.forEach(function(post) {
-      xml += '  <url>\n';
-      xml += '    <loc>' + BASE_URL + '/blog/?post=' + post.id + '</loc>\n';
-      xml += '    <lastmod>' + (post.date || today) + '</lastmod>\n';
-      xml += '    <changefreq>monthly</changefreq>\n';
-      xml += '    <priority>0.6</priority>\n';
-      xml += '  </url>\n';
-    });
-  }
+  posts.forEach(function(post) {
+    xml += '  <url>\n';
+    xml += '    <loc>' + BASE_URL + '/blog/?post=' + post.id + '</loc>\n';
+    xml += '    <lastmod>' + (post.date || today) + '</lastmod>\n';
+    xml += '    <changefreq>monthly</changefreq>\n';
+    xml += '    <priority>0.6</priority>\n';
+    xml += '  </url>\n';
+  });
 
   xml += '</urlset>';
 
