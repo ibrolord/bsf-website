@@ -3,8 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q4EYY24EDZ"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-Q4EYY24EDZ');</script>
   <title>Big Sister Foundation — Rooted. Present. Protective.</title>
   <meta name="description" content="Big Sister Foundation supports vulnerable children in Lagos, preparing them to lead and strengthen the communities they come from.">
   <meta name="theme-color" content="#2D5E40">
@@ -21,9 +19,9 @@
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130'%3E%3Cellipse cx='50' cy='35' rx='35' ry='30' fill='%232D5E40' opacity='0.85'/%3E%3Cellipse cx='30' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cellipse cx='70' cy='45' rx='28' ry='24' fill='%232D5E40' opacity='0.7'/%3E%3Cpath d='M47 70 Q46 90 44 110 Q50 112 56 110 Q54 90 53 70 Z' fill='%233A2A1F' opacity='0.8'/%3E%3C/svg%3E">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+  <link rel="preload" href="/fonts/eb-garamond/eb-garamond-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/shared/bsf-fonts.css">
+  <script defer src="/shared/bsf-analytics.js"></script>
 
   <style>
     /* =============================================
@@ -269,6 +267,12 @@
       inset: 0;
     }
 
+    .hero__media {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
     .hero__image {
       width: 100%;
       height: 100%;
@@ -439,6 +443,10 @@
       object-fit: cover;
     }
 
+    .pathway-card__media {
+      display: block;
+    }
+
     .pathway-card__body {
       padding: 1.5rem;
     }
@@ -568,6 +576,10 @@
       width: 100%;
       aspect-ratio: 4/5;
       object-fit: cover;
+    }
+
+    .founder__media {
+      display: block;
     }
 
     .founder__quote-mark {
@@ -1162,13 +1174,30 @@
   <!-- HERO -->
   <section class="hero" id="hero">
     <div class="hero__image-wrap">
-      <img
-        class="hero__image"
-        src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1400&q=80&auto=format&fit=crop"
-        alt="African children smiling together in a community setting"
-        loading="eager"
-        fetchpriority="high"
-      >
+      <picture class="hero__media">
+        <source
+          type="image/avif"
+          srcset="/assets/home/hero-community-640.avif 640w, /assets/home/hero-community-960.avif 960w, /assets/home/hero-community-1400.avif 1400w"
+          sizes="100vw"
+        >
+        <source
+          type="image/webp"
+          srcset="/assets/home/hero-community-640.webp 640w, /assets/home/hero-community-960.webp 960w, /assets/home/hero-community-1400.webp 1400w"
+          sizes="100vw"
+        >
+        <img
+          class="hero__image"
+          src="/assets/home/hero-community-1400.jpg"
+          srcset="/assets/home/hero-community-640.jpg 640w, /assets/home/hero-community-960.jpg 960w, /assets/home/hero-community-1400.jpg 1400w"
+          sizes="100vw"
+          alt="African children smiling together in a community setting"
+          width="1400"
+          height="933"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        >
+      </picture>
     </div>
 
     <!-- Grain texture -->
@@ -1243,12 +1272,29 @@
 
       <div class="pathways__grid">
         <article class="pathway-card" data-animate data-animate-delay="1">
-          <img
-            class="pathway-card__image"
-            src="https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=600&q=80&auto=format&fit=crop"
-            alt="Portrait of an African child"
-            loading="lazy"
-          >
+          <picture class="pathway-card__media">
+            <source
+              type="image/avif"
+              srcset="/assets/home/pathway-difficult-backgrounds-320.avif 320w, /assets/home/pathway-difficult-backgrounds-640.avif 640w"
+              sizes="(min-width: 1024px) 30vw, (min-width: 768px) 45vw, 100vw"
+            >
+            <source
+              type="image/webp"
+              srcset="/assets/home/pathway-difficult-backgrounds-320.webp 320w, /assets/home/pathway-difficult-backgrounds-640.webp 640w"
+              sizes="(min-width: 1024px) 30vw, (min-width: 768px) 45vw, 100vw"
+            >
+            <img
+              class="pathway-card__image"
+              src="/assets/home/pathway-difficult-backgrounds-640.jpg"
+              srcset="/assets/home/pathway-difficult-backgrounds-320.jpg 320w, /assets/home/pathway-difficult-backgrounds-640.jpg 640w"
+              sizes="(min-width: 1024px) 30vw, (min-width: 768px) 45vw, 100vw"
+              alt="Portrait of an African child"
+              width="640"
+              height="508"
+              loading="lazy"
+              decoding="async"
+            >
+          </picture>
           <div class="pathway-card__body">
             <div class="pathway-card__accent pathway-card__accent--green"></div>
             <p class="pathway-card__number">01</p>
@@ -1258,12 +1304,29 @@
         </article>
 
         <article class="pathway-card" data-animate data-animate-delay="2">
-          <img
-            class="pathway-card__image"
-            src="https://images.unsplash.com/photo-1516627145497-ae6968895b74?w=600&q=80&auto=format&fit=crop"
-            alt="Children learning in a classroom setting"
-            loading="lazy"
-          >
+          <picture class="pathway-card__media">
+            <source
+              type="image/avif"
+              srcset="/assets/home/pathway-special-needs-320.avif 320w, /assets/home/pathway-special-needs-640.avif 640w"
+              sizes="(min-width: 1024px) 30vw, (min-width: 768px) 45vw, 100vw"
+            >
+            <source
+              type="image/webp"
+              srcset="/assets/home/pathway-special-needs-320.webp 320w, /assets/home/pathway-special-needs-640.webp 640w"
+              sizes="(min-width: 1024px) 30vw, (min-width: 768px) 45vw, 100vw"
+            >
+            <img
+              class="pathway-card__image"
+              src="/assets/home/pathway-special-needs-640.jpg"
+              srcset="/assets/home/pathway-special-needs-320.jpg 320w, /assets/home/pathway-special-needs-640.jpg 640w"
+              sizes="(min-width: 1024px) 30vw, (min-width: 768px) 45vw, 100vw"
+              alt="Children learning in a classroom setting"
+              width="640"
+              height="442"
+              loading="lazy"
+              decoding="async"
+            >
+          </picture>
           <div class="pathway-card__body">
             <div class="pathway-card__accent pathway-card__accent--terra"></div>
             <p class="pathway-card__number">02</p>
@@ -1273,12 +1336,29 @@
         </article>
 
         <article class="pathway-card" data-animate data-animate-delay="3">
-          <img
-            class="pathway-card__image"
-            src="https://images.unsplash.com/photo-1596495578065-6e0763fa1178?w=600&q=80&auto=format&fit=crop"
-            alt="Young African student in an academic setting"
-            loading="lazy"
-          >
+          <picture class="pathway-card__media">
+            <source
+              type="image/avif"
+              srcset="/assets/home/pathway-gifted-talented-320.avif 320w, /assets/home/pathway-gifted-talented-640.avif 640w"
+              sizes="(min-width: 1024px) 30vw, (min-width: 768px) 45vw, 100vw"
+            >
+            <source
+              type="image/webp"
+              srcset="/assets/home/pathway-gifted-talented-320.webp 320w, /assets/home/pathway-gifted-talented-640.webp 640w"
+              sizes="(min-width: 1024px) 30vw, (min-width: 768px) 45vw, 100vw"
+            >
+            <img
+              class="pathway-card__image"
+              src="/assets/home/pathway-gifted-talented-640.jpg"
+              srcset="/assets/home/pathway-gifted-talented-320.jpg 320w, /assets/home/pathway-gifted-talented-640.jpg 640w"
+              sizes="(min-width: 1024px) 30vw, (min-width: 768px) 45vw, 100vw"
+              alt="Young African student in an academic setting"
+              width="640"
+              height="427"
+              loading="lazy"
+              decoding="async"
+            >
+          </picture>
           <div class="pathway-card__body">
             <div class="pathway-card__accent pathway-card__accent--gold"></div>
             <p class="pathway-card__number">03</p>
@@ -1327,12 +1407,29 @@
     <div class="container">
       <div class="founder__layout">
         <div class="founder__image-wrap" data-animate>
-          <img
-            class="founder__image"
-            src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=600&q=80&auto=format&fit=crop"
-            alt="Bolaji, Founder of Big Sister Foundation"
-            loading="lazy"
-          >
+          <picture class="founder__media">
+            <source
+              type="image/avif"
+              srcset="/assets/home/founder-bolaji-320.avif 320w, /assets/home/founder-bolaji-640.avif 640w"
+              sizes="(min-width: 1024px) 36vw, 100vw"
+            >
+            <source
+              type="image/webp"
+              srcset="/assets/home/founder-bolaji-320.webp 320w, /assets/home/founder-bolaji-640.webp 640w"
+              sizes="(min-width: 1024px) 36vw, 100vw"
+            >
+            <img
+              class="founder__image"
+              src="/assets/home/founder-bolaji-640.jpg"
+              srcset="/assets/home/founder-bolaji-320.jpg 320w, /assets/home/founder-bolaji-640.jpg 640w"
+              sizes="(min-width: 1024px) 36vw, 100vw"
+              alt="Bolaji, Founder of Big Sister Foundation"
+              width="640"
+              height="960"
+              loading="lazy"
+              decoding="async"
+            >
+          </picture>
         </div>
         <div class="founder__text">
           <div class="founder__quote-mark" data-animate aria-hidden="true">"</div>
@@ -1666,6 +1763,5 @@
   });
 })();
 </script>
-<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
