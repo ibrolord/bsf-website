@@ -2,5 +2,9 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /sponsor/dashboard.html
+Disallow: /volunteer/dashboard/
+Disallow: /donations/
+Disallow: /signin/
+Disallow: /volunteer/register/
 
-Sitemap: https://public-mu-steel.vercel.app/sitemap.xml
+Sitemap: https://thebigsisterfoundation.org/sitemap.xml

@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 export default function handler(req, res) {
-  const BASE_URL = 'https://public-mu-steel.vercel.app';
+  const BASE_URL = 'https://thebigsisterfoundation.org';
 
   // Static pages
   const staticPages = [
@@ -13,8 +13,11 @@ export default function handler(req, res) {
     { loc: '/ideas/', changefreq: 'weekly', priority: '0.7' },
     { loc: '/donate/', changefreq: 'weekly', priority: '0.9' },
     { loc: '/sponsor/', changefreq: 'weekly', priority: '0.8' },
-    { loc: '/volunteer/register/', changefreq: 'monthly', priority: '0.5' },
     { loc: '/blog/', changefreq: 'daily', priority: '0.8' },
+    { loc: '/events/', changefreq: 'weekly', priority: '0.7' },
+    { loc: '/forums/', changefreq: 'weekly', priority: '0.6' },
+    { loc: '/docs/', changefreq: 'monthly', priority: '0.5' },
+    { loc: '/manifesto/', changefreq: 'monthly', priority: '0.7' },
   ];
 
   // Read blog posts

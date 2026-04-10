@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 export default function handler(req, res) {
-  const BASE_URL = 'https://public-mu-steel.vercel.app';
+  const BASE_URL = 'https://thebigsisterfoundation.org';
 
   // Read blog posts
   let posts = [];
@@ -42,7 +42,7 @@ export default function handler(req, res) {
   xml += '    <link>' + BASE_URL + '/blog/</link>\n';
   xml += '    <description>Stories, updates, and insights from Big Sister Foundation. Read about our work with vulnerable children in Lagos and the communities we serve.</description>\n';
   xml += '    <language>en</language>\n';
-  xml += '    <atom:link href="' + BASE_URL + '/api/feed" rel="self" type="application/rss+xml" />\n';
+  xml += '    <atom:link href="' + BASE_URL + '/feed.xml" rel="self" type="application/rss+xml" />\n';
 
   if (Array.isArray(posts)) {
     posts.forEach(function(post) {

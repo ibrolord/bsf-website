@@ -1,10 +1,9 @@
 /**
- * BSF Paystack - Payment integration wrapper
+ * BSF Paystack - Payment placeholder wrapper
  * Big Sister Foundation
  *
- * Multi-currency Paystack payment handler with sponsorship tier logic.
- * Requires the Paystack inline script to be loaded on the page:
- *   <script src="https://js.paystack.co/v2/inline.js"></script>
+ * Multi-currency helper with a guarded Paystack checkout entry point.
+ * Current production state: Paystack is NOT live yet.
  *
  * Usage:
  *   BSFPaystack.pay({
@@ -23,8 +22,10 @@ window.BSFPaystack = (function () {
   return {
 
     // ── Configuration ─────────────────────────────────────────────
-    // IMPORTANT: Replace with your live Paystack public key for production
-    publicKey: 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+    // Leave disabled until a real live Paystack key is available.
+    enabled: false,
+    publicKey: '',
+    unavailableMessage: 'Paystack checkout is not live yet. Use PayPal or direct bank transfer for now, or email hello@thebigsisterfoundation.org.',
 
     // ── Supported currencies with display metadata and preset amounts ──
     currencies: {
@@ -74,6 +75,19 @@ window.BSFPaystack = (function () {
       return this.currencies[currency] || this.currencies.NGN;
     },
 
+    /** True only when checkout is intentionally enabled with a live key. */
+    isReady: function () {
+      return this.enabled === true &&
+        typeof this.publicKey === 'string' &&
+        this.publicKey.indexOf('pk_live_') === 0 &&
+        typeof PaystackPop !== 'undefined';
+    },
+
+    /** Public helper for UI copy when checkout is disabled. */
+    getUnavailableMessage: function () {
+      return this.unavailableMessage;
+    },
+
     // ── Payment ───────────────────────────────────────────────────
 
     /**
@@ -87,11 +101,17 @@ window.BSFPaystack = (function () {
      * @param {Object} [options.metadata] - Arbitrary metadata sent to Paystack
      * @param {Function} [options.onSuccess] - Called with Paystack response on success
      * @param {Function} [options.onClose]   - Called when the payment dialog is closed
+     * @param {Function} [options.onUnavailable] - Called when checkout is disabled
      */
     pay: function (options) {
-      if (typeof PaystackPop === 'undefined') {
-        console.error('[BSFPaystack] PaystackPop is not loaded. Include the Paystack inline script.');
-        return;
+      options = options || {};
+
+      if (!this.isReady()) {
+        console.warn('[BSFPaystack] Checkout is disabled until Paystack is live.');
+        if (typeof options.onUnavailable === 'function') {
+          options.onUnavailable(this.getUnavailableMessage());
+        }
+        return false;
       }
 
       var self = this;
@@ -118,6 +138,7 @@ window.BSFPaystack = (function () {
       });
 
       handler.openIframe();
+      return true;
     },
 
     // ── Sponsor tier calculation ──────────────────────────────────
