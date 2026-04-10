@@ -11,9 +11,9 @@
 //  - Post-publish rank tracking: weekly checks via Perplexity
 // ═══════════════════════════════════════════════════════════════
 
-const GITHUB_REPO = 'ibrolord/threatgenix';
-const POSTS_FILE_PATH = 'TrashShit/claudecode/VNtranscript/public/data/ai-posts.json';
-const BRANCH = 'feat/bsf-website';
+const GITHUB_REPO = process.env.GITHUB_REPO || 'ibrolord/bsf-website';
+const POSTS_FILE_PATH = process.env.GITHUB_POSTS_FILE_PATH || 'public/data/ai-posts.json';
+const BRANCH = process.env.GITHUB_BRANCH || 'main';
 
 // ═══ SEO ENFORCEMENT CONFIG ═══
 const SEO_CONFIG = {
@@ -634,28 +634,42 @@ Return the complete revised post in the same JSON format:
 // ═══ GitHub Persistence ═══
 async function getGitHubFile() {
   const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-  if (!GITHUB_TOKEN) return { content: [], sha: null };
+  if (!GITHUB_TOKEN) {
+    throw new Error('GITHUB_TOKEN not configured');
+  }
 
   const res = await fetch(
     `https://api.github.com/repos/${GITHUB_REPO}/contents/${POSTS_FILE_PATH}?ref=${BRANCH}`,
-    { headers: { Authorization: `token ${GITHUB_TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
+    { headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
   );
-  if (!res.ok) return { content: [], sha: null };
+  if (!res.ok) {
+    let message = `GitHub read failed (${res.status})`;
+    try {
+      const body = await res.json();
+      if (body && body.message) message = `GitHub read failed (${res.status}): ${body.message}`;
+    } catch (_err) {}
+    throw new Error(message);
+  }
   const data = await res.json();
   const content = JSON.parse(Buffer.from(data.content, 'base64').toString());
+  if (!data.sha) {
+    throw new Error('GitHub read succeeded without a file sha');
+  }
   return { content, sha: data.sha };
 }
 
 async function updateGitHubFile(posts, sha) {
   const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-  if (!GITHUB_TOKEN) return false;
+  if (!GITHUB_TOKEN) {
+    throw new Error('GITHUB_TOKEN not configured');
+  }
 
   const encoded = Buffer.from(JSON.stringify(posts, null, 2)).toString('base64');
   const res = await fetch(
     `https://api.github.com/repos/${GITHUB_REPO}/contents/${POSTS_FILE_PATH}`,
     {
       method: 'PUT',
-      headers: { Authorization: `token ${GITHUB_TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
       body: JSON.stringify({
         message: `blog: auto-generate SEO post — ${new Date().toISOString().split('T')[0]}`,
         content: encoded,
@@ -664,7 +678,15 @@ async function updateGitHubFile(posts, sha) {
       })
     }
   );
-  return res.ok;
+  if (!res.ok) {
+    let message = `GitHub write failed (${res.status})`;
+    try {
+      const body = await res.json();
+      if (body && body.message) message = `GitHub write failed (${res.status}): ${body.message}`;
+    } catch (_err) {}
+    throw new Error(message);
+  }
+  return res.json();
 }
 
 // ═══ TOPIC CLUSTER SELECTOR ═══
@@ -1171,10 +1193,8 @@ Respond in JSON: {"title":"","excerpt":"","metaDescription":"","body":"","author
     // ── Persist ──
     const allPosts = [newPost, ...interlinkedPosts].slice(0, 50);
 
-    if (sha) {
-      await updateGitHubFile(allPosts, sha);
-      pipeline.push('published_to_github');
-    }
+    const publishResult = await updateGitHubFile(allPosts, sha);
+    pipeline.push('published_to_github');
 
     return res.status(200).json({
       success: true,
@@ -1188,7 +1208,13 @@ Respond in JSON: {"title":"","excerpt":"","metaDescription":"","body":"","author
       },
       pipeline,
       measurements,
-      totalPosts: allPosts.length
+      totalPosts: allPosts.length,
+      github: {
+        repo: GITHUB_REPO,
+        branch: BRANCH,
+        path: POSTS_FILE_PATH,
+        commitSha: publishResult && publishResult.commit ? publishResult.commit.sha : null
+      }
     });
 
   } catch (error) {
