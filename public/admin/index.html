@@ -1200,6 +1200,7 @@ function switchVolTab(tab){document.querySelectorAll('#page-volunteers .tab-btn'
 // Auth
 function doLogin(){var e=document.getElementById('login-email').value.trim(),p=document.getElementById('login-password').value;if(!e||!p){document.getElementById('login-error').textContent='Please enter email and password.';return;}document.getElementById('btn-login').disabled=true;document.getElementById('btn-login').textContent='Signing in...';auth.signInWithEmailAndPassword(e,p).then(function(){document.getElementById('login-error').textContent='';}).catch(function(err){document.getElementById('login-error').textContent=err.message;document.getElementById('btn-login').disabled=false;document.getElementById('btn-login').textContent='Sign In';});}
 function doLogout(){auth.signOut();}
+async function callAdminJsonApi(path,payload){if(!currentUser){throw new Error('Not signed in.');}var token=await currentUser.getIdToken();var res=await fetch(path,{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify(payload||{})});var data=null;try{data=await res.json();}catch(_err){}if(!res.ok){var msg=data&&data.error&&data.error.message?data.error.message:'Request failed ('+res.status+')';throw new Error(msg);}return data||{ok:true};}
 
 // Login mode switching
 function showLoginMode(mode){
