@@ -369,18 +369,79 @@
       font-size: 1.05rem;
       line-height: 1.85;
     }
-    .post-detail__body p { margin-bottom: 1.25rem; }
+    .post-detail__body > *:first-child { margin-top: 0; }
+    .post-detail__body > *:last-child { margin-bottom: 0; }
+    .post-detail__body p { margin: 0 0 1.25rem; }
     .post-detail__body h2 {
-      font-size: 1.5rem;
-      margin-top: 2rem;
-      margin-bottom: 0.75rem;
+      font-size: clamp(1.45rem, 1.2rem + 1vw, 1.85rem);
+      line-height: 1.25;
+      color: var(--green-dark);
+      margin: 2.5rem 0 0.9rem;
+    }
+    .post-detail__body h3 {
+      font-size: clamp(1.15rem, 1rem + 0.55vw, 1.35rem);
+      line-height: 1.35;
+      color: var(--green-dark);
+      margin: 1.9rem 0 0.75rem;
+    }
+    .post-detail__body ul,
+    .post-detail__body ol {
+      margin: 0 0 1.5rem 1.3rem;
+      padding-left: 1.1rem;
+    }
+    .post-detail__body li {
+      margin-bottom: 0.55rem;
+      padding-left: 0.15rem;
+    }
+    .post-detail__body li::marker {
+      color: var(--terra);
+      font-weight: 700;
+    }
+    .post-detail__body figure {
+      margin: 2rem 0;
+    }
+    .post-detail__body img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 18px;
+      background: rgba(0,0,0,0.04);
+      box-shadow: 0 18px 36px rgba(73,44,27,0.08);
+    }
+    .post-detail__body figure img {
+      display: block;
+      width: 100%;
+    }
+    .post-detail__body figcaption {
+      margin-top: 0.7rem;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      text-align: center;
+      color: rgba(73,44,27,0.72);
+    }
+    .post-detail__inline-image {
+      display: inline-block;
+      vertical-align: middle;
+      margin: 0.35rem 0;
     }
     .post-detail__body blockquote {
-      border-left: 3px solid var(--terra);
-      padding: 0.5rem 1.25rem;
-      margin: 1.5rem 0;
-      font-style: italic;
-      opacity: 0.8;
+      border-left: 4px solid var(--terra);
+      background: rgba(194,115,76,0.08);
+      border-radius: 0 12px 12px 0;
+      padding: 1rem 1.25rem;
+      margin: 1.75rem 0;
+      color: rgba(73,44,27,0.9);
+    }
+    .post-detail__body blockquote p:last-child { margin-bottom: 0; }
+    .post-detail__body a {
+      color: var(--green);
+      text-decoration-thickness: 1.5px;
+      text-underline-offset: 0.18em;
+      word-break: break-word;
+    }
+    .post-detail__body a:hover { color: var(--green-dark); }
+    .post-detail__body strong {
+      color: var(--green-dark);
+      font-weight: 700;
     }
 
     .post-detail__share {
@@ -902,6 +963,223 @@
         return Math.max(1, Math.ceil(text.split(/\s+/).length / 220));
       }
 
+      function escapeHtml(text) {
+        return String(text || '').replace(/[&<>"']/g, function(char) {
+          return {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+          }[char];
+        });
+      }
+
+      function applyInlineFormatting(escapedText) {
+        var placeholders = [];
+
+        function stash(html) {
+          var token = '%%INLINE_' + placeholders.length + '%%';
+          placeholders.push(html);
+          return token;
+        }
+
+        var formatted = escapedText.replace(/\*\*([^*]+)\*\*/g, function(_, content) {
+          return stash('<strong>' + content + '</strong>');
+        });
+
+        formatted = formatted.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, function(_, prefix, content) {
+          return prefix + stash('<em>' + content + '</em>');
+        });
+
+        return formatted.replace(/%%INLINE_(\d+)%%/g, function(_, index) {
+          return placeholders[Number(index)];
+        });
+      }
+
+      function sanitizeUrl(url) {
+        var trimmed = String(url || '').trim();
+        if (!trimmed) return '';
+        if (/^\/(?!\/)/.test(trimmed) || /^#/.test(trimmed) || /^mailto:/i.test(trimmed)) return trimmed;
+        try {
+          var parsed = new URL(trimmed, window.location.origin);
+          if (parsed.protocol === 'http:' || parsed.protocol === 'https:') return parsed.href;
+        } catch (e) {}
+        return '';
+      }
+
+      function sanitizeAssetUrl(url) {
+        var trimmed = String(url || '').trim();
+        if (!trimmed) return '';
+        try {
+          var parsed = new URL(trimmed, window.location.origin);
+          if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return '';
+          if (parsed.origin === window.location.origin) {
+            return parsed.pathname + parsed.search + parsed.hash;
+          }
+          return parsed.href;
+        } catch (e) {}
+        return '';
+      }
+
+      function renderImageTag(src, alt, title, className) {
+        var attrs = ' src="' + escapeHtml(src) + '"' +
+          ' alt="' + escapeHtml(alt || '') + '"' +
+          ' loading="lazy" decoding="async"';
+        if (className) attrs += ' class="' + className + '"';
+        if (title) attrs += ' title="' + escapeHtml(title) + '"';
+        return '<img' + attrs + '>';
+      }
+
+      function renderInlineText(text) {
+        var source = String(text || '');
+        var html = '';
+        var lastIndex = 0;
+        var tokenPattern = /!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)|\[([^\]]+)\]\(([^)\s]+)\)/g;
+        var match;
+
+        while ((match = tokenPattern.exec(source)) !== null) {
+          html += applyInlineFormatting(escapeHtml(source.slice(lastIndex, match.index)));
+
+          if (match[0].charAt(0) === '!') {
+            var imageSrc = sanitizeAssetUrl(match[2]);
+            if (imageSrc) {
+              html += renderImageTag(imageSrc, match[1], match[3], 'post-detail__inline-image');
+            } else {
+              html += applyInlineFormatting(escapeHtml(match[0]));
+            }
+          } else {
+            var href = sanitizeUrl(match[5]);
+            if (href) {
+              var attrs = ' href="' + escapeHtml(href) + '"';
+              if (/^https?:\/\//i.test(href) && href.indexOf(window.location.origin) !== 0) {
+                attrs += ' target="_blank" rel="noopener noreferrer"';
+              }
+              html += '<a' + attrs + '>' + applyInlineFormatting(escapeHtml(match[4])) + '</a>';
+            } else {
+              html += applyInlineFormatting(escapeHtml(match[0]));
+            }
+          }
+
+          lastIndex = tokenPattern.lastIndex;
+        }
+
+        html += applyInlineFormatting(escapeHtml(source.slice(lastIndex)));
+        return html;
+      }
+
+      function renderPostBody(body) {
+        var lines = String(body || '').replace(/\r\n?/g, '\n').split('\n');
+        var html = [];
+        var paragraphLines = [];
+        var quoteLines = [];
+        var listItems = [];
+        var listType = null;
+
+        function flushParagraph() {
+          if (!paragraphLines.length) return;
+          html.push('<p>' + renderInlineText(paragraphLines.join(' ')) + '</p>');
+          paragraphLines = [];
+        }
+
+        function flushQuote() {
+          if (!quoteLines.length) return;
+          html.push('<blockquote><p>' + renderInlineText(quoteLines.join(' ')) + '</p></blockquote>');
+          quoteLines = [];
+        }
+
+        function flushList() {
+          if (!listItems.length || !listType) return;
+          html.push('<' + listType + '>' + listItems.map(function(item) {
+            return '<li>' + renderInlineText(item) + '</li>';
+          }).join('') + '</' + listType + '>');
+          listItems = [];
+          listType = null;
+        }
+
+        function renderFigure(alt, url, caption) {
+          var imageSrc = sanitizeAssetUrl(url);
+          if (!imageSrc) return '<p>' + renderInlineText('![' + alt + '](' + url + ')') + '</p>';
+          return '<figure>' +
+            renderImageTag(imageSrc, alt, caption || '', '') +
+            (caption ? '<figcaption>' + renderInlineText(caption) + '</figcaption>' : '') +
+          '</figure>';
+        }
+
+        lines.forEach(function(line) {
+          var trimmed = line.trim();
+          var h2Match;
+          var h3Match;
+          var imageMatch;
+          var quoteMatch;
+          var unorderedMatch;
+          var orderedMatch;
+
+          if (!trimmed) {
+            flushParagraph();
+            flushQuote();
+            flushList();
+            return;
+          }
+
+          h3Match = trimmed.match(/^###\s+(.+)$/);
+          if (h3Match) {
+            flushParagraph();
+            flushQuote();
+            flushList();
+            html.push('<h3>' + renderInlineText(h3Match[1]) + '</h3>');
+            return;
+          }
+
+          h2Match = trimmed.match(/^##\s+(.+)$/);
+          if (h2Match) {
+            flushParagraph();
+            flushQuote();
+            flushList();
+            html.push('<h2>' + renderInlineText(h2Match[1]) + '</h2>');
+            return;
+          }
+
+          imageMatch = trimmed.match(/^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)$/);
+          if (imageMatch) {
+            flushParagraph();
+            flushQuote();
+            flushList();
+            html.push(renderFigure(imageMatch[1], imageMatch[2], imageMatch[3]));
+            return;
+          }
+
+          quoteMatch = trimmed.match(/^>\s?(.*)$/);
+          if (quoteMatch) {
+            flushParagraph();
+            flushList();
+            quoteLines.push(quoteMatch[1]);
+            return;
+          }
+          flushQuote();
+
+          orderedMatch = trimmed.match(/^\d+\.\s+(.+)$/);
+          unorderedMatch = trimmed.match(/^[-*]\s+(.+)$/);
+          if (orderedMatch || unorderedMatch) {
+            flushParagraph();
+            var nextListType = orderedMatch ? 'ol' : 'ul';
+            if (listType && listType !== nextListType) flushList();
+            listType = nextListType;
+            listItems.push((orderedMatch || unorderedMatch)[1]);
+            return;
+          }
+          flushList();
+
+          paragraphLines.push(trimmed);
+        });
+
+        flushParagraph();
+        flushQuote();
+        flushList();
+
+        return html.join('');
+      }
+
       function getFilteredPosts() {
         var filtered = posts.slice().sort(function(a, b) {
           return new Date(b.date) - new Date(a.date);
@@ -985,12 +1263,7 @@
         if (!post) return;
 
         var pageUrl = window.location.origin + '/blog/?post=' + post.id;
-        var bodyHtml = post.body.split('\n\n').map(function(para) {
-          para = para.trim();
-          if (!para) return '';
-          if (para.charAt(0) === '>') return '<blockquote>' + para.substring(1).trim() + '</blockquote>';
-          return '<p>' + para + '</p>';
-        }).join('');
+        var bodyHtml = renderPostBody(post.body);
 
         var content = document.getElementById('postDetailContent');
         content.innerHTML =
