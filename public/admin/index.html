@@ -3094,11 +3094,7 @@ function approveBlogPost(firestoreId){
     showToast('You do not have permission to approve posts.','error');return;
   }
   if(!confirm('Approve this post? It will become publicly visible on the blog.'))return;
-  db.collection('blog_posts').doc(firestoreId).update({
-    status:'approved',
-    approvedBy:currentUser?currentUser.email:'unknown',
-    approvedAt:FieldValue.serverTimestamp()
-  }).then(function(){
+  callAdminJsonApi('/api/admin/blog/review',{firestoreId:firestoreId,decision:'approved'}).then(function(){
     showToast('Post approved and now publicly visible.','success');
     // Update local state
     allBlogPosts.forEach(function(p){if(p.firestoreId===firestoreId)p.status='approved';});
@@ -3114,12 +3110,7 @@ function rejectBlogPost(firestoreId){
     showToast('You do not have permission to reject posts.','error');return;
   }
   var reason=prompt('Reason for rejection (optional):');
-  db.collection('blog_posts').doc(firestoreId).update({
-    status:'rejected',
-    rejectedBy:currentUser?currentUser.email:'unknown',
-    rejectedAt:FieldValue.serverTimestamp(),
-    rejectionReason:reason||''
-  }).then(function(){
+  callAdminJsonApi('/api/admin/blog/review',{firestoreId:firestoreId,decision:'rejected',rejectionReason:reason||''}).then(function(){
     showToast('Post rejected.','success');
     allBlogPosts.forEach(function(p){if(p.firestoreId===firestoreId)p.status='rejected';});
     renderBlogPosts();
