@@ -1134,6 +1134,8 @@ Respond in JSON: {"title":"","excerpt":"","metaDescription":"","body":"","author
       readTime: finalPost.readTime || Math.ceil((finalPost.body || '').split(/\s+/).length / 220),
       keywords: finalPost.keywords,
       metaDescription: finalPost.metaDescription,
+      coverImage: ogImage,
+      coverImageAlt: finalPost.title,
       ogImage: ogImage,
       aiGenerated: true,
       seoScore: seoScore,

@@ -781,7 +781,72 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--gr
 <div class="modal-overlay" id="modal-team-forum-post"><div class="modal modal-wide"><div class="modal-head"><h3 id="tf-post-modal-title">New Team Post</h3><button class="modal-close" onclick="closeModal('modal-team-forum-post')">&times;</button></div><div class="modal-body"><div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#9a3412">Could this be useful to others? Post it in the <strong>General Forums</strong> instead. Team forums are for coordination only.</div><input type="hidden" id="tf-post-edit-id"><div class="form-group"><label>Title *</label><input type="text" id="tf-post-title"></div><div class="form-group"><label>Body *</label><textarea id="tf-post-body" rows="5"></textarea></div><div class="form-group"><label>Pinned</label><select id="tf-post-pinned"><option value="false">No</option><option value="true">Yes</option></select></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-team-forum-post')">Cancel</button><button class="btn btn-primary" onclick="saveTeamForumPost()">Save Post</button></div></div></div>
 <div class="modal-overlay" id="modal-team-forum-reply"><div class="modal"><div class="modal-head"><h3>Add Reply</h3><button class="modal-close" onclick="closeModal('modal-team-forum-reply')">&times;</button></div><div class="modal-body"><input type="hidden" id="tf-reply-post-id"><div class="form-group"><label>Your Reply *</label><textarea id="tf-reply-body" rows="4"></textarea></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-team-forum-reply')">Cancel</button><button class="btn btn-primary" onclick="saveTeamForumReply()">Post Reply</button></div></div></div>
 <div class="modal-overlay" id="modal-sponsor-detail"><div class="modal modal-wide"><div class="modal-head"><h3 id="sponsor-detail-title">Sponsor Details</h3><button class="modal-close" onclick="closeModal('modal-sponsor-detail')">&times;</button></div><div id="sponsor-detail-content"></div></div></div>
-<div class="modal-overlay" id="modal-blog-post"><div class="modal modal-wide"><div class="modal-head"><h3 id="blog-modal-title">Write Blog Post</h3><button class="modal-close" onclick="closeModal('modal-blog-post')">&times;</button></div><div class="modal-body"><input type="hidden" id="blog-edit-id"><div class="form-group"><label>Title *</label><input type="text" id="blog-post-title" placeholder="SEO-optimized title (50-65 chars ideal)"></div><div class="form-group"><label>Category *</label><select id="blog-post-category"><option value="story">Story</option><option value="update">Update</option><option value="insight">Insight</option><option value="guide">Guide</option></select></div><div class="form-group"><label>Author *</label><input type="text" id="blog-post-author" placeholder="Author name"></div><div class="form-group"><label>Excerpt * <small style="font-weight:400;color:var(--gray-400)">(1-2 sentences for preview cards)</small></label><input type="text" id="blog-post-excerpt" placeholder="Brief summary including target keyword"></div><div class="form-group"><label>Keywords <small style="font-weight:400;color:var(--gray-400)">(comma-separated)</small></label><input type="text" id="blog-post-keywords" placeholder="e.g. child welfare Lagos, nonprofit Nigeria"></div><div class="form-group"><label>Meta Description <small style="font-weight:400;color:var(--gray-400)">(150-160 chars for search results)</small></label><input type="text" id="blog-post-meta" placeholder="Compelling meta description with primary keyword" maxlength="165"></div><div class="form-group"><label>Body * <small style="font-weight:400;color:var(--gray-400)">(use blank lines for paragraphs)</small></label><textarea id="blog-post-body" rows="12" placeholder="Write your blog post..."></textarea></div><div class="form-group"><label>Status</label><select id="blog-post-status"><option value="published">Published</option><option value="draft">Draft</option><option value="pending">Pending Review</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-blog-post')">Cancel</button><button class="btn btn-primary" onclick="saveBlogPost()">Publish Post</button></div></div></div>
+<div class="modal-overlay" id="modal-blog-post">
+  <div class="modal modal-wide">
+    <div class="modal-head">
+      <h3 id="blog-modal-title">Write Blog Post</h3>
+      <button class="modal-close" onclick="closeModal('modal-blog-post')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="blog-edit-id">
+      <div class="form-group">
+        <label>Title *</label>
+        <input type="text" id="blog-post-title" placeholder="SEO-optimized title (50-65 chars ideal)">
+      </div>
+      <div class="form-group">
+        <label>Category *</label>
+        <select id="blog-post-category">
+          <option value="story">Story</option>
+          <option value="update">Update</option>
+          <option value="insight">Insight</option>
+          <option value="guide">Guide</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Author *</label>
+        <input type="text" id="blog-post-author" placeholder="Author name">
+      </div>
+      <div class="form-group">
+        <label>Excerpt * <small style="font-weight:400;color:var(--gray-400)">(1-2 sentences for preview cards)</small></label>
+        <input type="text" id="blog-post-excerpt" placeholder="Brief summary including target keyword">
+      </div>
+      <div class="form-group">
+        <label>Cover Image URL <small style="font-weight:400;color:var(--gray-400)">(optional, absolute or site-relative)</small></label>
+        <input type="text" id="blog-post-cover-image" placeholder="e.g. /assets/blog/makoko-visit.jpg">
+      </div>
+      <div class="form-group">
+        <label>Cover Image Alt Text <small style="font-weight:400;color:var(--gray-400)">(optional)</small></label>
+        <input type="text" id="blog-post-cover-alt" placeholder="Describe the image for accessibility">
+      </div>
+      <div class="form-group">
+        <label>Keywords <small style="font-weight:400;color:var(--gray-400)">(comma-separated)</small></label>
+        <input type="text" id="blog-post-keywords" placeholder="e.g. child welfare Lagos, nonprofit Nigeria">
+      </div>
+      <div class="form-group">
+        <label>Meta Description <small style="font-weight:400;color:var(--gray-400)">(150-160 chars for search results)</small></label>
+        <input type="text" id="blog-post-meta" placeholder="Compelling meta description with primary keyword" maxlength="165">
+      </div>
+      <div class="form-group">
+        <label>Body * <small style="font-weight:400;color:var(--gray-400)">(use blank lines for paragraphs)</small></label>
+        <textarea id="blog-post-body" rows="12" placeholder="Write your blog post..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="blog-post-status">
+          <option value="published">Published</option>
+          <option value="draft">Draft</option>
+          <option value="pending">Pending Review</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-blog-post')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveBlogPost()">Publish Post</button>
+    </div>
+  </div>
+</div>
 <div class="modal-overlay" id="modal-blog-preview"><div class="modal modal-wide" style="max-width:700px"><div class="modal-head"><h3>Post Preview</h3><button class="modal-close" onclick="closeModal('modal-blog-preview')">&times;</button></div><div class="modal-body" id="blog-preview-content" style="max-height:70vh;overflow-y:auto"></div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-blog-preview')">Close</button><button class="btn btn-primary" onclick="window.open('/blog/?post='+document.getElementById('blog-preview-id').value,'_blank')">View on Site</button><input type="hidden" id="blog-preview-id"></div></div></div>
 <div class="confirm-overlay" id="confirm-dialog"><div class="confirm-box"><h3 id="confirm-title">Confirm Action</h3><p id="confirm-message">Are you sure?</p><div class="confirm-actions"><button class="btn btn-secondary" onclick="closeConfirm()">Cancel</button><button class="btn btn-danger" id="confirm-yes" onclick="confirmAction()">Delete</button></div></div></div>
 <div class="day-detail-overlay" id="day-detail-overlay" onclick="if(event.target===this)closeDayDetail()">
@@ -1144,6 +1209,7 @@ function formatDate(ts){if(!ts)return'--';var d=ts.toDate?ts.toDate():new Date(t
 function formatDateTime(ts){if(!ts)return'--';var d=ts.toDate?ts.toDate():new Date(ts);if(isNaN(d.getTime()))return'--';var m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];var h=d.getHours(),mi=d.getMinutes(),ap=h>=12?'PM':'AM';h=h%12||12;return m[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear()+' '+h+':'+(mi<10?'0':'')+mi+' '+ap;}
 function formatCurrency(a){if(a==null||isNaN(a))return'--';return'NGN '+Number(a).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function escHtml(s){if(!s)return'';var d=document.createElement('div');d.textContent=String(s);return d.innerHTML;}
+function sanitizeBlogImageUrl(url){var trimmed=String(url||'').trim();if(!trimmed)return'';try{var parsed=new URL(trimmed,window.location.origin);if(parsed.protocol!=='http:'&&parsed.protocol!=='https:')return'';return parsed.origin===window.location.origin?parsed.pathname+parsed.search+parsed.hash:parsed.href;}catch(e){return'';}}
 function statusBadge(s){if(!s)return'<span class="badge badge-default">--</span>';var l=s.toLowerCase().replace(/\s+/g,''),c='badge-default';if(l==='pending')c='badge-pending';else if(l==='approved'||l==='active')c='badge-approved';else if(l==='rejected'||l==='withdrawn')c='badge-rejected';else if(l==='graduated')c='badge-graduated';else if(l==='onhold'||l==='planned')c='badge-onhold';else if(l==='open')c='badge-open';else if(l==='completed')c='badge-completed';else if(l==='inprogress')c='badge-inprogress';else if(l==='suspended'||l==='inactive')c='badge-suspended';else if(l==='expired')c='badge-expired';else if(l==='info')c='badge-info';else if(l==='warning')c='badge-warning';else if(l==='urgent')c='badge-urgent';else if(l==='success')c='badge-success';else if(l==='superadmin')c='badge-superadmin';else if(l==='admin')c='badge-admin';else if(l==='coordinator')c='badge-coordinator';else if(l==='volunteer')c='badge-volunteer';return'<span class="badge '+c+'">'+escHtml(s)+'</span>';}
 function pathwayLabel(p){var m={'difficult-backgrounds':'Difficult Backgrounds','special-needs':'Special Needs','gifted-talented':'Gifted & Talented'};return m[p]||p||'--';}
 function showToast(msg,type){var c=document.getElementById('toast-container');var t=document.createElement('div');t.className='toast toast-'+(type||'success');t.innerHTML=(type==='error'?'&#10007; ':'&#10003; ')+escHtml(msg);c.appendChild(t);setTimeout(function(){t.style.opacity='0';t.style.transform='translateX(40px)';setTimeout(function(){t.remove();},300);},3500);}
@@ -2883,6 +2949,8 @@ function loadBlogAdmin(){
         author:d.author||'Anonymous',
         date:d.date||'',
         excerpt:d.excerpt||'',
+        coverImage:d.coverImage||d.ogImage||'',
+        coverImageAlt:d.coverImageAlt||'',
         body:d.body||'',
         readTime:d.readTime||3,
         aiGenerated:d.aiGenerated||false,
@@ -2891,6 +2959,7 @@ function loadBlogAdmin(){
         submittedAt:d.submittedAt||null,
         keywords:d.keywords||[],
         metaDescription:d.metaDescription||'',
+        ogImage:d.ogImage||'',
         seoScore:d.seoScore||null
       });
     });
@@ -3010,6 +3079,8 @@ function openBlogPostModal(data){
   document.getElementById('blog-post-category').value=data?data.category:'story';
   document.getElementById('blog-post-author').value=data?data.author:(currentUser?currentUser.name||currentUser.email:'');
   document.getElementById('blog-post-excerpt').value=data?data.excerpt:'';
+  document.getElementById('blog-post-cover-image').value=data?(data.coverImage||data.ogImage||''):'';
+  document.getElementById('blog-post-cover-alt').value=data?(data.coverImageAlt||data.title||''):'';
   document.getElementById('blog-post-keywords').value=data&&data.keywords?data.keywords.join(', '):'';
   document.getElementById('blog-post-meta').value=data?data.metaDescription||'':'';
   document.getElementById('blog-post-body').value=data?data.body:'';
@@ -3036,12 +3107,16 @@ function saveBlogPost(){
 
   var keywords=document.getElementById('blog-post-keywords').value.split(',').map(function(k){return k.trim();}).filter(Boolean);
   var existingPost=id?allBlogPosts.find(function(p){return String(p.id)===String(id);}):null;
+  var coverImage=document.getElementById('blog-post-cover-image').value.trim();
+  var coverImageAlt=document.getElementById('blog-post-cover-alt').value.trim();
 
   var postData={
     title:title,
     category:document.getElementById('blog-post-category').value,
     author:document.getElementById('blog-post-author').value.trim(),
     excerpt:document.getElementById('blog-post-excerpt').value.trim(),
+    coverImage:coverImage,
+    coverImageAlt:coverImage?(coverImageAlt||title):'',
     body:body,
     keywords:keywords,
     metaDescription:document.getElementById('blog-post-meta').value.trim(),
@@ -3123,6 +3198,7 @@ function rejectBlogPost(firestoreId){
 function previewBlogPost(id){
   var post=allBlogPosts.find(function(p){return p.id===id;});
   if(!post)return;
+  var previewImageUrl=sanitizeBlogImageUrl(post.coverImage||post.ogImage||'');
   var bodyHtml=(post.body||'').split('\n\n').map(function(para){
     para=para.trim();if(!para)return '';
     return '<p style="margin-bottom:12px;line-height:1.8;font-size:15px">'+escHtml(para)+'</p>';
@@ -3136,6 +3212,7 @@ function previewBlogPost(id){
     '</div>'+
     '<h2 style="font-family:var(--font-serif);font-size:24px;margin-bottom:8px">'+escHtml(post.title)+'</h2>'+
     '<div style="font-size:13px;color:var(--gray-400);margin-bottom:4px">'+escHtml(post.author)+' &middot; '+post.date+' &middot; '+(post.readTime||3)+' min read</div>'+
+    (previewImageUrl?'<div style="margin:16px 0 18px"><img src="'+escHtml(previewImageUrl)+'" alt="'+escHtml(post.coverImageAlt||post.title||'')+'" style="display:block;width:100%;max-height:360px;object-fit:cover;border-radius:12px;background:var(--gray-100)"></div>':'')+
     (post.metaDescription?'<div style="font-size:12px;color:var(--blue);margin-bottom:16px;padding:8px;background:var(--blue-light);border-radius:6px"><strong>Meta:</strong> '+escHtml(post.metaDescription)+'</div>':'')+
     (post.keywords&&post.keywords.length?'<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px">'+post.keywords.map(function(k){return '<span style="padding:2px 8px;background:var(--gray-100);border-radius:4px;font-size:11px;color:var(--gray-600)">'+escHtml(k)+'</span>';}).join('')+'</div>':'')+
     '<div style="border-top:1px solid var(--gray-200);padding-top:16px">'+bodyHtml+'</div>';

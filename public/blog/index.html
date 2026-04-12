@@ -120,11 +120,17 @@
       width: 100%;
       aspect-ratio: 16/10;
       border-radius: 10px;
-      object-fit: cover;
+      overflow: hidden;
       background: linear-gradient(135deg, var(--sage) 0%, var(--green) 100%);
       display: flex; align-items: center; justify-content: center;
       color: rgba(255,255,255,0.5);
       font-size: 3rem;
+    }
+    .featured__img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     .featured__content .eyebrow { color: var(--terra); }
@@ -161,10 +167,16 @@
     .post-card__img {
       width: 100%;
       aspect-ratio: 16/9;
-      object-fit: cover;
+      overflow: hidden;
       display: flex; align-items: center; justify-content: center;
       font-size: 2rem;
       color: rgba(255,255,255,0.4);
+    }
+    .post-card__img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
     .post-card__img--green { background: linear-gradient(135deg, var(--sage) 0%, var(--green) 100%); }
     .post-card__img--terra { background: linear-gradient(135deg, var(--gold) 0%, var(--terra) 100%); }
@@ -363,6 +375,19 @@
       margin-bottom: 2rem;
       padding-bottom: 1.5rem;
       border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .post-detail__hero {
+      margin: 0 0 1.9rem;
+    }
+    .post-detail__hero img {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      display: block;
+      border-radius: 18px;
+      background: rgba(0,0,0,0.04);
+      box-shadow: 0 18px 36px rgba(73,44,27,0.08);
     }
 
     .post-detail__body {
@@ -679,6 +704,14 @@
               <label for="postExcerpt">Excerpt</label>
               <input type="text" id="postExcerpt" placeholder="A short summary (1-2 sentences)" required>
             </div>
+            <div class="form-group">
+              <label for="postCoverImage">Cover Image URL</label>
+              <input type="text" id="postCoverImage" placeholder="Optional absolute or site-relative image URL">
+            </div>
+            <div class="form-group">
+              <label for="postCoverImageAlt">Cover Image Alt Text</label>
+              <input type="text" id="postCoverImageAlt" placeholder="Optional description for accessibility">
+            </div>
             <div class="form-group form-group--full">
               <label for="postBody">Body</label>
               <textarea id="postBody" placeholder="Write your post here. Use blank lines for paragraphs." required></textarea>
@@ -935,8 +968,11 @@
                 author: data.author || 'Anonymous',
                 date: data.date || '',
                 excerpt: data.excerpt || '',
+                coverImage: data.coverImage || data.ogImage || '',
+                coverImageAlt: data.coverImageAlt || '',
                 body: data.body || '',
                 readTime: data.readTime || 3,
+                ogImage: data.ogImage || '',
                 aiGenerated: data.aiGenerated || false,
                 status: data.status
               });
@@ -1020,6 +1056,42 @@
           return parsed.href;
         } catch (e) {}
         return '';
+      }
+
+      function getPostColorClass(postId) {
+        var id = String(postId || '');
+        var total = 0;
+        var index = 0;
+        for (; index < id.length; index++) total += id.charCodeAt(index);
+        return colorClasses[total % colorClasses.length];
+      }
+
+      function getPostImageUrl(post) {
+        return sanitizeAssetUrl(post && (post.coverImage || post.ogImage || ''));
+      }
+
+      function getPostImageAlt(post) {
+        return String(post && (post.coverImageAlt || post.title || 'Blog post image') || 'Blog post image');
+      }
+
+      function getGeneratedOgImageUrl(post) {
+        return '/api/og-image?title=' + encodeURIComponent(post && post.title || '') + '&category=' + encodeURIComponent(post && post.category || 'insight');
+      }
+
+      function getPostShareImageUrl(post) {
+        return getPostImageUrl(post) || getGeneratedOgImageUrl(post);
+      }
+
+      function renderPostListingMedia(post, className, iconSize) {
+        var imageUrl = getPostImageUrl(post);
+        if (imageUrl) {
+          return '<div class="' + className + '">' +
+            renderImageTag(imageUrl, getPostImageAlt(post), post.title || '', '') +
+          '</div>';
+        }
+        return '<div class="' + className + '">' +
+          '<svg width="' + iconSize + '" height="' + iconSize + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>' +
+        '</div>';
       }
 
       function renderImageTag(src, alt, title, className) {
@@ -1210,9 +1282,7 @@
 
         el.dataset.id = post.id;
         el.innerHTML =
-          '<div class="featured__img ' + colorClasses[post.id % colorClasses.length] + '">' +
-            '<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>' +
-          '</div>' +
+          renderPostListingMedia(post, 'featured__img ' + getPostColorClass(post.id), 64) +
           '<div class="featured__content">' +
             '<p class="eyebrow">' + post.category.charAt(0).toUpperCase() + post.category.slice(1) + '</p>' +
             '<h2>' + post.title + '</h2>' +
@@ -1239,11 +1309,9 @@
         }
 
         grid.innerHTML = filtered.map(function(post) {
-          var colorClass = colorClasses[post.id % colorClasses.length];
+          var colorClass = getPostColorClass(post.id);
           return '<article class="post-card" data-id="' + post.id + '">' +
-            '<div class="post-card__img ' + colorClass + '">' +
-              '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>' +
-            '</div>' +
+            renderPostListingMedia(post, 'post-card__img ' + colorClass, 40) +
             '<div class="post-card__body">' +
               '<span class="post-card__tag post-card__tag--' + post.category + '">' + post.category + '</span>' +
               '<h3 class="post-card__title">' + post.title + '</h3>' +
@@ -1264,6 +1332,8 @@
 
         var pageUrl = window.location.origin + '/blog/?post=' + post.id;
         var bodyHtml = renderPostBody(post.body);
+        var shareImage = getPostShareImageUrl(post);
+        var heroImageUrl = getPostImageUrl(post);
 
         var content = document.getElementById('postDetailContent');
         content.innerHTML =
@@ -1275,6 +1345,7 @@
             '<span>' + formatDate(post.date) + '</span>' +
             '<span>' + (post.readTime || estimateReadTime(post.body)) + ' min read</span>' +
           '</div>' +
+          (heroImageUrl ? '<div class="post-detail__hero">' + renderImageTag(heroImageUrl, getPostImageAlt(post), post.title || '', '') + '</div>' : '') +
           '<div class="post-detail__body">' + bodyHtml + '</div>' +
           '<div class="post-detail__share">' +
             '<span>Share:</span>' +
@@ -1319,7 +1390,7 @@
         var ogDesc = document.querySelector('meta[property="og:description"]');
         if (ogDesc) ogDesc.setAttribute('content', post.metaDescription || post.excerpt);
         var ogImage = document.querySelector('meta[property="og:image"]');
-        if (ogImage) ogImage.setAttribute('content', post.ogImage || '/api/og-image?title=' + encodeURIComponent(post.title || '') + '&category=' + encodeURIComponent(post.category || 'insight'));
+        if (ogImage) ogImage.setAttribute('content', shareImage);
 
         // Remove any existing article schema
         var existingSchema = document.getElementById('article-schema');
@@ -1337,7 +1408,7 @@
           "author": {"@type": "Person", "name": post.author || "Big Sister Foundation"},
           "publisher": {"@type": "Organization", "name": "Big Sister Foundation"},
           "datePublished": post.date,
-          "image": post.ogImage || '/api/og-image?title=' + encodeURIComponent(post.title || ''),
+          "image": shareImage,
           "keywords": (post.keywords || []).join(", ")
         });
         document.head.appendChild(schema);
@@ -1408,6 +1479,8 @@
         var category = document.getElementById('postCategory').value;
         var author = document.getElementById('postAuthor').value.trim();
         var excerpt = document.getElementById('postExcerpt').value.trim();
+        var coverImage = document.getElementById('postCoverImage').value.trim();
+        var coverImageAlt = document.getElementById('postCoverImageAlt').value.trim();
 
         // Determine submitter email
         var submitterEmail = '';
@@ -1428,6 +1501,8 @@
           author: author,
           date: new Date().toISOString().split('T')[0],
           excerpt: excerpt,
+          coverImage: coverImage,
+          coverImageAlt: coverImage ? (coverImageAlt || title) : '',
           body: body,
           readTime: estimateReadTime(body),
           status: 'pending',

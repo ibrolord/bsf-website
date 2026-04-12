@@ -426,11 +426,15 @@ function todayIsoDate() {
 function buildCanonicalBlogData(input, existingData, actorEmail, legacyLocalId) {
   const now = new Date();
   const base = existingData && typeof existingData === 'object' ? existingData : {};
+  const coverImage = typeof input.coverImage === 'string' ? input.coverImage.trim() : (base.coverImage || '');
+  const coverImageAltInput = typeof input.coverImageAlt === 'string' ? input.coverImageAlt.trim() : (base.coverImageAlt || '');
   const nextData = {
     title: input.title,
     category: input.category,
     author: input.author || base.author || actorEmail,
     excerpt: input.excerpt || '',
+    coverImage: coverImage,
+    coverImageAlt: coverImage ? (coverImageAltInput || String(input.title || base.title || '').trim()) : '',
     body: input.body,
     keywords: Array.isArray(input.keywords) ? input.keywords : [],
     metaDescription: input.metaDescription || '',
