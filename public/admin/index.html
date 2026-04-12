@@ -2900,7 +2900,8 @@ function deleteTeamReply(rid,pid){if(!hasPermission('team_forums.delete')){showT
 // BLOG & SEO MANAGEMENT
 // ═══════════════════════════════════════
 var BLOG_STORAGE='bsf_blog_posts';
-var AI_POSTS_STORAGE='bsf_ai_posts_cache';
+var AI_POSTS_CACHE_VERSION='2026-04-12-images-v1';
+var AI_POSTS_STORAGE='bsf_ai_posts_cache_'+AI_POSTS_CACHE_VERSION;
 var allBlogPosts=[];
 var blogLocalPosts=[],blogAiPosts=[],blogFirestorePosts=[];
 
@@ -2920,7 +2921,7 @@ function loadBlogAdmin(){
   mergeBlogAndRender(local,ai);
 
   // Also fetch from API
-  fetch('/data/ai-posts.json').then(function(r){return r.ok?r.json():[];}).then(function(apiPosts){
+  fetch(aiPostsUrl('/data/ai-posts.json')).then(function(r){return r.ok?r.json():[];}).then(function(apiPosts){
     if(apiPosts&&apiPosts.length){
       localStorage.setItem(AI_POSTS_STORAGE,JSON.stringify(apiPosts));
       ai=apiPosts;
@@ -2929,7 +2930,7 @@ function loadBlogAdmin(){
   }).catch(function(){mergeBlogAndRender(local,ai);});
 
   // Also fetch from /api/posts
-  fetch('/api/posts').then(function(r){return r.ok?r.json():[];}).then(function(apiPosts){
+  fetch(aiPostsUrl('/api/posts')).then(function(r){return r.ok?r.json():[];}).then(function(apiPosts){
     if(apiPosts&&apiPosts.length){
       localStorage.setItem(AI_POSTS_STORAGE,JSON.stringify(apiPosts));
       mergeBlogAndRender(local,apiPosts);
@@ -3096,6 +3097,11 @@ function removeLegacyBlogLocalEntry(id){
   var ai=[];try{ai=JSON.parse(localStorage.getItem(AI_POSTS_STORAGE)||'[]');}catch(e){}
   ai=ai.filter(function(p){return String(p.id)!==String(id);});
   localStorage.setItem(AI_POSTS_STORAGE,JSON.stringify(ai));
+}
+
+function aiPostsUrl(url){
+  var separator=url.indexOf('?')===-1?'?':'&';
+  return url+separator+'v='+encodeURIComponent(AI_POSTS_CACHE_VERSION)+'&t='+Date.now();
 }
 
 function saveBlogPost(){

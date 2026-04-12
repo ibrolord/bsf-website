@@ -836,7 +836,8 @@
       BSFAntiSpam.protect('postForm');
 
       var STORAGE_KEY = 'bsf_blog_posts';
-      var AI_POSTS_KEY = 'bsf_ai_posts_cache';
+      var AI_POSTS_CACHE_VERSION = '2026-04-12-images-v1';
+      var AI_POSTS_KEY = 'bsf_ai_posts_cache_' + AI_POSTS_CACHE_VERSION;
       var colorClasses = ['post-card__img--green', 'post-card__img--terra', 'post-card__img--brown', 'post-card__img--sage'];
 
       // ── Auth gate for write section ──
@@ -946,6 +947,11 @@
         return defaultPosts;
       }
 
+      function withAiPostsCacheBust(url) {
+        var separator = url.indexOf('?') === -1 ? '?' : '&';
+        return url + separator + 'v=' + encodeURIComponent(AI_POSTS_CACHE_VERSION) + '&t=' + Date.now();
+      }
+
       function savePosts(allPosts) {
         // Only save user-created posts to localStorage (not AI ones)
         var userPosts = allPosts.filter(function(p) { return !p.aiGenerated; });
@@ -995,8 +1001,8 @@
         }
 
         // Try API first, fallback to static JSON
-        fetch('/api/posts')
-          .then(function(r) { return r.ok ? r.json() : fetch('/data/ai-posts.json').then(function(r2) { return r2.ok ? r2.json() : []; }); })
+        fetch(withAiPostsCacheBust('/api/posts'))
+          .then(function(r) { return r.ok ? r.json() : fetch(withAiPostsCacheBust('/data/ai-posts.json')).then(function(r2) { return r2.ok ? r2.json() : []; }); })
           .then(function(aiPosts) {
             if (aiPosts && aiPosts.length) {
               localStorage.setItem(AI_POSTS_KEY, JSON.stringify(aiPosts));
