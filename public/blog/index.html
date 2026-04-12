@@ -986,6 +986,19 @@
         if (showPost(pendingPostId)) pendingPostId = null;
       }
 
+      function getBlogRoutePath() {
+        var path = window.location.pathname || '/blog/';
+        if (/\/index\.html$/i.test(path)) return path;
+        return path.endsWith('/') ? path : path + '/';
+      }
+
+      function getBlogRouteUrl(postId) {
+        var routePath = getBlogRoutePath();
+        return postId === undefined || postId === null || postId === ''
+          ? routePath
+          : routePath + '?post=' + encodeURIComponent(postId);
+      }
+
       // Fetch AI-generated posts from API and approved Firestore posts, then merge
       (function fetchAllPosts() {
         // Try cached AI posts first
@@ -1432,7 +1445,7 @@
         var post = posts.find(function(p) { return p.id === id; });
         if (!post) return false;
 
-        var pageUrl = window.location.origin + '/blog/?post=' + post.id;
+        var pageUrl = window.location.origin + getBlogRouteUrl(post.id);
         var bodyHtml = renderPostBody(post.body);
         var shareImage = getPostShareImageUrl(post);
         var heroImageUrl = getPostImageUrl(post);
@@ -1520,7 +1533,7 @@
         document.getElementById('writeSection').classList.add('hidden');
         document.getElementById('postDetail').classList.remove('hidden');
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        history.pushState({ post: id }, '', '/blog/?post=' + id);
+        history.pushState({ post: id }, '', getBlogRouteUrl(id));
         return true;
       }
 
@@ -1528,7 +1541,7 @@
         document.getElementById('postDetail').classList.add('hidden');
         document.getElementById('blogListing').classList.remove('hidden');
         document.getElementById('writeSection').classList.remove('hidden');
-        history.pushState({}, '', '/blog/');
+        history.pushState({}, '', getBlogRouteUrl());
 
         // Restore original meta tags
         document.title = 'Blog — Big Sister Foundation';
