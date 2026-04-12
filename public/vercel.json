@@ -36,14 +36,6 @@
   ],
   "rewrites": [
     {
-      "source": "/stories",
-      "destination": "/blog"
-    },
-    {
-      "source": "/stories/:match*",
-      "destination": "/blog/:match*"
-    },
-    {
       "source": "/sitemap.xml",
       "destination": "/api/sitemap"
     },
