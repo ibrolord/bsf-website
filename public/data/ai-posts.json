@@ -15,7 +15,7 @@
       "sisterhood community support"
     ],
     "metaDescription": "Join weekend volunteer Lagos initiatives to empower children through tutoring and community support. Make your impact felt today!",
-    "coverImage": "/api/og-image?title=Weekend+Volunteer+Lagos%3A+Transform+Lives+through+Tutoring+%26+Support&category=guide&author=Amara+Okafor&keyword=weekend+volunteer+Lagos",
+    "coverImage": "/api/post-cover?title=Weekend+Volunteer+Lagos%3A+Transform+Lives+through+Tutoring+%26+Support&category=guide&keyword=weekend+volunteer+Lagos&keywords=weekend+volunteer+Lagos%2Ctutoring+children+Lagos%2Cfirst+time+volunteer+Africa%2Csisterhood+community+support&preferred=https%3A%2F%2Fapi.openverse.org%2Fv1%2Fimages%2F71960953-e9cc-4e1d-9ce0-d10f0feb1ded%2Fthumb%2F",
     "coverImageAlt": "Weekend Volunteer Lagos: Transform Lives through Tutoring & Support",
     "ogImage": "/api/og-image?title=Weekend+Volunteer+Lagos%3A+Transform+Lives+through+Tutoring+%26+Support&category=guide&author=Amara+Okafor&keyword=weekend+volunteer+Lagos",
     "aiGenerated": true,
@@ -44,7 +44,15 @@
       "crossPostLinks": 2,
       "hasSnippetBlock": true,
       "primaryKeyword": "weekend volunteer Lagos"
-    }
+    },
+    "coverImageOriginal": "https://api.openverse.org/v1/images/71960953-e9cc-4e1d-9ce0-d10f0feb1ded/thumb/",
+    "coverImageProvider": "openverse",
+    "coverImageCreator": "DFID - UK Department for International Development",
+    "coverImageLicense": "by-sa",
+    "coverImageLicenseVersion": "2.0",
+    "coverImageSource": "flickr",
+    "coverImageSourceUrl": "https://www.flickr.com/photos/14214150@N02/8406369172",
+    "coverImageSearchQuery": "children education Nigeria"
   },
   {
     "id": 1775821817888,
@@ -62,7 +70,7 @@
       "child safety laws Lagos"
     ],
     "metaDescription": "Explore female education barriers Lagos faces and how volunteer skills programs help vulnerable girls overcome challenges. Join us in making change!",
-    "coverImage": "/api/og-image?title=Female+Education+Barriers+Lagos%3A+How+to+Empower+Girls&category=guide&author=Amara+Okafor&keyword=female+education+barriers+Lagos",
+    "coverImage": "/api/post-cover?title=Female+Education+Barriers+Lagos%3A+How+to+Empower+Girls&category=guide&keyword=female+education+barriers+Lagos&keywords=female+education+barriers+Lagos%2Cskills+volunteering+Nigeria%2Ctutoring+children+Lagos%2Cchild+safety+laws+Lagos&preferred=https%3A%2F%2Fapi.openverse.org%2Fv1%2Fimages%2F37954abd-6b7e-4695-b985-c93d4393cf56%2Fthumb%2F",
     "coverImageAlt": "Female Education Barriers Lagos: How to Empower Girls",
     "ogImage": "/api/og-image?title=Female+Education+Barriers+Lagos%3A+How+to+Empower+Girls&category=guide&author=Amara+Okafor&keyword=female+education+barriers+Lagos",
     "aiGenerated": true,
@@ -93,7 +101,15 @@
       "crossPostLinks": 1,
       "hasSnippetBlock": true,
       "primaryKeyword": "female education barriers Lagos"
-    }
+    },
+    "coverImageOriginal": "https://api.openverse.org/v1/images/37954abd-6b7e-4695-b985-c93d4393cf56/thumb/",
+    "coverImageProvider": "openverse",
+    "coverImageCreator": "Edu-Tourist",
+    "coverImageLicense": "by-sa",
+    "coverImageLicenseVersion": "2.0",
+    "coverImageSource": "flickr",
+    "coverImageSourceUrl": "https://www.flickr.com/photos/55968903@N00/20758880",
+    "coverImageSearchQuery": "African community children"
   },
   {
     "id": 1775264124172,
@@ -110,7 +126,7 @@
       "homework help Nigeria"
     ],
     "metaDescription": "Transform lives with after school programs in Lagos. Tutoring and life skills training empower vulnerable children. Support now!",
-    "coverImage": "/api/og-image?title=After+School+Programs+in+Lagos%3A+Transforming+the+Lives+of+Vulnerable+Children&category=guide&author=Amara+Okafor&keyword=after+school+programs+Lagos",
+    "coverImage": "/api/post-cover?title=After+School+Programs+in+Lagos%3A+Transforming+the+Lives+of+Vulnerable+Children&category=guide&keyword=after+school+programs+Lagos&keywords=after+school+programs+Lagos%2Ctutoring+children+Lagos%2Chomework+help+Nigeria&preferred=https%3A%2F%2Fapi.openverse.org%2Fv1%2Fimages%2F14790470-ef91-43ca-bdb6-9e5950eae51f%2Fthumb%2F",
     "coverImageAlt": "After School Programs in Lagos: Transforming the Lives of Vulnerable Children",
     "ogImage": "/api/og-image?title=After+School+Programs+in+Lagos%3A+Transforming+the+Lives+of+Vulnerable+Children&category=guide&author=Amara+Okafor&keyword=after+school+programs+Lagos",
     "aiGenerated": true,
@@ -146,7 +162,15 @@
       "crossPostLinks": 0,
       "hasSnippetBlock": true,
       "primaryKeyword": "after school programs Lagos"
-    }
+    },
+    "coverImageOriginal": "https://api.openverse.org/v1/images/14790470-ef91-43ca-bdb6-9e5950eae51f/thumb/",
+    "coverImageProvider": "openverse",
+    "coverImageCreator": "jurvetson",
+    "coverImageLicense": "by",
+    "coverImageLicenseVersion": "2.0",
+    "coverImageSource": "flickr",
+    "coverImageSourceUrl": "https://www.flickr.com/photos/44124348109@N01/5967376588",
+    "coverImageSearchQuery": "African children classroom education"
   },
   {
     "id": 1775262545518,
@@ -163,7 +187,7 @@
       "school fees Nigeria"
     ],
     "metaDescription": "Learn about scholarship programs Lagos and how Big Sister Foundation empowers children as future leaders. Join our mission today.",
-    "coverImage": "/api/og-image?title=Scholarship+Programs+Lagos%3A+Empowering+Future+Leaders&category=guide&author=Amara+Okafor&keyword=scholarship+programs+Lagos",
+    "coverImage": "/api/post-cover?title=Scholarship+Programs+Lagos%3A+Empowering+Future+Leaders&category=guide&keyword=scholarship+programs+Lagos&keywords=scholarship+programs+Lagos%2Cfree+education+Lagos%2Cschool+fees+Nigeria&preferred=https%3A%2F%2Fapi.openverse.org%2Fv1%2Fimages%2F9ac561f3-497a-4733-a85d-d4cc74fac315%2Fthumb%2F",
     "coverImageAlt": "Scholarship Programs Lagos: Empowering Future Leaders",
     "aiGenerated": true,
     "seoScore": 95,
@@ -192,9 +216,15 @@
       "hasSnippetBlock": true,
       "primaryKeyword": "scholarship programs Lagos"
     },
-    "coverImage": "/api/og-image?title=Scholarship+Programs+Lagos%3A+Empowering+Future+Leaders&category=guide&author=Amara+Okafor&keyword=scholarship+programs+Lagos",
-    "coverImageAlt": "Scholarship Programs Lagos: Empowering Future Leaders",
-    "ogImage": "/api/og-image?title=Scholarship+Programs+Lagos%3A+Empowering+Future+Leaders&category=guide&author=Amara+Okafor&keyword=scholarship+programs+Lagos"
+    "ogImage": "/api/og-image?title=Scholarship+Programs+Lagos%3A+Empowering+Future+Leaders&category=guide&author=Amara+Okafor&keyword=scholarship+programs+Lagos",
+    "coverImageOriginal": "https://api.openverse.org/v1/images/9ac561f3-497a-4733-a85d-d4cc74fac315/thumb/",
+    "coverImageProvider": "openverse",
+    "coverImageCreator": "Bureau of Educational & Cultural Affairs",
+    "coverImageLicense": "cc0",
+    "coverImageLicenseVersion": "1.0",
+    "coverImageSource": "flickr",
+    "coverImageSourceUrl": "https://www.flickr.com/photos/45717276@N08/14540746141",
+    "coverImageSearchQuery": "children education Nigeria"
   },
   {
     "id": 1775251202492,
@@ -211,11 +241,19 @@
       "nonprofit Nigeria"
     ],
     "metaDescription": "Discover how child protection Nigeria evolves when we see vulnerable children as future leaders, not victims. Real stories from Lagos communities.",
-    "coverImage": "/api/og-image?title=Beyond+Protection%3A+How+Lagos+Children+Are+Rewriting+Their+Own+Stories&category=insight&author=Bolaji+Agunbiade&keyword=child+protection+Nigeria",
+    "coverImage": "/api/post-cover?title=Beyond+Protection%3A+How+Lagos+Children+Are+Rewriting+Their+Own+Stories&category=insight&keyword=child+protection+Nigeria&keywords=child+protection+Nigeria%2Cvulnerable+children+Lagos%2Cnonprofit+Nigeria&preferred=https%3A%2F%2Fapi.openverse.org%2Fv1%2Fimages%2Fd9485997-c2e2-49f0-be2b-969dd8eb73ca%2Fthumb%2F",
     "coverImageAlt": "Beyond Protection: How Lagos Children Are Rewriting Their Own Stories",
     "aiGenerated": true,
     "seoScore": 85,
     "readabilityScore": 90,
-    "ogImage": "/api/og-image?title=Beyond+Protection%3A+How+Lagos+Children+Are+Rewriting+Their+Own+Stories&category=insight&author=Bolaji+Agunbiade&keyword=child+protection+Nigeria"
+    "ogImage": "/api/og-image?title=Beyond+Protection%3A+How+Lagos+Children+Are+Rewriting+Their+Own+Stories&category=insight&author=Bolaji+Agunbiade&keyword=child+protection+Nigeria",
+    "coverImageOriginal": "https://api.openverse.org/v1/images/d9485997-c2e2-49f0-be2b-969dd8eb73ca/thumb/",
+    "coverImageProvider": "openverse",
+    "coverImageCreator": "ITU Pictures",
+    "coverImageLicense": "by",
+    "coverImageLicenseVersion": "2.0",
+    "coverImageSource": "flickr",
+    "coverImageSourceUrl": "https://www.flickr.com/photos/42121221@N07/9344339952",
+    "coverImageSearchQuery": "child protection nigeria Nigeria"
   }
 ]

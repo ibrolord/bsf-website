@@ -117,6 +117,7 @@
     .featured:hover { box-shadow: 0 6px 32px rgba(0,0,0,0.1); }
 
     .featured__img {
+      position: relative;
       width: 100%;
       aspect-ratio: 16/10;
       border-radius: 10px;
@@ -165,6 +166,7 @@
     .post-card:hover { box-shadow: 0 6px 28px rgba(0,0,0,0.09); transform: translateY(-2px); }
 
     .post-card__img {
+      position: relative;
       width: 100%;
       aspect-ratio: 16/9;
       overflow: hidden;
@@ -379,15 +381,54 @@
 
     .post-detail__hero {
       margin: 0 0 1.9rem;
+      position: relative;
+      aspect-ratio: 16/9;
+      border-radius: 18px;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(139,175,142,0.28) 0%, rgba(45,94,64,0.9) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,248,240,0.58);
+      box-shadow: 0 18px 36px rgba(73,44,27,0.08);
     }
     .post-detail__hero img {
       width: 100%;
-      aspect-ratio: 16/9;
+      height: 100%;
       object-fit: cover;
       display: block;
-      border-radius: 18px;
+      border-radius: inherit;
       background: rgba(0,0,0,0.04);
-      box-shadow: 0 18px 36px rgba(73,44,27,0.08);
+      box-shadow: none;
+      position: relative;
+      z-index: 1;
+    }
+    .post-media__fallback {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: inherit;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s var(--ease);
+    }
+    .featured__img.is-fallback .post-media__fallback,
+    .post-card__img.is-fallback .post-media__fallback,
+    .post-detail__hero.is-fallback .post-media__fallback {
+      opacity: 1;
+    }
+    .post-detail__hero-credit {
+      margin: 0.8rem 0 1.6rem;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      color: rgba(73,44,27,0.66);
+    }
+    .post-detail__hero-credit a {
+      color: var(--green-dark);
+      text-decoration: underline;
+      text-underline-offset: 2px;
     }
 
     .post-detail__body {
@@ -1094,18 +1135,58 @@
       }
 
       function getPostShareImageUrl(post) {
-        return getPostImageUrl(post) || getGeneratedOgImageUrl(post);
+        return sanitizeAssetUrl(post && (post.ogImage || post.coverImage || '')) || getGeneratedOgImageUrl(post);
+      }
+
+      function getPostImageCreditHtml(post) {
+        if (!post) return '';
+        var creator = String(post.coverImageCreator || '').trim();
+        var source = String(post.coverImageSource || '').trim();
+        var license = String(post.coverImageLicense || '').trim();
+        var licenseVersion = String(post.coverImageLicenseVersion || '').trim();
+        var sourceUrl = sanitizeUrl(post.coverImageSourceUrl || '');
+        var pieces = [];
+
+        if (creator) pieces.push('Photo: ' + escapeHtml(creator));
+        if (source) {
+          if (sourceUrl) {
+            pieces.push('via <a href="' + escapeHtml(sourceUrl) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(source) + '</a>');
+          } else {
+            pieces.push('via ' + escapeHtml(source));
+          }
+        }
+        if (license) {
+          pieces.push('License ' + escapeHtml(license.toUpperCase() + (licenseVersion ? ' ' + licenseVersion : '')));
+        }
+
+        return pieces.length ? '<div class="post-detail__hero-credit">' + pieces.join(' · ') + '</div>' : '';
+      }
+
+      function renderFallbackIcon(iconSize) {
+        return '<span class="post-media__fallback" aria-hidden="true">' +
+          '<svg width="' + iconSize + '" height="' + iconSize + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>' +
+        '</span>';
+      }
+
+      function renderManagedImageTag(src, alt, title, className, iconSize) {
+        var attrs = ' src="' + escapeHtml(src) + '"' +
+          ' alt="' + escapeHtml(alt || '') + '"' +
+          ' loading="lazy" decoding="async"' +
+          " onerror='this.onerror=null;this.parentNode.classList.add(\"is-fallback\");this.remove();'";
+        if (className) attrs += ' class="' + className + '"';
+        if (title) attrs += ' title="' + escapeHtml(title) + '"';
+        return renderFallbackIcon(iconSize) + '<img' + attrs + '>';
       }
 
       function renderPostListingMedia(post, className, iconSize) {
         var imageUrl = getPostImageUrl(post);
         if (imageUrl) {
           return '<div class="' + className + '">' +
-            renderImageTag(imageUrl, getPostImageAlt(post), post.title || '', '') +
+            renderManagedImageTag(imageUrl, getPostImageAlt(post), post.title || '', '', iconSize) +
           '</div>';
         }
         return '<div class="' + className + '">' +
-          '<svg width="' + iconSize + '" height="' + iconSize + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>' +
+          renderFallbackIcon(iconSize) +
         '</div>';
       }
 
@@ -1349,6 +1430,7 @@
         var bodyHtml = renderPostBody(post.body);
         var shareImage = getPostShareImageUrl(post);
         var heroImageUrl = getPostImageUrl(post);
+        var heroCreditHtml = getPostImageCreditHtml(post);
 
         var content = document.getElementById('postDetailContent');
         content.innerHTML =
@@ -1360,7 +1442,7 @@
             '<span>' + formatDate(post.date) + '</span>' +
             '<span>' + (post.readTime || estimateReadTime(post.body)) + ' min read</span>' +
           '</div>' +
-          (heroImageUrl ? '<div class="post-detail__hero">' + renderImageTag(heroImageUrl, getPostImageAlt(post), post.title || '', '') + '</div>' : '') +
+          (heroImageUrl ? '<div class="post-detail__hero">' + renderManagedImageTag(heroImageUrl, getPostImageAlt(post), post.title || '', '', 72) + '</div>' + heroCreditHtml : '') +
           '<div class="post-detail__body">' + bodyHtml + '</div>' +
           '<div class="post-detail__share">' +
             '<span>Share:</span>' +
