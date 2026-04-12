@@ -926,6 +926,18 @@
       var posts = loadPosts();
       var activeFilter = 'all';
       var searchQuery = '';
+      var pendingPostId = null;
+
+      function normalizePostId(rawId) {
+        var stringId = String(rawId || '');
+        var numericId = parseInt(stringId, 10);
+        return isNaN(numericId) || String(numericId) !== stringId ? stringId : numericId;
+      }
+
+      function flushPendingPost() {
+        if (pendingPostId === null || pendingPostId === undefined || pendingPostId === '') return;
+        if (showPost(pendingPostId)) pendingPostId = null;
+      }
 
       // Fetch AI-generated posts from API and approved Firestore posts, then merge
       (function fetchAllPosts() {
@@ -937,6 +949,7 @@
             posts = mergeAndDedupe(posts, aiPosts);
             renderFeatured();
             renderGrid();
+            flushPendingPost();
           } catch(e) {}
         }
 
@@ -949,6 +962,7 @@
               posts = mergeAndDedupe(loadPosts(), aiPosts);
               renderFeatured();
               renderGrid();
+              flushPendingPost();
             }
           })
           .catch(function() { /* API not available, use local posts only */ });
@@ -981,6 +995,7 @@
               posts = mergeAndDedupe(posts, firestorePosts);
               renderFeatured();
               renderGrid();
+              flushPendingPost();
             }
           })
           .catch(function(err) {
@@ -1328,7 +1343,7 @@
       // ── Post detail view ──
       function showPost(id) {
         var post = posts.find(function(p) { return p.id === id; });
-        if (!post) return;
+        if (!post) return false;
 
         var pageUrl = window.location.origin + '/blog/?post=' + post.id;
         var bodyHtml = renderPostBody(post.body);
@@ -1418,6 +1433,7 @@
         document.getElementById('postDetail').classList.remove('hidden');
         window.scrollTo({ top: 0, behavior: 'smooth' });
         history.pushState({ post: id }, '', '/blog/?post=' + id);
+        return true;
       }
 
       function hidePost() {
@@ -1527,9 +1543,10 @@
         var params = new URLSearchParams(window.location.search);
         var postId = params.get('post');
         if (postId) {
-          var numPid = parseInt(postId, 10);
-          showPost(isNaN(numPid) || String(numPid) !== postId ? postId : numPid);
+          pendingPostId = normalizePostId(postId);
+          if (!showPost(pendingPostId)) flushPendingPost();
         } else {
+          pendingPostId = null;
           document.getElementById('postDetail').classList.add('hidden');
           document.getElementById('blogListing').classList.remove('hidden');
           document.getElementById('writeSection').classList.remove('hidden');
@@ -1564,8 +1581,8 @@
       if (postParam) {
         renderFeatured();
         renderGrid();
-        var numPp = parseInt(postParam, 10);
-        showPost(isNaN(numPp) || String(numPp) !== postParam ? postParam : numPp);
+        pendingPostId = normalizePostId(postParam);
+        flushPendingPost();
       } else {
         renderFeatured();
         renderGrid();
