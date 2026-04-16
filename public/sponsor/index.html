@@ -1371,6 +1371,14 @@
           createdAt: new Date().toISOString()
         };
 
+        if (!BSFPaystack.hasLivePublicKey()) {
+          isSubmitting = false;
+          submitBtn.textContent = 'Set Up Monthly Giving';
+          submitBtn.classList.remove('btn--disabled');
+          showToast('Monthly giving is temporarily unavailable while Paystack is being reconfigured. Please use bank transfer or PayPal for now.', 'error');
+          return;
+        }
+
         BSFStore.saveSponsor(sponsor);
 
         // Sync to Firestore
@@ -1422,6 +1430,12 @@
             submitBtn.textContent = 'Set Up Monthly Giving';
             submitBtn.classList.remove('btn--disabled');
             showToast('Payment window closed. Try again when ready.', 'error');
+          },
+          onError: function() {
+            isSubmitting = false;
+            submitBtn.textContent = 'Set Up Monthly Giving';
+            submitBtn.classList.remove('btn--disabled');
+            showToast('Monthly giving is temporarily unavailable while Paystack is being reconfigured. Please use bank transfer or PayPal for now.', 'error');
           }
         });
       });

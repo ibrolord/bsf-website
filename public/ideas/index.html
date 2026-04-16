@@ -1017,15 +1017,37 @@
         { id: 'local-goal-4', title: 'Art Therapy Sessions', description: 'Weekly art therapy sessions led by a trained therapist for children who have experienced abuse, displacement, or family breakdown.', sourceIdeaId: 'local-6', sourceIdeaTitle: 'Art therapy sessions for trauma survivors', child: 'Trauma Support Group', fund: 'counselling', pathway: 'difficult-backgrounds', targetAmount: 200000, raisedAmount: 85000, status: 'active', deadline: '2026-07-31', sponsors: 7, createdBy: 'bolaji' }
       ];
 
-      function loadLocalIdeas() {
+      function isRecoverableFirestoreError(err) {
+        var code = err && err.code ? String(err.code) : '';
+        var message = err && err.message ? String(err.message) : '';
+        return code === 'permission-denied' ||
+          code === 'failed-precondition' ||
+          code === 'unavailable' ||
+          code === 'unauthenticated' ||
+          message.indexOf('Missing or insufficient permissions') !== -1;
+      }
+
+      function applyLocalIdeas() {
         ideas = localDemoIdeas.slice();
+        votedIds = {};
+      }
+
+      function applyLocalGoals() {
         goals = localDemoGoals.slice();
+      }
+
+      function loadLocalIdeas() {
+        applyLocalIdeas();
+        applyLocalGoals();
         updateStats(); renderIdeas(); renderGoals(); updateTabCounts();
       }
 
       function loadIdeas() {
         return db.collection('ideas').get().then(function (snapshot) {
-          if (snapshot.empty) return seedDemoData();
+          if (snapshot.empty) {
+            applyLocalIdeas();
+            return;
+          }
           ideas = [];
           snapshot.forEach(function (doc) {
             var data = doc.data(); data.id = doc.id;
@@ -1035,18 +1057,26 @@
           });
           return loadVoteCounts();
         }).then(function () { updateStats(); renderIdeas(); updateTabCounts(); })
-        .catch(function (err) { console.error('Error loading ideas:', err); loadLocalIdeas(); });
+        .catch(function (err) {
+          if (!isRecoverableFirestoreError(err)) console.error('Error loading ideas:', err);
+          applyLocalIdeas();
+          updateStats(); renderIdeas(); updateTabCounts();
+        });
       }
 
       function loadGoals() {
         return db.collection('goals').get().then(function (snapshot) {
-          if (snapshot.empty) return seedDemoGoals();
+          if (snapshot.empty) {
+            applyLocalGoals();
+            renderGoals(); updateTabCounts(); updateStats();
+            return;
+          }
           goals = [];
           snapshot.forEach(function (doc) { var data = doc.data(); data.id = doc.id; goals.push(data); });
           renderGoals(); updateTabCounts(); updateStats();
         }).catch(function (err) {
-          console.error('Error loading goals:', err);
-          goals = localDemoGoals.slice(); renderGoals(); updateTabCounts(); updateStats();
+          if (!isRecoverableFirestoreError(err)) console.error('Error loading goals:', err);
+          applyLocalGoals(); renderGoals(); updateTabCounts(); updateStats();
         });
       }
 
@@ -1060,6 +1090,10 @@
             if (user && v.userId === user.uid) votedIds[v.ideaId] = doc.id;
           });
           ideas.forEach(function (idea) { idea.votes = countsMap[idea.id] || 0; });
+        }).catch(function (err) {
+          if (!isRecoverableFirestoreError(err)) console.warn('Error loading vote counts:', err);
+          votedIds = {};
+          ideas.forEach(function (idea) { idea.votes = Number(idea.votes) || 0; });
         });
       }
 

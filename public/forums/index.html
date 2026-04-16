@@ -386,6 +386,28 @@
     @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
     .form-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
     .form-hint { font-size: 0.75rem; color: rgba(58,42,31,0.4); margin-top: 0.25rem; }
+    .forum-access-note {
+      margin-top: 1rem;
+      padding: 0.9rem 1rem;
+      border-radius: 12px;
+      font-size: 0.84rem;
+      line-height: 1.6;
+      background: rgba(45,94,64,0.06);
+      color: var(--green-dark);
+    }
+    .forum-access-note a {
+      color: inherit;
+      font-weight: 700;
+      text-decoration: underline;
+    }
+    .forum-access-note--warning {
+      background: rgba(194,115,76,0.12);
+      color: #7b4428;
+    }
+    .forum-access-note--muted {
+      background: rgba(58,42,31,0.06);
+      color: rgba(58,42,31,0.7);
+    }
 
     /* MODALS */
     .modal-overlay {
@@ -592,7 +614,7 @@
     <div class="container">
       <p class="eyebrow" data-animate>Open Conversation</p>
       <h1 data-animate data-animate-delay="1">Community Forums</h1>
-      <p class="forums-hero__sub" data-animate data-animate-delay="2">A space for volunteers, supporters, and community members to discuss, share stories, and shape our work together. Everyone is welcome.</p>
+      <p class="forums-hero__sub" data-animate data-animate-delay="2">A public reading space for the BSF community. Anyone can follow the conversation, while signed-in volunteers can start threads, reply, and react.</p>
       <div class="forums-stats" data-animate data-animate-delay="2">
         <div>
           <p class="forums-stat__number" id="stat-threads">--</p>
@@ -644,6 +666,7 @@
             <input type="text" class="search-bar__input" id="search-input" placeholder="Search threads...">
           </div>
         </div>
+        <div class="forum-access-note forum-access-note--muted" id="forum-access-note" data-animate data-animate-delay="1"></div>
 
         <!-- CATEGORY FILTERS -->
         <div class="filter-pills" style="margin-bottom:1.5rem;" data-animate data-animate-delay="1">
@@ -673,6 +696,7 @@
         <!-- REPLY FORM -->
         <div class="reply-form" id="reply-form-section">
           <p class="reply-form__title">Leave a Reply</p>
+          <div class="forum-access-note forum-access-note--muted" id="reply-auth-note" hidden></div>
           <form id="reply-form">
             <div class="form-row">
               <div class="form-group">
@@ -779,6 +803,7 @@
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
   <script src="/shared/bsf-antispam.js"></script>
@@ -797,7 +822,9 @@
         measurementId: "G-Q4EYY24EDZ"
       };
       firebase.initializeApp(firebaseConfig);
+      var auth = firebase.auth();
       var db = firebase.firestore();
+      var FieldValue = firebase.firestore.FieldValue;
 
       document.body.classList.add('js-ready');
 
@@ -820,6 +847,12 @@
       var currentFilter = 'all';
       var searchQuery = '';
       var currentThreadId = null;
+      var currentReplies = [];
+      var currentUser = null;
+      var currentVolunteer = null;
+      var currentForumUser = null;
+      var canParticipate = false;
+      var forumReadOnlyMode = false;
       var votedThreads = JSON.parse(localStorage.getItem('bsf_forum_votes') || '{}');
       var likedReplies = JSON.parse(localStorage.getItem('bsf_forum_reply_likes') || '{}');
       var savedName = localStorage.getItem('bsf_forum_name') || '';
@@ -834,6 +867,9 @@
       var modalThread = document.getElementById('modal-thread');
       var threadForm = document.getElementById('thread-form');
       var replyForm = document.getElementById('reply-form');
+      var forumAccessNote = document.getElementById('forum-access-note');
+      var replyAuthNote = document.getElementById('reply-auth-note');
+      var newThreadButton = document.getElementById('btn-new-thread');
 
       BSFAntiSpam.protect('thread-form');
       BSFAntiSpam.protect('reply-form');
@@ -849,6 +885,16 @@
       };
 
       // -- Helpers --
+      function isRecoverableFirestoreError(err) {
+        var code = err && err.code ? String(err.code) : '';
+        var message = err && err.message ? String(err.message) : '';
+        return code === 'permission-denied' ||
+          code === 'failed-precondition' ||
+          code === 'unavailable' ||
+          code === 'unauthenticated' ||
+          message.indexOf('Missing or insufficient permissions') !== -1;
+      }
+
       function showToast(msg, type) {
         toastEl.textContent = msg;
         toastEl.className = 'toast toast--' + (type || 'success') + ' is-visible';
@@ -878,6 +924,171 @@
         if (email) localStorage.setItem('bsf_forum_email', email);
         savedName = name || savedName;
         savedEmail = email || savedEmail;
+      }
+
+      function getUserRoles(userDoc) {
+        if (!userDoc) return [];
+        if (Array.isArray(userDoc.roles)) return userDoc.roles.slice();
+        if (userDoc.role) return [userDoc.role];
+        return [];
+      }
+
+      function userHasForumPermission(userDoc) {
+        if (!userDoc) return false;
+        var permissions = Array.isArray(userDoc.permissions) ? userDoc.permissions : [];
+        if (permissions.indexOf('forums.post') !== -1 || permissions.indexOf('forums.moderate') !== -1) {
+          return true;
+        }
+
+        var overrides = userDoc.permissionOverrides || userDoc.permission_overrides || {};
+        if (overrides['forums.post'] || overrides['forums.moderate']) {
+          return true;
+        }
+
+        return getUserRoles(userDoc).some(function (role) {
+          return ['volunteer', 'team_lead', 'program_lead', 'finance', 'moderator', 'admin', 'superadmin'].indexOf(role) !== -1;
+        });
+      }
+
+      function getForumDisplayName() {
+        if (currentVolunteer) {
+          if (currentVolunteer.name) return currentVolunteer.name;
+          var fullName = [currentVolunteer.firstName || '', currentVolunteer.lastName || ''].join(' ').trim();
+          if (fullName) return fullName;
+        }
+        if (currentUser && currentUser.displayName) return currentUser.displayName;
+        if (savedName) return savedName;
+        if (currentUser && currentUser.email) return currentUser.email.split('@')[0];
+        return '';
+      }
+
+      function getForumEmail() {
+        if (currentVolunteer && currentVolunteer.email) return String(currentVolunteer.email).trim().toLowerCase();
+        if (currentUser && currentUser.email) return String(currentUser.email).trim().toLowerCase();
+        return savedEmail;
+      }
+
+      function prefillForumIdentity() {
+        var displayName = getForumDisplayName();
+        var email = getForumEmail();
+        var threadAuthor = document.getElementById('thread-author');
+        var threadEmail = document.getElementById('thread-email');
+        var replyName = document.getElementById('reply-name');
+        var replyEmail = document.getElementById('reply-email');
+
+        if (displayName) {
+          threadAuthor.value = displayName;
+          replyName.value = displayName;
+        }
+        if (email) {
+          threadEmail.value = email;
+          replyEmail.value = email;
+        }
+
+        var lockIdentity = !!canParticipate;
+        [threadAuthor, threadEmail, replyName, replyEmail].forEach(function (el) {
+          el.readOnly = lockIdentity;
+        });
+      }
+
+      function updateForumAccessUI() {
+        var noteHtml = '';
+        var noteClass = 'forum-access-note forum-access-note--muted';
+        var replyHtml = '';
+        var showReplyForm = false;
+
+        if (forumReadOnlyMode) {
+          noteClass = 'forum-access-note forum-access-note--warning';
+          noteHtml = 'The live forum is temporarily unavailable, so this page is in read-only fallback mode.';
+          replyHtml = 'Replying is paused while the live forum is unavailable.';
+        } else if (!currentUser) {
+          noteHtml = 'Anyone can read the forum. <a href="/signin/">Sign in as a volunteer</a> to start threads, reply, and like posts.';
+          replyHtml = 'You need to <a href="/signin/">sign in as a volunteer</a> before you can reply.';
+        } else if (!canParticipate) {
+          noteClass = 'forum-access-note forum-access-note--warning';
+          noteHtml = 'Your account can read the forum, but only active volunteers with forum access can post or react here.';
+          replyHtml = 'Replying is limited to active volunteers with forum access.';
+        } else {
+          noteHtml = 'Signed in as ' + escapeHtml(getForumDisplayName()) + '. Volunteer discussion is enabled.';
+          replyHtml = '';
+          showReplyForm = true;
+        }
+
+        forumAccessNote.className = noteClass;
+        forumAccessNote.innerHTML = noteHtml;
+        replyAuthNote.className = noteClass;
+        replyAuthNote.innerHTML = replyHtml;
+        replyAuthNote.hidden = showReplyForm;
+        replyForm.hidden = !showReplyForm;
+        if (forumReadOnlyMode) {
+          newThreadButton.textContent = 'Forum Read-Only';
+        } else if (canParticipate) {
+          newThreadButton.textContent = '+ New Thread';
+        } else if (currentUser) {
+          newThreadButton.textContent = 'Volunteer Access Needed';
+        } else {
+          newThreadButton.textContent = 'Volunteer Sign In to Post';
+        }
+        prefillForumIdentity();
+      }
+
+      function loadForumAccess(user) {
+        currentUser = user || null;
+        currentVolunteer = null;
+        currentForumUser = null;
+        canParticipate = false;
+
+        if (!user || !user.email) {
+          updateForumAccessUI();
+          return Promise.resolve();
+        }
+
+        var email = String(user.email).trim().toLowerCase();
+        return Promise.all([
+          db.collection('volunteers').where('email', '==', email).limit(1).get().catch(function () { return null; }),
+          db.collection('users').where('email', '==', email).limit(1).get().catch(function () { return null; })
+        ]).then(function (results) {
+          var volunteerSnap = results[0];
+          var userSnap = results[1];
+
+          if (volunteerSnap && !volunteerSnap.empty) {
+            currentVolunteer = volunteerSnap.docs[0].data();
+          }
+          if (userSnap && !userSnap.empty) {
+            currentForumUser = userSnap.docs[0].data();
+          }
+
+          var volunteerStatus = currentVolunteer && currentVolunteer.status ? String(currentVolunteer.status).toLowerCase() : 'active';
+          canParticipate = !!currentVolunteer &&
+            volunteerStatus === 'active' &&
+            userHasForumPermission(currentForumUser) &&
+            !forumReadOnlyMode;
+
+          updateForumAccessUI();
+        }).catch(function () {
+          canParticipate = false;
+          updateForumAccessUI();
+        });
+      }
+
+      function requireForumParticipation(actionLabel) {
+        if (forumReadOnlyMode) {
+          showToast('The forum is in read-only fallback mode right now.', 'error');
+          return false;
+        }
+        if (!currentUser) {
+          showToast('Sign in as a volunteer to ' + actionLabel + '.', 'error');
+          return false;
+        }
+        if (!canParticipate) {
+          showToast('Only active volunteers with forum access can ' + actionLabel + '.', 'error');
+          return false;
+        }
+        return true;
+      }
+
+      function isLocalOnlyThread(threadId) {
+        return String(threadId || '').indexOf('demo-') === 0 || String(threadId || '').indexOf('local-') === 0;
       }
 
       // -- Demo data --
@@ -960,8 +1171,13 @@
       // -- Load threads --
       function loadThreads() {
         return db.collection('forum_threads').orderBy('createdAt', 'desc').get().then(function (snapshot) {
+          forumReadOnlyMode = false;
           if (snapshot.empty) {
-            return seedDemoData();
+            threads = [];
+            updateStats();
+            renderThreads();
+            updateForumAccessUI();
+            return;
           }
           threads = [];
           snapshot.forEach(function (doc) {
@@ -977,9 +1193,14 @@
           });
           updateStats();
           renderThreads();
+          updateForumAccessUI();
         }).catch(function (err) {
-          console.error('Error loading threads:', err);
+          if (!isRecoverableFirestoreError(err)) {
+            console.error('Error loading threads:', err);
+          }
+          forumReadOnlyMode = true;
           loadLocalThreads();
+          updateForumAccessUI();
         });
       }
 
@@ -1125,21 +1346,41 @@
 
       // -- Vote --
       function handleVote(threadId) {
+        if (!requireForumParticipation('vote on threads')) return;
+
         var thread = threads.find(function (t) { return t.id === threadId; });
         if (!thread) return;
+        var delta = 0;
 
         if (votedThreads[threadId]) {
           thread.votes = Math.max(0, (thread.votes || 0) - 1);
           delete votedThreads[threadId];
+          delta = -1;
         } else {
           thread.votes = (thread.votes || 0) + 1;
           votedThreads[threadId] = true;
+          delta = 1;
         }
 
         localStorage.setItem('bsf_forum_votes', JSON.stringify(votedThreads));
 
-        // Update Firestore
-        db.collection('forum_threads').doc(threadId).update({ votes: thread.votes }).catch(function () {});
+        if (!isLocalOnlyThread(threadId)) {
+          db.collection('forum_threads').doc(threadId).update({
+            votes: FieldValue.increment(delta)
+          }).catch(function () {
+            if (delta === -1) {
+              thread.votes = (thread.votes || 0) + 1;
+              votedThreads[threadId] = true;
+            } else {
+              thread.votes = Math.max(0, (thread.votes || 0) - 1);
+              delete votedThreads[threadId];
+            }
+            localStorage.setItem('bsf_forum_votes', JSON.stringify(votedThreads));
+            renderThreads();
+            if (currentThreadId === threadId) openThread(threadId);
+            showToast('We could not save that vote right now.', 'error');
+          });
+        }
 
         renderThreads();
       }
@@ -1180,11 +1421,7 @@
         // Load replies
         loadReplies(threadId, thread);
 
-        // Pre-fill name/email if saved
-        var replyNameEl = document.getElementById('reply-name');
-        var replyEmailEl = document.getElementById('reply-email');
-        if (savedName) replyNameEl.value = savedName;
-        if (savedEmail) replyEmailEl.value = savedEmail;
+        prefillForumIdentity();
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
@@ -1207,10 +1444,12 @@
             replies = demoReplies[threadId];
           }
 
+          currentReplies = replies.slice();
           renderReplies(replies, thread);
         }).catch(function () {
           // Fallback to demo
-          renderReplies(demoReplies[threadId] || [], thread);
+          currentReplies = (demoReplies[threadId] || []).slice();
+          renderReplies(currentReplies, thread);
         });
       }
 
@@ -1248,15 +1487,48 @@
 
       // -- Like reply --
       function handleLikeReply(replyId, threadId) {
+        if (!requireForumParticipation('like replies')) return;
+
+        var reply = currentReplies.find(function (r) { return r.id === replyId; });
+        if (!reply) return;
+
+        var delta = 0;
         if (likedReplies[replyId]) {
           delete likedReplies[replyId];
+          reply.likes = Math.max(0, (reply.likes || 0) - 1);
+          delta = -1;
         } else {
           likedReplies[replyId] = true;
+          reply.likes = (reply.likes || 0) + 1;
+          delta = 1;
         }
         localStorage.setItem('bsf_forum_reply_likes', JSON.stringify(likedReplies));
 
-        // Re-open thread to refresh
-        if (currentThreadId) openThread(currentThreadId);
+        if (demoReplies[threadId]) {
+          demoReplies[threadId] = currentReplies.slice();
+        }
+
+        renderReplies(currentReplies, threads.find(function (t) { return t.id === threadId; }) || null);
+
+        if (!isLocalOnlyThread(threadId)) {
+          db.collection('forum_threads').doc(threadId).collection('replies').doc(replyId).update({
+            likes: FieldValue.increment(delta)
+          }).catch(function () {
+            if (delta === -1) {
+              reply.likes = (reply.likes || 0) + 1;
+              likedReplies[replyId] = true;
+            } else {
+              reply.likes = Math.max(0, (reply.likes || 0) - 1);
+              delete likedReplies[replyId];
+            }
+            localStorage.setItem('bsf_forum_reply_likes', JSON.stringify(likedReplies));
+            if (demoReplies[threadId]) {
+              demoReplies[threadId] = currentReplies.slice();
+            }
+            renderReplies(currentReplies, threads.find(function (t) { return t.id === threadId; }) || null);
+            showToast('We could not save that reaction right now.', 'error');
+          });
+        }
       }
 
       // -- Close thread / back --
@@ -1267,11 +1539,10 @@
       });
 
       // -- New thread modal --
-      document.getElementById('btn-new-thread').addEventListener('click', function () {
+      newThreadButton.addEventListener('click', function () {
+        if (!requireForumParticipation('start a new thread')) return;
         modalThread.classList.add('is-open');
-        // Pre-fill saved name/email
-        if (savedName) document.getElementById('thread-author').value = savedName;
-        if (savedEmail) document.getElementById('thread-email').value = savedEmail;
+        prefillForumIdentity();
       });
       document.getElementById('modal-thread-close').addEventListener('click', function () {
         modalThread.classList.remove('is-open');
@@ -1286,6 +1557,7 @@
       // -- Submit thread --
       threadForm.addEventListener('submit', function (e) {
         e.preventDefault();
+        if (!requireForumParticipation('post threads')) return;
         if (!BSFAntiSpam.check('thread-form')) return;
         var author = document.getElementById('thread-author').value.trim();
         var email = document.getElementById('thread-email').value.trim();
@@ -1309,8 +1581,8 @@
           pinned: false,
           votes: 0,
           replyCount: 0,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          lastActivityAt: firebase.firestore.FieldValue.serverTimestamp()
+          createdAt: FieldValue.serverTimestamp(),
+          lastActivityAt: FieldValue.serverTimestamp()
         };
 
         db.collection('forum_threads').add(threadData).then(function (docRef) {
@@ -1321,26 +1593,19 @@
           updateStats();
           renderThreads();
           threadForm.reset();
+          prefillForumIdentity();
           modalThread.classList.remove('is-open');
           showToast('Thread posted!');
         }).catch(function (err) {
           console.error('Error creating thread:', err);
-          // Still add locally
-          threadData.id = 'local-' + Date.now();
-          threadData.date = new Date().toISOString();
-          threadData.lastActivity = threadData.date;
-          threads.unshift(threadData);
-          updateStats();
-          renderThreads();
-          threadForm.reset();
-          modalThread.classList.remove('is-open');
-          showToast('Thread posted!');
+          showToast('We could not post that thread right now.', 'error');
         });
       });
 
       // -- Submit reply --
       replyForm.addEventListener('submit', function (e) {
         e.preventDefault();
+        if (!requireForumParticipation('post replies')) return;
         if (!BSFAntiSpam.check('reply-form')) return;
         if (!currentThreadId) return;
 
@@ -1359,7 +1624,7 @@
           author: author,
           body: body,
           likes: 0,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          createdAt: FieldValue.serverTimestamp()
         };
 
         var threadRef = db.collection('forum_threads').doc(currentThreadId);
@@ -1373,8 +1638,8 @@
           }
 
           threadRef.update({
-            replyCount: firebase.firestore.FieldValue.increment(1),
-            lastActivityAt: firebase.firestore.FieldValue.serverTimestamp()
+            replyCount: FieldValue.increment(1),
+            lastActivityAt: FieldValue.serverTimestamp()
           }).catch(function () {});
 
           updateStats();
@@ -1384,14 +1649,7 @@
           openThread(currentThreadId);
         }).catch(function (err) {
           console.error('Error posting reply:', err);
-          // Still show success locally
-          var thread = threads.find(function (t) { return t.id === currentThreadId; });
-          if (thread) {
-            thread.replyCount = (thread.replyCount || 0) + 1;
-          }
-          updateStats();
-          document.getElementById('reply-body').value = '';
-          showToast('Reply posted!');
+          showToast('We could not post that reply right now.', 'error');
         });
       });
 
@@ -1435,6 +1693,9 @@
       });
 
       // -- Init --
+      auth.onAuthStateChanged(function (user) {
+        loadForumAccess(user);
+      });
       loadThreads();
 
     })();

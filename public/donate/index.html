@@ -162,6 +162,7 @@
     .pay-btn:hover { background: var(--green-dark); transform: translateY(-1px); }
     .pay-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     .pay-btn svg { flex-shrink: 0; }
+    .payment-error { margin-top: 0.85rem; font-size: 0.85rem; color: #B91C1C; line-height: 1.5; }
 
     .pay-methods { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 1rem; font-size: 0.75rem; opacity: 0.4; }
 
@@ -551,6 +552,7 @@
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
               <span id="pay-btn-text">Pay with Paystack</span>
             </button>
+            <p class="payment-error" id="payment-error" role="alert" hidden></p>
 
             <div class="pay-methods">
               <span>Visa</span>
@@ -755,6 +757,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
   <script src="/shared/bsf-antispam.js"></script>
+  <script src="/shared/bsf-paystack.js"></script>
   <script>
     (function () {
       'use strict';
@@ -773,7 +776,7 @@
       var db = firebase.firestore();
 
       // ── Paystack config ──
-      var PAYSTACK_PUBLIC_KEY = 'pk_test_441d40d980617caac1cfbf3a36bcb66921047667';
+      var PAYSTACK_PUBLIC_KEY = window.BSFPaystack ? BSFPaystack.getPublicKey() : '';
 
       // ── Fund config ──
       var funds = {
@@ -933,7 +936,7 @@
           var unitLabels = { 'volunteer': 'volunteers signed up', 'outreach': (goal.unit || 'people') + ' reached', 'mentoring': 'mentors enrolled' };
           raised.textContent = effectiveRaised + ' ' + (unitLabels[goal.goalType] || (goal.unit || 'units') + ' pledged');
         } else {
-          raised.textContent = fmt(goal.raisedAmount) + ' raised';
+          raised.textContent = fmt(effectiveRaised) + ' raised';
         }
         var rem = document.createElement('span');
         rem.className = 'goal-card__remaining';
@@ -1005,7 +1008,7 @@
       // Select a goal for funding
       function selectGoal(goal) {
         selectedGoal = goal;
-        var remaining = Math.max(0, goal.targetAmount - goal.raisedAmount);
+        var remaining = Math.max(0, (goal.targetAmount || 0) - (goal.raisedAmount || 0));
 
         // Update the allocation sidebar to show goal info
         selectedFund = goal.fund || 'school-fees';
@@ -1123,7 +1126,27 @@
       });
 
       // ── Format currency ──
-      function fmt(n) { return '\u20A6' + n.toLocaleString('en-NG'); }
+      function fmt(n) {
+        var value = Number(n);
+        if (!isFinite(value)) value = 0;
+        return '\u20A6' + value.toLocaleString('en-NG');
+      }
+
+      function hasLivePaystackKey() {
+        return PAYSTACK_PUBLIC_KEY.indexOf('pk_live_') === 0;
+      }
+
+      function setPaymentError(message) {
+        var el = document.getElementById('payment-error');
+        if (!el) return;
+        if (message) {
+          el.textContent = message;
+          el.hidden = false;
+          return;
+        }
+        el.textContent = '';
+        el.hidden = true;
+      }
 
       // ── Update allocation sidebar ──
       function updateAllocation() {
@@ -1250,6 +1273,7 @@
       document.getElementById('give-form').addEventListener('submit', function (e) {
         e.preventDefault();
         if (!BSFAntiSpam.check('give-form')) return;
+        setPaymentError('');
 
         var email = document.getElementById('donor-email').value.trim();
         var name = document.getElementById('donor-name').value.trim() || 'Anonymous';
@@ -1265,6 +1289,12 @@
         var receiptId = generateRef();
         var payBtn = document.getElementById('pay-btn');
         payBtn.disabled = true;
+
+        if (!hasLivePaystackKey()) {
+          payBtn.disabled = false;
+          setPaymentError('Online card payments are temporarily unavailable while Paystack is being reconfigured. Please use PayPal or bank transfer below.');
+          return;
+        }
 
         var fundLabel = selectedGoal ? selectedGoal.title : funds[selectedFund].label;
         var metaFields = [

@@ -1,0 +1,17 @@
+{
+  "name": "bsf-website-cloudflare-ops",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "cf:whoami": "wrangler whoami",
+    "cf:zone:report": "node ./scripts/cloudflare/zone-report.mjs",
+    "cf:dns:export": "node ./scripts/cloudflare/export-dns.mjs",
+    "cf:email:status": "node ./scripts/cloudflare/email-routing-status.mjs",
+    "cf:cache:status": "node ./scripts/cloudflare/cache-status.mjs",
+    "cf:cache:purge": "node ./scripts/cloudflare/purge-cache.mjs",
+    "cf:turnstile:status": "node ./scripts/cloudflare/turnstile-status.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "4.20.5"
+  }
+}

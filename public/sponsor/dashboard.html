@@ -836,7 +836,7 @@
       <li><a href="/events/">Events</a></li>
       <li><a href="/volunteer/">Volunteer</a></li>
       <li><a href="/donate/">Give</a></li>
-      <li id="nav-signout" style="display:none"><a href="#" onclick="sponsorSignOut();return false" style="color:var(--gold)">Sign Out</a></li>
+      <li id="nav-signout" style="display:none"><button type="button" onclick="sponsorSignOut()" style="background:none;border:0;padding:0;color:var(--gold);font:inherit;cursor:pointer">Sign Out</button></li>
     </ul>
   </nav>
 
@@ -1324,6 +1324,7 @@
     var currentFilter = 'all';
     var txnPage = 1;
     var TXN_PER_PAGE = 10;
+    var extrasBooted = false;
 
     /* ================================================================
        HELPERS
@@ -1390,6 +1391,7 @@
       renderCertificate();
       populateProfile();
       bindEvents();
+      bootExtras();
 
       // Check for welcome param
       var params = new URLSearchParams(window.location.search);
@@ -1951,6 +1953,11 @@
         return;
       }
 
+      if (!BSFPaystack.hasLivePublicKey()) {
+        showToast('Online donations are temporarily unavailable while Paystack is being reconfigured.', 'error');
+        return;
+      }
+
       BSFPaystack.pay({
         email: sponsor.email,
         amount: amount,
@@ -1993,6 +2000,9 @@
         },
         onClose: function() {
           showToast('Payment window closed', 'error');
+        },
+        onError: function() {
+          showToast('Online donations are temporarily unavailable while Paystack is being reconfigured.', 'error');
         }
       });
     }
@@ -2285,9 +2295,12 @@
       }).catch(function() { empty.style.display = 'block'; });
     }
 
-    function bootExtras() { loadIdeas(); loadGoals(); }
-    if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', bootExtras); }
-    else { bootExtras(); }
+    function bootExtras() {
+      if (extrasBooted) return;
+      extrasBooted = true;
+      loadIdeas();
+      loadGoals();
+    }
   })();
   </script>
 <div class="nav__backdrop" id="nav-backdrop"></div>

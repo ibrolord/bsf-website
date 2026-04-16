@@ -2,6 +2,8 @@
 
 Apply these rules on `thebigsisterfoundation.org` after deploying the origin changes in `public/vercel.json`.
 
+Canonical ops runbook: `docs/cloudflare-ops.md`
+
 ## 1. Static asset cache rule
 - Match:
   - host equals `thebigsisterfoundation.org`
@@ -42,11 +44,11 @@ Only enable this after the purge script is part of the production deploy flow.
 Run the targeted purge script after production deploys:
 
 ```bash
-node /Users/ibrobaba/TrashShit/claudecode/VNtranscript/scripts/purge-cloudflare-cache.mjs
+npm run cf:cache:purge
 ```
 
 To purge a narrower set:
 
 ```bash
-node /Users/ibrobaba/TrashShit/claudecode/VNtranscript/scripts/purge-cloudflare-cache.mjs / /blog/ /feed.xml
+npm run cf:cache:purge -- / /blog/ /feed.xml
 ```

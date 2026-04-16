@@ -380,9 +380,9 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--gr
         Sign in with Google
       </button>
       <div style="margin-top:16px;font-size:13px">
-        <a href="#" onclick="showLoginMode('forgot');return false" style="color:var(--green);text-decoration:none">Forgot password?</a>
+        <button type="button" onclick="showLoginMode('forgot')" style="background:none;border:0;padding:0;color:var(--green);text-decoration:none;font:inherit;cursor:pointer">Forgot password?</button>
         <span style="color:var(--gray-300);margin:0 8px">|</span>
-        <a href="#" onclick="showLoginMode('create');return false" style="color:var(--green);text-decoration:none">Create account</a>
+        <button type="button" onclick="showLoginMode('create')" style="background:none;border:0;padding:0;color:var(--green);text-decoration:none;font:inherit;cursor:pointer">Create account</button>
       </div>
     </div>
 
@@ -392,7 +392,7 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--gr
       <button class="btn btn-primary btn-full" onclick="doForgotPassword()" id="btn-forgot">Send Reset Link</button>
       <div id="forgot-msg" style="font-size:13px;margin-top:8px;min-height:20px"></div>
       <div style="margin-top:16px;font-size:13px">
-        <a href="#" onclick="showLoginMode('signin');return false" style="color:var(--green);text-decoration:none">&larr; Back to sign in</a>
+        <button type="button" onclick="showLoginMode('signin')" style="background:none;border:0;padding:0;color:var(--green);text-decoration:none;font:inherit;cursor:pointer">&larr; Back to sign in</button>
       </div>
     </div>
 
@@ -409,7 +409,7 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--gr
         Sign up with Google
       </button>
       <div style="margin-top:16px;font-size:13px">
-        <a href="#" onclick="showLoginMode('signin');return false" style="color:var(--green);text-decoration:none">&larr; Back to sign in</a>
+        <button type="button" onclick="showLoginMode('signin')" style="background:none;border:0;padding:0;color:var(--green);text-decoration:none;font:inherit;cursor:pointer">&larr; Back to sign in</button>
       </div>
     </div>
   </div>

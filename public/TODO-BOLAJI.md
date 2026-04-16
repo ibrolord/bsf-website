@@ -16,7 +16,7 @@ Things Claude can't do for you. Each item has clear steps and where to plug the 
 6. Once approved, go to Settings → API Keys & Webhooks
 7. Copy the **live** public key (`pk_live_...`) and secret key (`sk_live_...`)
 
-**Where to update:** Tell Claude to swap keys in `/donate/index.html` line ~554 (PAYSTACK_PUBLIC_KEY)
+**Where to update:** Tell Claude to set the live key in `/shared/bsf-paystack.js` (`publicKey`). Donate + sponsor flows now read from that shared config.
 
 ---
 

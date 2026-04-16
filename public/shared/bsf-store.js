@@ -159,25 +159,9 @@ window.BSFStore = (function () {
       return this.syncToFirestore(db, 'donations', txn);
     },
 
-    /** Convenience: sync a sponsor profile to the canonical email-keyed doc. */
+    /** Convenience: sync a sponsor profile to the 'sponsors' collection. */
     syncSponsorToFirestore: function (db, sponsor) {
-      if (!db) return Promise.resolve(null);
-      try {
-        if (sponsor && sponsor.email) {
-          var email = String(sponsor.email).trim().toLowerCase();
-          return db.collection('sponsors').doc(email).set(
-            Object.assign({}, sponsor, {
-              email: email,
-              updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }),
-            { merge: true }
-          );
-        }
-        return this.syncToFirestore(db, 'sponsors', sponsor);
-      } catch (e) {
-        console.error('[BSFStore] Firestore sponsor sync failed', e);
-        return Promise.reject(e);
-      }
+      return this.syncToFirestore(db, 'sponsors', sponsor);
     },
 
     /* ── ID / reference generators ─────────────────────────────────── */

@@ -1,9 +1,10 @@
 /**
- * BSF Paystack - Payment placeholder wrapper
+ * BSF Paystack - Payment integration wrapper
  * Big Sister Foundation
  *
- * Multi-currency helper with a guarded Paystack checkout entry point.
- * Current production state: Paystack is NOT live yet.
+ * Multi-currency Paystack payment handler with sponsorship tier logic.
+ * Requires the Paystack inline script to be loaded on the page:
+ *   <script src="https://js.paystack.co/v2/inline.js"></script>
  *
  * Usage:
  *   BSFPaystack.pay({
@@ -22,10 +23,24 @@ window.BSFPaystack = (function () {
   return {
 
     // ── Configuration ─────────────────────────────────────────────
-    // Leave disabled until a real live Paystack key is available.
-    enabled: false,
+    // IMPORTANT: Set this to your live Paystack public key (`pk_live_...`)
+    // before taking payments. The wrapper fails closed when only a test
+    // key or no key is configured so donors never complete fake charges.
     publicKey: '',
-    unavailableMessage: 'Paystack checkout is not live yet. Use PayPal or direct bank transfer for now, or email hello@thebigsisterfoundation.org.',
+
+    /** Resolve the currently configured public key. */
+    getPublicKey: function () {
+      if (typeof window !== 'undefined' && typeof window.__BSF_PAYSTACK_PUBLIC_KEY__ === 'string') {
+        var runtimeKey = window.__BSF_PAYSTACK_PUBLIC_KEY__.trim();
+        if (runtimeKey) return runtimeKey;
+      }
+      return String(this.publicKey || '').trim();
+    },
+
+    /** Only a live key is acceptable on the public site. */
+    hasLivePublicKey: function () {
+      return this.getPublicKey().indexOf('pk_live_') === 0;
+    },
 
     // ── Supported currencies with display metadata and preset amounts ──
     currencies: {
@@ -75,19 +90,6 @@ window.BSFPaystack = (function () {
       return this.currencies[currency] || this.currencies.NGN;
     },
 
-    /** True only when checkout is intentionally enabled with a live key. */
-    isReady: function () {
-      return this.enabled === true &&
-        typeof this.publicKey === 'string' &&
-        this.publicKey.indexOf('pk_live_') === 0 &&
-        typeof PaystackPop !== 'undefined';
-    },
-
-    /** Public helper for UI copy when checkout is disabled. */
-    getUnavailableMessage: function () {
-      return this.unavailableMessage;
-    },
-
     // ── Payment ───────────────────────────────────────────────────
 
     /**
@@ -101,15 +103,22 @@ window.BSFPaystack = (function () {
      * @param {Object} [options.metadata] - Arbitrary metadata sent to Paystack
      * @param {Function} [options.onSuccess] - Called with Paystack response on success
      * @param {Function} [options.onClose]   - Called when the payment dialog is closed
-     * @param {Function} [options.onUnavailable] - Called when checkout is disabled
      */
     pay: function (options) {
       options = options || {};
 
-      if (!this.isReady()) {
-        console.warn('[BSFPaystack] Checkout is disabled until Paystack is live.');
-        if (typeof options.onUnavailable === 'function') {
-          options.onUnavailable(this.getUnavailableMessage());
+      if (typeof PaystackPop === 'undefined') {
+        console.error('[BSFPaystack] PaystackPop is not loaded. Include the Paystack inline script.');
+        if (typeof options.onError === 'function') {
+          options.onError(new Error('paystack_not_loaded'));
+        }
+        return false;
+      }
+
+      if (!this.hasLivePublicKey()) {
+        console.error('[BSFPaystack] Missing live Paystack public key. Configure BSFPaystack.publicKey with a pk_live_ value before taking payments.');
+        if (typeof options.onError === 'function') {
+          options.onError(new Error('missing_live_paystack_key'));
         }
         return false;
       }
@@ -119,7 +128,7 @@ window.BSFPaystack = (function () {
       var ref = options.ref || (window.BSFStore ? BSFStore.generateRef() : 'BSF-' + Date.now());
 
       var handler = PaystackPop.setup({
-        key:      self.publicKey,
+        key:      self.getPublicKey(),
         email:    options.email,
         amount:   self.toSmallestUnit(options.amount, currency),
         currency: currency,

@@ -22,6 +22,16 @@ service cloud.firestore {
     function isAdmin() {
       return hasRole('admin') || isSuperAdmin();
     }
+    function canParticipateInForum() {
+      return hasRole('volunteer') ||
+        hasRole('team_lead') ||
+        hasRole('program_lead') ||
+        hasRole('finance') ||
+        hasRole('moderator') ||
+        hasRole('admin') ||
+        hasRole('superadmin') ||
+        isSuperAdmin();
+    }
     function hasAnyRole() {
       return userDocExists() && (
         ('roles' in getUserDoc() && getUserDoc().roles.size() > 0) ||
@@ -113,14 +123,11 @@ service cloud.firestore {
     }
     match /forum_threads/{docId} {
       allow read: if true;
-      allow create: if true;
-      allow update, delete: if hasAnyRole();
+      allow create, update, delete: if canParticipateInForum();
 
       match /replies/{replyId} {
         allow read: if true;
-        allow create: if true;
-        allow update: if hasAnyRole();
-        allow delete: if hasAnyRole();
+        allow create, update, delete: if canParticipateInForum();
       }
     }
 

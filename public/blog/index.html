@@ -113,6 +113,8 @@
       margin-bottom: 3rem;
       cursor: pointer;
       transition: box-shadow 0.3s var(--ease);
+      text-decoration: none;
+      color: inherit;
     }
     .featured:hover { box-shadow: 0 6px 32px rgba(0,0,0,0.1); }
 
@@ -550,7 +552,7 @@
     <div class="container">
 
       <!-- FEATURED POST -->
-      <article class="featured" id="featuredPost"></article>
+      <a class="featured" id="featuredPost" href="/blog/" aria-label="Read the featured post"></a>
 
       <!-- FILTERS -->
       <div class="filter-bar">
@@ -931,6 +933,8 @@
         if (!post) { el.classList.add('hidden'); return; }
 
         el.dataset.id = post.id;
+        el.href = '/blog/?post=' + encodeURIComponent(post.id);
+        el.setAttribute('aria-label', 'Read blog post: ' + post.title);
         el.innerHTML =
           '<div class="featured__img ' + colorClasses[post.id % colorClasses.length] + '">' +
             '<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>' +
@@ -941,8 +945,6 @@
             '<p>' + post.excerpt + '</p>' +
             '<span class="featured__meta">' + formatDate(post.date) + ' &middot; ' + post.author + ' &middot; ' + (post.readTime || estimateReadTime(post.body)) + ' min read</span>' +
           '</div>';
-
-        el.onclick = function() { showPost(post.id); };
       }
 
       // ── Render grid ──
@@ -962,7 +964,7 @@
 
         grid.innerHTML = filtered.map(function(post) {
           var colorClass = colorClasses[post.id % colorClasses.length];
-          return '<article class="post-card" data-id="' + post.id + '">' +
+          return '<a class="post-card" href="/blog/?post=' + encodeURIComponent(post.id) + '" data-id="' + post.id + '" aria-label="Read blog post: ' + post.title + '">' +
             '<div class="post-card__img ' + colorClass + '">' +
               '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>' +
             '</div>' +
@@ -975,7 +977,7 @@
                 '<span class="post-card__read-time"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' + (post.readTime || estimateReadTime(post.body)) + ' min</span>' +
               '</div>' +
             '</div>' +
-          '</article>';
+          '</a>';
         }).join('');
       }
 
@@ -984,7 +986,7 @@
         var post = posts.find(function(p) { return p.id === id; });
         if (!post) return;
 
-        var pageUrl = window.location.origin + '/blog/?post=' + post.id;
+        var pageUrl = window.location.origin + '/blog/?post=' + encodeURIComponent(post.id);
         var bodyHtml = post.body.split('\n\n').map(function(para) {
           para = para.trim();
           if (!para) return '';
@@ -1041,12 +1043,20 @@
         document.title = post.title + ' — Big Sister Foundation Blog';
         var metaDesc = document.querySelector('meta[name="description"]');
         if (metaDesc) metaDesc.setAttribute('content', post.metaDescription || post.excerpt);
+        var canonical = document.querySelector('link[rel="canonical"]');
+        if (canonical) canonical.setAttribute('href', pageUrl);
         var ogTitle = document.querySelector('meta[property="og:title"]');
         if (ogTitle) ogTitle.setAttribute('content', post.title + ' — Big Sister Foundation');
         var ogDesc = document.querySelector('meta[property="og:description"]');
         if (ogDesc) ogDesc.setAttribute('content', post.metaDescription || post.excerpt);
+        var ogUrl = document.querySelector('meta[property="og:url"]');
+        if (ogUrl) ogUrl.setAttribute('content', pageUrl);
         var ogImage = document.querySelector('meta[property="og:image"]');
         if (ogImage) ogImage.setAttribute('content', post.ogImage || '/api/og-image?title=' + encodeURIComponent(post.title || '') + '&category=' + encodeURIComponent(post.category || 'insight'));
+        var twitterTitle = document.querySelector('meta[name="twitter:title"]');
+        if (twitterTitle) twitterTitle.setAttribute('content', post.title + ' — Big Sister Foundation');
+        var twitterDesc = document.querySelector('meta[name="twitter:description"]');
+        if (twitterDesc) twitterDesc.setAttribute('content', post.metaDescription || post.excerpt);
 
         // Remove any existing article schema
         var existingSchema = document.getElementById('article-schema');
@@ -1073,37 +1083,66 @@
         document.getElementById('writeSection').classList.add('hidden');
         document.getElementById('postDetail').classList.remove('hidden');
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        history.pushState({ post: id }, '', '/blog/?post=' + id);
+        history.pushState({ post: id }, '', '/blog/?post=' + encodeURIComponent(id));
       }
 
-      function hidePost() {
+      function restoreListingState(updateHistory) {
         document.getElementById('postDetail').classList.add('hidden');
         document.getElementById('blogListing').classList.remove('hidden');
         document.getElementById('writeSection').classList.remove('hidden');
-        history.pushState({}, '', '/blog/');
+        if (updateHistory !== false) {
+          history.pushState({}, '', '/blog/');
+        }
 
         // Restore original meta tags
         document.title = 'Blog — Big Sister Foundation';
         var metaDesc = document.querySelector('meta[name="description"]');
         if (metaDesc) metaDesc.setAttribute('content', 'Stories, updates, and insights from Big Sister Foundation. Read about our work with vulnerable children in Lagos and the communities we serve.');
+        var canonical = document.querySelector('link[rel="canonical"]');
+        if (canonical) canonical.setAttribute('href', 'https://thebigsisterfoundation.org/blog/');
         var ogTitle = document.querySelector('meta[property="og:title"]');
         if (ogTitle) ogTitle.setAttribute('content', 'Blog — Big Sister Foundation');
         var ogDesc = document.querySelector('meta[property="og:description"]');
         if (ogDesc) ogDesc.setAttribute('content', 'Stories, updates, and insights from our work with vulnerable children in Lagos.');
+        var ogUrl = document.querySelector('meta[property="og:url"]');
+        if (ogUrl) ogUrl.setAttribute('content', 'https://thebigsisterfoundation.org/blog/');
+        var ogImage = document.querySelector('meta[property="og:image"]');
+        if (ogImage) ogImage.setAttribute('content', 'https://thebigsisterfoundation.org/og-image.png');
+        var twitterTitle = document.querySelector('meta[name="twitter:title"]');
+        if (twitterTitle) twitterTitle.setAttribute('content', 'Blog — Big Sister Foundation');
+        var twitterDesc = document.querySelector('meta[name="twitter:description"]');
+        if (twitterDesc) twitterDesc.setAttribute('content', 'Stories, updates, and insights from our work with vulnerable children in Lagos.');
 
         // Remove article schema
         var existingSchema = document.getElementById('article-schema');
         if (existingSchema) existingSchema.remove();
       }
 
+      function hidePost() {
+        restoreListingState(true);
+      }
+
+      function shouldInterceptPostNavigation(event) {
+        return !(event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey);
+      }
+
+      function parsePostId(rawId) {
+        var numId = parseInt(rawId, 10);
+        return isNaN(numId) || String(numId) !== rawId ? rawId : numId;
+      }
+
       // ── Click handlers ──
+      document.getElementById('featuredPost').addEventListener('click', function(e) {
+        if (!shouldInterceptPostNavigation(e)) return;
+        e.preventDefault();
+        showPost(parsePostId(e.currentTarget.dataset.id));
+      });
+
       document.getElementById('blogGrid').addEventListener('click', function(e) {
-        var card = e.target.closest('.post-card');
-        if (!card) return;
-        var cardId = card.dataset.id;
-        // Support both numeric IDs (localStorage posts) and string IDs (Firestore posts)
-        var numId = parseInt(cardId, 10);
-        showPost(isNaN(numId) || String(numId) !== cardId ? cardId : numId);
+        var card = e.target.closest('a.post-card');
+        if (!card || !shouldInterceptPostNavigation(e)) return;
+        e.preventDefault();
+        showPost(parsePostId(card.dataset.id));
       });
 
       // ── Filters ──
@@ -1182,9 +1221,7 @@
           var numPid = parseInt(postId, 10);
           showPost(isNaN(numPid) || String(numPid) !== postId ? postId : numPid);
         } else {
-          document.getElementById('postDetail').classList.add('hidden');
-          document.getElementById('blogListing').classList.remove('hidden');
-          document.getElementById('writeSection').classList.remove('hidden');
+          restoreListingState(false);
         }
       });
 

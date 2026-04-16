@@ -1872,6 +1872,24 @@
         { date: '2026-01-10', direction: 'out', category: 'healthcare', amount: 150000, description: 'Vaccinations and health screenings', program: 'general', source: '', notes: '' },
       ];
 
+      function isRecoverableFirestoreError(err) {
+        var code = err && err.code ? String(err.code) : '';
+        var message = err && err.message ? String(err.message) : '';
+        return code === 'permission-denied' ||
+          code === 'failed-precondition' ||
+          code === 'unavailable' ||
+          code === 'unauthenticated' ||
+          message.indexOf('Missing or insufficient permissions') !== -1;
+      }
+
+      function applyLocalEntries() {
+        allEntries = seedEntries.slice();
+        allEntries.sort(function (a, b) { return b.date.localeCompare(a.date); });
+        updateDashboard();
+        drawSankey();
+        renderEntries();
+      }
+
       function seedFirestore() {
         var batch = db.batch();
         seedEntries.forEach(function (entry) {
@@ -1897,14 +1915,9 @@
         return db.collection('ledger').orderBy('date', 'desc').get()
           .then(function (snapshot) {
             if (snapshot.empty) {
-              // Seed demo data into Firestore
-              return seedFirestore().then(function () {
-                return db.collection('ledger').orderBy('date', 'desc').get();
-              });
+              applyLocalEntries();
+              return;
             }
-            return snapshot;
-          })
-          .then(function (snapshot) {
             allEntries = [];
             snapshot.forEach(function (doc) {
               var data = doc.data();
@@ -1934,14 +1947,13 @@
             renderEntries();
           })
           .catch(function (err) {
-            console.error('Error fetching ledger entries:', err);
-            // Fallback: load seed data locally so the page is not empty
-            allEntries = seedEntries.slice();
-            allEntries.sort(function (a, b) { return b.date.localeCompare(a.date); });
-            updateDashboard();
-            drawSankey();
-            renderEntries();
-            showToast('Loaded offline data (Firestore unavailable)', 'error');
+            if (!isRecoverableFirestoreError(err)) {
+              console.error('Error fetching ledger entries:', err);
+            }
+            applyLocalEntries();
+            if (!isRecoverableFirestoreError(err)) {
+              showToast('Loaded offline data (Firestore unavailable)', 'error');
+            }
           });
       }
 

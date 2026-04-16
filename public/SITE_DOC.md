@@ -89,7 +89,7 @@ The site runs **two independent Firebase projects** with different credentials:
 |---------|---------|------------|--------------|
 | **Firebase Firestore** | All data storage (volunteers, sponsors, applications, threads, ideas, goals, scholars, donations, events, invites) | Nearly every page | Two separate projects (volunteer & sponsor) |
 | **Firebase Auth** | User authentication | `/signin/`, portals, admin | Two separate apps |
-| **Paystack** | Payment processing | `/donate/`, sponsor dashboard | **TEST KEY HARDCODED** in `bsf-paystack.js` — must swap for production |
+| **Paystack** | Payment processing | `/donate/`, sponsor dashboard | Set `shared/bsf-paystack.js` `publicKey` to a real `pk_live_...` value before taking payments |
 | **EmailJS** | Approval/rejection emails | `/admin/` | API keys likely in admin page JS |
 | **Google Analytics** | Page tracking | All pages | ID: `G-Q4EYY24EDZ` |
 | **Google Fonts** | EB Garamond serif font | All pages | |
@@ -120,7 +120,7 @@ The site runs **two independent Firebase projects** with different credentials:
   - Elder (≥₦25,000/mo) 🌲
   - Grower (≥₦10,000/mo) 🌱
   - Seedling (<₦10,000/mo) 🌾
-- **CRITICAL KINK:** `publicKey` is a **test key** (`pk_test_xxx...`). Must replace before going live.
+- **CRITICAL KINK:** `publicKey` is intentionally blank until a verified live Paystack key is available. Checkout now fails closed instead of silently using test mode.
 - Currency conversion rates for tier calculation are hardcoded approximations, not live rates.
 
 ### `bsf-receipt.js` — Donation receipts
@@ -296,7 +296,7 @@ Both use BSF branding (dark green header, copper accents, cream body). Table-bas
 ## 12. Known Kinks & Issues
 
 ### Critical (Must Fix Before Production)
-1. **Paystack test key hardcoded** in `bsf-paystack.js` — payments won't process in production
+1. **Paystack live key still needs operator setup** in `bsf-paystack.js` — checkout is intentionally disabled until a real `pk_live_...` key is added
 2. **Hardcoded base URL** (`https://public-mu-steel.vercel.app`) in feed.js, sitemap.js — needs env var
 3. **Blog post URLs use query params** (`/blog/?post={id}`) — bad for SEO, should use slugs
 
@@ -348,7 +348,7 @@ GEMINI_API_KEY=          # Blog outline (falls back to OpenAI)
 CRON_SECRET=             # Auth for /api/generate-post.js
 
 # Needs to be set in code before production
-# bsf-paystack.js publicKey → replace test key with live key
+# shared/bsf-paystack.js publicKey → set a verified pk_live_... key
 ```
 
 ---

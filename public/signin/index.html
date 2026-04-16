@@ -142,6 +142,17 @@
     @keyframes spin{to{transform:rotate(360deg)}}
     .splash p{color:var(--brown);font-size:.95rem}
     .splash strong{color:var(--green)}
+
+    @media (max-width: 640px){
+      body{padding:1rem .75rem;align-items:flex-start}
+      .card{border-radius:18px;margin-top:1rem}
+      .hdr{padding:1.4rem 1.25rem 1.2rem}
+      .picker{padding:1.25rem}
+      .fwrap{padding:0 1.25rem 1.4rem}
+      .fnav{flex-wrap:wrap;gap:.75rem}
+      .ftabs{width:100%}
+      .rcard-btns{flex-direction:column}
+    }
   </style>
 </head>
 <body>
@@ -171,8 +182,8 @@
           </div>
         </div>
         <div class="rcard-btns">
-          <button class="rbtn rbtn-outline" id="vol-signin-card">Sign In</button>
-          <button class="rbtn rbtn-solid" id="vol-apply-card">Apply to Join →</button>
+          <button type="button" class="rbtn rbtn-outline" id="vol-signin-card">Sign In</button>
+          <button type="button" class="rbtn rbtn-solid" id="vol-apply-card">Apply to Join →</button>
         </div>
       </div>
 
@@ -186,8 +197,8 @@
           </div>
         </div>
         <div class="rcard-btns">
-          <button class="rbtn rbtn-outline" id="sp-signin-card">Sign In</button>
-          <button class="rbtn rbtn-solid" id="sp-signup-card">Create Account</button>
+          <button type="button" class="rbtn rbtn-outline" id="sp-signin-card">Sign In</button>
+          <button type="button" class="rbtn rbtn-solid" id="sp-signup-card">Create Account</button>
         </div>
       </div>
 
@@ -199,28 +210,30 @@
   <div class="step" id="step-vol">
     <div class="fwrap">
       <div class="fnav">
-        <button class="fback" id="vol-back">← Back</button>
+        <button type="button" class="fback" id="vol-back">← Back</button>
         <div class="ftabs">
           <span class="ftab on">Sign In</span>
         </div>
       </div>
       <span class="badge vol">🌱 Volunteer</span>
-      <div class="msg" id="vol-msg"></div>
-      <div class="field">
-        <label for="vol-email">Email</label>
-        <input type="email" id="vol-email" placeholder="you@example.com" autocomplete="email">
-      </div>
-      <div class="field">
-        <label for="vol-pw">Password</label>
-        <div class="pwrap">
-          <input type="password" id="vol-pw" placeholder="Your password" autocomplete="current-password">
-          <span class="pshow" data-for="vol-pw">Show</span>
+      <form id="vol-form">
+        <div class="msg" id="vol-msg"></div>
+        <div class="field">
+          <label for="vol-email">Email</label>
+          <input type="email" id="vol-email" placeholder="you@example.com" autocomplete="email" required>
         </div>
-      </div>
-      <button class="submit" id="vol-btn">Sign In to Volunteer Portal</button>
-      <div class="flinks">
-        <button id="vol-forgot">Forgot password?</button>
-      </div>
+        <div class="field">
+          <label for="vol-pw">Password</label>
+          <div class="pwrap">
+            <input type="password" id="vol-pw" placeholder="Your password" autocomplete="current-password" required>
+            <span class="pshow" data-for="vol-pw">Show</span>
+          </div>
+        </div>
+        <button type="submit" class="submit" id="vol-btn">Sign In to Volunteer Portal</button>
+        <div class="flinks">
+          <button type="button" id="vol-forgot">Forgot password?</button>
+        </div>
+      </form>
       <div class="nudge" id="vol-nudge">
         No account yet? <a href="/volunteer/">Apply to volunteer →</a><br>
         <span style="color:#9c8f84;font-size:.78rem">Accounts are created after your application is approved.</span>
@@ -232,35 +245,37 @@
   <div class="step" id="step-sp">
     <div class="fwrap">
       <div class="fnav">
-        <button class="fback" id="sp-back">← Back</button>
+        <button type="button" class="fback" id="sp-back">← Back</button>
         <div class="ftabs">
-          <button class="ftab on" id="sp-tab-in" onclick="spTab('in')">Sign In</button>
-          <button class="ftab" id="sp-tab-up" onclick="spTab('up')">Create Account</button>
+          <button type="button" class="ftab on" id="sp-tab-in" onclick="spTab('in')">Sign In</button>
+          <button type="button" class="ftab" id="sp-tab-up" onclick="spTab('up')">Create Account</button>
         </div>
       </div>
       <span class="badge sp">💛 Sponsor</span>
-      <div class="msg" id="sp-msg"></div>
-      <div class="field" id="sp-name-row" style="display:none">
-        <label for="sp-name">Full name</label>
-        <input type="text" id="sp-name" placeholder="Your name" autocomplete="name">
-      </div>
-      <div class="field">
-        <label for="sp-email">Email</label>
-        <input type="email" id="sp-email" placeholder="you@example.com" autocomplete="email">
-      </div>
-      <div class="field">
-        <label for="sp-pw">Password</label>
-        <div class="pwrap">
-          <input type="password" id="sp-pw" placeholder="Your password" autocomplete="current-password">
-          <span class="pshow" data-for="sp-pw">Show</span>
+      <form id="sp-form">
+        <div class="msg" id="sp-msg"></div>
+        <div class="field" id="sp-name-row" style="display:none">
+          <label for="sp-name">Full name</label>
+          <input type="text" id="sp-name" placeholder="Your name" autocomplete="name">
         </div>
-      </div>
-      <button class="submit" id="sp-btn">Sign In to Sponsor Dashboard</button>
-      <div class="flinks">
-        <button id="sp-forgot">Forgot password?</button>
-        <span style="margin:0 .4rem;color:#c9bdb2">·</span>
-        <a href="/sponsor/">About sponsoring</a>
-      </div>
+        <div class="field">
+          <label for="sp-email">Email</label>
+          <input type="email" id="sp-email" placeholder="you@example.com" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="sp-pw">Password</label>
+          <div class="pwrap">
+            <input type="password" id="sp-pw" placeholder="Your password" autocomplete="current-password" required>
+            <span class="pshow" data-for="sp-pw">Show</span>
+          </div>
+        </div>
+        <button type="submit" class="submit" id="sp-btn">Sign In to Sponsor Dashboard</button>
+        <div class="flinks">
+          <button type="button" id="sp-forgot">Forgot password?</button>
+          <span style="margin:0 .4rem;color:#c9bdb2">·</span>
+          <a href="/sponsor/">About sponsoring</a>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -377,8 +392,10 @@
     spMode=mode;
     var isUp=mode==='up';
     document.getElementById('sp-name-row').style.display=isUp?'':'none';
+    document.getElementById('sp-name').required=isUp;
     document.getElementById('sp-tab-in').classList.toggle('on',!isUp);
     document.getElementById('sp-tab-up').classList.toggle('on',isUp);
+    document.getElementById('sp-pw').setAttribute('autocomplete', isUp ? 'new-password' : 'current-password');
     document.getElementById('sp-btn').textContent=isUp?'Create Sponsor Account':'Sign In to Sponsor Dashboard';
     clrMsg('sp-msg');
   };
@@ -402,9 +419,9 @@
         if(err.code==='auth/user-not-found'||err.code==='auth/invalid-credential')document.getElementById('vol-nudge').classList.add('on');
       });
   }
-  document.getElementById('vol-btn').addEventListener('click',doVolSignin);
-  ['vol-email','vol-pw'].forEach(function(id){
-    document.getElementById(id).addEventListener('keydown',function(e){if(e.key==='Enter')doVolSignin();});
+  document.getElementById('vol-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    doVolSignin();
   });
   document.getElementById('vol-forgot').addEventListener('click',function(){
     var em=document.getElementById('vol-email').value.trim();
@@ -452,9 +469,9 @@
       if(err.code==='auth/email-already-in-use')spTab('in');
     });
   }
-  document.getElementById('sp-btn').addEventListener('click',doSpSubmit);
-  ['sp-email','sp-pw'].forEach(function(id){
-    document.getElementById(id).addEventListener('keydown',function(e){if(e.key==='Enter')doSpSubmit();});
+  document.getElementById('sp-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    doSpSubmit();
   });
   document.getElementById('sp-forgot').addEventListener('click',function(){
     var em=document.getElementById('sp-email').value.trim();

@@ -2326,6 +2326,16 @@
 
       // --- LOAD SCHOOL NOTES (lazy) ---
 
+      function isRecoverableFirestoreError(err) {
+        var code = err && err.code ? String(err.code) : '';
+        var message = err && err.message ? String(err.message) : '';
+        return code === 'permission-denied' ||
+          code === 'failed-precondition' ||
+          code === 'unavailable' ||
+          code === 'unauthenticated' ||
+          message.indexOf('Missing or insufficient permissions') !== -1;
+      }
+
       function loadSchoolNotes(schoolId) {
         return db.collection('school_notes')
           .where('schoolId', '==', schoolId)
@@ -2342,7 +2352,7 @@
             return notes;
           })
           .catch(function (err) {
-            console.warn('Error loading school notes:', err);
+            if (!isRecoverableFirestoreError(err)) console.warn('Error loading school notes:', err);
             schoolNotesCache[schoolId] = [];
             return [];
           });
@@ -2392,7 +2402,7 @@
             return allSchools;
           })
           .catch(function (err) {
-            console.warn('Error fetching schools:', err);
+            if (!isRecoverableFirestoreError(err)) console.warn('Error fetching schools:', err);
             allSchools = [];
             populateSchoolDropdown();
             return [];
@@ -3823,7 +3833,7 @@
             return allExpenses;
           })
           .catch(function (err) {
-            console.warn('Error fetching expenses:', err);
+            if (!isRecoverableFirestoreError(err)) console.warn('Error fetching expenses:', err);
             allExpenses = [];
             buildExpenseIndex();
             return allExpenses;
@@ -3964,6 +3974,61 @@
         { schoolName: 'Vivian Fowler Memorial College, Ikorodu', type: 'event', title: 'Inter-School Athletics Championship', content: 'Blessing qualified and will represent school at state level. Competition at Teslim Balogun Stadium.', date: '2026-01-20', status: null, priority: null }
       ];
 
+      function applyLocalScholarData() {
+        allScholars = seedScholars.map(function (s, i) {
+          return {
+            id: 'local-' + i,
+            name: s.name,
+            firstName: s.firstName || '',
+            lastInitial: s.lastInitial || '',
+            school: s.school,
+            classGrade: s.classGrade,
+            pathway: s.pathway,
+            enrolledDate: s.enrolledDate,
+            performance: s.performance,
+            extracurriculars: s.extracurriculars,
+            supportNotes: s.supportNotes,
+            additionalSupport: s.supportNotes,
+            status: s.status,
+            createdBy: 'seed',
+            createdByName: 'System',
+            createdAt: null,
+            lastEditedBy: 'seed',
+            lastEditedByName: 'System',
+            lastEditedAt: null
+          };
+        });
+        allExpenses = [];
+        buildExpenseIndex();
+      }
+
+      function applyLocalSchoolData() {
+        allSchools = seedSchoolsData.map(function (s, i) {
+          return {
+            id: 'local-school-' + i,
+            name: s.name,
+            location: s.location,
+            contactPerson: s.contactPerson,
+            contactPhone: s.contactPhone,
+            contactEmail: s.contactEmail,
+            scholarCount: s.scholarCount
+          };
+        });
+        populateSchoolDropdown();
+      }
+
+      function publishScholarData() {
+        populateCommunityFilter();
+        applyCommunityUrlParams();
+        updateDashboard();
+        renderScholars();
+        window._bsfAllCommunities = allCommunities;
+        window._bsfAllSchools = allSchools;
+        window._bsfAllScholars = allScholars;
+        window._bsfRenderScholars = renderScholars;
+        window.dispatchEvent(new Event('bsf-data-ready'));
+      }
+
       function seedSchoolsFirestore() {
         var batch = db.batch();
 
@@ -4037,22 +4102,31 @@
       // --- FETCH SCHOLARS ---
 
       function fetchScholars() {
-        var scholarsSnapshot;
+        var usingLocalFallback = false;
         return db.collection('scholars').orderBy('name', 'asc').get()
-          .catch(function () {
+          .catch(function (err) {
+            if (isRecoverableFirestoreError(err)) {
+              usingLocalFallback = true;
+              return null;
+            }
             // Fallback: if 'name' field doesn't exist in index, try legacy 'firstName' ordering
-            return db.collection('scholars').orderBy('firstName', 'asc').get();
+            return db.collection('scholars').orderBy('firstName', 'asc').get()
+              .catch(function (legacyErr) {
+                if (isRecoverableFirestoreError(legacyErr)) {
+                  usingLocalFallback = true;
+                  return null;
+                }
+                throw legacyErr;
+              });
           })
           .then(function (snapshot) {
-            if (snapshot.empty) {
-              return seedFirestore().then(function () {
-                return db.collection('scholars').orderBy('name', 'asc').get();
+            if (usingLocalFallback || !snapshot || snapshot.empty) {
+              applyLocalScholarData();
+              applyLocalSchoolData();
+              return fetchCommunities().then(function () {
+                publishScholarData();
               });
             }
-            return snapshot;
-          })
-          .then(function (snapshot) {
-            scholarsSnapshot = snapshot;
             allScholars = [];
             snapshot.forEach(function (doc) {
               var data = doc.data();
@@ -4087,79 +4161,38 @@
             return fetchExpenses();
           })
           .then(function () {
-            // Seed expenses if none exist and scholars exist
-            if (allExpenses.length === 0 && allScholars.length > 0 && scholarsSnapshot) {
-              return generateSeedExpenses(scholarsSnapshot).then(function () {
-                return fetchExpenses();
-              });
+            if (usingLocalFallback) return;
+            if (allExpenses.length === 0) {
+              buildExpenseIndex();
             }
           })
           .then(function () {
+            if (usingLocalFallback) return;
             // Fetch communities + schools
             return fetchCommunities().then(function () {
               return fetchSchools().then(function () {
                 if (allSchools.length === 0 && allScholars.length > 0) {
-                  return seedSchoolsFirestore().then(function () {
-                    return fetchSchools();
-                  });
+                  applyLocalSchoolData();
                 }
               });
             });
           })
           .then(function () {
-            populateCommunityFilter();
-            applyCommunityUrlParams();
-            updateDashboard();
-            renderScholars();
-            // Expose data for communities view IIFE
-            window._bsfAllCommunities = allCommunities;
-            window._bsfAllSchools = allSchools;
-            window._bsfAllScholars = allScholars;
-            window._bsfRenderScholars = renderScholars;
-            // Notify communities view that data is ready
-            window.dispatchEvent(new Event('bsf-data-ready'));
+            if (usingLocalFallback) return;
+            publishScholarData();
           })
           .catch(function (err) {
-            console.error('Error fetching scholars:', err);
-            // Fallback: load seed data locally
-            allScholars = seedScholars.map(function (s, i) {
-              return {
-                id: 'local-' + i,
-                name: s.name,
-                firstName: s.firstName || '',
-                lastInitial: s.lastInitial || '',
-                school: s.school,
-                classGrade: s.classGrade,
-                pathway: s.pathway,
-                enrolledDate: s.enrolledDate,
-                performance: s.performance,
-                extracurriculars: s.extracurriculars,
-                supportNotes: s.supportNotes,
-                additionalSupport: s.supportNotes,
-                status: s.status,
-                createdBy: 'seed',
-                createdByName: 'System',
-                createdAt: null,
-                lastEditedBy: 'seed',
-                lastEditedByName: 'System',
-                lastEditedAt: null
-              };
+            if (!isRecoverableFirestoreError(err)) {
+              console.error('Error fetching scholars:', err);
+            }
+            applyLocalScholarData();
+            applyLocalSchoolData();
+            return fetchCommunities().then(function () {
+              publishScholarData();
+              if (!isRecoverableFirestoreError(err)) {
+                showToast('Loaded offline data (Firestore unavailable)', 'error');
+              }
             });
-            allExpenses = [];
-            buildExpenseIndex();
-            allSchools = seedSchoolsData.map(function (s, i) {
-              return { id: 'local-school-' + i, name: s.name, location: s.location, contactPerson: s.contactPerson, contactPhone: s.contactPhone, contactEmail: s.contactEmail, scholarCount: s.scholarCount };
-            });
-            populateSchoolDropdown();
-            updateDashboard();
-            renderScholars();
-            // Expose data for communities view IIFE (fallback path)
-            window._bsfAllCommunities = allCommunities;
-            window._bsfAllSchools = allSchools;
-            window._bsfAllScholars = allScholars;
-            window._bsfRenderScholars = renderScholars;
-            window.dispatchEvent(new Event('bsf-data-ready'));
-            showToast('Loaded offline data (Firestore unavailable)', 'error');
           });
       }
 
