@@ -100,7 +100,8 @@ The site runs **two independent Firebase projects** with different credentials:
 | **Google Gemini** | Blog outline generation | `/api/generate-post.js` | Model: `gemini-2.0-flash`, falls back to OpenAI |
 | **Claude API** | Blog writing + revision | `/api/generate-post.js` | Model: `claude-sonnet-4-20250514` |
 | **OpenAI API** | Blog review + fallback | `/api/generate-post.js` | Model: `gpt-4o-mini` |
-| **GitHub API** | Blog post persistence | `/api/generate-post.js` | Commits to `feat/bsf-website` branch |
+| **GitHub API** | Blog post persistence | `/api/generate-post.js` | Commits to `feat/bsf-website` branch when `GITHUB_TOKEN` is present |
+| **Openverse API** | Live blog cover image search | `/api/post-cover.js` + `/api/_lib/openverse.js` | Reusable images, then OG fallback |
 
 ---
 
@@ -142,7 +143,7 @@ The site runs **two independent Firebase projects** with different credentials:
 
 All are Vercel serverless functions.
 
-### `POST /api/generate-post.js` — AI Blog Generator
+### `GET /api/generate-post.js` — AI Blog Generator
 **The most complex file in the project.** 5-stage AI pipeline:
 1. **Cluster selection** → pick least-covered topic from 4 pillars × 5 subtopics
 2. **Research** (Perplexity) → SEO gaps, trending topics
@@ -158,15 +159,19 @@ All are Vercel serverless functions.
 
 **Auth:** `Authorization: Bearer {CRON_SECRET}` header
 
-**Env vars required:** `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GITHUB_TOKEN` (required). `PERPLEXITY_API_KEY`, `GROK_API_KEY`, `GEMINI_API_KEY` (optional, has fallbacks).
+**Env vars required to generate:** `ANTHROPIC_API_KEY` or `OPENAI_API_KEY`. `PERPLEXITY_API_KEY`, `GROK_API_KEY`, `GEMINI_API_KEY` are optional and have fallbacks. `GITHUB_TOKEN` is only required to publish the generated post back to the repo.
 
 **SEO thresholds:** min score 70, keyword density 0.8-2.5%, title 40-70 chars, meta desc 120-165 chars, min 2 internal links.
+
+**Visible media metadata written to AI posts:** `coverImage`, `coverImageAlt`, `coverImageOriginal`, `coverImageProvider`, `coverImageCreator`, `coverImageLicense`, `coverImageLicenseVersion`, `coverImageSource`, `coverImageSourceUrl`, `coverImageSearchQuery`.
+
+**Topic control:** cluster selection is authoritative by default. Research may override only when the returned topic stays inside the selected pillar and keyword family. The route returns and stores `topicSource` and `topicOverrideReason`.
 
 **Kinks:**
 - No post deduplication (same topic could be generated twice)
 - Sequential API calls — 5+ external services per run, could timeout
 - Hardcoded author assignment by category (story→Funke, guide→Amara, update→BSF Team, else→Bolaji)
-- GitHub commits on every run even on partial failure
+- GitHub publish is skipped entirely when `GITHUB_TOKEN` is absent
 
 ### `GET /api/posts.js` — Blog Posts JSON
 - Returns all posts from `data/ai-posts.json`
@@ -184,6 +189,12 @@ All are Vercel serverless functions.
 - Query params: `title`, `category`, `author`, `keyword`
 - Category colors: story=#C2734C, update=#2D5E40, insight=#D4A96A, guide=#8BAF8E
 - Cache: 1 day browser, 7 day CDN
+
+### `GET /api/post-cover.js` — Visible Blog Cover Resolver
+- Redirects to a pinned preferred image when available and still valid
+- Otherwise searches Openverse in real time for a reusable image that matches the post topic
+- Falls back to `/api/og-image` only if no usable photo is found
+- Used for visible blog listing/detail media, not for social share cards
 
 ### `GET /api/sitemap.js` — XML Sitemap
 - 9 static pages + dynamic blog post entries
@@ -339,7 +350,7 @@ For Vercel deployment:
 # Required
 ANTHROPIC_API_KEY=       # Claude API for blog generation
 OPENAI_API_KEY=          # GPT-4o-mini for blog review + fallback
-GITHUB_TOKEN=            # For committing blog posts to repo
+GITHUB_TOKEN=            # Optional for generation, required for committing blog posts to repo
 
 # Optional (has fallbacks)
 PERPLEXITY_API_KEY=      # Blog research (falls back to cluster data)
@@ -366,8 +377,10 @@ public/
 │       └── template_reject.html        # Rejection email
 ├── api/
 │   ├── feed.js                         # RSS feed endpoint
+│   ├── _lib/openverse.js               # Openverse cover image search + scoring
 │   ├── generate-post.js                # AI blog generator (5-agent pipeline)
 │   ├── og-image.js                     # Dynamic OG image SVG
+│   ├── post-cover.js                   # Visible blog cover image resolver
 │   ├── posts.js                        # Blog posts JSON endpoint
 │   └── sitemap.js                      # XML sitemap
 ├── blog/
@@ -420,7 +433,7 @@ public/
 
 **To modify payment:** Edit `shared/bsf-paystack.js`. The `pay()` function accepts options with `amount`, `email`, `currency`, `metadata`, `onSuccess`, `onClose`.
 
-**To modify blog generation:** Edit `api/generate-post.js`. Topic clusters are hardcoded in the `CLUSTERS` constant. SEO thresholds in `SEO_CONFIG`.
+**To modify blog generation:** Edit `api/generate-post.js`. Topic clusters are hardcoded in the `TOPIC_CLUSTERS` constant. SEO thresholds live in `SEO_CONFIG`. Visible cover-image search lives in `api/post-cover.js` and `api/_lib/openverse.js`.
 
 **To modify design:** Colors are CSS variables defined per-page (not in a shared stylesheet). The canonical palette is in Section 9 above.
 

@@ -1,3 +1,5 @@
+import { buildRealtimeCoverImageUrl, findRealtimeCoverImage } from './_lib/openverse.js';
+
 // ═══════════════════════════════════════════════════════════════
 //  BSF BLOG ORCHESTRATOR — Multi-AI SEO Content Pipeline v3
 //
@@ -33,6 +35,13 @@ const SEO_CONFIG = {
   requiredKeywordPlacements: ['title', 'firstParagraph', 'lastParagraph'],
   snippetRequired: true,           // must include a featured snippet block
 };
+
+const TOPIC_MATCH_STOPWORDS = new Set([
+  'a', 'an', 'and', 'are', 'as', 'at', 'be', 'best', 'big', 'by', 'for', 'foundation',
+  'from', 'how', 'in', 'into', 'is', 'it', 'its', 'lagos', 'need', 'needs', 'nigeria',
+  'of', 'on', 'or', 'our', 'sister', 'that', 'the', 'their', 'them', 'these', 'those',
+  'to', 'what', 'with'
+]);
 
 // ═══ TOPIC CLUSTERS ═══
 // Each pillar has a core topic and cluster subtopics. The system rotates
@@ -88,6 +97,173 @@ const TOPIC_CLUSTERS = [
 const KEYWORD_UNIVERSE = [
   ...new Set(TOPIC_CLUSTERS.flatMap(c => [c.pillarKeyword, ...c.clusters.flatMap(cl => cl.keywords)]))
 ];
+
+function uniqueList(values) {
+  return Array.from(new Set((values || []).filter(Boolean).map(function(value) {
+    return String(value).trim();
+  }).filter(Boolean)));
+}
+
+function normalizeTopicPhrase(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function topicTokensFromValues(values) {
+  const tokens = [];
+  (values || []).forEach(function(value) {
+    normalizeTopicPhrase(value).split(' ').forEach(function(token) {
+      if (token && token.length > 2 && !TOPIC_MATCH_STOPWORDS.has(token)) tokens.push(token);
+    });
+  });
+  return Array.from(new Set(tokens));
+}
+
+function scoreTopicFamilyOverlap(tokens, familyTokens) {
+  const familySet = new Set(familyTokens || []);
+  return (tokens || []).reduce(function(total, token) {
+    return total + (familySet.has(token) ? 1 : 0);
+  }, 0);
+}
+
+function getSelectedPillarConfig(clusterTopic) {
+  return TOPIC_CLUSTERS.find(function(pillar) {
+    return pillar.pillar === clusterTopic.pillar;
+  }) || null;
+}
+
+function buildClusterFamilyTokens(clusterTopic) {
+  return topicTokensFromValues([
+    clusterTopic.pillar,
+    clusterTopic.pillarKeyword,
+    clusterTopic.topic,
+    clusterTopic.primary_keyword,
+    ...(clusterTopic.secondary_keywords || [])
+  ]);
+}
+
+function buildPillarFamilyTokens(pillar) {
+  return topicTokensFromValues([
+    pillar.pillar,
+    pillar.pillarKeyword,
+    ...pillar.clusters.flatMap(function(cluster) {
+      return [cluster.topic].concat(cluster.keywords || []);
+    })
+  ]);
+}
+
+function filterRelatedSecondaryKeywords(keywords, clusterTopic) {
+  const pillar = getSelectedPillarConfig(clusterTopic);
+  const clusterTokens = buildClusterFamilyTokens(clusterTopic);
+  const pillarTokens = pillar ? buildPillarFamilyTokens(pillar) : clusterTokens;
+
+  return uniqueList(keywords).filter(function(keyword) {
+    const keywordTokens = topicTokensFromValues([keyword]);
+    if (keywordTokens.length === 0) return false;
+    if (scoreTopicFamilyOverlap(keywordTokens, clusterTokens) >= 1) return true;
+    return scoreTopicFamilyOverlap(keywordTokens, pillarTokens) >= 2;
+  });
+}
+
+export function resolveTopicDecision(clusterTopic, research) {
+  const recommended = research && research.recommended || {};
+  const candidateTopic = String(recommended.topic || '').trim();
+  const candidatePrimaryKeyword = String(recommended.primary_keyword || '').trim();
+  const candidateSecondaryKeywords = Array.isArray(recommended.secondary_keywords) ? recommended.secondary_keywords : [];
+  const clusterTokens = buildClusterFamilyTokens(clusterTopic);
+  const filteredSecondaries = filterRelatedSecondaryKeywords(candidateSecondaryKeywords, clusterTopic);
+
+  const decision = {
+    topicSource: 'cluster',
+    topicOverrideReason: 'research_missing_topic_or_primary_keyword',
+    topic: clusterTopic.topic,
+    primaryKeyword: clusterTopic.primary_keyword,
+    secondaryKeywords: uniqueList([...(clusterTopic.secondary_keywords || []), ...filteredSecondaries]).slice(0, 6),
+    researchTopic: candidateTopic,
+    researchPrimaryKeyword: candidatePrimaryKeyword
+  };
+
+  if (recommended._fromClusterFallback) {
+    decision.topicOverrideReason = 'research_skipped_or_missing_primary_keyword';
+    return decision;
+  }
+
+  if (!candidateTopic && !candidatePrimaryKeyword) {
+    return decision;
+  }
+
+  const candidateTokens = topicTokensFromValues([
+    candidateTopic,
+    candidatePrimaryKeyword,
+    ...candidateSecondaryKeywords
+  ]);
+  const pillarScores = TOPIC_CLUSTERS.map(function(pillar) {
+    return {
+      pillar: pillar.pillar,
+      score: scoreTopicFamilyOverlap(candidateTokens, buildPillarFamilyTokens(pillar))
+    };
+  }).sort(function(left, right) {
+    return right.score - left.score;
+  });
+  const bestPillar = pillarScores[0] || { pillar: '', score: 0 };
+  const runnerUp = pillarScores[1] || { pillar: '', score: 0 };
+  const clusterFamilyScore = scoreTopicFamilyOverlap(candidateTokens, clusterTokens);
+  const exactTopicMatch = normalizeTopicPhrase(candidateTopic) === normalizeTopicPhrase(clusterTopic.topic);
+  const exactPrimaryKeywordMatch = normalizeTopicPhrase(candidatePrimaryKeyword) === normalizeTopicPhrase(clusterTopic.primary_keyword);
+  const exactClusterMatch = exactTopicMatch && exactPrimaryKeywordMatch;
+  const samePillar = bestPillar.score > 0 && bestPillar.pillar === clusterTopic.pillar;
+  const sameKeywordFamily = exactTopicMatch || exactPrimaryKeywordMatch || clusterFamilyScore >= 2;
+  const unambiguousPillar = bestPillar.score > 0 && (bestPillar.score > runnerUp.score || runnerUp.score === 0);
+
+  decision.pillarScores = pillarScores.slice(0, 4);
+  decision.clusterFamilyScore = clusterFamilyScore;
+
+  if (exactClusterMatch) {
+    decision.topicOverrideReason = 'research_confirmed_selected_cluster';
+    return decision;
+  }
+
+  if (!(samePillar && sameKeywordFamily && (unambiguousPillar || exactTopicMatch || exactPrimaryKeywordMatch || clusterFamilyScore >= 3))) {
+    if (!samePillar) {
+      decision.topicOverrideReason = 'research_topic_outside_selected_pillar';
+    } else if (!sameKeywordFamily) {
+      decision.topicOverrideReason = 'research_topic_outside_selected_keyword_family';
+    } else {
+      decision.topicOverrideReason = 'research_pillar_match_ambiguous';
+    }
+    return decision;
+  }
+
+  return {
+    ...decision,
+    topicSource: 'research_override',
+    topicOverrideReason: 'research_aligned_with_selected_pillar_family',
+    topic: candidateTopic || clusterTopic.topic,
+    primaryKeyword: candidatePrimaryKeyword || clusterTopic.primary_keyword,
+    secondaryKeywords: uniqueList([...filteredSecondaries, ...(clusterTopic.secondary_keywords || [])]).slice(0, 6)
+  };
+}
+
+function applyTopicDecision(research, topicDecision) {
+  const base = research || {};
+  const recommended = base.recommended || {};
+  return {
+    ...base,
+    recommended: {
+      ...recommended,
+      topic: topicDecision.topic,
+      primary_keyword: topicDecision.primaryKeyword,
+      secondary_keywords: topicDecision.secondaryKeywords
+    },
+    topicDecision: {
+      topicSource: topicDecision.topicSource,
+      topicOverrideReason: topicDecision.topicOverrideReason
+    }
+  };
+}
 
 // ═══ SEO COMPLIANCE CHECKER ═══
 function checkSeoCompliance(post, primaryKeyword) {
@@ -177,8 +353,265 @@ function checkSeoCompliance(post, primaryKeyword) {
   return { compliant: issues.length === 0, issues, metrics };
 }
 
+function extractJsonObject(text) {
+  if (!text) return null;
+  const jsonMatch = String(text).match(/\{[\s\S]*\}/);
+  if (!jsonMatch) return null;
+  try {
+    return JSON.parse(jsonMatch[0]);
+  } catch (error) {
+    return null;
+  }
+}
+
+function countWords(text) {
+  return String(text || '').split(/\s+/).filter(Boolean).length;
+}
+
+function titleCaseKeyword(value) {
+  return String(value || '')
+    .split(/\s+/)
+    .filter(Boolean)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+function truncateAtWord(text, maxLength) {
+  const value = String(text || '').trim();
+  if (!value || value.length <= maxLength) return value;
+  const trimmed = value.slice(0, maxLength + 1);
+  const cut = trimmed.lastIndexOf(' ');
+  return (cut > 20 ? trimmed.slice(0, cut) : trimmed.slice(0, maxLength)).trim().replace(/[,:;.\-–]+$/, '');
+}
+
+function padToMinLength(text, minLength, suffix) {
+  const value = String(text || '').trim();
+  if (!value) return suffix;
+  if (value.length >= minLength) return value;
+  return `${value} ${suffix}`.trim();
+}
+
+function buildSeoTitle(primaryKeyword, fallbackTopic) {
+  const keywordTitle = titleCaseKeyword(primaryKeyword || fallbackTopic || 'child education Lagos');
+  const candidates = [
+    `${keywordTitle}: What Lagos Families Need to Know`,
+    `Why ${keywordTitle} Matters for Families in Lagos`,
+    `${keywordTitle} and School Access in Lagos`,
+  ];
+  const valid = candidates.find(candidate => candidate.length >= SEO_CONFIG.titleMinLength && candidate.length <= SEO_CONFIG.titleMaxLength);
+  return valid || truncateAtWord(`${keywordTitle}: What Families Need to Know in Lagos`, SEO_CONFIG.titleMaxLength);
+}
+
+function buildSeoMetaDescription(primaryKeyword, topic) {
+  const keyword = String(primaryKeyword || topic || 'child education Lagos').trim();
+  const base = `Learn how ${keyword} affects families in Lagos and how Big Sister Foundation helps children stay enrolled, supported, and ready for school.`;
+  return truncateAtWord(padToMinLength(base, SEO_CONFIG.metaDescMinLength, 'Learn what support is available today.'), SEO_CONFIG.metaDescMaxLength);
+}
+
+function buildWriterPrompt(research, outline, retryFeedback) {
+  const validation = research?.validation || {};
+  const recommended = research?.recommended || {};
+  const primaryKeyword = recommended.primary_keyword || 'child welfare Lagos Nigeria';
+  const secondaryKeywords = recommended.secondary_keywords || ['vulnerable children Lagos', 'nonprofit Nigeria'];
+  const retryInstructions = retryFeedback ? `
+
+CRITICAL: Your previous draft FAILED SEO compliance. Fix these issues:
+${retryFeedback.join('\n- ')}
+
+You MUST fix ALL of these issues in this revision.` : '';
+
+  return `You are the head writer for Big Sister Foundation, a nonprofit in Lagos, Nigeria that invests in vulnerable children and their families.
+
+${outline ? `CONTENT OUTLINE TO FOLLOW:
+${JSON.stringify(outline, null, 2)}` : ''}
+
+SEO RESEARCH CONTEXT:
+- Primary keyword: "${primaryKeyword}"
+- Secondary keywords: ${secondaryKeywords.join(', ')}
+- Content gaps to fill: ${(research?.content_gaps || []).join('; ')}
+- Emotional angle: ${validation.emotional_angle || 'empowerment'}
+- Category: ${validation.category || 'insight'}
+
+STRICT SEO RULES (non-negotiable):
+1. Use ## for H2 headings and ### for H3 headings
+2. Include 4-6 ## H2 headings throughout the post
+3. Primary keyword MUST appear in: title, first paragraph, at least one ## heading, last paragraph, meta description
+4. Include each secondary keyword 1-2 times naturally
+5. 750-1000 words total
+6. Include at least 3 internal links as markdown: [anchor text](/path/) linking to /scholars/, /volunteer/, /donate/, /ledger/, or /ideas/
+7. Short paragraphs (2-4 sentences max)
+8. Meta description: 120-165 characters, includes primary keyword, has a call-to-action
+
+VOICE & STYLE:
+- BSF voice: direct, warm, honest. No jargon. No saviour language.
+- Reference real Lagos neighborhoods such as Makoko, Surulere, Ajegunle, Victoria Island, and Ikeja where useful.
+- Use specific details, realistic examples, and a practical community-centered tone.
+- Separate paragraphs with \\n\\n
+${retryInstructions}
+
+AUTHOR: ${validation.category === 'story' ? 'Funke Adeyemi' : validation.category === 'guide' ? 'Amara Okafor' : validation.category === 'update' ? 'BSF Team' : 'Bolaji Agunbiade'}
+
+Respond in JSON only:
+{
+  "title": "40-70 chars, includes primary keyword",
+  "excerpt": "1-2 sentences, 120-160 chars, include primary keyword",
+  "metaDescription": "120-165 chars with primary keyword and CTA",
+  "body": "full post text with ## headings, paragraphs separated by \\n\\n, internal links as [text](/path/)",
+  "author": "author name",
+  "category": "${validation.category || 'insight'}",
+  "keywords": ["primary", "secondary1", "secondary2"],
+  "readTime": estimated_minutes
+}`;
+}
+
+function repairDraftForSeo(draft, outline, primaryKeyword, fallbackTopic) {
+  if (!draft) return draft;
+
+  const keyword = String(primaryKeyword || '').trim();
+  const keywordLower = keyword.toLowerCase();
+  const repaired = {
+    ...draft,
+    category: draft.category || 'insight',
+    author: draft.author || 'BSF Team',
+  };
+
+  if (!Array.isArray(repaired.keywords) || repaired.keywords.length === 0) {
+    repaired.keywords = keyword ? [keyword] : [];
+  } else if (keyword && !repaired.keywords.some(item => String(item || '').toLowerCase() === keywordLower)) {
+    repaired.keywords = [keyword, ...repaired.keywords];
+  }
+
+  repaired.title = repaired.title || '';
+  if (!keyword || !repaired.title.toLowerCase().includes(keywordLower) || repaired.title.length < SEO_CONFIG.titleMinLength || repaired.title.length > SEO_CONFIG.titleMaxLength) {
+    repaired.title = buildSeoTitle(keyword, fallbackTopic);
+  }
+
+  repaired.metaDescription = repaired.metaDescription || '';
+  if (!keyword || !repaired.metaDescription.toLowerCase().includes(keywordLower) || repaired.metaDescription.length < SEO_CONFIG.metaDescMinLength || repaired.metaDescription.length > SEO_CONFIG.metaDescMaxLength) {
+    repaired.metaDescription = buildSeoMetaDescription(keyword, fallbackTopic);
+  }
+
+  repaired.excerpt = truncateAtWord(
+    padToMinLength(
+      repaired.excerpt || `Families dealing with ${keyword || fallbackTopic} need practical support, trusted guidance, and clear next steps in Lagos.`,
+      120,
+      'Big Sister Foundation shares what families should know and where support can help.'
+    ),
+    160
+  );
+
+  const rawParagraphs = String(repaired.body || '')
+    .split(/\n\n+/)
+    .map(part => part.trim())
+    .filter(Boolean);
+
+  const paragraphs = rawParagraphs.length ? rawParagraphs : [
+    `${keyword || fallbackTopic} affects how families in Lagos choose schools, manage costs, and keep children enrolled through the year.`,
+    'Big Sister Foundation works with families and communities to remove practical barriers that keep children out of class.',
+  ];
+
+  const findParagraphIndex = (fromEnd = false) => {
+    const indexes = paragraphs.map((_, index) => index);
+    const ordered = fromEnd ? indexes.reverse() : indexes;
+    return ordered.find(index => !paragraphs[index].startsWith('#') && !paragraphs[index].startsWith('>') && !paragraphs[index].startsWith('- '));
+  };
+
+  const firstParagraphIndex = findParagraphIndex(false);
+  if (firstParagraphIndex === undefined) {
+    paragraphs.unshift(`For many families in Lagos, ${keyword || fallbackTopic} shapes whether a child stays in school and gets consistent support.`);
+  } else if (keyword && !paragraphs[firstParagraphIndex].toLowerCase().includes(keywordLower)) {
+    paragraphs[firstParagraphIndex] = `For many families in Lagos, ${keyword} shapes whether a child stays in school and gets steady support. ${paragraphs[firstParagraphIndex]}`;
+  }
+
+  let h2Indexes = paragraphs
+    .map((part, index) => part.startsWith('## ') ? index : -1)
+    .filter(index => index !== -1);
+
+  if (h2Indexes.length === 0) {
+    paragraphs.splice(1, 0, `## ${titleCaseKeyword(keyword || fallbackTopic)} in Lagos`);
+    h2Indexes = [1];
+  }
+
+  if (keyword && !h2Indexes.some(index => paragraphs[index].toLowerCase().includes(keywordLower))) {
+    const targetIndex = h2Indexes[0];
+    paragraphs[targetIndex] = `## ${titleCaseKeyword(keyword)} in Lagos`;
+  }
+
+  const ensureSection = (heading, lines) => {
+    paragraphs.push(`## ${heading}`);
+    lines.forEach(line => paragraphs.push(line));
+  };
+
+  while (paragraphs.filter(part => part.startsWith('## ')).length < 3) {
+    const headingCount = paragraphs.filter(part => part.startsWith('## ')).length;
+    if (headingCount === 1) {
+      ensureSection('What Families Ask Before Enrolling', [
+        `Parents weighing ${keyword || fallbackTopic} often compare fees, distance, uniforms, learning support, and whether a school will keep a child engaged through the term.`,
+        'That is why trusted guidance matters as much as tuition. Families need clear options, realistic costs, and adults who will follow through after enrollment.',
+      ]);
+    } else {
+      ensureSection('How Community Support Changes Outcomes', [
+        `At Big Sister Foundation, ${keyword || fallbackTopic} becomes more practical when families can combine school guidance with help for registration, books, uniforms, and follow-up from local volunteers.`,
+        'That community support reduces drop-off risk, keeps attendance steady, and gives caregivers a clearer path when money or paperwork becomes a barrier.',
+      ]);
+    }
+  }
+
+  const keywordLinkBlock = 'Meet our [scholars](/scholars/), join our [volunteer team](/volunteer/), or support school access through [donations](/donate/).';
+  const internalLinks = (paragraphs.join('\n\n').match(/\]\(\//g) || []).length;
+  if (internalLinks < SEO_CONFIG.requiredInternalLinks) {
+    paragraphs.push(keywordLinkBlock);
+  }
+
+  while (countWords(paragraphs.join('\n\n')) < SEO_CONFIG.minWordCount) {
+    ensureSection(`Questions About ${titleCaseKeyword(keyword || fallbackTopic)}`, [
+      `${keyword || fallbackTopic} is rarely solved by one decision. Families in Surulere, Ajegunle, Makoko, and Ikeja often need a mix of financial breathing room, enrollment guidance, and consistent encouragement for children who have already missed time in class.`,
+      `That is also why ${keyword || fallbackTopic} should be discussed in practical terms: transport, uniforms, learning gaps, parent confidence, and the adults around a child who can keep showing up after the first day of school.`,
+      keywordLinkBlock,
+    ]);
+  }
+
+  const lastParagraphIndex = findParagraphIndex(true);
+  if (lastParagraphIndex === undefined) {
+    paragraphs.push(`That is why ${keyword || fallbackTopic} remains central to how Big Sister Foundation supports children and families across Lagos.`);
+  } else if (keyword && !paragraphs[lastParagraphIndex].toLowerCase().includes(keywordLower)) {
+    paragraphs[lastParagraphIndex] = `${paragraphs[lastParagraphIndex]} That is why ${keyword} remains central to how Big Sister Foundation supports children and families across Lagos.`;
+  }
+
+  if (keyword) {
+    let attempts = 0;
+    let body = paragraphs.join('\n\n');
+    let compliance = checkSeoCompliance({
+      title: repaired.title,
+      metaDescription: repaired.metaDescription,
+      body: body
+    }, keyword);
+
+    while (compliance.metrics.keywordDensity < SEO_CONFIG.minKeywordDensity && attempts < 4) {
+      const densitySentence = `For families in Lagos, ${keyword} remains one of the clearest indicators of whether a child can stay enrolled, keep learning, and move forward with confidence.`;
+      const targetIndex = findParagraphIndex(true);
+      if (targetIndex === undefined) {
+        paragraphs.push(densitySentence);
+      } else {
+        paragraphs[targetIndex] = `${paragraphs[targetIndex]} ${densitySentence}`;
+      }
+      body = paragraphs.join('\n\n');
+      compliance = checkSeoCompliance({
+        title: repaired.title,
+        metaDescription: repaired.metaDescription,
+        body: body
+      }, keyword);
+      attempts++;
+    }
+  }
+
+  repaired.body = paragraphs.join('\n\n');
+  repaired.readTime = repaired.readTime || Math.ceil(countWords(repaired.body) / 220);
+  return repaired;
+}
+
 // ═══ Agent 1: Perplexity — SEO Research ═══
-async function researchWithPerplexity(existingTitles) {
+async function researchWithPerplexity(existingTitles, clusterTopic) {
   const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY;
   if (!PERPLEXITY_API_KEY) return null;
 
@@ -197,6 +630,12 @@ async function researchWithPerplexity(existingTitles) {
           role: 'user',
           content: `You are an SEO research agent for a nonprofit called Big Sister Foundation in Lagos, Nigeria that helps vulnerable children.
 
+SELECTED CLUSTER PILLAR:
+- Pillar: ${clusterTopic.pillar}
+- Cluster topic: ${clusterTopic.topic}
+- Primary keyword family: ${clusterTopic.primary_keyword}
+- Secondary keyword family: ${(clusterTopic.secondary_keywords || []).join(', ')}
+
 Research the current search landscape for these keyword areas: ${randomKeywords}
 
 Find me:
@@ -205,6 +644,11 @@ Find me:
 3. CONTENT GAPS — what questions are people asking that have poor quality answers currently?
 4. COMPETITOR CONTENT — what are similar nonprofits (e.g., Save the Children Nigeria, SOS Children Villages, Slum2School) publishing that ranks well?
 5. RECOMMENDED ANGLE — one specific blog post topic that would have the best chance of ranking, with primary keyword and 3-4 secondary keywords
+
+IMPORTANT:
+- Default to the selected cluster pillar and topic family above.
+- You may refine the angle, but do NOT switch to a different pillar unless there is no viable opportunity inside the selected pillar.
+- If you recommend a different pillar, make that explicit in the "angle" field.
 
 EXISTING TITLES TO AVOID (do not suggest anything similar):
 ${existingTitles || 'None'}
@@ -419,59 +863,7 @@ Respond in JSON:
 async function writeWithClaude(research, outline, retryFeedback) {
   const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
   if (!ANTHROPIC_API_KEY) return null;
-
-  const validation = research?.validation || {};
-  const recommended = research?.recommended || {};
-
-  const retryInstructions = retryFeedback ? `
-
-CRITICAL: Your previous draft FAILED SEO compliance. Fix these issues:
-${retryFeedback.join('\n- ')}
-
-You MUST fix ALL of these issues in this revision.` : '';
-
-  const prompt = `You are the head writer for Big Sister Foundation, a nonprofit in Lagos, Nigeria that invests in vulnerable children — not as recipients, but as future leaders who lift their communities.
-
-${outline ? `CONTENT OUTLINE TO FOLLOW:
-${JSON.stringify(outline, null, 2)}` : ''}
-
-SEO RESEARCH CONTEXT:
-- Primary keyword: "${recommended.primary_keyword || 'child welfare Lagos Nigeria'}"
-- Secondary keywords: ${(recommended.secondary_keywords || ['vulnerable children Lagos', 'nonprofit Nigeria']).join(', ')}
-- Content gaps to fill: ${(research?.content_gaps || []).join('; ')}
-- Emotional angle: ${validation.emotional_angle || 'empowerment'}
-- Category: ${validation.category || 'insight'}
-
-STRICT SEO RULES (non-negotiable):
-1. Use ## for H2 headings and ### for H3 headings — this is REQUIRED for SEO structure
-2. Include 4-6 ## H2 headings throughout the post
-3. Primary keyword MUST appear in: title, first paragraph, at least one ## heading, last paragraph, meta description
-4. Each secondary keyword must appear 1-2 times naturally
-5. 750-1000 words total (count carefully)
-6. Include at least 3 internal links as markdown: [anchor text](/path/) linking to /scholars/, /volunteer/, /donate/, /ledger/, or /ideas/
-7. Short paragraphs (2-4 sentences max)
-8. Meta description: 120-165 characters, includes primary keyword, has a call-to-action
-
-VOICE & STYLE:
-- BSF voice: direct, warm, honest. No jargon. No saviour language.
-- Reference real Lagos neighborhoods: Makoko, Surulere, Ajegunle, Victoria Island, Ikeja
-- Use specific details — names (fictional but realistic Yoruba/Igbo names), numbers, places
-- Separate paragraphs with \\n\\n
-${retryInstructions}
-
-AUTHOR: ${validation.category === 'story' ? 'Funke Adeyemi' : validation.category === 'guide' ? 'Amara Okafor' : validation.category === 'update' ? 'BSF Team' : 'Bolaji Agunbiade'}
-
-Respond in JSON only:
-{
-  "title": "40-70 chars, includes primary keyword",
-  "excerpt": "1-2 sentences, 120-160 chars, include primary keyword",
-  "metaDescription": "120-165 chars with primary keyword and CTA",
-  "body": "full post text with ## headings, paragraphs separated by \\n\\n, internal links as [text](/path/)",
-  "author": "author name",
-  "category": "${validation.category || 'insight'}",
-  "keywords": ["primary", "secondary1", "secondary2"],
-  "readTime": estimated_minutes
-}`;
+  const prompt = buildWriterPrompt(research, outline, retryFeedback);
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -495,6 +887,33 @@ Respond in JSON only:
     return jsonMatch ? JSON.parse(jsonMatch[0]) : null;
   } catch (e) {
     console.error('Claude error:', e.message);
+    return null;
+  }
+}
+
+async function writeWithOpenAI(research, outline, retryFeedback) {
+  const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+  if (!OPENAI_API_KEY) return null;
+
+  try {
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${OPENAI_API_KEY}` },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        response_format: { type: 'json_object' },
+        messages: [{
+          role: 'user',
+          content: buildWriterPrompt(research, outline, retryFeedback)
+        }]
+      })
+    });
+
+    if (!res.ok) return null;
+    const data = await res.json();
+    return extractJsonObject(data.choices?.[0]?.message?.content);
+  } catch (e) {
+    console.error('OpenAI fallback writer error:', e.message);
     return null;
   }
 }
@@ -631,6 +1050,49 @@ Return the complete revised post in the same JSON format:
   }
 }
 
+async function finalPassOpenAI(draft, review, primaryKeyword, fallbackTopic) {
+  const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+  if (!OPENAI_API_KEY || !draft || !review || review.overall_verdict === 'publish') {
+    return repairDraftForSeo(draft, null, primaryKeyword, fallbackTopic);
+  }
+
+  try {
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${OPENAI_API_KEY}` },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        response_format: { type: 'json_object' },
+        messages: [{
+          role: 'user',
+          content: `Revise this Big Sister Foundation blog post based on the SEO review feedback.
+
+CURRENT POST:
+${JSON.stringify(draft, null, 2)}
+
+REVIEW FEEDBACK:
+${JSON.stringify(review, null, 2)}
+
+STRICT REQUIREMENTS:
+- Keep the same topic and voice
+- Ensure the primary keyword "${primaryKeyword}" appears in the title, first paragraph, one H2, last paragraph, and meta description
+- Ensure 4-6 ## H2 headings
+- Ensure 3+ internal links using [text](/path/)
+- Keep word count between 750 and 1000
+- Return JSON only using the same schema as the original post`
+        }]
+      })
+    });
+
+    if (!res.ok) return repairDraftForSeo(draft, null, primaryKeyword, fallbackTopic);
+    const data = await res.json();
+    const revised = extractJsonObject(data.choices?.[0]?.message?.content);
+    return repairDraftForSeo(revised || draft, null, primaryKeyword, fallbackTopic);
+  } catch (error) {
+    return repairDraftForSeo(draft, null, primaryKeyword, fallbackTopic);
+  }
+}
+
 // ═══ GitHub Persistence ═══
 async function getGitHubFile() {
   const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
@@ -665,6 +1127,18 @@ async function updateGitHubFile(posts, sha) {
     }
   );
   return res.ok;
+}
+
+function extractPinnedCoverImage(url) {
+  const value = String(url || '').trim();
+  if (!value) return '';
+  try {
+    const parsed = new URL(value, 'https://example.com');
+    if (parsed.pathname === '/api/post-cover') {
+      return parsed.searchParams.get('preferred') || '';
+    }
+  } catch (error) {}
+  return /^https?:\/\//i.test(value) ? value : '';
 }
 
 // ═══ TOPIC CLUSTER SELECTOR ═══
@@ -914,8 +1388,8 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return res.status(500).json({ error: 'ANTHROPIC_API_KEY not configured' });
+  if (!process.env.ANTHROPIC_API_KEY && !process.env.OPENAI_API_KEY) {
+    return res.status(500).json({ error: 'No writer configured (need ANTHROPIC_API_KEY or OPENAI_API_KEY)' });
   }
 
   const pipeline = [];
@@ -938,15 +1412,17 @@ export default async function handler(req, res) {
 
     // ── STAGE 1: SEO Research (Perplexity) — informed by cluster ──
     pipeline.push('research_started');
-    const research = await researchWithPerplexity(existingTitles);
+    const research = await researchWithPerplexity(existingTitles, clusterTopic);
     // Merge cluster data into research — cluster takes priority for topic direction
     const enrichedResearch = research || {};
     if (!enrichedResearch.recommended) enrichedResearch.recommended = {};
+    enrichedResearch.recommended._fromClusterFallback = false;
     // Only override if Perplexity didn't return strong results
     if (!enrichedResearch.recommended.primary_keyword) {
       enrichedResearch.recommended.topic = clusterTopic.topic;
       enrichedResearch.recommended.primary_keyword = clusterTopic.primary_keyword;
       enrichedResearch.recommended.secondary_keywords = clusterTopic.secondary_keywords;
+      enrichedResearch.recommended._fromClusterFallback = true;
     }
     pipeline.push(research ? 'research_complete' : 'research_skipped_using_cluster');
 
@@ -955,17 +1431,23 @@ export default async function handler(req, res) {
     const validated = await validateWithGrok(enrichedResearch);
     pipeline.push('validation_complete');
 
-    const primaryKeyword = validated?.recommended?.primary_keyword || clusterTopic.primary_keyword;
+    const topicDecision = resolveTopicDecision(clusterTopic, validated);
+    const resolvedResearch = applyTopicDecision(validated, topicDecision);
+    measurements.topicDecision = topicDecision;
+    pipeline.push('topic_source:' + topicDecision.topicSource);
+    pipeline.push('topic_reason:' + topicDecision.topicOverrideReason);
+
+    const primaryKeyword = topicDecision.primaryKeyword;
 
     // ── STAGE 3: Content Outline (Gemini → fallback to Claude) ──
     pipeline.push('outline_started');
-    let outline = await outlineWithGemini(validated);
+    let outline = await outlineWithGemini(resolvedResearch);
     if (!outline) {
       // Fallback: generate a basic outline from the cluster topic
       pipeline.push('outline_gemini_failed_using_fallback');
       const kw = primaryKeyword || clusterTopic.primary_keyword;
       outline = {
-        title: `${clusterTopic.topic.charAt(0).toUpperCase() + clusterTopic.topic.slice(1)}`,
+        title: `${topicDecision.topic.charAt(0).toUpperCase() + topicDecision.topic.slice(1)}`,
         metaDescription: `Learn about ${kw} and how Big Sister Foundation is making a difference in Lagos, Nigeria.`,
         sections: [
           { heading: `Understanding ${kw}`, level: 'h2', points: ['Define the issue', 'Scale in Lagos'], wordCount: 150, keywords_to_include: [kw] },
@@ -993,40 +1475,19 @@ export default async function handler(req, res) {
 
     while (retryCount <= SEO_CONFIG.maxRetries) {
       pipeline.push(`writing_attempt_${retryCount + 1}`);
-      draft = await writeWithClaude(validated, outline, retryFeedback);
+      writerUsed = 'claude';
+      draft = await writeWithClaude(resolvedResearch, outline, retryFeedback);
 
       // Fallback: if Claude fails, try OpenAI as backup writer
       if (!draft && process.env.OPENAI_API_KEY) {
         pipeline.push('claude_writer_failed_trying_openai');
         writerUsed = 'openai_fallback';
-        try {
-          const fallbackRes = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
-            body: JSON.stringify({
-              model: 'gpt-4o-mini',
-              messages: [{
-                role: 'user',
-                content: `Write a 750-word SEO blog post for Big Sister Foundation, a nonprofit in Lagos Nigeria.
-Topic: ${validated?.recommended?.topic || clusterTopic.topic}
-Primary keyword: "${primaryKeyword}" (must appear in title, first paragraph, one H2, last paragraph)
-Use ## for H2 headings (4-6 total). Include 3+ internal links as [text](/path/) to /scholars/, /volunteer/, /donate/.
-Voice: warm, direct, honest. No saviour language. Reference real Lagos neighborhoods.
-Respond in JSON: {"title":"","excerpt":"","metaDescription":"","body":"","author":"BSF Team","category":"insight","keywords":["${primaryKeyword}"],"readTime":4}`
-              }]
-            })
-          });
-          if (fallbackRes.ok) {
-            const fbData = await fallbackRes.json();
-            const fbText = fbData.choices?.[0]?.message?.content;
-            const fbMatch = fbText?.match(/\{[\s\S]*\}/);
-            if (fbMatch) draft = JSON.parse(fbMatch[0]);
-          }
-        } catch (e) { console.error('OpenAI fallback writer error:', e.message); }
+        draft = await writeWithOpenAI(resolvedResearch, outline, retryFeedback);
       }
 
       if (!draft) return res.status(500).json({ error: 'All writers failed (Claude + OpenAI fallback)', pipeline, measurements });
 
+      draft = repairDraftForSeo(draft, outline, primaryKeyword, topicDecision.topic || clusterTopic.topic);
       compliance = checkSeoCompliance(draft, primaryKeyword);
       measurements[`attempt_${retryCount + 1}`] = { ...compliance.metrics, writer: writerUsed };
 
@@ -1067,21 +1528,24 @@ Respond in JSON: {"title":"","excerpt":"","metaDescription":"","body":"","author
 
     // ── STAGE 6: Final Polish (Claude — skipped if using fallback writer) ──
     pipeline.push('final_pass_started');
-    const finalPost = (writerUsed === 'claude') ? await finalPassClaude(draft, review) : draft;
+    const preservedDraft = JSON.parse(JSON.stringify(draft));
+    let finalPost = draft;
+    if (writerUsed === 'claude') {
+      finalPost = await finalPassClaude(draft, review);
+    } else if (writerUsed === 'openai_fallback') {
+      finalPost = await finalPassOpenAI(draft, review, primaryKeyword, topicDecision.topic || clusterTopic.topic);
+    }
+    finalPost = repairDraftForSeo(finalPost, outline, primaryKeyword, topicDecision.topic || clusterTopic.topic);
     pipeline.push('final_pass_complete');
 
     // ── Post-polish degradation check ──
     // If the final polish made the post WORSE, revert to the best draft
     const prePolishCompliance = checkSeoCompliance(draft, primaryKeyword);
     const postPolishCompliance = checkSeoCompliance(finalPost, primaryKeyword);
-    if (postPolishCompliance.metrics.computedSeoScore < prePolishCompliance.metrics.computedSeoScore - 10) {
-      pipeline.push('polish_degraded_reverting: ' + postPolishCompliance.metrics.computedSeoScore + ' < ' + prePolishCompliance.metrics.computedSeoScore);
-      // Revert to pre-polish draft
-      finalPost.title = draft.title;
-      finalPost.body = draft.body;
-      finalPost.excerpt = draft.excerpt;
-      finalPost.metaDescription = draft.metaDescription;
-      finalPost.keywords = draft.keywords;
+    if ((prePolishCompliance.compliant && !postPolishCompliance.compliant) ||
+        postPolishCompliance.metrics.computedSeoScore < prePolishCompliance.metrics.computedSeoScore - 10) {
+      pipeline.push('polish_degraded_reverting');
+      finalPost = repairDraftForSeo(preservedDraft, outline, primaryKeyword, topicDecision.topic || clusterTopic.topic);
     }
 
     // ── STAGE 7: Featured Snippet Injection ──
@@ -1095,21 +1559,42 @@ Respond in JSON: {"title":"","excerpt":"","metaDescription":"","body":"","author
     finalPost.body = injectCrossPostLinks(finalPost.body, crossLinks.linksToAdd);
     measurements.crossPostLinks = crossLinks.linksToAdd.length;
     measurements.reverseLinksToApply = crossLinks.reverseLinks.length;
+    finalPost = repairDraftForSeo(finalPost, outline, primaryKeyword, topicDecision.topic || clusterTopic.topic);
 
     // ── Final compliance check ──
-    const finalCompliance = checkSeoCompliance(finalPost, primaryKeyword);
+    let finalCompliance = checkSeoCompliance(finalPost, primaryKeyword);
+    if (!finalCompliance.compliant && prePolishCompliance.compliant) {
+      pipeline.push('post_enrichment_degraded_reverting');
+      finalPost = repairDraftForSeo(preservedDraft, outline, primaryKeyword, topicDecision.topic || clusterTopic.topic);
+      finalPost.body = ensureSnippetBlock(finalPost.body, primaryKeyword);
+      finalPost.body = injectCrossPostLinks(finalPost.body, crossLinks.linksToAdd);
+      finalPost = repairDraftForSeo(finalPost, outline, primaryKeyword, topicDecision.topic || clusterTopic.topic);
+      finalCompliance = checkSeoCompliance(finalPost, primaryKeyword);
+    }
     measurements.final = finalCompliance.metrics;
 
     // ── Score gate ──
-    const seoScore = review?.seo_score || finalCompliance.metrics.computedSeoScore;
+    const seoScore = Math.max(review?.seo_score || 0, finalCompliance.metrics.computedSeoScore);
     const readScore = review?.readability_score || 70;
 
-    if (seoScore < SEO_CONFIG.minSeoScore) {
+    if (!finalCompliance.compliant || finalCompliance.metrics.computedSeoScore < SEO_CONFIG.minSeoScore) {
+      const errorMessage = finalCompliance.metrics.computedSeoScore < SEO_CONFIG.minSeoScore
+        ? `Post rejected: SEO score ${finalCompliance.metrics.computedSeoScore} below minimum ${SEO_CONFIG.minSeoScore}`
+        : `Post rejected: SEO compliance failed (${finalCompliance.issues.join('; ')})`;
       return res.status(422).json({
-        error: `Post rejected: SEO score ${seoScore} below minimum ${SEO_CONFIG.minSeoScore}`,
+        error: errorMessage,
         pipeline, measurements,
+        topicSource: topicDecision.topicSource,
+        topicOverrideReason: topicDecision.topicOverrideReason,
         issues: finalCompliance.issues,
-        draft: { title: finalPost.title, seoScore, readabilityScore: readScore }
+        draft: {
+          title: finalPost.title,
+          seoScore: finalCompliance.metrics.computedSeoScore,
+          reviewSeoScore: review?.seo_score || 0,
+          readabilityScore: readScore,
+          topicSource: topicDecision.topicSource,
+          topicOverrideReason: topicDecision.topicOverrideReason
+        }
       });
     }
 
@@ -1121,6 +1606,28 @@ Respond in JSON: {"title":"","excerpt":"","metaDescription":"","body":"","author
       keyword: primaryKeyword || ''
     });
     const ogImage = `/api/og-image?${ogParams.toString()}`;
+
+    const usedCoverImages = existingPosts.map(function(post) {
+      return post.coverImageOriginal || extractPinnedCoverImage(post.coverImage) || '';
+    }).filter(Boolean);
+
+    const coverSelection = await findRealtimeCoverImage({
+      title: finalPost.title,
+      excerpt: finalPost.excerpt,
+      body: finalPost.body,
+      category: finalPost.category || 'insight',
+      keyword: primaryKeyword || '',
+      keywords: (finalPost.keywords || []).slice(0, 4).join(','),
+      usedThumbnails: usedCoverImages
+    });
+
+    const coverImage = buildRealtimeCoverImageUrl({
+      title: finalPost.title,
+      category: finalPost.category || 'insight',
+      keyword: primaryKeyword || '',
+      keywords: (finalPost.keywords || []).slice(0, 4).join(','),
+      preferred: coverSelection && coverSelection.thumbnail || ''
+    });
 
     // ── Build post object ──
     const newPost = {
@@ -1134,6 +1641,18 @@ Respond in JSON: {"title":"","excerpt":"","metaDescription":"","body":"","author
       readTime: finalPost.readTime || Math.ceil((finalPost.body || '').split(/\s+/).length / 220),
       keywords: finalPost.keywords,
       metaDescription: finalPost.metaDescription,
+      coverImage: coverImage,
+      coverImageAlt: finalPost.title,
+      coverImageOriginal: coverSelection && coverSelection.thumbnail || '',
+      coverImageProvider: coverSelection ? 'openverse' : 'og-fallback',
+      coverImageCreator: coverSelection && coverSelection.creator || '',
+      coverImageLicense: coverSelection && coverSelection.license || '',
+      coverImageLicenseVersion: coverSelection && coverSelection.licenseVersion || '',
+      coverImageSource: coverSelection && coverSelection.source || '',
+      coverImageSourceUrl: coverSelection && coverSelection.sourceUrl || '',
+      coverImageSearchQuery: coverSelection && coverSelection.query || '',
+      topicSource: topicDecision.topicSource,
+      topicOverrideReason: topicDecision.topicOverrideReason,
       ogImage: ogImage,
       aiGenerated: true,
       seoScore: seoScore,
@@ -1144,6 +1663,9 @@ Respond in JSON: {"title":"","excerpt":"","metaDescription":"","body":"","author
         retryCount,
         cluster: clusterTopic.pillar,
         clusterTopic: clusterTopic.topic,
+        resolvedTopic: topicDecision.topic,
+        topicSource: topicDecision.topicSource,
+        topicOverrideReason: topicDecision.topicOverrideReason,
         crossPostLinks: crossLinks.linksToAdd.length,
         hasSnippetBlock: (finalPost.body || '').includes('**Quick Answer:**'),
         primaryKeyword
@@ -1184,6 +1706,12 @@ Respond in JSON: {"title":"","excerpt":"","metaDescription":"","body":"","author
         seoScore: newPost.seoScore,
         readabilityScore: newPost.readabilityScore,
         cluster: clusterTopic.pillar,
+        primaryKeyword: primaryKeyword,
+        topicSource: topicDecision.topicSource,
+        topicOverrideReason: topicDecision.topicOverrideReason,
+        coverImage: newPost.coverImage,
+        coverImageProvider: newPost.coverImageProvider,
+        coverImageSearchQuery: newPost.coverImageSearchQuery,
         seoMetrics: newPost.seoMetrics
       },
       pipeline,
