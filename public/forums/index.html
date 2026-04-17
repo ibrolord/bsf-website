@@ -206,6 +206,13 @@
       background: rgba(45,94,64,0.12);
       border-color: rgba(45,94,64,0.2);
     }
+    .thread-vote__btn[disabled] {
+      cursor: not-allowed;
+      opacity: 0.45;
+      background: rgba(58,42,31,0.05);
+      color: rgba(58,42,31,0.4);
+      border-color: transparent;
+    }
     .thread-vote__btn.is-voted {
       background: var(--green); color: var(--cream);
       border-color: var(--green);
@@ -321,6 +328,13 @@
       background: rgba(45,94,64,0.12);
       border-color: rgba(45,94,64,0.2);
     }
+    .thread-detail__vote-btn[disabled] {
+      cursor: not-allowed;
+      opacity: 0.45;
+      background: rgba(58,42,31,0.05);
+      color: rgba(58,42,31,0.4);
+      border-color: transparent;
+    }
     .thread-detail__vote-btn.is-voted {
       background: var(--green); color: var(--cream);
       border-color: var(--green);
@@ -356,6 +370,11 @@
     }
     .reply-card__like:hover { color: var(--terra); }
     .reply-card__like.is-liked { color: var(--terra); }
+    .reply-card__like[disabled] {
+      cursor: not-allowed;
+      opacity: 0.5;
+      color: rgba(58,42,31,0.4);
+    }
 
     /* REPLY FORM */
     .reply-form {
@@ -919,6 +938,10 @@
         return div.innerHTML;
       }
 
+      function escapeAttr(str) {
+        return escapeHtml(str).replace(/"/g, '&quot;');
+      }
+
       function saveName(name, email) {
         if (name) localStorage.setItem('bsf_forum_name', name);
         if (email) localStorage.setItem('bsf_forum_email', email);
@@ -948,6 +971,29 @@
         return getUserRoles(userDoc).some(function (role) {
           return ['volunteer', 'team_lead', 'program_lead', 'finance', 'moderator', 'admin', 'superadmin'].indexOf(role) !== -1;
         });
+      }
+
+      function isActiveAccessStatus(status) {
+        if (!status) return true;
+        return String(status).toLowerCase() === 'active';
+      }
+
+      function getReactionDisabledReason(threadId) {
+        if (forumReadOnlyMode) return 'Reactions are disabled while the live forum is unavailable.';
+        if (isLocalOnlyThread(threadId)) return 'Reactions are unavailable in preview mode.';
+        if (!currentUser) return 'Sign in as a volunteer to react.';
+        if (!canParticipate) return 'Only active volunteers with forum access can react.';
+        return '';
+      }
+
+      function canReactToThread(threadId) {
+        return !getReactionDisabledReason(threadId);
+      }
+
+      function getReactionButtonAttrs(threadId) {
+        var reason = getReactionDisabledReason(threadId);
+        if (!reason) return '';
+        return ' disabled aria-disabled="true" title="' + escapeAttr(reason) + '"';
       }
 
       function getForumDisplayName() {
@@ -1038,36 +1084,50 @@
         currentForumUser = null;
         canParticipate = false;
 
+        function refreshForumViews() {
+          if (threads.length) {
+            renderThreads();
+          }
+          if (currentThreadId) {
+            openThread(currentThreadId);
+          }
+        }
+
         if (!user || !user.email) {
           updateForumAccessUI();
+          refreshForumViews();
           return Promise.resolve();
         }
 
         var email = String(user.email).trim().toLowerCase();
         return Promise.all([
-          db.collection('volunteers').where('email', '==', email).limit(1).get().catch(function () { return null; }),
-          db.collection('users').where('email', '==', email).limit(1).get().catch(function () { return null; })
+          db.collection('users').doc(email).get().catch(function () { return null; }),
+          db.collection('volunteers').where('email', '==', email).limit(1).get().catch(function () { return null; })
         ]).then(function (results) {
-          var volunteerSnap = results[0];
-          var userSnap = results[1];
+          var userSnap = results[0];
+          var volunteerSnap = results[1];
 
+          if (userSnap && userSnap.exists) {
+            currentForumUser = userSnap.data();
+          }
           if (volunteerSnap && !volunteerSnap.empty) {
             currentVolunteer = volunteerSnap.docs[0].data();
           }
-          if (userSnap && !userSnap.empty) {
-            currentForumUser = userSnap.docs[0].data();
-          }
 
-          var volunteerStatus = currentVolunteer && currentVolunteer.status ? String(currentVolunteer.status).toLowerCase() : 'active';
-          canParticipate = !!currentVolunteer &&
-            volunteerStatus === 'active' &&
+          var userStatus = currentForumUser && currentForumUser.status ? currentForumUser.status : '';
+          var volunteerStatus = currentVolunteer && currentVolunteer.status ? currentVolunteer.status : '';
+          canParticipate = !!currentForumUser &&
             userHasForumPermission(currentForumUser) &&
+            isActiveAccessStatus(userStatus) &&
+            isActiveAccessStatus(volunteerStatus) &&
             !forumReadOnlyMode;
 
           updateForumAccessUI();
+          refreshForumViews();
         }).catch(function () {
           canParticipate = false;
           updateForumAccessUI();
+          refreshForumViews();
         });
       }
 
@@ -1205,9 +1265,11 @@
       }
 
       function loadLocalThreads() {
-        threads = demoThreads.slice();
+        threads = [];
         updateStats();
-        renderThreads();
+        var loadingEl = document.getElementById('loading-indicator');
+        if (loadingEl) loadingEl.style.display = 'none';
+        threadsList.innerHTML = '<div class="threads-empty"><p style="font-size:2rem;margin-bottom:0.5rem;">&#9888;</p><p>The live forum is temporarily unavailable.</p><p style="font-size:0.85rem;margin-top:0.5rem;">Please try again later. Reading is paused until the live data connection is restored.</p></div>';
       }
 
       function seedDemoData() {
@@ -1306,9 +1368,10 @@
         var html = '';
         filtered.forEach(function (t) {
           var isVoted = votedThreads[t.id];
+          var voteAttrs = getReactionButtonAttrs(t.id);
           html += '<div class="thread-card' + (t.pinned ? ' is-pinned' : '') + '" data-id="' + t.id + '">';
           html += '<div class="thread-vote">';
-          html += '<button class="thread-vote__btn' + (isVoted ? ' is-voted' : '') + '" data-vote="' + t.id + '" title="Upvote">&#9650;</button>';
+          html += '<button class="thread-vote__btn' + (isVoted ? ' is-voted' : '') + '" data-vote="' + t.id + '" title="Upvote"' + voteAttrs + '>&#9650;</button>';
           html += '<span class="thread-vote__count">' + (t.votes || 0) + '</span>';
           html += '</div>';
           html += '<div class="thread-content">';
@@ -1330,6 +1393,7 @@
 
         // Vote click handlers
         threadsList.querySelectorAll('.thread-vote__btn').forEach(function (btn) {
+          if (btn.disabled) return;
           btn.addEventListener('click', function (e) {
             e.stopPropagation();
             handleVote(btn.getAttribute('data-vote'));
@@ -1390,6 +1454,7 @@
         currentThreadId = threadId;
         var thread = threads.find(function (t) { return t.id === threadId; });
         if (!thread) return;
+        var canVote = canReactToThread(threadId);
 
         threadsView.classList.add('is-hidden');
         threadDetail.classList.add('is-visible');
@@ -1404,7 +1469,7 @@
         html += '<span class="thread-detail__author">' + escapeHtml(thread.author) + '</span>';
         html += '<span class="thread-detail__date">' + timeAgo(thread.date) + '</span>';
         html += '<div class="thread-detail__vote">';
-        html += '<button class="thread-detail__vote-btn' + (isVoted ? ' is-voted' : '') + '" id="detail-vote-btn">&#9650; ' + (thread.votes || 0) + '</button>';
+        html += '<button class="thread-detail__vote-btn' + (isVoted ? ' is-voted' : '') + '" id="detail-vote-btn"' + getReactionButtonAttrs(threadId) + '>&#9650; ' + (thread.votes || 0) + '</button>';
         html += '</div>';
         html += '</div>';
         html += '</div>';
@@ -1412,11 +1477,13 @@
         threadDetailContent.innerHTML = html;
 
         // Vote handler on detail
-        document.getElementById('detail-vote-btn').addEventListener('click', function () {
-          handleVote(threadId);
-          // Re-render the detail page
-          openThread(threadId);
-        });
+        if (canVote) {
+          document.getElementById('detail-vote-btn').addEventListener('click', function () {
+            handleVote(threadId);
+            // Re-render the detail page
+            openThread(threadId);
+          });
+        }
 
         // Load replies
         loadReplies(threadId, thread);
@@ -1440,22 +1507,19 @@
             replies.push(data);
           });
 
-          if (replies.length === 0 && demoReplies[threadId]) {
-            replies = demoReplies[threadId];
-          }
-
           currentReplies = replies.slice();
           renderReplies(replies, thread);
         }).catch(function () {
-          // Fallback to demo
-          currentReplies = (demoReplies[threadId] || []).slice();
+          currentReplies = [];
           renderReplies(currentReplies, thread);
         });
       }
 
       function renderReplies(replies, thread) {
         if (!replies || replies.length === 0) {
-          repliesSection.innerHTML = '<div class="replies-header">No replies yet — be the first to respond!</div>';
+          repliesSection.innerHTML = forumReadOnlyMode
+            ? '<div class="replies-header">Replies are unavailable while the live forum is in read-only mode.</div>'
+            : '<div class="replies-header">No replies yet — be the first to respond!</div>';
           return;
         }
 
@@ -1463,12 +1527,13 @@
 
         replies.forEach(function (r) {
           var isLiked = likedReplies[r.id];
+          var likeAttrs = getReactionButtonAttrs(thread ? thread.id : '');
           html += '<div class="reply-card">';
           html += '<div class="reply-card__body">' + escapeHtml(r.body) + '</div>';
           html += '<div class="reply-card__meta">';
           html += '<span class="reply-card__author">' + escapeHtml(r.author) + '</span>';
           html += '<span>' + timeAgo(r.date) + '</span>';
-          html += '<span class="reply-card__like' + (isLiked ? ' is-liked' : '') + '" data-reply-id="' + r.id + '" data-thread-id="' + (thread ? thread.id : '') + '">&#9825; ' + (r.likes || 0) + '</span>';
+          html += '<button type="button" class="reply-card__like' + (isLiked ? ' is-liked' : '') + '" data-reply-id="' + r.id + '" data-thread-id="' + (thread ? thread.id : '') + '"' + likeAttrs + '>&#9825; ' + (r.likes || 0) + '</button>';
           html += '</div>';
           html += '</div>';
         });
@@ -1477,6 +1542,7 @@
 
         // Like handlers
         repliesSection.querySelectorAll('.reply-card__like').forEach(function (btn) {
+          if (btn.disabled) return;
           btn.addEventListener('click', function () {
             var replyId = btn.getAttribute('data-reply-id');
             var threadId = btn.getAttribute('data-thread-id');
@@ -1504,10 +1570,6 @@
         }
         localStorage.setItem('bsf_forum_reply_likes', JSON.stringify(likedReplies));
 
-        if (demoReplies[threadId]) {
-          demoReplies[threadId] = currentReplies.slice();
-        }
-
         renderReplies(currentReplies, threads.find(function (t) { return t.id === threadId; }) || null);
 
         if (!isLocalOnlyThread(threadId)) {
@@ -1522,9 +1584,6 @@
               delete likedReplies[replyId];
             }
             localStorage.setItem('bsf_forum_reply_likes', JSON.stringify(likedReplies));
-            if (demoReplies[threadId]) {
-              demoReplies[threadId] = currentReplies.slice();
-            }
             renderReplies(currentReplies, threads.find(function (t) { return t.id === threadId; }) || null);
             showToast('We could not save that reaction right now.', 'error');
           });

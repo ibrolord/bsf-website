@@ -776,7 +776,7 @@
       var db = firebase.firestore();
 
       // ── Paystack config ──
-      var PAYSTACK_PUBLIC_KEY = window.BSFPaystack ? BSFPaystack.getPublicKey() : '';
+      var PAYSTACK_PUBLIC_KEY = '';
 
       // ── Fund config ──
       var funds = {
@@ -1132,8 +1132,33 @@
         return '\u20A6' + value.toLocaleString('en-NG');
       }
 
+      function syncPaystackKeyState() {
+        PAYSTACK_PUBLIC_KEY = window.BSFPaystack ? BSFPaystack.getPublicKey() : '';
+      }
+
       function hasLivePaystackKey() {
+        syncPaystackKeyState();
         return PAYSTACK_PUBLIC_KEY.indexOf('pk_live_') === 0;
+      }
+
+      function loadRuntimePublicConfig() {
+        return fetch('/api/public-config', { credentials: 'same-origin' })
+          .then(function (response) {
+            if (!response.ok) throw new Error('public_config_unavailable');
+            return response.json();
+          })
+          .then(function (config) {
+            var runtimeKey = config && typeof config.paystackPublicKey === 'string'
+              ? config.paystackPublicKey.trim()
+              : '';
+            if (runtimeKey) {
+              window.__BSF_PAYSTACK_PUBLIC_KEY__ = runtimeKey;
+            }
+            syncPaystackKeyState();
+          })
+          .catch(function () {
+            syncPaystackKeyState();
+          });
       }
 
       function setPaymentError(message) {
@@ -1405,6 +1430,12 @@
       }
 
       // ── Init ──
+      syncPaystackKeyState();
+      loadRuntimePublicConfig().then(function () {
+        if (!hasLivePaystackKey()) {
+          setPaymentError('Online card payments are temporarily unavailable while Paystack is being reconfigured. Please use PayPal or bank transfer below.');
+        }
+      });
       updateAllocation();
       loadRecentDonations();
       loadGoals();

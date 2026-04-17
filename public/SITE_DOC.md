@@ -24,7 +24,7 @@
 | `/donate/` | `donate/index.html` | None | Fund picker + Paystack checkout |
 | `/donations/` | `donations/index.html` | Volunteer | Volunteer donation tracking + receipt generation |
 | `/events/` | `events/index.html` | Volunteer | Calendar, RSVP, event CRUD |
-| `/forums/` | `forums/index.html` | Optional | Community threads, replies, voting |
+| `/forums/` | `forums/index.html` | Read: none; post/react: volunteer forum access | Community threads, replies, voting |
 | `/ideas/` | `ideas/index.html` | Volunteer | Ideas board, voting, goal promotion |
 | `/ledger/` | `ledger/index.html` | None | Public real-time donation ledger |
 | `/scholars/` | `scholars/index.html` | Volunteer (edit) | Scholar profiles, progress, sponsor assignment |
@@ -89,7 +89,7 @@ The site runs **two independent Firebase projects** with different credentials:
 |---------|---------|------------|--------------|
 | **Firebase Firestore** | All data storage (volunteers, sponsors, applications, threads, ideas, goals, scholars, donations, events, invites) | Nearly every page | Two separate projects (volunteer & sponsor) |
 | **Firebase Auth** | User authentication | `/signin/`, portals, admin | Two separate apps |
-| **Paystack** | Payment processing | `/donate/`, sponsor dashboard | Set `shared/bsf-paystack.js` `publicKey` to a real `pk_live_...` value before taking payments |
+| **Paystack** | Payment processing | `/donate/`, sponsor dashboard | Set `BSF_PAYSTACK_PUBLIC_KEY` (or `PAYSTACK_PUBLIC_KEY`) in the environment; `/api/public-config` exposes the public key at runtime |
 | **EmailJS** | Approval/rejection emails | `/admin/` | API keys likely in admin page JS |
 | **Google Analytics** | Page tracking | All pages | ID: `G-Q4EYY24EDZ` |
 | **Google Fonts** | EB Garamond serif font | All pages | |
@@ -121,7 +121,7 @@ The site runs **two independent Firebase projects** with different credentials:
   - Elder (≥₦25,000/mo) 🌲
   - Grower (≥₦10,000/mo) 🌱
   - Seedling (<₦10,000/mo) 🌾
-- **CRITICAL KINK:** `publicKey` is intentionally blank until a verified live Paystack key is available. Checkout now fails closed instead of silently using test mode.
+- **CRITICAL KINK:** Checkout stays disabled until `/api/public-config` can return a verified `pk_live_...` key from environment config. The client no longer needs a hardcoded key edit.
 - Currency conversion rates for tier calculation are hardcoded approximations, not live rates.
 
 ### `bsf-receipt.js` — Donation receipts
@@ -209,8 +209,8 @@ All are Vercel serverless functions.
 | `volunteers` | Admin, portals, dashboard | name, email, roles, status |
 | `sponsors` | Sponsor dashboard, signin | name, email, tier, createdAt |
 | `applications` | Admin, volunteer register | name, email, roles, motivation, status |
-| `forum_threads` | Forums | title, body, author, category, votes, createdAt |
-| `forum_threads/{id}/replies` | Forums | body, author, createdAt |
+| `forum_threads` | Forums | title, body, author, category, votes, replyCount, createdAt |
+| `forum_threads/{id}/replies` | Forums | body, author, likes, createdAt |
 | `ideas` | Ideas page | title, description, category, votes, status |
 | `goals` | Ideas page, donate page | amount, deadline, beneficiary, description, status |
 | `scholars` | Scholars page | name, age, school, background, needs, sponsor |
@@ -307,7 +307,7 @@ Both use BSF branding (dark green header, copper accents, cream body). Table-bas
 ## 12. Known Kinks & Issues
 
 ### Critical (Must Fix Before Production)
-1. **Paystack live key still needs operator setup** in `bsf-paystack.js` — checkout is intentionally disabled until a real `pk_live_...` key is added
+1. **Paystack live key still needs operator setup** in environment config — checkout is intentionally disabled until `/api/public-config` can return a real `pk_live_...` key
 2. **Hardcoded base URL** (`https://public-mu-steel.vercel.app`) in feed.js, sitemap.js — needs env var
 3. **Blog post URLs use query params** (`/blog/?post={id}`) — bad for SEO, should use slugs
 
@@ -359,7 +359,7 @@ GEMINI_API_KEY=          # Blog outline (falls back to OpenAI)
 CRON_SECRET=             # Auth for /api/generate-post.js
 
 # Needs to be set in code before production
-# shared/bsf-paystack.js publicKey → set a verified pk_live_... key
+BSF_PAYSTACK_PUBLIC_KEY= # Public Paystack key returned by /api/public-config
 ```
 
 ---
@@ -431,7 +431,7 @@ public/
 
 **To add a Firestore collection:** Just start writing to it from client-side JS. Firebase rules need to be configured separately (not in this repo).
 
-**To modify payment:** Edit `shared/bsf-paystack.js`. The `pay()` function accepts options with `amount`, `email`, `currency`, `metadata`, `onSuccess`, `onClose`.
+**To modify payment:** Edit `shared/bsf-paystack.js` for client behavior and `api/public-config.js` for runtime public-key exposure. The `pay()` function accepts options with `amount`, `email`, `currency`, `metadata`, `onSuccess`, `onClose`.
 
 **To modify blog generation:** Edit `api/generate-post.js`. Topic clusters are hardcoded in the `TOPIC_CLUSTERS` constant. SEO thresholds live in `SEO_CONFIG`. Visible cover-image search lives in `api/post-cover.js` and `api/_lib/openverse.js`.
 
