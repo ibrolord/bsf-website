@@ -96,7 +96,9 @@ service cloud.firestore {
     }
     match /schools/{docId} {
       allow read: if true;
-      allow write: if hasAnyRole();
+      allow create: if hasPermission('schools.create') || hasRole('program_lead') || isAdmin();
+      allow update: if hasPermission('schools.edit') || hasRole('program_lead') || isAdmin();
+      allow delete: if hasPermission('schools.delete') || hasRole('program_lead') || isAdmin();
     }
     match /ledger/{docId} {
       allow read: if true;
@@ -106,16 +108,21 @@ service cloud.firestore {
     }
     match /events/{docId} {
       allow read: if true;
-      // Team members can manage event data; public page has no write path here.
-      allow update: if hasAnyRole();
-      allow create, delete: if hasAnyRole();
+      allow update: if
+        hasPermission('events.edit') ||
+        hasPermission('events.signup') ||
+        hasRole('program_lead') ||
+        hasRole('volunteer') ||
+        isAdmin();
+      allow create: if hasPermission('events.create') || hasRole('program_lead') || isAdmin();
+      allow delete: if hasPermission('events.delete') || hasRole('program_lead') || isAdmin();
     }
     match /goals/{docId} {
       allow read: if true;
-      allow create: if hasAnyRole();
+      allow create: if hasPermission('goals.create') || isAdmin();
       // Allow public updates for donation progress
       allow update: if true;
-      allow delete: if isAdmin();
+      allow delete: if hasPermission('goals.delete') || isAdmin();
     }
     match /forums/{docId} {
       allow read: if true;
@@ -127,7 +134,9 @@ service cloud.firestore {
     }
     match /announcements/{docId} {
       allow read: if true;
-      allow write: if hasAnyRole();
+      allow create: if hasPermission('announcements.create') || hasRole('comms') || isAdmin();
+      allow update: if hasPermission('announcements.edit') || hasRole('comms') || isAdmin();
+      allow delete: if hasPermission('announcements.delete') || hasRole('comms') || isAdmin();
     }
     match /outreach/{docId} {
       allow read: if true;
@@ -141,7 +150,7 @@ service cloud.firestore {
     }
     match /invites/{docId} {
       allow read: if true;
-      allow write: if hasAnyRole();
+      allow write: if hasPermission('volunteers.create') || hasRole('program_lead') || isAdmin();
     }
     match /donations/{docId} {
       allow read: if true;
@@ -228,7 +237,16 @@ service cloud.firestore {
       allow update, delete: if false;
     }
     match /volunteers/{docId} {
-      allow read, write: if hasAnyRole();
+      allow read: if
+        hasPermission('volunteers.view') ||
+        hasPermission('volunteer_requests.view') ||
+        hasRole('program_lead') ||
+        hasRole('volunteer') ||
+        hasRole('viewer') ||
+        isAdmin();
+      allow create: if hasPermission('volunteers.create') || hasRole('program_lead') || isAdmin();
+      allow update: if hasPermission('volunteers.edit') || hasRole('program_lead') || isAdmin();
+      allow delete: if hasPermission('volunteers.delete') || hasRole('program_lead') || isAdmin();
     }
     match /teams/{docId} {
       allow read, write: if hasAnyRole();
