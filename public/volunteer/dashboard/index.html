@@ -351,8 +351,8 @@ tbody tr:hover{background:var(--gray-50)}
 <div id="not-registered-screen">
   <div class="login-card">
     <div class="logo-text">Big Sister Foundation</div>
-    <h1>Not Registered</h1>
-    <p class="sub">You're not a registered volunteer. Please apply on our volunteer page or contact an admin.</p>
+    <h1 id="nr-title">Not Registered</h1>
+    <p class="sub" id="nr-copy">You're not a registered volunteer. Please apply on our volunteer page or contact an admin.</p>
     <p style="font-size:13px;color:var(--gray-500);margin-bottom:20px" id="nr-email"></p>
     <div style="display:flex;gap:10px;justify-content:center">
       <a href="/volunteer/" class="btn btn-primary" style="text-decoration:none">Apply to Volunteer</a>
@@ -820,24 +820,58 @@ function hasPermission(perm) {
   return currentPermissions && currentPermissions.indexOf(perm) > -1;
 }
 
+function canAccessVolunteerPage(page) {
+  if (!page || page === 'dashboard' || page === 'shoutouts' || page === 'tasks' || page === 'ideas' || page === 'reports' || page === 'team') {
+    return true;
+  }
+  if (page === 'approvals') {
+    return hasPermission('ledger.approve') || hasPermission('volunteer_requests.approve') || hasPermission('events.approve');
+  }
+  if (page === 'sponsor') {
+    return hasPermission('sponsor.view') || !!sponsorData;
+  }
+  return false;
+}
+
+function showVolunteerAccessState(title, message, email) {
+  document.getElementById('vol-app').style.display = 'none';
+  document.getElementById('nr-title').textContent = title;
+  document.getElementById('nr-copy').textContent = message;
+  document.getElementById('nr-email').textContent = email || '';
+  document.getElementById('not-registered-screen').style.display = 'flex';
+}
+
+function hideVolunteerAccessState() {
+  document.getElementById('not-registered-screen').style.display = 'none';
+}
+
+function isTransientFirestoreError(err) {
+  var code = err && err.code ? String(err.code) : '';
+  return code === 'unavailable' ||
+    code === 'deadline-exceeded' ||
+    code === 'resource-exhausted' ||
+    code === 'aborted' ||
+    code === 'internal' ||
+    code === 'cancelled' ||
+    code === 'unknown';
+}
+
+function isVolunteerAccessDeniedError(err) {
+  var code = err && err.code ? String(err.code) : '';
+  return code === 'permission-denied' || code === 'unauthenticated';
+}
+
 function applyNavVisibility() {
-  // Approvals: only if can approve ledger or volunteer requests
   var approvalsNav = document.querySelector('[data-page="approvals"]');
   if (approvalsNav) {
-    if (!hasPermission('ledger.approve') && !hasPermission('volunteer_requests.approve') && !hasPermission('events.approve')) {
-      approvalsNav.classList.add('role-hidden');
-    } else {
-      approvalsNav.classList.remove('role-hidden');
-    }
+    approvalsNav.classList.toggle('role-hidden', !canAccessVolunteerPage('approvals'));
   }
-  // Sponsor view: show for program_lead/admin or if they are a sponsor
   var sponsorNav = document.querySelector('[data-page="sponsor"]');
   if (sponsorNav) {
-    if (!hasPermission('sponsor.view') && !sponsorData) {
-      sponsorNav.classList.add('role-hidden');
-    } else {
-      sponsorNav.classList.remove('role-hidden');
-    }
+    sponsorNav.classList.toggle('role-hidden', !canAccessVolunteerPage('sponsor'));
+  }
+  if (!canAccessVolunteerPage(currentPage)) {
+    navigateTo('dashboard');
   }
 }
 
@@ -867,6 +901,7 @@ auth.onAuthStateChanged(function(user) {
   if (user) {
     currentUser = user;
     document.getElementById('login-screen').style.display = 'none';
+    hideVolunteerAccessState();
     loadVolunteerProfile(user.email.toLowerCase());
   } else {
     window.location.href = '/signin/';
@@ -874,39 +909,54 @@ auth.onAuthStateChanged(function(user) {
 });
 
 function loadVolunteerProfile(email) {
+  var VOLUNTEER_PROFILE_BLOCKED = { blocked: true };
+  sponsorData = null;
+  volunteerDoc = null;
+  volunteerId = null;
+  userDoc = null;
+  currentPermissions = [];
+  hideVolunteerAccessState();
+  document.getElementById('vol-app').style.display = 'none';
+
   // Look up volunteer doc by email
   db.collection('volunteers').where('email', '==', email).limit(1).get()
     .then(function(snap) {
       if (snap.empty) {
-        // Not a registered volunteer
-        document.getElementById('not-registered-screen').style.display = 'flex';
-        document.getElementById('nr-email').textContent = email;
-        return;
+        showVolunteerAccessState(
+          'Volunteer Access Required',
+          "This signed-in account is not an approved volunteer profile. Please apply on our volunteer page or contact an admin.",
+          email
+        );
+        return VOLUNTEER_PROFILE_BLOCKED;
       }
       var doc = snap.docs[0];
       volunteerDoc = doc.data();
       volunteerId = doc.id;
 
       // Now load user permissions
-      return db.collection('users').where('email', '==', email).limit(1).get();
+      return db.collection('users').doc(email).get();
     })
-    .then(function(snap) {
-      if (!snap) return; // not-registered case
-      if (!snap.empty) {
-        userDoc = snap.docs[0].data();
+    .then(function(userSnap) {
+      if (userSnap === VOLUNTEER_PROFILE_BLOCKED) return VOLUNTEER_PROFILE_BLOCKED;
+      if (userSnap && userSnap.exists) {
+        userDoc = userSnap.data();
         var roles = userDoc.roles || userDoc.role || 'volunteer';
-        currentPermissions = computePermissions(roles, userDoc.permissionOverrides);
+        currentPermissions = computePermissions(roles, userDoc.permissionOverrides || userDoc.permission_overrides || null);
       } else {
         // No user doc, default volunteer perms
         currentPermissions = computePermissions(['volunteer'], null);
       }
 
       // Check sponsor status early
-      return db.collection('sponsors').where('email', '==', currentUser.email.toLowerCase()).limit(1).get();
+      return db.collection('sponsors').where('email', '==', currentUser.email.toLowerCase()).limit(1).get()
+        .catch(function(err) {
+          console.warn('Sponsor lookup skipped:', err);
+          return null;
+        });
     })
     .then(function(snap) {
-      if (!snap) return;
-      if (!snap.empty) {
+      if (snap === VOLUNTEER_PROFILE_BLOCKED) return;
+      if (snap && !snap.empty) {
         sponsorData = snap.docs[0].data();
         sponsorData._id = snap.docs[0].id;
       }
@@ -916,17 +966,27 @@ function loadVolunteerProfile(email) {
       var displayName = volunteerDoc.firstName || volunteerDoc.name || currentUser.email.split('@')[0];
       document.getElementById('user-name-display').textContent = displayName;
       applyNavVisibility();
+      navigateTo('dashboard');
       loadDashboard();
     })
     .catch(function(err) {
       console.error('Profile load error:', err);
-      // Fallback to demo mode
-      loadDemoData();
-      document.getElementById('vol-app').style.display = 'block';
-      document.getElementById('user-name-display').textContent = 'Demo User';
-      currentPermissions = computePermissions(['admin'], null);
-      applyNavVisibility();
-      loadDashboard();
+      var title = 'Access Unavailable';
+      var message = "We couldn't load this volunteer account right now. Please refresh and try again.";
+      if (err && err.blocked) {
+        title = 'Volunteer Access Required';
+        message = "This signed-in account is not an approved volunteer profile. Please apply on our volunteer page or contact an admin.";
+      } else if (isVolunteerAccessDeniedError(err)) {
+        title = 'Volunteer Access Required';
+        message = "This signed-in account does not have volunteer portal access. Sign in with an approved volunteer account or apply on our volunteer page.";
+      } else if (!isTransientFirestoreError(err)) {
+        message = "We couldn't verify this volunteer account right now. Please contact an admin if this keeps happening.";
+      }
+      showVolunteerAccessState(
+        title,
+        message,
+        email
+      );
     });
 }
 
@@ -1033,6 +1093,13 @@ var PAGE_TITLES = {
 };
 
 function navigateTo(page) {
+  var requestedPage = page;
+  if (!canAccessVolunteerPage(page)) {
+    page = 'dashboard';
+    if (requestedPage !== 'dashboard') {
+      showToast('You do not have access to ' + (PAGE_TITLES[requestedPage] || requestedPage) + '.', 'error');
+    }
+  }
   currentPage = page;
   document.querySelectorAll('.page-section').forEach(function(s) { s.classList.remove('active'); });
   var el = document.getElementById('page-' + page);
@@ -1069,6 +1136,32 @@ function showToast(msg, type) {
   t.textContent = msg;
   c.appendChild(t);
   setTimeout(function() { t.remove(); }, 4000);
+}
+
+function callVolunteerJsonApi(path, payload) {
+  if (!currentUser) {
+    return Promise.reject(new Error('Not signed in.'));
+  }
+  return currentUser.getIdToken().then(function(token) {
+    return fetch(path, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload || {})
+    });
+  }).then(function(response) {
+    return response.json().catch(function() { return null; }).then(function(data) {
+      if (!response.ok) {
+        var message = data && data.error && data.error.message
+          ? data.error.message
+          : 'Request failed (' + response.status + ')';
+        throw new Error(message);
+      }
+      return data || { ok: true };
+    });
+  });
 }
 
 function openModal(id) { document.getElementById(id).classList.add('open'); }
@@ -2028,10 +2121,9 @@ function loadPendingBlogPosts() {
         approveBtn.style.cssText = 'background:var(--green);color:#fff;padding:6px 16px;font-size:13px;border-radius:6px;border:none;cursor:pointer';
         approveBtn.textContent = 'Approve';
         approveBtn.onclick = function() {
-          db.collection('blog_posts').doc(doc.id).update({
-            status: 'approved',
-            approvedBy: currentUser ? currentUser.email : '',
-            approvedAt: firebase.firestore.FieldValue.serverTimestamp()
+          callVolunteerJsonApi('/api/admin/blog/review', {
+            firestoreId: doc.id,
+            decision: 'approved'
           }).then(function() {
             showToast('Blog post approved!');
             card.style.opacity = '0.5';
@@ -2048,10 +2140,9 @@ function loadPendingBlogPosts() {
         rejectBtn.textContent = 'Reject';
         rejectBtn.onclick = function() {
           var reason = prompt('Rejection reason (optional):');
-          db.collection('blog_posts').doc(doc.id).update({
-            status: 'rejected',
-            rejectedBy: currentUser ? currentUser.email : '',
-            rejectedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          callVolunteerJsonApi('/api/admin/blog/review', {
+            firestoreId: doc.id,
+            decision: 'rejected',
             rejectionReason: reason || ''
           }).then(function() {
             showToast('Blog post rejected.');

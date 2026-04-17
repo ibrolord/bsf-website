@@ -38,6 +38,48 @@ service cloud.firestore {
         ('role' in getUserDoc() && getUserDoc().role != null && getUserDoc().role != '')
       );
     }
+    function hasLegacyPermission(permission) {
+      return (
+        (permission == 'users.view' && (hasRole('admin') || hasRole('viewer'))) ||
+        (permission == 'users.assign_permissions' && hasRole('admin')) ||
+        (permission == 'sponsors.view' && (
+          hasRole('admin') ||
+          hasRole('program_lead') ||
+          hasRole('finance') ||
+          hasRole('volunteer') ||
+          hasRole('viewer')
+        )) ||
+        (permission == 'sponsors.edit' && hasRole('admin')) ||
+        (permission == 'blog.create' && (
+          hasRole('admin') ||
+          hasRole('program_lead') ||
+          hasRole('comms') ||
+          hasRole('volunteer')
+        )) ||
+        (permission == 'blog.edit_any' && (
+          hasRole('admin') ||
+          hasRole('program_lead') ||
+          hasRole('comms')
+        )) ||
+        (permission == 'blog.approve' && (
+          hasRole('admin') ||
+          hasRole('program_lead') ||
+          hasRole('comms')
+        ))
+      );
+    }
+    function hasPermission(permission) {
+      return isSuperAdmin() || (userDocExists() && (
+        ('permissions' in getUserDoc() && permission in getUserDoc().permissions) ||
+        hasLegacyPermission(permission)
+      ));
+    }
+    function isSignedInEmail(email) {
+      return isAuth() &&
+        email is string &&
+        request.auth.token.email is string &&
+        request.auth.token.email == email;
+    }
     function isSuperAdmin() {
       return isAuth() && request.auth.token.email == 'admin@bigsisterfoundation.org';
     }
@@ -112,9 +154,17 @@ service cloud.firestore {
       allow update, delete: if hasAnyRole();
     }
     match /blog_posts/{docId} {
-      allow read: if true;
-      allow create: if request.auth != null;
-      allow update, delete: if request.auth != null;
+      allow read: if
+        resource.data.status == 'approved' ||
+        resource.data.aiGenerated == true ||
+        hasPermission('blog.edit_any') ||
+        hasPermission('blog.approve') ||
+        isSignedInEmail(resource.data.submittedBy);
+      allow create: if
+        hasPermission('blog.create') &&
+        request.resource.data.status == 'pending' &&
+        isSignedInEmail(request.resource.data.submittedBy);
+      allow update, delete: if hasPermission('blog.edit_any') || hasPermission('blog.approve');
     }
     match /votes/{docId} {
       allow read: if true;
@@ -139,13 +189,20 @@ service cloud.firestore {
 
     // ── Sponsor dashboard ──
     match /sponsors/{docId} {
-      // Anyone can create a sponsor profile (sign-up flow)
-      allow create: if true;
-      // Sponsors can read their own doc, admins can read all
-      allow read: if isAuth() || hasAnyRole();
-      // Sponsors can update their own profile, admins can update/delete
-      allow update: if (isAuth() && resource.data.email == request.auth.token.email) || isAdmin();
-      allow delete: if isAdmin();
+      allow create: if
+        isAuth() &&
+        docId == request.auth.token.email &&
+        request.resource.data.email == request.auth.token.email;
+      allow read: if
+        hasPermission('sponsors.view') ||
+        hasPermission('sponsors.edit') ||
+        isSignedInEmail(docId) ||
+        isSignedInEmail(resource.data.email);
+      allow update: if
+        hasPermission('sponsors.edit') ||
+        isSignedInEmail(docId) ||
+        isSignedInEmail(resource.data.email);
+      allow delete: if hasPermission('sponsors.edit');
     }
     match /sponsor_notes/{docId} {
       allow read: if hasAnyRole() || (isAuth() && docId == request.auth.token.email);
@@ -158,9 +215,11 @@ service cloud.firestore {
       allow write: if isAdmin() || isSuperAdmin();
     }
     match /users/{docId} {
-      // Any authenticated user can read their own doc (role lookup on login)
-      allow read: if isAuth();
-      allow write: if isAdmin() || isSuperAdmin();
+      allow read: if
+        isSignedInEmail(docId) ||
+        hasPermission('users.view') ||
+        hasPermission('users.assign_permissions');
+      allow write: if hasPermission('users.assign_permissions');
     }
     match /audit_log/{docId} {
       allow read: if hasAnyRole();

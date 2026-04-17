@@ -417,7 +417,7 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--gr
 <div id="pending-screen">
   <div class="login-card">
     <div class="logo-text">Big Sister Foundation</div><h1>Access Pending</h1>
-    <p class="sub">Your account is awaiting role assignment. Please contact an administrator.</p>
+    <p class="sub" id="pending-sub">Your account is awaiting role assignment. Please contact an administrator.</p>
     <p style="font-size:13px;color:var(--gray-500);margin-bottom:20px" id="pending-email"></p>
     <button class="btn btn-secondary btn-full" onclick="doLogout()">Sign Out</button>
   </div>
@@ -1154,6 +1154,8 @@ var ROLE_PRESETS={
     ]
   }
 };
+var ADMIN_PORTAL_ROLES=['admin','superadmin','program_lead','finance','comms','moderator','viewer'];
+var ADMIN_PORTAL_GATE_PERMISSIONS=['users.assign_permissions','reports.view','settings.edit','sponsors.edit','blog.approve','volunteer_requests.approve','ledger.approve'];
 
 function hasPermission(perm){
   return currentPermissions && currentPermissions.indexOf(perm)>-1;
@@ -1203,6 +1205,23 @@ function getRolesFromUser(userData){
   if(userData.roles&&Array.isArray(userData.roles))return userData.roles;
   if(userData.role)return[userData.role];
   return[];
+}
+function hasAdminPortalRole(roles){
+  return(roles||[]).some(function(role){return ADMIN_PORTAL_ROLES.indexOf(role)>-1;});
+}
+function canUseAdminPortal(userData){
+  var roles=getRolesFromUser(userData);
+  if(hasAdminPortalRole(roles))return true;
+  var overrides=userData?(userData.permissionOverrides||userData.permission_overrides||{}):{};
+  var effective=computeEffectivePermissions(roles,overrides);
+  return effective.some(function(permission){return ADMIN_PORTAL_GATE_PERMISSIONS.indexOf(permission)>-1;});
+}
+function showPendingAccess(email,message){
+  currentRoles=[];currentPermissions=[];
+  document.getElementById('pending-screen').style.display='flex';
+  document.getElementById('pending-email').textContent='Signed in as '+email;
+  document.getElementById('pending-sub').textContent=message||'Your account is awaiting role assignment. Please contact an administrator.';
+  document.getElementById('admin-app').style.display='none';
 }
 
 function formatDate(ts){if(!ts)return'--';var d=ts.toDate?ts.toDate():new Date(ts);if(isNaN(d.getTime()))return'--';var m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];var isDateOnly=typeof ts==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(ts);if(isDateOnly){return m[d.getUTCMonth()]+' '+d.getUTCDate()+', '+d.getUTCFullYear();}return m[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();}
@@ -1401,18 +1420,22 @@ function grantAccess(roles,overrides){
   applyRolePermissions();
   db.collection('communities').orderBy('name','asc').get().then(function(snap){allCommunities=[];snap.forEach(function(doc){var d=doc.data();d.id=doc.id;allCommunities.push(d);});}).catch(function(){allCommunities=[];}).then(function(){loadSchoolsCache().then(function(){seedGoalsIfEmpty().then(function(){loadDashboard();});});});
   updateNotifBell();
-  try{db.collection('users').doc(ek).set({roles:currentRoles,email:ek,addedAt:FieldValue.serverTimestamp()},{merge:true}).catch(function(){});}catch(e){}
+  if(SUPERADMINS.indexOf(ek)===-1){
+    try{db.collection('users').doc(ek).set({roles:currentRoles,email:ek,addedAt:FieldValue.serverTimestamp()},{merge:true}).catch(function(){});}catch(e){}
+  }
 }
 if(SUPERADMINS.indexOf(ek)>-1){grantAccess(['admin']);}
 else{db.collection('users').doc(ek).get().then(function(snap){
   if(snap.exists){
     var d=snap.data();
     var roles=getRolesFromUser(d);
-    if(roles.length>0){
+    if(roles.length>0&&canUseAdminPortal(d)){
       grantAccess(roles,d.permission_overrides||{});
-    }else{currentRoles=[];currentPermissions=[];document.getElementById('pending-screen').style.display='flex';document.getElementById('pending-email').textContent='Signed in as '+user.email;document.getElementById('admin-app').style.display='none';}
-  }else{currentRoles=[];currentPermissions=[];document.getElementById('pending-screen').style.display='flex';document.getElementById('pending-email').textContent='Signed in as '+user.email;document.getElementById('admin-app').style.display='none';}
-}).catch(function(){currentRoles=[];currentPermissions=[];document.getElementById('pending-screen').style.display='flex';document.getElementById('pending-email').textContent='Signed in as '+user.email;document.getElementById('admin-app').style.display='none';});}}
+    }else if(roles.length>0){
+      showPendingAccess(user.email,'This account does not have admin portal access. Use the volunteer or sponsor dashboard instead.');
+    }else{showPendingAccess(user.email);}
+  }else{showPendingAccess(user.email);}
+}).catch(function(){showPendingAccess(user.email);});}}
 else{currentUser=null;currentRoles=[];currentPermissions=[];document.getElementById('login-screen').style.display='flex';document.getElementById('admin-app').style.display='none';document.getElementById('pending-screen').style.display='none';document.getElementById('btn-login').disabled=false;document.getElementById('btn-login').textContent='Sign In';document.getElementById('btn-create').disabled=false;document.getElementById('btn-create').textContent='Create Account';showLoginMode('signin');}});
 
 function applyRolePermissions(){

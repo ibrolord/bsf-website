@@ -9,6 +9,7 @@ import {
   methodNotAllowed,
   nodeHeadersToWebHeaders,
   nodeRequestBodyToString,
+  nodeRequestUrl,
   sendNodeResponse
 } from '../_lib/response.js';
 
@@ -148,7 +149,7 @@ async function handleRequest(request) {
 export default async function handler(req, res) {
   const headers = nodeHeadersToWebHeaders(req.headers);
   const body = nodeRequestBodyToString(req);
-  const requestUrl = new URL(req.url, 'https://' + (headers.get('host') || 'thebigsisterfoundation.org'));
+  const requestUrl = nodeRequestUrl(req, headers, 'thebigsisterfoundation.org');
   const request = new Request(requestUrl.toString(), {
     method: req.method,
     headers: headers,

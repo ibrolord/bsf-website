@@ -71,7 +71,10 @@ const ROLE_PERMISSIONS = {
   program_lead: new Set(['volunteer_requests.approve', 'volunteers.create', 'volunteers.edit', 'volunteers.delete', 'team_forums.create', 'team_forums.edit', 'team_forums.delete', 'team_forums.moderate', 'blog.approve', 'blog.edit_any', 'blog.delete_any', 'scholars.create', 'scholars.edit', 'schools.create', 'schools.edit', 'schools.delete', 'events.create', 'events.edit', 'events.delete', 'events.signup', 'goals.create', 'goals.edit', 'goals.delete', 'goals.update_progress', 'outreach.create', 'outreach.edit', 'outreach.delete', 'communities.create', 'communities.edit', 'communities.delete', 'teams.create', 'teams.edit', 'teams.delete', 'teams.manage_members', 'kids.create', 'kids.edit']),
   comms: new Set(['ideas.edit_any', 'ideas.delete_any', 'forums.create', 'forums.edit_any', 'forums.delete_any', 'forums.moderate', 'team_forums.create', 'team_forums.edit', 'team_forums.delete', 'team_forums.moderate', 'blog.approve', 'blog.edit_any', 'blog.delete_any', 'announcements.create', 'announcements.edit', 'announcements.delete']),
   moderator: new Set(['ideas.edit_any', 'ideas.delete_any', 'forums.create', 'forums.edit_any', 'forums.delete_any', 'forums.moderate', 'team_forums.create', 'team_forums.edit', 'team_forums.delete', 'team_forums.moderate']),
-  finance: new Set(['ledger.create', 'ledger.edit', 'ledger.delete', 'ledger.approve', 'goals.create', 'goals.edit', 'goals.delete', 'goals.update_progress'])
+  finance: new Set(['ledger.create', 'ledger.edit', 'ledger.delete', 'ledger.approve', 'goals.create', 'goals.edit', 'goals.delete', 'goals.update_progress']),
+  team_lead: new Set(['volunteer_requests.approve', 'ledger.approve', 'ledger.view', 'forums.create', 'team_forums.create']),
+  volunteer: new Set(['forums.create', 'team_forums.create', 'ideas.create', 'events.signup', 'blog.create', 'blog.edit_own', 'blog.delete_own', 'sponsors.view']),
+  viewer: new Set(['users.view', 'sponsors.view', 'blog.view', 'reports.view'])
 };
 let automationSessionCache = {
   email: '',
@@ -181,14 +184,24 @@ function hasPermissionFromRoles(roles, permission) {
   });
 }
 
+function hasStoredPermission(userDoc, permission) {
+  if (!userDoc || !Array.isArray(userDoc.permissions)) {
+    return false;
+  }
+  return userDoc.permissions.includes(permission);
+}
+
 function hasExplicitOverride(userDoc, permission) {
-  if (!userDoc || !userDoc.permission_overrides || typeof userDoc.permission_overrides !== 'object') {
+  const overrides = userDoc && typeof userDoc === 'object'
+    ? (userDoc.permission_overrides || userDoc.permissionOverrides || null)
+    : null;
+  if (!overrides || typeof overrides !== 'object') {
     return null;
   }
-  if (!(permission in userDoc.permission_overrides)) {
+  if (!(permission in overrides)) {
     return null;
   }
-  return Boolean(userDoc.permission_overrides[permission]);
+  return Boolean(overrides[permission]);
 }
 
 function resolveAllowedPermission(roles, userDoc, permissions, isSuperAdmin) {
@@ -200,6 +213,12 @@ function resolveAllowedPermission(roles, userDoc, permissions, isSuperAdmin) {
 
   for (const permission of requestedPermissions) {
     if (hasExplicitOverride(userDoc, permission) === true) {
+      return permission;
+    }
+  }
+
+  for (const permission of requestedPermissions) {
+    if (hasExplicitOverride(userDoc, permission) !== false && hasStoredPermission(userDoc, permission)) {
       return permission;
     }
   }

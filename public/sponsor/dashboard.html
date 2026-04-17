@@ -848,8 +848,9 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/>
         </svg>
       </div>
-      <h2>Welcome, Future Sponsor</h2>
-      <p>You haven't registered as a sponsor yet. Join our community of givers and track your impact on children's lives in Lagos.</p>
+      <h2 id="not-registered-title">Welcome, Future Sponsor</h2>
+      <p id="not-registered-copy">You haven't registered as a sponsor yet. Join our community of givers and track your impact on children's lives in Lagos.</p>
+      <p id="not-registered-email" style="color:rgba(58,42,31,0.55);margin-top:-0.5rem;margin-bottom:1.5rem;font-size:0.95rem"></p>
       <a href="/sponsor/" class="btn btn--terra">Become a Sponsor</a>
     </div>
   </section>
@@ -1284,20 +1285,35 @@
         window.location.href = '/signin/';
       });
     };
+    function normalizeEmail(value) {
+      return String(value || '').trim().toLowerCase();
+    }
     var hasBooted = false;
     firebase.auth().onAuthStateChanged(function(user) {
       var gate = document.getElementById('loading-gate');
       var signoutBtn = document.getElementById('nav-signout');
       if (user) {
-        if (gate) gate.style.display = 'none';
+        hasBooted = false;
+        var authEmail = normalizeEmail(user.email);
+        var storedSponsor = BSFStore.getSponsor();
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('not-registered').style.display = 'none';
+        if (gate) gate.style.display = 'flex';
+        if (!storedSponsor || normalizeEmail(storedSponsor.email) !== authEmail) {
+          BSFStore.clearSponsor();
+          BSFStore.clearTransactions();
+        }
         if (signoutBtn) signoutBtn.style.display = '';
         // Load sponsor data from Firestore by email, then boot
-        if (db && user.email) {
-          db.collection('sponsors').where('email', '==', user.email).limit(1).get().then(function(snap) {
+        if (db && authEmail) {
+          db.collection('sponsors').where('email', '==', authEmail).limit(1).get().then(function(snap) {
             if (!snap.empty) {
               var sData = snap.docs[0].data();
               sData._id = snap.docs[0].id;
               BSFStore.saveSponsor(sData);
+            } else {
+              BSFStore.clearSponsor();
+              BSFStore.clearTransactions();
             }
             if (!hasBooted) { hasBooted = true; boot(); }
           }).catch(function() {
@@ -1366,13 +1382,36 @@
     /* ================================================================
        BOOT
     ================================================================ */
+    function showSponsorAccessState(title, message, email) {
+      document.getElementById('loading-gate').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('not-registered-title').textContent = title;
+      document.getElementById('not-registered-copy').textContent = message;
+      document.getElementById('not-registered-email').textContent = email ? 'Signed in as ' + email : '';
+      document.getElementById('not-registered').style.display = 'flex';
+    }
+
     function boot() {
-      if (!BSFStore.isRegisteredSponsor()) {
-        document.getElementById('not-registered').style.display = 'flex';
+      var authUser = firebase.auth().currentUser;
+      var authEmail = normalizeEmail(authUser && authUser.email);
+      sponsor = BSFStore.getSponsor();
+
+      if (!authEmail || !sponsor || normalizeEmail(sponsor.email) !== authEmail) {
+        if (sponsor && normalizeEmail(sponsor.email) !== authEmail) {
+          BSFStore.clearSponsor();
+          BSFStore.clearTransactions();
+          sponsor = null;
+        }
+        showSponsorAccessState(
+          'Sponsor Access Required',
+          "This signed-in account does not have a sponsor profile yet. Start a sponsorship to unlock your dashboard.",
+          authEmail
+        );
         return;
       }
 
-      sponsor = BSFStore.getSponsor();
+      document.getElementById('loading-gate').style.display = 'none';
+      document.getElementById('not-registered').style.display = 'none';
       txns = BSFStore.getTransactions();
       successTxns = txns.filter(function(t) { return t.status === 'success'; });
       totalDonated = successTxns.reduce(function(sum, t) { return sum + (Number(t.amount) || 0); }, 0);

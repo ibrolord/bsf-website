@@ -867,6 +867,7 @@
       var searchQuery = '';
       var currentThreadId = null;
       var currentReplies = [];
+      var repliesLoadError = '';
       var currentUser = null;
       var currentVolunteer = null;
       var currentForumUser = null;
@@ -996,6 +997,16 @@
         return ' disabled aria-disabled="true" title="' + escapeAttr(reason) + '"';
       }
 
+      function refreshForumParticipationState() {
+        var userStatus = currentForumUser && currentForumUser.status ? currentForumUser.status : '';
+        var volunteerStatus = currentVolunteer && currentVolunteer.status ? currentVolunteer.status : '';
+        canParticipate = !!currentForumUser &&
+          userHasForumPermission(currentForumUser) &&
+          isActiveAccessStatus(userStatus) &&
+          isActiveAccessStatus(volunteerStatus) &&
+          !forumReadOnlyMode;
+      }
+
       function getForumDisplayName() {
         if (currentVolunteer) {
           if (currentVolunteer.name) return currentVolunteer.name;
@@ -1113,14 +1124,7 @@
           if (volunteerSnap && !volunteerSnap.empty) {
             currentVolunteer = volunteerSnap.docs[0].data();
           }
-
-          var userStatus = currentForumUser && currentForumUser.status ? currentForumUser.status : '';
-          var volunteerStatus = currentVolunteer && currentVolunteer.status ? currentVolunteer.status : '';
-          canParticipate = !!currentForumUser &&
-            userHasForumPermission(currentForumUser) &&
-            isActiveAccessStatus(userStatus) &&
-            isActiveAccessStatus(volunteerStatus) &&
-            !forumReadOnlyMode;
+          refreshForumParticipationState();
 
           updateForumAccessUI();
           refreshForumViews();
@@ -1232,6 +1236,7 @@
       function loadThreads() {
         return db.collection('forum_threads').orderBy('createdAt', 'desc').get().then(function (snapshot) {
           forumReadOnlyMode = false;
+          refreshForumParticipationState();
           if (snapshot.empty) {
             threads = [];
             updateStats();
@@ -1259,6 +1264,7 @@
             console.error('Error loading threads:', err);
           }
           forumReadOnlyMode = true;
+          refreshForumParticipationState();
           loadLocalThreads();
           updateForumAccessUI();
         });
@@ -1414,14 +1420,16 @@
 
         var thread = threads.find(function (t) { return t.id === threadId; });
         if (!thread) return;
+        var originalVotes = Number(thread.votes) || 0;
+        var originallyVoted = !!votedThreads[threadId];
         var delta = 0;
 
-        if (votedThreads[threadId]) {
-          thread.votes = Math.max(0, (thread.votes || 0) - 1);
+        if (originallyVoted) {
+          thread.votes = Math.max(0, originalVotes - 1);
           delete votedThreads[threadId];
           delta = -1;
         } else {
-          thread.votes = (thread.votes || 0) + 1;
+          thread.votes = originalVotes + 1;
           votedThreads[threadId] = true;
           delta = 1;
         }
@@ -1432,13 +1440,9 @@
           db.collection('forum_threads').doc(threadId).update({
             votes: FieldValue.increment(delta)
           }).catch(function () {
-            if (delta === -1) {
-              thread.votes = (thread.votes || 0) + 1;
-              votedThreads[threadId] = true;
-            } else {
-              thread.votes = Math.max(0, (thread.votes || 0) - 1);
-              delete votedThreads[threadId];
-            }
+            thread.votes = originalVotes;
+            if (originallyVoted) votedThreads[threadId] = true;
+            else delete votedThreads[threadId];
             localStorage.setItem('bsf_forum_votes', JSON.stringify(votedThreads));
             renderThreads();
             if (currentThreadId === threadId) openThread(threadId);
@@ -1495,6 +1499,13 @@
 
       // -- Load replies --
       function loadReplies(threadId, thread) {
+        repliesLoadError = '';
+        if (isLocalOnlyThread(threadId)) {
+          currentReplies = (demoReplies[threadId] || []).slice();
+          renderReplies(currentReplies, thread);
+          return;
+        }
+
         // Try Firestore first
         db.collection('forum_threads').doc(threadId).collection('replies').orderBy('createdAt', 'asc').get().then(function (snapshot) {
           var replies = [];
@@ -1509,17 +1520,29 @@
 
           currentReplies = replies.slice();
           renderReplies(replies, thread);
-        }).catch(function () {
+        }).catch(function (err) {
+          if (!isRecoverableFirestoreError(err)) {
+            console.error('Error loading replies:', err);
+          }
           currentReplies = [];
+          if (forumReadOnlyMode) {
+            repliesLoadError = 'Replies are unavailable while the live forum is in read-only mode.';
+          } else {
+            repliesLoadError = 'Replies are temporarily unavailable. Please try again later.';
+          }
           renderReplies(currentReplies, thread);
         });
       }
 
       function renderReplies(replies, thread) {
         if (!replies || replies.length === 0) {
-          repliesSection.innerHTML = forumReadOnlyMode
-            ? '<div class="replies-header">Replies are unavailable while the live forum is in read-only mode.</div>'
-            : '<div class="replies-header">No replies yet — be the first to respond!</div>';
+          if (repliesLoadError) {
+            repliesSection.innerHTML = '<div class="replies-header">' + escapeHtml(repliesLoadError) + '</div>';
+          } else {
+            repliesSection.innerHTML = forumReadOnlyMode
+              ? '<div class="replies-header">Replies are unavailable while the live forum is in read-only mode.</div>'
+              : '<div class="replies-header">No replies yet — be the first to respond!</div>';
+          }
           return;
         }
 

@@ -79,6 +79,27 @@ export function nodeRequestBodyToString(req) {
   return JSON.stringify(req.body);
 }
 
+export function nodeRequestUrl(req, headers, fallbackHost) {
+  const normalizedHeaders = headers instanceof Headers ? headers : nodeHeadersToWebHeaders(headers);
+  const host = normalizedHeaders.get('host') || fallbackHost || 'thebigsisterfoundation.org';
+  const origin = normalizedHeaders.get('origin') || normalizedHeaders.get('referer') || '';
+
+  if (origin) {
+    try {
+      return new URL(req.url, origin);
+    } catch (_originError) {
+      // Fall through to forwarded protocol handling below.
+    }
+  }
+
+  const forwardedProto = String(normalizedHeaders.get('x-forwarded-proto') || '').trim().toLowerCase();
+  const protocol = forwardedProto === 'http' || forwardedProto === 'https'
+    ? forwardedProto
+    : (host.indexOf('localhost') > -1 || host.indexOf('127.0.0.1') > -1 ? 'http' : 'https');
+
+  return new URL(req.url, protocol + '://' + host);
+}
+
 export async function sendNodeResponse(webResponse, res) {
   webResponse.headers.forEach(function(value, key) {
     res.setHeader(key, value);

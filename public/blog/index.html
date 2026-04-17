@@ -715,8 +715,8 @@
       <div class="write-post" id="writeCTA" style="display:none; text-align:center;">
         <p class="eyebrow" style="color: var(--green);">Contribute</p>
         <h2>Want to Share Your Story?</h2>
-        <p style="margin-bottom:1.5rem;">Only registered volunteers and team members can submit blog posts. Join our volunteer community to contribute.</p>
-        <a href="/volunteer/" class="btn btn--primary" style="text-decoration:none;">Join Our Volunteer Community</a>
+        <p id="writeCtaCopy" style="margin-bottom:1.5rem;">Sign in with an approved volunteer or team account to submit blog posts for review.</p>
+        <a id="writeCtaLink" href="/signin/" class="btn btn--primary" style="text-decoration:none;">Sign In</a>
       </div>
       <!-- Form for authenticated volunteers -->
       <div class="write-post" id="writeFormWrap" style="display:none;">
@@ -809,25 +809,6 @@
     var blogDb = firebase.firestore();
     var blogAuth = firebase.auth();
 
-    /*
-     * ── Firestore Security Rules needed for blog_posts collection ──
-     *
-     * rules_version = '2';
-     * service cloud.firestore {
-     *   match /databases/{database}/documents {
-     *     match /blog_posts/{postId} {
-     *       // Public read for approved posts
-     *       allow read: if resource.data.status == 'approved' || resource.data.aiGenerated == true;
-     *       // Authenticated volunteers can create posts (status must be 'pending')
-     *       allow create: if request.auth != null && request.resource.data.status == 'pending';
-     *       // Only admins can update (approve/reject) — enforced via admin custom claims
-     *       allow update: if request.auth != null && request.auth.token.admin == true;
-     *       // Only admins can delete
-     *       allow delete: if request.auth != null && request.auth.token.admin == true;
-     *     }
-     *   }
-     * }
-     */
   </script>
 
   <script src="/shared/bsf-antispam.js"></script>
@@ -844,40 +825,159 @@
 
       // ── Auth gate for write section ──
       var currentBlogUser = null;
-      function checkBlogAuth() {
+      var currentBlogUserDoc = null;
+      var canCurrentUserCreatePost = false;
+      var BLOG_SUPERADMINS = [
+        'admin@bigsisterfoundation.org',
+        'bsfadmin@bigsisterfoundation.org',
+        'princebolajibreeze@gmail.com',
+        'bolajiagunbiade1@gmail.com'
+      ];
+
+      function getBlogRoles(userDoc) {
+        if (!userDoc || typeof userDoc !== 'object') return [];
+        if (Array.isArray(userDoc.roles)) return userDoc.roles.filter(Boolean);
+        if (userDoc.role) return [userDoc.role];
+        return [];
+      }
+
+      function getBlogPermissionOverrides(userDoc) {
+        return userDoc && typeof userDoc === 'object'
+          ? (userDoc.permissionOverrides || userDoc.permission_overrides || null)
+          : null;
+      }
+
+      function hasBlogPermission(userDoc, permission) {
+        var overrides = getBlogPermissionOverrides(userDoc);
+        if (overrides && Object.prototype.hasOwnProperty.call(overrides, permission)) {
+          return !!overrides[permission];
+        }
+
+        if (userDoc && Array.isArray(userDoc.permissions) && userDoc.permissions.indexOf(permission) > -1) {
+          return true;
+        }
+
+        var roles = getBlogRoles(userDoc);
+        if (permission === 'blog.create') {
+          return roles.some(function(role) {
+            return ['admin', 'program_lead', 'comms', 'volunteer'].indexOf(role) > -1;
+          });
+        }
+        if (permission === 'blog.edit_any' || permission === 'blog.approve') {
+          return roles.some(function(role) {
+            return ['admin', 'program_lead', 'comms'].indexOf(role) > -1;
+          });
+        }
+        return false;
+      }
+
+      function updateBlogWriteAccess(message, href, label) {
         var writeSection = document.getElementById('writeSection');
         var writeCTA = document.getElementById('writeCTA');
         var writeForm = document.getElementById('writeFormWrap');
+        var writeCtaCopy = document.getElementById('writeCtaCopy');
+        var writeCtaLink = document.getElementById('writeCtaLink');
         writeSection.style.display = '';
+        if (canCurrentUserCreatePost) {
+          writeCTA.style.display = 'none';
+          writeForm.style.display = '';
+          return;
+        }
+        writeCTA.style.display = '';
+        writeForm.style.display = 'none';
+        if (writeCtaCopy) {
+          writeCtaCopy.textContent = message || 'Sign in with an approved volunteer or team account to submit blog posts for review.';
+        }
+        if (writeCtaLink) {
+          writeCtaLink.href = href || '/signin/';
+          writeCtaLink.textContent = label || 'Sign In';
+        }
+      }
 
-        // Check localStorage for volunteer/sponsor registration
-        var sponsor = localStorage.getItem('bsf_sponsor');
-        var volunteerData = localStorage.getItem('bsf_volunteer');
+      function syncBlogAuthorField() {
+        var authorField = document.getElementById('postAuthor');
+        if (!authorField || authorField.value) return;
+        if (currentBlogUser && currentBlogUser.displayName) {
+          authorField.value = currentBlogUser.displayName;
+          return;
+        }
+        if (currentBlogUserDoc && currentBlogUserDoc.name) {
+          authorField.value = currentBlogUserDoc.name;
+        }
+      }
 
-        // Check Firebase Auth state
-        blogAuth.onAuthStateChanged(function(user) {
-          if (user || sponsor || volunteerData) {
-            currentBlogUser = user;
-            writeCTA.style.display = 'none';
-            writeForm.style.display = '';
-            // Pre-fill author from user info
-            if (user && user.displayName) {
-              var authorField = document.getElementById('postAuthor');
-              if (authorField && !authorField.value) authorField.value = user.displayName;
-            } else if (volunteerData) {
-              try {
-                var vd = JSON.parse(volunteerData);
-                var authorField = document.getElementById('postAuthor');
-                if (authorField && !authorField.value) authorField.value = vd.name || '';
-              } catch(e){}
+      function loadBlogAccess(user) {
+        currentBlogUser = user || null;
+        currentBlogUserDoc = null;
+        canCurrentUserCreatePost = false;
+
+        if (!user || !user.email) {
+          updateBlogWriteAccess(
+            'Sign in with an approved volunteer or team account to submit blog posts for review.',
+            '/signin/',
+            'Sign In'
+          );
+          return;
+        }
+
+        var email = String(user.email).trim().toLowerCase();
+        if (BLOG_SUPERADMINS.indexOf(email) > -1) {
+          canCurrentUserCreatePost = true;
+          syncBlogAuthorField();
+          updateBlogWriteAccess();
+          return;
+        }
+        blogDb.collection('users').doc(email).get()
+          .then(function(doc) {
+            currentBlogUserDoc = doc.exists ? (doc.data() || {}) : null;
+            canCurrentUserCreatePost = hasBlogPermission(currentBlogUserDoc, 'blog.create');
+            if (canCurrentUserCreatePost) {
+              syncBlogAuthorField();
+              updateBlogWriteAccess();
+              return;
             }
-          } else {
-            writeCTA.style.display = '';
-            writeForm.style.display = 'none';
-          }
+            updateBlogWriteAccess(
+              'This signed-in account is not approved to submit blog posts. Use an approved volunteer or team account instead.',
+              '/signin/',
+              'Switch Account'
+            );
+          })
+          .catch(function() {
+            updateBlogWriteAccess(
+              'We could not verify your publishing access right now. Please sign in again and retry.',
+              '/signin/',
+              'Sign In Again'
+            );
+          });
+      }
+
+      function callBlogJsonApi(path, payload) {
+        if (!currentBlogUser) {
+          return Promise.reject(new Error('Sign in with an approved volunteer or team account to submit posts.'));
+        }
+        return currentBlogUser.getIdToken().then(function(token) {
+          return fetch(path, {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Bearer ' + token,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload || {})
+          });
+        }).then(function(response) {
+          return response.json().catch(function() { return null; }).then(function(data) {
+            if (!response.ok) {
+              var message = data && data.error && data.error.message
+                ? data.error.message
+                : 'Request failed (' + response.status + ')';
+              throw new Error(message);
+            }
+            return data || { ok: true };
+          });
         });
       }
-      checkBlogAuth();
+
+      blogAuth.onAuthStateChanged(loadBlogAccess);
 
       var defaultPosts = [
         {
@@ -942,11 +1042,81 @@
         }
       ];
 
+      function normalizeBlogDateValue(value) {
+        if (!value) return '';
+        if (typeof value === 'string') {
+          var trimmed = value.trim();
+          if (!trimmed) return '';
+          var parsed = new Date(trimmed);
+          if (!isNaN(parsed.getTime())) return parsed.toISOString().slice(0, 10);
+          var dayOnly = new Date(trimmed + 'T00:00:00');
+          return isNaN(dayOnly.getTime()) ? '' : dayOnly.toISOString().slice(0, 10);
+        }
+        if (value instanceof Date) {
+          return isNaN(value.getTime()) ? '' : value.toISOString().slice(0, 10);
+        }
+        if (typeof value === 'object' && typeof value.seconds === 'number') {
+          return new Date(value.seconds * 1000).toISOString().slice(0, 10);
+        }
+        return '';
+      }
+
+      function normalizeBlogPost(rawPost) {
+        var post = Object.assign({}, rawPost || {});
+        post.title = String(post.title || '').trim();
+        post.category = String(post.category || 'story').trim().toLowerCase() || 'story';
+        post.author = String(post.author || 'Anonymous').trim() || 'Anonymous';
+        post.excerpt = String(post.excerpt || '').trim();
+        post.body = String(post.body || '').trim();
+        post.status = post.status ? String(post.status).trim().toLowerCase() : '';
+        post.submittedBy = post.submittedBy ? String(post.submittedBy).trim().toLowerCase() : '';
+        post.date = normalizeBlogDateValue(post.date) ||
+          normalizeBlogDateValue(post.approvedAt) ||
+          normalizeBlogDateValue(post.submittedAt);
+        return post;
+      }
+
+      function isInternalTestBlogPost(post) {
+        var identifier = String(post && post.id || '').toLowerCase();
+        var haystack = [
+          identifier,
+          post && post.title,
+          post && post.author,
+          post && post.excerpt,
+          post && post.submittedBy
+        ].join(' ').toLowerCase();
+        return /^qa[-_]/.test(identifier) ||
+          /(^|[\s:_-])(qa|test)([\s:_-]|$)/.test(haystack) ||
+          /qa bot|pending blog review|pending approve/.test(haystack);
+      }
+
+      function isPublicBlogPost(post) {
+        if (!post || post.id === undefined || post.id === null || post.id === '') return false;
+        if (!post.title || !post.excerpt || !post.body || !post.author || !post.date) return false;
+        if (isInternalTestBlogPost(post)) return false;
+        if (post.aiGenerated === true) {
+          return !post.status || post.status === 'approved' || post.status === 'published';
+        }
+        if (post.status) return post.status === 'approved' || post.status === 'published';
+        return true;
+      }
+
+      function filterPublicBlogPosts(postList) {
+        return (postList || []).map(normalizeBlogPost).filter(isPublicBlogPost);
+      }
+
       function loadPosts() {
         var stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) return JSON.parse(stored);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultPosts));
-        return defaultPosts;
+        if (stored) {
+          try {
+            return filterPublicBlogPosts(JSON.parse(stored));
+          } catch (_storedParseError) {
+            localStorage.removeItem(STORAGE_KEY);
+          }
+        }
+        var seededPosts = filterPublicBlogPosts(defaultPosts);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(seededPosts));
+        return seededPosts;
       }
 
       function withAiPostsCacheBust(url) {
@@ -956,14 +1126,14 @@
 
       function savePosts(allPosts) {
         // Only save user-created posts to localStorage (not AI ones)
-        var userPosts = allPosts.filter(function(p) { return !p.aiGenerated; });
+        var userPosts = filterPublicBlogPosts(allPosts).filter(function(p) { return !p.aiGenerated; });
         localStorage.setItem(STORAGE_KEY, JSON.stringify(userPosts));
       }
 
       function mergeAndDedupe(localPosts, aiPosts) {
         var seen = {};
         var merged = [];
-        localPosts.concat(aiPosts).forEach(function(p) {
+        filterPublicBlogPosts(localPosts.concat(aiPosts)).forEach(function(p) {
           if (!seen[p.id]) {
             seen[p.id] = true;
             merged.push(p);
@@ -1050,7 +1220,10 @@
                 readTime: data.readTime || 3,
                 ogImage: data.ogImage || '',
                 aiGenerated: data.aiGenerated || false,
-                status: data.status
+                status: data.status,
+                submittedBy: data.submittedBy || '',
+                submittedAt: data.submittedAt || null,
+                approvedAt: data.approvedAt || null
               });
             });
             if (firestorePosts.length) {
@@ -1630,6 +1803,11 @@
         e.preventDefault();
         if (!BSFAntiSpam.check('postForm')) return;
 
+        if (!canCurrentUserCreatePost) {
+          showToast('Sign in with an approved volunteer or team account to submit posts.');
+          return;
+        }
+
         var body = document.getElementById('postBody').value.trim();
         var title = document.getElementById('postTitle').value.trim();
         var category = document.getElementById('postCategory').value;
@@ -1637,44 +1815,34 @@
         var excerpt = document.getElementById('postExcerpt').value.trim();
         var coverImage = document.getElementById('postCoverImage').value.trim();
         var coverImageAlt = document.getElementById('postCoverImageAlt').value.trim();
-
-        // Determine submitter email
-        var submitterEmail = '';
-        if (currentBlogUser && currentBlogUser.email) {
-          submitterEmail = currentBlogUser.email;
-        } else {
-          var sponsor = localStorage.getItem('bsf_sponsor');
-          if (sponsor) { try { submitterEmail = JSON.parse(sponsor).email || ''; } catch(ex){} }
-          if (!submitterEmail) {
-            var vd = localStorage.getItem('bsf_volunteer');
-            if (vd) { try { submitterEmail = JSON.parse(vd).email || ''; } catch(ex){} }
-          }
+        var submitButton = e.target.querySelector('button[type="submit"]');
+        var originalSubmitText = submitButton ? submitButton.textContent : '';
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.textContent = 'Submitting...';
         }
 
-        var postData = {
+        callBlogJsonApi('/api/blog/submit', {
           title: title,
           category: category,
           author: author,
-          date: new Date().toISOString().split('T')[0],
           excerpt: excerpt,
           coverImage: coverImage,
-          coverImageAlt: coverImage ? (coverImageAlt || title) : '',
-          body: body,
-          readTime: estimateReadTime(body),
-          status: 'pending',
-          aiGenerated: false,
-          submittedBy: submitterEmail,
-          submittedAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-
-        // Save to Firestore blog_posts collection
-        blogDb.collection('blog_posts').add(postData).then(function(docRef) {
+          coverImageAlt: coverImageAlt,
+          body: body
+        }).then(function() {
           e.target.reset();
+          syncBlogAuthorField();
           showToast('Your post has been submitted for review.');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }).catch(function(err) {
           console.error('Error submitting post:', err);
-          showToast('Error submitting post. Please try again.');
+          showToast(err && err.message ? err.message : 'Error submitting post. Please try again.');
+        }).finally(function() {
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = originalSubmitText;
+          }
         });
       });
 
