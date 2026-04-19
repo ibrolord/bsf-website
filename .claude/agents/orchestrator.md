@@ -28,8 +28,24 @@ Dashboard, Users, Volunteers, Teams, Scholars, Schools, Ledger, Ideas, Forums, E
 
 ## Available Agents
 
+### Bug Fix (`bug-fix.md`)
+**When to use:** When there are open GitHub issues labelled `bug` that need automated triage and fixing.
+**What it does:** Fetches open `bug`-labelled issues, locates the defect in the codebase, applies a minimal surgical fix on a `fix/<issue>-<slug>` branch, commits using `fix:` convention, opens a PR labelled `auto-fix`, and tags the issue `fix-in-progress`. Skips issues it cannot confidently diagnose.
+**Trigger conditions:**
+- New `bug` issue opened on GitHub
+- Periodic sweep of unprocessed `bug` issues
+- After a QA regression report identifies new defects
+
+### Auto Merge (`auto-merge.md`)
+**When to use:** After the Bug Fix agent has opened PRs, or on a periodic schedule to drain the `auto-fix` PR queue.
+**What it does:** Fetches PRs labelled `auto-fix`, runs safety checks (merge conflicts, CI status, diff safety, Firestore rule regressions), delegates UI changes to the Visual QA agent, squash-merges clean PRs, closes the linked issue, and updates labels to `fix-merged`.
+**Trigger conditions:**
+- After Bug Fix agent completes a run (always run Auto Merge next)
+- Periodic scheduled sweep of open `auto-fix` PRs
+- After a human resolves a `needs-human-review` blocker and re-labels the PR `auto-fix`
+
 ### Visual QA (`visual-qa.md`)
-**When to use:** After any UI change, new feature, or layout modification. Also run periodically for regression testing.
+**When to use:** After any UI change, new feature, or layout modification. Also run periodically for regression testing. Called automatically by the Auto Merge agent when a fix PR touches HTML files.
 **What it does:** Convenes a design committee (Rams, Ive, Zhuo, Matsuoka, Monteiro, van Schneider). They study the product context, form hypotheses, audit every page at desktop/tablet/mobile, deliberate each issue, apply fixes, then verify everything against a scorecard with screenshots. Returns a signed committee verdict.
 **Trigger conditions:**
 - After building a new page or section
@@ -72,7 +88,14 @@ Dashboard, Users, Volunteers, Teams, Scholars, Schools, Ledger, Ideas, Forums, E
 6. Fix visual issues
 7. Re-deploy and verify
 
-### For Bug Fixes
+### For Bug Fixes (Automated Pipeline)
+1. **Run Bug Fix agent** — it fetches open `bug` issues, diagnoses each, pushes fix branches, and opens PRs labelled `auto-fix`.
+2. **Run Auto Merge agent** — it checks each `auto-fix` PR (CI, diff safety, Firestore rules), calls Visual QA for HTML changes, and squash-merges clean PRs.
+3. PRs the agent cannot safely merge get labelled `needs-human-review` — a human resolves the blocker, then re-triggers Auto Merge.
+4. Deploy to Vercel after merge if the fix changed public HTML/JS/CSS.
+5. Deploy Firestore rules after merge if `/firestore.rules` changed.
+
+### For Bug Fixes (Manual)
 1. Identify the root cause
 2. Fix it
 3. Deploy
