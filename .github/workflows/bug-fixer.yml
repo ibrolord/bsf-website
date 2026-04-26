@@ -5,6 +5,11 @@ name: Bug Fixer
 on:
   issues:
     types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'Issue number to fix'
+        required: true
 
 permissions:
   contents: write
@@ -14,7 +19,7 @@ permissions:
 
 jobs:
   fix-bug:
-    if: github.event.label.name == 'agent-bug-fix'
+    if: github.event.label.name == 'agent-bug-fix' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -36,7 +41,7 @@ jobs:
       - name: Fetch issue details
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_NUMBER: ${{ github.event.inputs.issue_number || github.event.issue.number }}
           REPO: ${{ github.repository }}
         run: |
           gh issue view "$ISSUE_NUMBER" \
@@ -86,7 +91,7 @@ jobs:
         if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_NUMBER: ${{ github.event.inputs.issue_number || github.event.issue.number }}
           REPO: ${{ github.repository }}
         run: |
           if [ -f fix-summary.txt ]; then

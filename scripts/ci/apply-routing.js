@@ -63,12 +63,20 @@ for (const d of decisions) {
   updated++;
 
   if (d.createIssue && d.issueTitle) {
-    await ghPost('/repos/' + process.env.REPO + '/issues', {
+    const issue = await ghPost('/repos/' + process.env.REPO + '/issues', {
       title: d.issueTitle,
       body: d.issueBody || '',
       labels: ['agent-bug-fix']
     });
     issued++;
+
+    // Directly dispatch bug-fixer — label cascade from GITHUB_TOKEN is swallowed by GitHub
+    if (issue.number) {
+      await ghPost('/repos/' + process.env.REPO + '/actions/workflows/bug-fixer.yml/dispatches', {
+        ref: 'main',
+        inputs: { issue_number: String(issue.number) }
+      });
+    }
   }
 
   console.log(d.ref, '→', d.routedTo, d.urgency === 'URGENT' ? '⚠️ URGENT' : '');
