@@ -506,10 +506,17 @@
             categoryTabs.style.opacity = '0.4';
             categoryTabs.style.pointerEvents = 'none';
           })
-          .catch(function () {
+          .catch(function (err) {
             submitBtn.classList.remove('loading');
             submitBtn.disabled = false;
-            alert('Something went wrong. Please try again or email us directly at hello@bigsisterfoundation.org');
+            var errEl = document.getElementById('submit-error');
+            if (!errEl) {
+              errEl = document.createElement('p');
+              errEl.id = 'submit-error';
+              errEl.style.cssText = 'color:#c0392b;font-size:.9rem;margin-top:.75rem;text-align:center';
+              submitBtn.insertAdjacentElement('afterend', errEl);
+            }
+            errEl.textContent = 'Something went wrong. Please try again or email hello@bigsisterfoundation.org directly.';
           });
       });
 
