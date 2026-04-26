@@ -10,6 +10,7 @@ permissions:
   contents: write
   issues: write
   pull-requests: write
+  id-token: write
 
 jobs:
   fix-bug:
@@ -50,7 +51,7 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           model: claude-sonnet-4-6
-          prompt: |
+          direct_prompt: |
             You are fixing a bug on the Big Sister Foundation website (static HTML/CSS/JS + Firebase Firestore + Vercel).
 
             Read `issue-context.json` to get the issue number, title, and bug report body.

@@ -11,6 +11,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  id-token: write
 
 jobs:
   review-and-merge:
@@ -49,7 +50,7 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           model: claude-sonnet-4-6
-          prompt: |
+          direct_prompt: |
             You are the PR merge gatekeeper for the Big Sister Foundation website (static HTML/CSS/JS + Firebase).
 
             Read `open-prs.json` for the list of open PRs labeled "bug-fix".
