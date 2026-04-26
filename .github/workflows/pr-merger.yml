@@ -49,6 +49,7 @@ jobs:
         uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          mode: agent
           model: claude-sonnet-4-6
           direct_prompt: |
             You are the PR merge gatekeeper for the Big Sister Foundation website (static HTML/CSS/JS + Firebase).
