@@ -758,6 +758,8 @@
 
   <script src="/shared/bsf-antispam.js"></script>
   <script src="/shared/bsf-paystack.js"></script>
+  <!-- Paystack Inline JS — must load before the give-form submit handler -->
+  <script src="https://js.paystack.co/v2/inline.js"></script>
   <script>
     (function () {
       'use strict';
@@ -1443,8 +1445,6 @@
     })();
   </script>
 
-  <!-- Paystack Inline JS -->
-  <script src="https://js.paystack.co/v2/inline.js"></script>
 
 <div class="nav__backdrop" id="nav-backdrop"></div>
 <script>
