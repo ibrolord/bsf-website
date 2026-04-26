@@ -56,6 +56,7 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           mode: agent
+          allowed_tools: Bash,Edit,MultiEdit,Write,Read,Glob,Grep,LS
           model: claude-sonnet-4-6
           direct_prompt: |
             You are fixing a bug on the Big Sister Foundation website (static HTML/CSS/JS + Firebase Firestore + Vercel).
