@@ -162,6 +162,10 @@ service cloud.firestore {
       allow create: if true;
       allow update, delete: if hasAnyRole();
     }
+    match /support_tickets/{docId} {
+      allow create: if true;
+      allow read, update, delete: if hasAnyRole();
+    }
     match /blog_posts/{docId} {
       allow read: if
         resource.data.status == 'approved' ||

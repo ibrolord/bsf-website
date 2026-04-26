@@ -73,6 +73,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://thebigsisterfoundation.org/help/</loc>
+    <lastmod>2026-04-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://thebigsisterfoundation.org/blog/?post=1775834077948</loc>
     <lastmod>2026-04-10</lastmod>
     <changefreq>monthly</changefreq>

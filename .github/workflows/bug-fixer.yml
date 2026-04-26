@@ -1,0 +1,101 @@
+name: Bug Fixer
+
+# Triggered when a GitHub Issue is labeled "agent-bug-fix".
+# Claude reads the issue via gh CLI, finds the root cause, commits a fix, opens a PR.
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  fix-bug:
+    if: github.event.label.name == 'agent-bug-fix'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Configure git
+        run: |
+          git config user.name  "BSF Bug Fixer"
+          git config user.email "bot@bigsisterfoundation.org"
+
+      # Fetch issue content at runtime — no ${{ github.event }} interpolation in YAML
+      - name: Fetch issue details
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh issue view "$ISSUE_NUMBER" \
+            --repo "$REPO" \
+            --json number,title,body \
+            > issue-context.json
+          echo "Issue fetched:"
+          node -e "const i=require('./issue-context.json'); console.log('#'+i.number+': '+i.title)"
+
+      - name: Fix bug with Claude
+        uses: anthropics/claude-code-action@beta
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          model: claude-sonnet-4-6
+          prompt: |
+            You are fixing a bug on the Big Sister Foundation website (static HTML/CSS/JS + Firebase Firestore + Vercel).
+
+            Read `issue-context.json` to get the issue number, title, and bug report body.
+
+            Your steps:
+            1. Understand the bug from the issue title + body
+            2. Find the affected file — pages live at `public/<route>/index.html`, API routes at `public/api/*.js`
+            3. Read only the relevant section using offset+limit (never load full files)
+            4. Identify the root cause — not just the symptom
+            5. Create a branch: `fix/issue-<number>-<2-3-word-slug>`
+            6. Write the minimal correct fix using the Edit tool
+            7. Commit with message: `fix: <issue title> (#<number>)`
+            8. Run: `git push -u origin <branch>`
+            9. Run: `gh pr create --title "fix: <issue title>" --body "Closes #<number>\n\n**Root cause:** <one sentence>\n**Fix:** <one sentence>" --label bug-fix --base main`
+            10. Write to `fix-summary.txt`:
+                Issue: #<number>
+                Branch: <name>
+                Files: <list>
+                Root cause: <sentence>
+                Fix: <sentence>
+                PR: <url>
+
+            Hard rules:
+            - Change ONLY the files causing the bug. No refactoring of nearby code.
+            - Match existing style (vanilla JS, inline CSS, no new imports or dependencies).
+            - If the fix requires >3 files or >60 changed lines, write "CANNOT_FIX: too complex" to fix-summary.txt and stop.
+            - Never commit .env files or API keys.
+            - Use `gh` CLI for PR creation (GH_TOKEN is available in the environment).
+
+      - name: Comment result on issue
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ -f fix-summary.txt ]; then
+            BODY=$(cat fix-summary.txt)
+          else
+            BODY="No fix summary produced. Check the workflow logs."
+          fi
+          gh issue comment "$ISSUE_NUMBER" \
+            --repo "$REPO" \
+            --body "**Bug fixer ran.**
+
+          \`\`\`
+          $BODY
+          \`\`\`"

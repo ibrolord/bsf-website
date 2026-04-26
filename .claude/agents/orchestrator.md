@@ -28,6 +28,27 @@ Dashboard, Users, Volunteers, Teams, Scholars, Schools, Ledger, Ideas, Forums, E
 
 ## Available Agents
 
+### Support Router (`support-router.md`)
+**When to use:** When you want to process the support ticket queue from `/help/`. Reads all `open` tickets from Firestore `support_tickets`, routes bugs to bug-fixer, flags finance questions for the finance team, and generates draft notes for inquiries/feedback.
+**Trigger conditions:**
+- User says "process support tickets" or "triage the queue"
+- After a batch of new tickets has come in
+- On a scheduled basis (daily or weekly)
+
+### Bug Fixer (`bug-fixer.md`)
+**When to use:** After support-router identifies a bug ticket, or when the user reports a specific bug and wants an automated fix attempt. Creates a fix branch, writes the minimal fix, and opens a PR with the `bug-fix` label.
+**Trigger conditions:**
+- A support ticket with `category: bug` is routed
+- User says "fix the bug in ticket REF-XXX"
+- User describes a specific reproducible bug and asks for an automated fix
+
+### PR Merger (`pr-merger.md`)
+**When to use:** After bug-fixer opens PRs and you want to review and merge clean ones. Lists all open `bug-fix` PRs, runs the merge checklist, merges passing PRs, and blocks failing ones with a reason.
+**Trigger conditions:**
+- After bug-fixer runs and opens one or more PRs
+- User says "merge the bug fix PRs" or "review pending PRs"
+- Periodic review of the open PR queue
+
 ### Visual QA (`visual-qa.md`)
 **When to use:** After any UI change, new feature, or layout modification. Also run periodically for regression testing.
 **What it does:** Convenes a design committee (Rams, Ive, Zhuo, Matsuoka, Monteiro, van Schneider). They study the product context, form hypotheses, audit every page at desktop/tablet/mobile, deliberate each issue, apply fixes, then verify everything against a scorecard with screenshots. Returns a signed committee verdict.

@@ -1,0 +1,88 @@
+name: PR Merger
+
+# Reviews and merges open PRs labeled "bug-fix".
+# Runs daily at 9am UTC, or triggered manually.
+# Using scheduled + manual only — no pull_request trigger avoids untrusted input risks.
+on:
+  schedule:
+    - cron: '0 9 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  review-and-merge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch open bug-fix PRs
+        id: fetch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh pr list \
+            --repo "$REPO" \
+            --label bug-fix \
+            --state open \
+            --json number,title,headRefName,url,createdAt \
+            > open-prs.json
+
+          COUNT=$(node -e "console.log(require('./open-prs.json').length)")
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "Open bug-fix PRs: $COUNT"
+
+      - name: Review and merge with Claude
+        if: steps.fetch.outputs.count != '0'
+        uses: anthropics/claude-code-action@beta
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          model: claude-sonnet-4-6
+          prompt: |
+            You are the PR merge gatekeeper for the Big Sister Foundation website (static HTML/CSS/JS + Firebase).
+
+            Read `open-prs.json` for the list of open PRs labeled "bug-fix".
+
+            For each PR, do the following:
+
+            1. Get the diff:        gh pr diff <number>
+            2. Get the description: gh pr view <number>
+
+            3. Apply the merge checklist (ALL must pass to merge):
+               - Scope: ≤3 files changed, ≤80 lines total?
+               - Root cause addressed, not just symptom masked?
+               - Code style matches repo (vanilla JS, inline CSS, no new npm deps)?
+               - No secrets or credentials (scan for: AIzaSy, sk-, ghp_, password=, api_key)?
+               - PR description contains a root cause explanation?
+
+            4. Hard blocks — NEVER merge if:
+               - Any credentials appear in the diff
+               - Changes touch firebase.json or firestore.rules without a clear security rationale
+               - The branch is more than 10 commits behind main (run: git log main..<branch> --oneline | wc -l)
+               - Diff is empty or whitespace-only
+
+            5. Decision:
+               MERGE → gh pr merge <number> --squash --delete-branch
+               BLOCK → gh pr review <number> --request-changes --body "BLOCKED: <specific reason for each failed check>"
+
+            6. Write `merge-report.txt`:
+               Reviewed: <N>
+               Merged:   <#number — title, or "none">
+               Blocked:  <#number — reason, or "none">
+
+            Use gh CLI for all GitHub operations. Do not edit any source files.
+
+      - name: Print report
+        if: always()
+        run: cat merge-report.txt 2>/dev/null || echo "No PRs to review."

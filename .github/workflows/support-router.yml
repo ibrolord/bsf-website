@@ -1,0 +1,97 @@
+name: Support Router
+
+# Runs every 2 hours and processes open support tickets from Firestore.
+# Classifies each ticket, creates GitHub Issues for bugs, updates ticket status.
+on:
+  schedule:
+    - cron: '0 */2 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (classify only, no writes)'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  route-tickets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Step 1 — pull open tickets from Firestore
+      - name: Fetch open tickets
+        env:
+          FIREBASE_SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          PROJECT_ID: big-sister-foundation
+        run: |
+          npm install firebase-admin --silent
+          node scripts/ci/fetch-open-tickets.js
+
+      - name: Count tickets
+        id: count
+        run: |
+          N=$(node -e "const t=require('./tickets.json');console.log(t.length)")
+          echo "n=$N" >> "$GITHUB_OUTPUT"
+
+      # Step 2 — classify and generate routing decisions with Claude
+      - name: Classify with Claude
+        if: steps.count.outputs.n != '0'
+        uses: anthropics/claude-code-action@beta
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          model: claude-haiku-4-5-20251001
+          prompt: |
+            Read `tickets.json`. Each entry is an open support ticket from the Big Sister Foundation help page.
+
+            For EACH ticket write a JSON decision object to `routing-decisions.json` (array).
+
+            Decision schema:
+            {
+              "id": "<firestore doc id>",
+              "ref": "<ticket ref>",
+              "category": "<bug|finance|inquiry|feedback>",
+              "urgency": "URGENT|NORMAL",
+              "routedTo": "<bug-fixer|finance-team|team>",
+              "agentNotes": "<one-paragraph summary or draft reply>",
+              "createIssue": true|false,
+              "issueTitle": "<only if createIssue — concise bug title>",
+              "issueBody": "<only if createIssue — full markdown body>"
+            }
+
+            Routing rules:
+            - bug      → routedTo "bug-fixer", createIssue true
+            - finance  → routedTo "finance-team", createIssue false, agentNotes = draft reply
+            - inquiry  → routedTo "team", createIssue false, agentNotes = suggested reply
+            - feedback → routedTo "team", createIssue false, agentNotes = actionable summary
+
+            Mark URGENT if the message mentions: missing money, failed login, security issue, or a child in distress.
+
+            Bug issue body format:
+            **Ticket:** `<ref>`
+            **From:** <name> (<email>)
+            **Subject:** <subject>
+            **Report:** <message>
+            ---
+            _Auto-created by support-router · label: agent-bug-fix_
+
+            Write ONLY `routing-decisions.json`. Do not touch any other file.
+
+      # Step 3 — apply decisions: update Firestore + create GitHub Issues
+      - name: Apply routing decisions
+        if: steps.count.outputs.n != '0'
+        env:
+          FIREBASE_SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          PROJECT_ID: big-sister-foundation
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+        run: node scripts/ci/apply-routing.js
