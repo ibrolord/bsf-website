@@ -1,0 +1,100 @@
+name: Annotator QA
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      report_id:
+        required: false
+        type: string
+      target_url:
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  ANNOTATE_API_URL: https://annotate-api-production.up.railway.app
+  ANNOTATOR_QA_SCRIPT_REF: main
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Annotator QA runtime
+        run: |
+          npm install --no-save @playwright/test
+          npx playwright install --with-deps chromium
+
+      - name: Download Annotator QA runner scripts
+        run: |
+          set -euo pipefail
+          mkdir -p .annotator-qa
+          base_url="https://raw.githubusercontent.com/ibrolord/annotator-qa-runner/${ANNOTATOR_QA_SCRIPT_REF}/scripts/qa"
+          curl -fsSL "$base_url/resolve-report-id.mjs" -o .annotator-qa/resolve-report-id.mjs
+          curl -fsSL "$base_url/run-verification.mjs" -o .annotator-qa/run-verification.mjs
+          curl -fsSL "$base_url/comment-pr-verification.mjs" -o .annotator-qa/comment-pr-verification.mjs
+          node --check .annotator-qa/resolve-report-id.mjs
+          node --check .annotator-qa/run-verification.mjs
+          node --check .annotator-qa/comment-pr-verification.mjs
+
+      - name: Resolve Annotator report ID
+        id: report
+        env:
+          ANNOTATE_REPORT_ID: ${{ inputs.report_id || '' }}
+        run: node .annotator-qa/resolve-report-id.mjs
+
+      - name: Resolve public target URL
+        if: steps.report.outputs.report_found == 'true'
+        id: target
+        env:
+          INPUT_TARGET_URL: ${{ inputs.target_url || '' }}
+          DEFAULT_TARGET_URL: ${{ vars.ANNOTATOR_QA_TARGET_URL || '' }}
+        run: |
+          set -euo pipefail
+          target_url="${INPUT_TARGET_URL:-$DEFAULT_TARGET_URL}"
+          if [ -z "$target_url" ]; then
+            echo "::error::Set ANNOTATOR_QA_TARGET_URL or pass workflow_dispatch target_url."
+            exit 1
+          fi
+          case "$target_url" in
+            http://localhost*|https://localhost*|http://127.*|https://127.*|http://0.0.0.0*|https://0.0.0.0*|http://[::1]*|https://[::1]*)
+              echo "::error::ANNOTATOR_QA_TARGET_URL must be a public preview or staging URL reachable from GitHub-hosted runners."
+              exit 1
+              ;;
+          esac
+          echo "target_url=$target_url" >> "$GITHUB_OUTPUT"
+
+      - name: Run Annotator QA verification
+        if: steps.report.outputs.report_found == 'true'
+        id: verification
+        env:
+          ANNOTATE_API_URL: ${{ env.ANNOTATE_API_URL }}
+          ANNOTATE_RUNNER_TOKEN: ${{ secrets.ANNOTATOR_QA_RUNNER_TOKEN }}
+          ANNOTATE_REPORT_ID: ${{ steps.report.outputs.report_id }}
+          ANNOTATE_TARGET_URL: ${{ steps.target.outputs.target_url }}
+          ANNOTATE_REPRO_BASE_URL: ${{ steps.target.outputs.target_url }}
+          ANNOTATE_GIT_REF: ${{ github.sha }}
+          ANNOTATE_REPO_DIR: ${{ github.workspace }}
+          ANNOTATE_PLAYWRIGHT_COMMAND: npx playwright test
+        run: node .annotator-qa/run-verification.mjs
+
+      - name: Comment on pull request
+        if: always() && github.event_name == 'pull_request' && steps.report.outputs.report_found == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANNOTATE_REPORT_ID: ${{ steps.report.outputs.report_id }}
+          ANNOTATE_VERIFICATION_RUN_ID: ${{ steps.verification.outputs.verification_run_id }}
+          ANNOTATE_VERIFICATION_STATUS: ${{ steps.verification.outputs.status || 'failed' }}
+          ANNOTATE_VERIFICATION_SUMMARY: ${{ steps.verification.outputs.result_summary }}
+        run: node .annotator-qa/comment-pr-verification.mjs
