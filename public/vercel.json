@@ -61,6 +61,10 @@
   ],
   "rewrites": [
     {
+      "source": "/qa/bsf",
+      "destination": "/index.html"
+    },
+    {
       "source": "/sitemap.xml",
       "destination": "/api/sitemap"
     },
