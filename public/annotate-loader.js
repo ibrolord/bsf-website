@@ -4,7 +4,8 @@
   var widgetUrl = "https://annotate-dashboard.pages.dev/widget.js";
   var apiUrl = "https://annotate-api-production.up.railway.app";
   var setupMode = "global_widget";
-  var dedicatedPath = "/qa/bsf";
+  var dedicatedPath = null;
+  var inviteRequired = false;
   var sensitiveSelector = "[data-annotate-sensitive],[data-sensitive],[data-private],[data-pii],[data-phi],.pii,.phi,.financial-data";
 
   function normalizePath(value) {
@@ -16,14 +17,18 @@
   var inviteCode = params.get('annotate_invite');
   var qaFlag = params.get('annotate_qa') === '1';
   var storedQa = false;
+  var storedInvite = false;
 
   try {
     storedQa = window.sessionStorage.getItem('annotate_qa') === '1';
+    storedInvite = Boolean(window.sessionStorage.getItem('annotate_invite'));
     if (inviteCode) {
       window.sessionStorage.setItem('annotate_qa', '1');
       window.sessionStorage.setItem('annotate_invite', inviteCode);
+      storedInvite = true;
     } else {
       inviteCode = window.sessionStorage.getItem('annotate_invite');
+      storedInvite = Boolean(inviteCode);
     }
     if (qaFlag) window.sessionStorage.setItem('annotate_qa', '1');
   } catch (error) {
@@ -31,12 +36,12 @@
   }
 
   var onDedicatedPath = Boolean(dedicatedPath) && normalizePath(window.location.pathname) === normalizePath(dedicatedPath);
+  var hasInviteSession = Boolean(inviteCode) || storedInvite;
+  var hasQaSession = qaFlag || storedQa || hasInviteSession;
   var shouldLoad =
-    setupMode === 'global_widget' ||
-    qaFlag ||
-    Boolean(inviteCode) ||
-    (setupMode === 'qa_invite_link' && storedQa) ||
-    (setupMode === 'dedicated_route' && (onDedicatedPath || storedQa));
+    (setupMode === 'global_widget' && (!inviteRequired || hasInviteSession)) ||
+    (setupMode === 'qa_invite_link' && (inviteRequired ? hasInviteSession : hasQaSession)) ||
+    (setupMode === 'dedicated_route' && (inviteRequired ? (onDedicatedPath && hasInviteSession) : (onDedicatedPath || hasQaSession)));
 
   if (!shouldLoad) return;
   if (document.querySelector('script[data-annotate-project-key]')) return;
