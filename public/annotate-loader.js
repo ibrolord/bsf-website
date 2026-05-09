@@ -55,6 +55,8 @@
   script.dataset.annotateRequireConsent = 'true';
   script.dataset.annotateSensitiveMode = 'strict';
   script.dataset.annotateSensitiveSelector = sensitiveSelector;
+  script.dataset.annotateRecording = 'true';
+  script.dataset.annotateCaptureNetworkSuccesses = 'true';
   if (inviteCode) script.dataset.annotateInviteCode = inviteCode;
   if (dedicatedPath) script.dataset.annotateInstrumentedPath = dedicatedPath;
   document.head.appendChild(script);
