@@ -3,8 +3,8 @@
   var projectKey = "fd7d0059d6484008a616722ec1ed955cae0c3066e86dc472";
   var widgetUrl = "https://annotate-dashboard.pages.dev/widget.js";
   var apiUrl = "https://annotate-api-production.up.railway.app";
-  var setupMode = "dedicated_route";
-  var dedicatedPath = "/qa/bsf";
+  var setupMode = "global_widget";
+  var dedicatedPath = null;
   var inviteRequired = false;
   var sensitiveSelector = "[data-annotate-sensitive],[data-sensitive],[data-private],[data-pii],[data-phi],.pii,.phi,.financial-data";
 
