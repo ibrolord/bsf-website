@@ -219,8 +219,8 @@
       100% { transform: scale(1.08); }
     }
     @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(8px); }
+      0%, 100% { opacity: 0.55; }
+      50% { opacity: 1; }
     }
 
     /* =============================================
@@ -1647,11 +1647,13 @@
 
       window.addEventListener('scroll', function () {
         var scrollY = window.scrollY || window.pageYOffset;
-        if (scrollY > 100) { nav.classList.add('is-visible'); }
-        else { nav.classList.remove('is-visible'); }
+        if (nav) {
+          if (scrollY > 100) { nav.classList.add('is-visible'); }
+          else { nav.classList.remove('is-visible'); }
+        }
         var docH = document.documentElement.scrollHeight - window.innerHeight;
         var scrollPct = docH > 0 ? scrollY / docH : 0;
-        if (docH > 0) { progressBar.style.width = (scrollPct * 100) + '%'; }
+        if (docH > 0 && progressBar) { progressBar.style.width = (scrollPct * 100) + '%'; }
         updateTree(scrollPct);
       }, { passive: true });
 
