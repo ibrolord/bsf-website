@@ -463,7 +463,7 @@ VOICE & STYLE:
 - Separate paragraphs with \\n\\n
 ${retryInstructions}
 
-AUTHOR: ${validation.category === 'story' ? 'Funke Adeyemi' : validation.category === 'guide' ? 'Amara Okafor' : validation.category === 'update' ? 'BSF Team' : 'Bolaji Agunbiade'}
+AUTHOR: Big Sister Foundation (all posts are bylined to the organization)
 
 Respond in JSON only:
 {
@@ -486,7 +486,7 @@ function repairDraftForSeo(draft, outline, primaryKeyword, fallbackTopic) {
   const repaired = {
     ...draft,
     category: draft.category || 'insight',
-    author: draft.author || 'BSF Team',
+    author: 'Big Sister Foundation',
   };
 
   if (!Array.isArray(repaired.keywords) || repaired.keywords.length === 0) {
@@ -1736,7 +1736,7 @@ export default async function handler(req, res) {
         body: newPost.body,
         excerpt: newPost.excerpt,
         category: newPost.category || 'insight',
-        author: newPost.author || 'BSF Team',
+        author: newPost.author || 'Big Sister Foundation',
         date: newPost.date,
         keywords: newPost.keywords || [],
         metaDescription: newPost.metaDescription || newPost.excerpt || '',
