@@ -25,8 +25,8 @@ const SEO_CONFIG = {
   minReadabilityScore: 65,
   minWordCount: 650,
   maxWordCount: 1200,
-  minKeywordDensity: 0.8,
-  maxKeywordDensity: 2.5,
+  minKeywordDensity: 0,
+  maxKeywordDensity: 1.8,
   requiredInternalLinks: 2,
   requiredCrossPostLinks: 1,      // link to at least 1 existing blog post
   maxRetries: 2,
@@ -305,17 +305,16 @@ function checkSeoCompliance(post, primaryKeyword) {
     if (density > SEO_CONFIG.maxKeywordDensity) issues.push(`Keyword density ${density.toFixed(2)}% above maximum (stuffing) ${SEO_CONFIG.maxKeywordDensity}%`);
 
     // Keyword placement checks
-    metrics.keywordInTitle = lowerTitle.includes(keyword);
+    metrics.keywordInTitle = textMatchesKeyword(lowerTitle, keyword);
     if (!metrics.keywordInTitle) issues.push('Primary keyword missing from title');
 
     const paragraphs = body.split(/\n\n+/).filter(p => p.trim().length > 0);
-    metrics.keywordInFirstParagraph = paragraphs.length > 0 && paragraphs[0].toLowerCase().includes(keyword);
-    if (!metrics.keywordInFirstParagraph) issues.push('Primary keyword missing from first paragraph');
+    // Keyword presence in the first/last paragraph is tracked but no longer a
+    // hard compliance failure — forcing it there is what produced stuffed openings.
+    metrics.keywordInFirstParagraph = paragraphs.length > 0 && textMatchesKeyword(paragraphs[0], keyword);
+    metrics.keywordInLastParagraph = paragraphs.length > 0 && textMatchesKeyword(paragraphs[paragraphs.length - 1], keyword);
 
-    metrics.keywordInLastParagraph = paragraphs.length > 0 && paragraphs[paragraphs.length - 1].toLowerCase().includes(keyword);
-    if (!metrics.keywordInLastParagraph) issues.push('Primary keyword missing from last paragraph');
-
-    metrics.keywordInMeta = meta.toLowerCase().includes(keyword);
+    metrics.keywordInMeta = textMatchesKeyword(meta, keyword);
     if (!metrics.keywordInMeta) issues.push('Primary keyword missing from meta description');
   }
 
@@ -353,6 +352,19 @@ function checkSeoCompliance(post, primaryKeyword) {
   metrics.computedSeoScore = Math.max(0, Math.min(100, score));
 
   return { compliant: issues.length === 0, issues, metrics };
+}
+
+// Loose keyword match: true if the text contains the exact phrase OR all of the
+// keyword's significant words. Lets natural variants ("affordable schools in
+// Lagos") satisfy the keyword ("affordable schools Lagos") so the compliance
+// retry loop stops forcing awkward exact-match stuffing.
+function textMatchesKeyword(text, keyword) {
+  const t = String(text || '').toLowerCase();
+  const k = String(keyword || '').toLowerCase().trim();
+  if (!k) return true;
+  if (t.includes(k)) return true;
+  const keywordWords = k.split(/\s+/).filter((w) => w.length > 2);
+  return keywordWords.length > 0 && keywordWords.every((w) => t.includes(w));
 }
 
 function extractJsonObject(text) {
@@ -437,7 +449,7 @@ SEO RESEARCH CONTEXT:
 STRICT SEO RULES (non-negotiable):
 1. Use ## for H2 headings and ### for H3 headings
 2. Include 4-6 ## H2 headings throughout the post
-3. Primary keyword MUST appear in: title, first paragraph, at least one ## heading, last paragraph, meta description
+3. Use the primary keyword naturally: include the exact phrase only 1-2 times where it fits grammatically, and use natural variations elsewhere (e.g. "affordable schools in Lagos", never "affordable schools Lagos in Lagos"). It should appear in the title and somewhere in the opening and the closing, but ALWAYS phrased as natural, grammatical English. Do NOT put the raw keyword phrase in a heading. Write a specific, varied title under 70 characters — avoid formulaic patterns like "X: What Lagos Families Need to Know".
 4. Include each secondary keyword 1-2 times naturally
 5. 750-1000 words total
 6. Include at least 3 internal links as markdown: [anchor text](/path/) linking to /scholars/, /volunteer/, /donate/, /ledger/, or /ideas/
@@ -484,12 +496,12 @@ function repairDraftForSeo(draft, outline, primaryKeyword, fallbackTopic) {
   }
 
   repaired.title = repaired.title || '';
-  if (!keyword || !repaired.title.toLowerCase().includes(keywordLower) || repaired.title.length < SEO_CONFIG.titleMinLength || repaired.title.length > SEO_CONFIG.titleMaxLength) {
+  if (!keyword || !textMatchesKeyword(repaired.title, keyword) || repaired.title.length < SEO_CONFIG.titleMinLength || repaired.title.length > SEO_CONFIG.titleMaxLength) {
     repaired.title = buildSeoTitle(keyword, fallbackTopic);
   }
 
   repaired.metaDescription = repaired.metaDescription || '';
-  if (!keyword || !repaired.metaDescription.toLowerCase().includes(keywordLower) || repaired.metaDescription.length < SEO_CONFIG.metaDescMinLength || repaired.metaDescription.length > SEO_CONFIG.metaDescMaxLength) {
+  if (!keyword || !textMatchesKeyword(repaired.metaDescription, keyword) || repaired.metaDescription.length < SEO_CONFIG.metaDescMinLength || repaired.metaDescription.length > SEO_CONFIG.metaDescMaxLength) {
     repaired.metaDescription = buildSeoMetaDescription(keyword, fallbackTopic);
   }
 
@@ -520,10 +532,10 @@ function repairDraftForSeo(draft, outline, primaryKeyword, fallbackTopic) {
 
   const firstParagraphIndex = findParagraphIndex(false);
   if (firstParagraphIndex === undefined) {
-    paragraphs.unshift(`For many families in Lagos, ${keyword || fallbackTopic} shapes whether a child stays in school and gets consistent support.`);
-  } else if (keyword && !paragraphs[firstParagraphIndex].toLowerCase().includes(keywordLower)) {
-    paragraphs[firstParagraphIndex] = `For many families in Lagos, ${keyword} shapes whether a child stays in school and gets steady support. ${paragraphs[firstParagraphIndex]}`;
+    paragraphs.unshift('Big Sister Foundation works with families in Lagos to keep vulnerable children enrolled, supported, and learning.');
   }
+  // No longer force the exact keyword into the opening — the writer's natural
+  // first paragraph stands (keyword still lives in the title, slug, meta, body).
 
   let h2Indexes = paragraphs
     .map((part, index) => part.startsWith('## ') ? index : -1)
@@ -534,10 +546,8 @@ function repairDraftForSeo(draft, outline, primaryKeyword, fallbackTopic) {
     h2Indexes = [1];
   }
 
-  if (keyword && !h2Indexes.some(index => paragraphs[index].toLowerCase().includes(keywordLower))) {
-    const targetIndex = h2Indexes[0];
-    paragraphs[targetIndex] = `## ${titleCaseKeyword(keyword)} in Lagos`;
-  }
+  // Keyword is no longer force-injected into a heading — the writer's natural
+  // headings stand (avoids "## After School Programs Lagos in Lagos").
 
   const ensureSection = (heading, lines) => {
     paragraphs.push(`## ${heading}`);
@@ -1263,14 +1273,14 @@ function ensureSnippetBlock(body, primaryKeyword) {
   const paragraphs = body.split('\n\n');
   if (paragraphs.length < 4) return body;
 
-  // Find the most relevant paragraph (one mentioning the keyword)
+  // Find the snippet source: prefer the first real paragraph mentioning the
+  // keyword, else the first prose paragraph. Never use a heading/quote/list line.
   const kwLower = (primaryKeyword || '').toLowerCase();
-  let bestIdx = 1; // default to second paragraph
-  for (let i = 1; i < paragraphs.length - 1; i++) {
-    if (paragraphs[i].toLowerCase().includes(kwLower) && !paragraphs[i].startsWith('#')) {
-      bestIdx = i;
-      break;
-    }
+  const isProse = (p) => p && !p.startsWith('#') && !p.startsWith('>') && !p.startsWith('- ') && p.trim().length > 40;
+  let bestIdx = paragraphs.findIndex(isProse);
+  if (bestIdx === -1) return body;
+  for (let i = 0; i < paragraphs.length; i++) {
+    if (isProse(paragraphs[i]) && textMatchesKeyword(paragraphs[i], kwLower)) { bestIdx = i; break; }
   }
 
   // Create a concise snippet block (40-60 words, direct answer format)
