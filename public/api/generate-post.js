@@ -339,9 +339,9 @@ function checkSeoCompliance(post, primaryKeyword) {
 
   // Paragraph length
   const paragraphs = body.split(/\n\n+/).filter(p => p.trim().length > 0);
-  const longParagraphs = paragraphs.filter(p => p.split(/\s+/).length > 80);
+  const longParagraphs = paragraphs.filter(p => p.split(/\s+/).length > 110);
   metrics.longParagraphs = longParagraphs.length;
-  if (longParagraphs.length > 0) issues.push(`${longParagraphs.length} paragraphs are too long (80+ words)`);
+  if (longParagraphs.length > 0) issues.push(`${longParagraphs.length} paragraphs are too long (110+ words)`);
 
   // Compute our own SEO score
   let score = 100;
@@ -441,7 +441,7 @@ STRICT SEO RULES (non-negotiable):
 4. Include each secondary keyword 1-2 times naturally
 5. 750-1000 words total
 6. Include at least 3 internal links as markdown: [anchor text](/path/) linking to /scholars/, /volunteer/, /donate/, /ledger/, or /ideas/
-7. Short paragraphs (2-4 sentences max)
+7. Short paragraphs — each MUST be 2-3 sentences and under 65 words. Any paragraph of 80+ words causes the whole post to be auto-rejected, so keep every paragraph tight.
 8. Meta description: 120-165 characters, includes primary keyword, has a call-to-action
 
 VOICE & STYLE:
