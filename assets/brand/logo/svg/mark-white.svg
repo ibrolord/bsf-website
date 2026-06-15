@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 560" width="512" height="560" role="img" aria-label="Big Sister Foundation iroko tree mark, reversed">
+  <ellipse cx="160" cy="220" rx="120" ry="108" fill="#FFF8F0" opacity="0.92"/>
+  <ellipse cx="360" cy="210" rx="140" ry="120" fill="#FFF8F0" opacity="0.92"/>
+  <ellipse cx="265" cy="155" rx="140" ry="120" fill="#FFF8F0" opacity="0.92"/>
+  <ellipse cx="262" cy="225" rx="180" ry="120" fill="#FFF8F0" opacity="0.8"/>
+  <ellipse cx="205" cy="170" rx="100" ry="96" fill="#CBD9C6" opacity="0.5"/>
+  <path d="M247 300 Q244 395 240 492 Q256 502 272 492 Q268 395 265 300 Z" fill="#3A2A1F" opacity="0.92"/>
+  <path d="M240 492 L205 528 M272 492 L307 528 M256 494 L256 534" stroke="#8b7a68" stroke-width="4.5" fill="none" stroke-linecap="round" opacity="0.85"/>
+</svg>
