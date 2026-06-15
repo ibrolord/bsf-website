@@ -199,6 +199,12 @@ async function identityToolkitRequest(path, body, options) {
   throw serviceError(500, 'firebase_auth_request_failed', 'Firebase Auth admin request failed', details);
 }
 
+export async function getFirestoreAccessToken() {
+  // Service-account OAuth token (cloud-platform scope) for server-side Firestore
+  // REST access — used by cron/background jobs that have no end-user id token.
+  return exchangeServiceAccountToken(getServiceAccount());
+}
+
 export async function createAuthUser(email, password) {
   const normalizedEmail = String(email || '').trim().toLowerCase();
   const normalizedPassword = String(password || '');

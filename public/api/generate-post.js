@@ -1,4 +1,6 @@
 import { buildRealtimeCoverImageUrl, findRealtimeCoverImage } from './_lib/openverse.js';
+import { createDocument } from './_lib/firestore-rest.js';
+import { getFirestoreAccessToken } from './_lib/firebase-auth-admin.js';
 
 // ═══════════════════════════════════════════════════════════════
 //  BSF BLOG ORCHESTRATOR — Multi-AI SEO Content Pipeline v3
@@ -1693,6 +1695,69 @@ export default async function handler(req, res) {
     // ── Persist ──
     const allPosts = [newPost, ...interlinkedPosts].slice(0, 50);
 
+    // Publish to Firestore `blog_posts` — this is the collection the live /blog/
+    // page reads (anonymous client query: where status == 'approved'). Written as
+    // the service account through the same Firestore REST helper the admin uses.
+    //
+    // Refuse to publish a post the renderer would silently drop: isPublicBlogPost
+    // requires non-empty title/excerpt/body/date (author is defaulted below). A
+    // post missing one of these would write "successfully" yet never appear — the
+    // same silent failure this fix exists to remove — so fail the run loudly.
+    const missingPublishFields = ['title', 'excerpt', 'body', 'date']
+      .filter((field) => !newPost[field]);
+    if (missingPublishFields.length) {
+      pipeline.push('publish_aborted_missing_fields:' + missingPublishFields.join(','));
+      throw new Error('Refusing to publish post with missing required fields: ' + missingPublishFields.join(','));
+    }
+
+    // Deterministic document id (date + title slug) makes the write idempotent: a
+    // retry after a lost-but-successful POST re-targets the same doc (409
+    // ALREADY_EXISTS) instead of creating a duplicate approved post.
+    const publishSlug = String(newPost.title || (newPost.seoMetrics && newPost.seoMetrics.primaryKeyword) || 'post')
+      .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'post';
+    const blogDocId = (newPost.date || 'undated') + '-' + publishSlug;
+
+    let publishedPostId = null;
+    try {
+      const firestoreToken = await getFirestoreAccessToken();
+      const publishedAt = new Date();
+      const created = await createDocument(firestoreToken, 'blog_posts', {
+        title: newPost.title,
+        body: newPost.body,
+        excerpt: newPost.excerpt,
+        category: newPost.category || 'insight',
+        author: newPost.author || 'BSF Team',
+        date: newPost.date,
+        keywords: newPost.keywords || [],
+        metaDescription: newPost.metaDescription || newPost.excerpt || '',
+        coverImage: newPost.coverImage || '',
+        coverImageAlt: newPost.coverImageAlt || newPost.title || '',
+        ogImage: newPost.ogImage || newPost.coverImage || '',
+        readTime: newPost.readTime || 3,
+        aiGenerated: true,
+        status: 'approved',
+        submittedBy: 'ai-pipeline',
+        approvedBy: 'ai-pipeline',
+        submittedAt: publishedAt,
+        approvedAt: publishedAt
+      }, blogDocId);
+      publishedPostId = created && created.id ? created.id : blogDocId;
+      pipeline.push('published_to_firestore:' + publishedPostId);
+    } catch (publishError) {
+      if (publishError && publishError.status === 409) {
+        // Doc already exists (idempotent re-run / retry-after-success) — not a failure.
+        publishedPostId = blogDocId;
+        pipeline.push('already_published:' + blogDocId);
+      } else {
+        // A generated-but-unpublished post is exactly the bug this pipeline had, so
+        // fail loudly — the cron run is recorded as failed instead of a false success.
+        pipeline.push('firestore_publish_failed:' + publishError.message);
+        throw publishError;
+      }
+    }
+
+    // Legacy GitHub mirror — dead path (sha is always null since the repo moved).
+    // Kept as a harmless no-op so the change stays minimal.
     if (sha) {
       await updateGitHubFile(allPosts, sha);
       pipeline.push('published_to_github');
@@ -1700,6 +1765,8 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
+      published: Boolean(publishedPostId),
+      postId: publishedPostId,
       post: {
         title: newPost.title,
         category: newPost.category,
