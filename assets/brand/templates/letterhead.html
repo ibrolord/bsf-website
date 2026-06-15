@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Big Sister Foundation — Letterhead</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Lora:ital,wght@0,400;0,500;1,400&family=Instrument+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --iroko:#2D5E40; --brown:#3A2A1F; --terra:#C2734C;
+    --gold:#D4A96A; --sage:#8BAF8E; --cream:#FFF8F0;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:#e9e6df;}
+  body{font-family:'Lora',Georgia,serif;color:var(--brown);}
+
+  /* Screen-only helper bar — never prints */
+  .howto{max-width:210mm;margin:18px auto;padding:12px 18px;background:#fff;
+    border:1px solid #d8d3c8;border-radius:8px;font-family:'Instrument Sans',system-ui,sans-serif;
+    font-size:13px;line-height:1.6;color:#5b544a;}
+  .howto b{color:var(--iroko);}
+
+  .sheet{width:210mm;min-height:297mm;margin:0 auto 24px;background:var(--cream);
+    display:flex;flex-direction:column;box-shadow:0 2px 10px rgba(30,63,43,0.15);}
+
+  .head{background:var(--iroko);padding:26px 28mm;display:flex;align-items:center;gap:16px;}
+  .wordmark{font-family:'Young Serif',Georgia,serif;font-size:25px;color:var(--cream);
+    letter-spacing:.3px;line-height:1;}
+  .tagline{font-family:'Instrument Sans',system-ui,sans-serif;font-size:10px;
+    letter-spacing:4px;color:var(--gold);margin-top:7px;}
+  .rule{height:3px;background:var(--gold);}
+
+  .body{flex:1;padding:24mm 28mm 12mm;}
+  .date{font-size:13.5px;color:#6b5d50;margin-bottom:26px;}
+  .recipient{font-size:14px;line-height:1.45;margin-bottom:24px;}
+  .salutation{font-size:15.5px;margin-bottom:14px;}
+  .content{font-size:15px;line-height:1.9;}
+  .signoff{font-size:15px;line-height:1.7;margin-top:34px;}
+  .signoff .name{font-weight:500;}
+  .signoff .role{font-size:13.5px;color:#6b5d50;}
+
+  .foot-wrap{margin:0 28mm;border-top:.5px solid rgba(45,94,64,.3);}
+  .foot{padding:12px 28mm 20px;display:flex;flex-wrap:wrap;justify-content:space-between;
+    gap:6px 20px;font-family:'Instrument Sans',system-ui,sans-serif;font-size:11px;
+    letter-spacing:.4px;color:var(--iroko);}
+
+  @media print{
+    html,body{background:#fff;}
+    .howto{display:none;}
+    .sheet{margin:0;box-shadow:none;width:auto;min-height:auto;}
+    @page{size:A4;margin:0;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="howto">
+    <b>How to use:</b> edit the date, recipient, greeting, body, and signature below — then
+    <b>File → Print → Save as PDF</b> (choose A4, margins “None/Default”, and enable
+    “Background graphics” so the green header prints). This grey bar will not appear in the PDF.
+  </div>
+
+  <div class="sheet">
+
+    <div class="head">
+      <svg width="38" height="44" viewBox="0 0 34 40" aria-hidden="true">
+        <ellipse cx="17" cy="13" rx="14" ry="11" fill="#8BAF8E"/>
+        <ellipse cx="11" cy="11" rx="9" ry="8" fill="#FFF8F0" opacity="0.92"/>
+        <ellipse cx="21" cy="14" rx="9" ry="8" fill="#E8EFE6" opacity="0.85"/>
+        <rect x="15.5" y="20" width="3" height="16" fill="#3A2A1F"/>
+      </svg>
+      <div>
+        <div class="wordmark">Big Sister Foundation</div>
+        <div class="tagline">ROOTED &nbsp;·&nbsp; PRESENT &nbsp;·&nbsp; PROTECTIVE</div>
+      </div>
+    </div>
+    <div class="rule"></div>
+
+    <div class="body">
+      <div class="date">14 June 2026</div>
+
+      <div class="recipient">
+        Recipient Name<br>
+        Title / Organisation<br>
+        Address line
+      </div>
+
+      <div class="salutation">Dear [Name],</div>
+
+      <div class="content">
+        Body text begins here. Replace this paragraph with the body of your letter.
+        The Big Sister Foundation mark, Iroko&nbsp;Green header, warm cream ground, and
+        the Young Serif / Lora type stay consistent across every piece of correspondence,
+        so anything written on this template reads as official foundation communication.
+      </div>
+
+      <div class="signoff">
+        Warm regards,<br><br>
+        <span class="name">Bolaji Agunbiade</span><br>
+        <span class="role">Big Sister Foundation</span>
+      </div>
+    </div>
+
+    <div class="foot-wrap"></div>
+    <div class="foot">
+      <span>Lagos, Nigeria</span>
+      <span>+1 289-968-0152</span>
+      <span>hello@thebigsisterfoundation.org</span>
+      <span>thebigsisterfoundation.org</span>
+    </div>
+
+  </div>
+
+</body>
+</html>
