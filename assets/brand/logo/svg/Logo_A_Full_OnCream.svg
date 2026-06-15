@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 490" width="460" height="490">
+  <rect width="460" height="490" fill="#FAF5EE"/>
+  <!-- Canopy -->
+  <ellipse cx="230" cy="145" rx="75" ry="68" fill="#2D5E40" opacity="0.85"/>
+  <ellipse cx="185" cy="165" rx="60" ry="55" fill="#2D5E40" opacity="0.7"/>
+  <ellipse cx="275" cy="165" rx="60" ry="55" fill="#2D5E40" opacity="0.7"/>
+  <ellipse cx="205" cy="130" rx="50" ry="50" fill="#8BAF8E" opacity="0.3"/>
+  <ellipse cx="250" cy="120" rx="40" ry="42" fill="#2D5E40" opacity="0.5"/>
+  <!-- Trunk -->
+  <path d="M225 210 Q222 260 218 310 Q230 315 242 310 Q238 260 235 210 Z" fill="#3A2A1F" opacity="0.8"/>
+  <!-- Roots -->
+  <path d="M218 310 Q200 318 185 325" stroke="#3A2A1F" stroke-width="2.5" fill="none" opacity="0.4"/>
+  <path d="M242 310 Q260 318 275 325" stroke="#3A2A1F" stroke-width="2.5" fill="none" opacity="0.4"/>
+  <path d="M230 313 Q230 325 230 332" stroke="#3A2A1F" stroke-width="2" fill="none" opacity="0.3"/>
+  <!-- Wordmark -->
+  <text x="230" y="380" text-anchor="middle" font-family="Georgia, serif" font-size="42" font-weight="bold" fill="#2D5E40">Big Sister</text>
+  <text x="230" y="420" text-anchor="middle" font-family="Georgia, serif" font-size="42" font-weight="bold" fill="#2D5E40">Foundation</text>
+  <text x="230" y="462" text-anchor="middle" font-family="Georgia, serif" font-size="13" letter-spacing="4" fill="#D4A96A">ROOTED. PRESENT. PROTECTIVE.</text>
+</svg>

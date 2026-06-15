@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 160" width="600" height="160">
+  
+  <ellipse cx="70" cy="50" rx="40" ry="36" fill="#2D5E40" opacity="0.85"/>
+  <ellipse cx="45" cy="62" rx="32" ry="28" fill="#2D5E40" opacity="0.7"/>
+  <ellipse cx="95" cy="62" rx="32" ry="28" fill="#2D5E40" opacity="0.7"/>
+  <ellipse cx="55" cy="42" rx="25" ry="25" fill="#8BAF8E" opacity="0.3"/>
+  <path d="M67 85 Q66 105 64 125 Q70 127 76 125 Q74 105 73 85 Z" fill="#3A2A1F" opacity="0.8"/>
+  <text x="155" y="75" font-family="Georgia, serif" font-size="38" font-weight="bold" fill="#2D5E40">Big Sister Foundation</text>
+  <text x="155" y="105" font-family="Georgia, serif" font-size="12" letter-spacing="4" fill="#D4A96A">ROOTED. PRESENT. PROTECTIVE.</text>
+</svg>
