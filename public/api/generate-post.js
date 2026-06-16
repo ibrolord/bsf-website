@@ -1400,6 +1400,10 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
+  // Dry-run mode (?dryRun=1): run the whole pipeline but skip publishing to the
+  // live blog — for testing generation/quality without posting to the public site.
+  const dryRun = !!((req.query && (req.query.dryRun === '1' || req.query.dryRun === 'true')) || req.headers['x-dry-run'] === '1');
+
   if (!process.env.ANTHROPIC_API_KEY && !process.env.OPENAI_API_KEY) {
     return res.status(500).json({ error: 'No writer configured (need ANTHROPIC_API_KEY or OPENAI_API_KEY)' });
   }
@@ -1728,7 +1732,9 @@ export default async function handler(req, res) {
     const blogDocId = (newPost.date || 'undated') + '-' + publishSlug;
 
     let publishedPostId = null;
-    try {
+    if (dryRun) {
+      pipeline.push('dry_run_no_publish:' + blogDocId);
+    } else try {
       const firestoreToken = await getFirestoreAccessToken();
       const publishedAt = new Date();
       const created = await createDocument(firestoreToken, 'blog_posts', {
@@ -1775,10 +1781,14 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
+      dryRun: dryRun,
       published: Boolean(publishedPostId),
       postId: publishedPostId,
       post: {
         title: newPost.title,
+        author: newPost.author,
+        excerpt: newPost.excerpt,
+        body: newPost.body,
         category: newPost.category,
         seoScore: newPost.seoScore,
         readabilityScore: newPost.readabilityScore,
