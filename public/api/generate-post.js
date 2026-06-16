@@ -305,8 +305,9 @@ function checkSeoCompliance(post, primaryKeyword) {
     if (density > SEO_CONFIG.maxKeywordDensity) issues.push(`Keyword density ${density.toFixed(2)}% above maximum (stuffing) ${SEO_CONFIG.maxKeywordDensity}%`);
 
     // Keyword placement checks
+    // Keyword in the title is tracked for scoring but not required — forcing it
+    // is what produced templated "X: What Lagos Families Need to Know" titles.
     metrics.keywordInTitle = textMatchesKeyword(lowerTitle, keyword);
-    if (!metrics.keywordInTitle) issues.push('Primary keyword missing from title');
 
     const paragraphs = body.split(/\n\n+/).filter(p => p.trim().length > 0);
     // Keyword presence in the first/last paragraph is tracked but no longer a
@@ -408,12 +409,12 @@ function padToMinLength(text, minLength, suffix) {
 function buildSeoTitle(primaryKeyword, fallbackTopic) {
   const keywordTitle = titleCaseKeyword(primaryKeyword || fallbackTopic || 'child education Lagos');
   const candidates = [
-    `${keywordTitle}: What Lagos Families Need to Know`,
     `Why ${keywordTitle} Matters for Families in Lagos`,
-    `${keywordTitle} and School Access in Lagos`,
+    `${keywordTitle}: A Practical Guide for Lagos Families`,
+    `Understanding ${keywordTitle} in Lagos`,
   ];
   const valid = candidates.find(candidate => candidate.length >= SEO_CONFIG.titleMinLength && candidate.length <= SEO_CONFIG.titleMaxLength);
-  return valid || truncateAtWord(`${keywordTitle}: What Families Need to Know in Lagos`, SEO_CONFIG.titleMaxLength);
+  return valid || truncateAtWord(`Why ${keywordTitle} Matters for Families in Lagos`, SEO_CONFIG.titleMaxLength);
 }
 
 function buildSeoMetaDescription(primaryKeyword, topic) {
@@ -449,7 +450,7 @@ SEO RESEARCH CONTEXT:
 STRICT SEO RULES (non-negotiable):
 1. Use ## for H2 headings and ### for H3 headings
 2. Include 4-6 ## H2 headings throughout the post
-3. Use the primary keyword naturally: include the exact phrase only 1-2 times where it fits grammatically, and use natural variations elsewhere (e.g. "affordable schools in Lagos", never "affordable schools Lagos in Lagos"). It should appear in the title and somewhere in the opening and the closing, but ALWAYS phrased as natural, grammatical English. Do NOT put the raw keyword phrase in a heading. Write a specific, varied title under 70 characters — avoid formulaic patterns like "X: What Lagos Families Need to Know".
+3. Use the primary keyword naturally: include the exact phrase only 1-2 times where it fits grammatically, and use natural variations elsewhere (e.g. "affordable schools in Lagos", never "affordable schools Lagos in Lagos"). It should appear in the title and somewhere in the opening and the closing, but ALWAYS phrased as natural, grammatical English. Do NOT put the raw keyword phrase in a heading. Write a specific, compelling title of 45-68 characters — avoid formulaic patterns like "X: What Lagos Families Need to Know".
 4. Include each secondary keyword 1-2 times naturally
 5. 750-1000 words total
 6. Include at least 3 internal links as markdown: [anchor text](/path/) linking to /scholars/, /volunteer/, /donate/, /ledger/, or /ideas/
@@ -496,8 +497,11 @@ function repairDraftForSeo(draft, outline, primaryKeyword, fallbackTopic) {
   }
 
   repaired.title = repaired.title || '';
-  if (!keyword || !textMatchesKeyword(repaired.title, keyword) || repaired.title.length < SEO_CONFIG.titleMinLength || repaired.title.length > SEO_CONFIG.titleMaxLength) {
+  if (!repaired.title || repaired.title.length < SEO_CONFIG.titleMinLength) {
     repaired.title = buildSeoTitle(keyword, fallbackTopic);
+  } else if (repaired.title.length > SEO_CONFIG.titleMaxLength) {
+    // Keep the writer's own (natural) title — just trim it to length.
+    repaired.title = truncateAtWord(repaired.title, SEO_CONFIG.titleMaxLength);
   }
 
   repaired.metaDescription = repaired.metaDescription || '';
