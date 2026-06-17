@@ -138,6 +138,24 @@ service cloud.firestore {
       allow update: if hasPermission('announcements.edit') || hasRole('comms') || isAdmin();
       allow delete: if hasPermission('announcements.delete') || hasRole('comms') || isAdmin();
     }
+    // Social Studio drafts — internal only (not publicly readable).
+    // New posts must start as drafts. Only approvers (social.approve / comms /
+    // admin) may set 'approved' or 'posted'. Editors may change content but can
+    // only leave the status at draft/rejected or unchanged — they can never
+    // self-approve or self-publish, even via the client SDK.
+    match /social_posts/{docId} {
+      allow read: if hasAnyRole();
+      allow create: if (hasPermission('social.create') || hasRole('comms') || isAdmin())
+        && request.resource.data.status == 'draft';
+      allow update: if
+        (hasPermission('social.approve') || hasRole('comms') || isAdmin())
+        || ((hasPermission('social.edit') || hasPermission('social.create')) && (
+              request.resource.data.status == resource.data.status ||
+              request.resource.data.status == 'draft' ||
+              request.resource.data.status == 'rejected'
+            ));
+      allow delete: if hasPermission('social.delete') || hasRole('comms') || isAdmin();
+    }
     match /outreach/{docId} {
       allow read: if true;
       allow write: if hasAnyRole();
