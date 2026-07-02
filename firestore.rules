@@ -263,6 +263,7 @@ service cloud.firestore {
         hasPermission('volunteers.view') ||
         hasPermission('volunteer_requests.view') ||
         hasRole('program_lead') ||
+        hasRole('team_lead') ||
         hasRole('volunteer') ||
         hasRole('viewer') ||
         isAdmin();
@@ -272,6 +273,15 @@ service cloud.firestore {
     }
     match /teams/{docId} {
       allow read, write: if hasAnyRole();
+    }
+    // ── Projects (collaborative planning) ──
+    // Any team member can read; leads/admins create & manage. Task/ledger/event
+    // tagging is enforced server-side via /api/admin/mutate permission checks.
+    match /projects/{docId} {
+      allow read: if hasAnyRole();
+      allow create: if hasPermission('projects.create') || hasRole('program_lead') || hasRole('team_lead') || isAdmin();
+      allow update: if hasPermission('projects.edit') || hasPermission('projects.manage_members') || hasRole('program_lead') || hasRole('team_lead') || isAdmin();
+      allow delete: if hasPermission('projects.delete') || hasRole('program_lead') || isAdmin();
     }
     match /team_forums/{docId} {
       allow read, write: if hasAnyRole();

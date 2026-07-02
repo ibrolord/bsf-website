@@ -3,6 +3,7 @@ Allow: /
 Disallow: /admin/
 Disallow: /sponsor/dashboard.html
 Disallow: /volunteer/dashboard/
+Disallow: /projects/
 Disallow: /donations/
 Disallow: /signin/
 Disallow: /volunteer/register/

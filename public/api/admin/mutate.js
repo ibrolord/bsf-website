@@ -12,6 +12,24 @@ import {
   sendNodeResponse
 } from '../_lib/response.js';
 
+// ── Enforcement model (read before trusting this endpoint as a security boundary) ──
+// Every handler writes with the CALLER'S OWN idToken (see firestore-rest.js), so
+// Firestore security rules authorize each write and it executes as the user. This
+// dispatcher therefore provides VALIDATION, DENORMALIZATION, and an AUDIT trail — it is
+// NOT the authorization boundary; firestore.rules is. Collections left broadly writable
+// (e.g. `tasks`, `ledger`: `allow write: if hasAnyRole()`) can also be written directly
+// via the client SDK, which bypasses this audit log. The audit trail is therefore complete
+// only for writes that come through here. Making this a true enforcement gate would require
+// an Admin-SDK/service-account write path plus locked-down rules — a separate, larger change.
+//
+// permission_overrides caveat: this endpoint and the client UI honor per-user overrides
+// (explicit `false` revokes, `true` grants), but firestore.rules does NOT — rules authorize
+// via the `permissions` array and role shortcuts only (true across every collection, not just
+// projects). Consequences: a `false` override does not hard-revoke a role-granted permission
+// at the rules layer (the user can still do it via the client SDK), and a `true` override with
+// no matching role/stored permission passes here but fails the rules-checked write. For hard
+// revocation, change the user's roles/permissions array — not just an override.
+
 const ALLOWED_METHODS = ['POST'];
 const ROUTE = 'api/admin/mutate';
 const MAX_BLOG_TEXT = 50000;
@@ -341,6 +359,60 @@ const schemas = {
     firestoreId: z.string().trim().max(200).optional().default(''),
     legacyLocalId: blogLegacyLocalIdSchema,
     title: z.string().trim().max(200).optional().default('')
+  }),
+  'project.save': z.object({
+    action: z.literal('project.save'),
+    projectId: z.string().trim().max(200).optional().default(''),
+    name: z.string().trim().min(1).max(200),
+    brief: z.string().trim().max(10000).optional().default(''),
+    status: z.enum(['planning', 'active', 'paused', 'done']),
+    leadId: z.string().trim().min(1).max(200),
+    teamId: z.string().trim().max(200).optional().default(''),
+    schoolId: z.string().trim().max(200).optional().default(''),
+    startDate: z.string().trim().max(40).optional().default(''),
+    dueDate: z.string().trim().max(40).optional().default(''),
+    budgetTarget: z.union([z.number().min(0).max(1000000000), z.null()]).optional().default(null)
+  }),
+  'project.delete': z.object({
+    action: z.literal('project.delete'),
+    projectId: z.string().trim().min(1).max(200),
+    name: z.string().trim().max(200).optional().default('')
+  }),
+  'project.member.add': z.object({
+    action: z.literal('project.member.add'),
+    projectId: z.string().trim().min(1).max(200),
+    volunteerId: z.string().trim().min(1).max(200)
+  }),
+  'project.member.remove': z.object({
+    action: z.literal('project.member.remove'),
+    projectId: z.string().trim().min(1).max(200),
+    volunteerId: z.string().trim().min(1).max(200)
+  }),
+  'task.save': z.object({
+    action: z.literal('task.save'),
+    taskId: z.string().trim().max(200).optional().default(''),
+    projectId: z.string().trim().max(200).optional().default(''),
+    title: z.string().trim().min(1).max(200),
+    description: z.string().trim().max(10000).optional().default(''),
+    status: z.enum(['open', 'in_progress', 'completed', 'blocked']),
+    priority: z.enum(['urgent', 'high', 'medium', 'low']),
+    assigneeId: z.string().trim().max(200).optional().default(''),
+    dueDate: z.string().trim().max(40).optional().default('')
+  }),
+  'task.delete': z.object({
+    action: z.literal('task.delete'),
+    taskId: z.string().trim().min(1).max(200),
+    title: z.string().trim().max(200).optional().default('')
+  }),
+  'event.link_project': z.object({
+    action: z.literal('event.link_project'),
+    eventId: z.string().trim().min(1).max(200),
+    projectId: z.string().trim().max(200).optional().default('')
+  }),
+  'ledger.tag_project': z.object({
+    action: z.literal('ledger.tag_project'),
+    ledgerId: z.string().trim().min(1).max(200),
+    projectId: z.string().trim().max(200).optional().default('')
   })
 
 };
@@ -3261,6 +3333,459 @@ async function handleTeamMemberRemove(request, data) {
   }
 }
 
+async function handleProjectSave(request, data) {
+  const projectId = String(data.projectId || '').trim();
+  const isUpdate = Boolean(projectId);
+  let context;
+  try {
+    context = await requireAnyPermission(request, isUpdate ? ['projects.edit'] : ['projects.create']);
+  } catch (authError) {
+    return errorFromException(authError, 'project_save_failed', 'Project save failed');
+  }
+
+  let leadDocument;
+  try {
+    leadDocument = await getDocument(context.idToken, 'volunteers/' + data.leadId);
+  } catch (_leadReadError) {
+    return error(500, 'project_lead_read_failed', 'Unable to load the project lead');
+  }
+  if (!leadDocument.exists || !leadDocument.document) {
+    return error(404, 'lead_not_found', 'Project lead volunteer not found', { leadId: data.leadId });
+  }
+  const leadData = leadDocument.document.data || {};
+
+  const schoolId = String(data.schoolId || '').trim();
+  let schoolName = '';
+  if (schoolId) {
+    let schoolDocument;
+    try {
+      schoolDocument = await getDocument(context.idToken, 'schools/' + schoolId);
+    } catch (_schoolReadError) {
+      return error(500, 'project_school_read_failed', 'Unable to load the linked school');
+    }
+    if (!schoolDocument.exists || !schoolDocument.document) {
+      return error(404, 'school_not_found', 'Linked school not found', { schoolId: schoolId });
+    }
+    schoolName = String((schoolDocument.document.data || {}).name || '').trim();
+  }
+
+  const projectData = {
+    name: data.name,
+    brief: data.brief,
+    status: data.status,
+    leadId: data.leadId,
+    leadName: String(leadData.name || '').trim(),
+    leadEmail: String(leadData.email || '').trim().toLowerCase(),
+    teamId: String(data.teamId || '').trim(),
+    schoolId: schoolId,
+    schoolName: schoolName,
+    startDate: String(data.startDate || '').trim(),
+    dueDate: String(data.dueDate || '').trim(),
+    budgetTarget: data.budgetTarget === null || data.budgetTarget === undefined ? null : Number(data.budgetTarget),
+    lastEditedAt: new Date()
+  };
+
+  if (!isUpdate) {
+    try {
+      const created = await createDocument(context.idToken, 'projects', Object.assign({}, projectData, { members: [], createdBy: context.identity.email, createdAt: new Date() }));
+      await writeAudit(context, {
+        adminAction: 'project.save',
+        action: 'create',
+        collection: 'projects',
+        documentId: created.id,
+        changes: 'Created: ' + data.name
+      });
+      return json({ ok: true, action: 'project.save', mode: 'create', projectId: created.id, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+    } catch (_writeError) {
+      return error(500, 'project_create_failed', 'Unable to create project');
+    }
+  }
+
+  let projectDocument;
+  try {
+    projectDocument = await getDocument(context.idToken, 'projects/' + projectId);
+  } catch (_readError) {
+    return error(500, 'project_read_failed', 'Unable to load the project');
+  }
+  if (!projectDocument.exists || !projectDocument.document) {
+    return error(404, 'not_found', 'Project not found', { projectId: projectId });
+  }
+  const changedFields = diffFields(projectDocument.document.data || {}, projectData, ['lastEditedAt']);
+  try {
+    await patchDocument(context.idToken, 'projects/' + projectId, projectData, Object.keys(projectData));
+    await writeAudit(context, {
+      adminAction: 'project.save',
+      action: 'update',
+      collection: 'projects',
+      documentId: projectId,
+      changes: changedFields.length ? 'Updated fields: ' + changedFields.join(', ') : 'No substantive field changes'
+    });
+    return json({ ok: true, action: 'project.save', mode: 'update', projectId: projectId, changedFields: changedFields, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (_writeError) {
+    return error(500, 'project_update_failed', 'Unable to update project');
+  }
+}
+
+async function handleProjectDelete(request, data) {
+  let context;
+  try {
+    context = await requirePermission(request, 'projects.delete');
+  } catch (authError) {
+    return errorFromException(authError, 'project_delete_failed', 'Project delete failed');
+  }
+  let projectDocument;
+  try {
+    projectDocument = await getDocument(context.idToken, 'projects/' + data.projectId);
+  } catch (_readError) {
+    return error(500, 'project_read_failed', 'Unable to load the project');
+  }
+  if (!projectDocument.exists || !projectDocument.document) {
+    return error(404, 'not_found', 'Project not found', { projectId: data.projectId });
+  }
+  // Deleting a project unlinks ALL tagged children (tasks, events, ledger). The project no
+  // longer exists, so a dangling projectId/projectName would surface a phantom project name
+  // in the finance/events admin views and hide those entries from other projects' pickers.
+  // The deletion is recorded in audit_log below. (Note: these are separate writes, not an
+  // atomic transaction — acceptable at current scale, tens of docs per project.)
+  try {
+    const [linkedTasks, linkedEvents, linkedLedger] = await Promise.all([
+      queryCollectionByField(context.idToken, 'tasks', 'projectId', data.projectId),
+      queryCollectionByField(context.idToken, 'events', 'projectId', data.projectId),
+      queryCollectionByField(context.idToken, 'ledger', 'projectId', data.projectId)
+    ]);
+    await Promise.all([].concat(
+      linkedTasks.map(function(task) {
+        return patchDocument(context.idToken, 'tasks/' + task.id, { projectId: '', lastEditedAt: new Date() }, ['projectId', 'lastEditedAt']);
+      }),
+      linkedEvents.map(function(ev) {
+        return patchDocument(context.idToken, 'events/' + ev.id, { projectId: '', projectName: '' }, ['projectId', 'projectName']);
+      }),
+      linkedLedger.map(function(entry) {
+        return patchDocument(context.idToken, 'ledger/' + entry.id, { projectId: '', projectName: '' }, ['projectId', 'projectName']);
+      })
+    ));
+    await deleteDocument(context.idToken, 'projects/' + data.projectId);
+    await writeAudit(context, {
+      adminAction: 'project.delete',
+      action: 'delete',
+      collection: 'projects',
+      documentId: data.projectId,
+      changes: 'Deleted: ' + String((projectDocument.document.data || {}).name || data.name || data.projectId)
+    });
+    return json({ ok: true, action: 'project.delete', projectId: data.projectId, unlinkedTasks: linkedTasks.length, unlinkedEvents: linkedEvents.length, unlinkedLedger: linkedLedger.length, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (_writeError) {
+    return error(500, 'project_delete_failed', 'Unable to delete project');
+  }
+}
+
+async function handleProjectMemberAdd(request, data) {
+  let context;
+  try {
+    context = await requirePermission(request, 'projects.manage_members');
+  } catch (authError) {
+    return errorFromException(authError, 'project_member_add_failed', 'Add project member failed');
+  }
+
+  let projectDocument;
+  let volunteerDocument;
+  try {
+    [projectDocument, volunteerDocument] = await Promise.all([
+      getDocument(context.idToken, 'projects/' + data.projectId),
+      getDocument(context.idToken, 'volunteers/' + data.volunteerId)
+    ]);
+  } catch (_readError) {
+    return error(500, 'project_member_read_failed', 'Unable to load the project or volunteer');
+  }
+  if (!projectDocument.exists || !projectDocument.document) {
+    return error(404, 'project_not_found', 'Project not found', { projectId: data.projectId });
+  }
+  if (!volunteerDocument.exists || !volunteerDocument.document) {
+    return error(404, 'volunteer_not_found', 'Volunteer not found', { volunteerId: data.volunteerId });
+  }
+
+  const projectData = projectDocument.document.data || {};
+  const members = Array.isArray(projectData.members) ? projectData.members.slice() : [];
+  if (members.some(function(member) { return String(member.id || '') === data.volunteerId; })) {
+    return json({ ok: true, action: 'project.member.add', projectId: data.projectId, volunteerId: data.volunteerId, noChange: true, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  }
+  const member = buildTeamMember(volunteerDocument.document);
+  members.push(member);
+  try {
+    await patchDocument(context.idToken, 'projects/' + data.projectId, { members: members, lastEditedAt: new Date() }, ['members', 'lastEditedAt']);
+    await writeAudit(context, {
+      adminAction: 'project.member.add',
+      action: 'update',
+      collection: 'projects',
+      documentId: data.projectId,
+      changes: 'Added member: ' + member.name
+    });
+    return json({ ok: true, action: 'project.member.add', projectId: data.projectId, volunteerId: data.volunteerId, member: member, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (_writeError) {
+    return error(500, 'project_member_add_failed', 'Unable to add the project member');
+  }
+}
+
+async function handleProjectMemberRemove(request, data) {
+  let context;
+  try {
+    context = await requirePermission(request, 'projects.manage_members');
+  } catch (authError) {
+    return errorFromException(authError, 'project_member_remove_failed', 'Remove project member failed');
+  }
+
+  let projectDocument;
+  try {
+    projectDocument = await getDocument(context.idToken, 'projects/' + data.projectId);
+  } catch (_readError) {
+    return error(500, 'project_read_failed', 'Unable to load the project');
+  }
+  if (!projectDocument.exists || !projectDocument.document) {
+    return error(404, 'project_not_found', 'Project not found', { projectId: data.projectId });
+  }
+  const projectData = projectDocument.document.data || {};
+  const members = Array.isArray(projectData.members) ? projectData.members.slice() : [];
+  const nextMembers = members.filter(function(member) {
+    return String(member.id || '') !== data.volunteerId;
+  });
+  if (nextMembers.length === members.length) {
+    return json({ ok: true, action: 'project.member.remove', projectId: data.projectId, volunteerId: data.volunteerId, noChange: true, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  }
+  const removedMember = members.find(function(member) {
+    return String(member.id || '') === data.volunteerId;
+  }) || null;
+  try {
+    await patchDocument(context.idToken, 'projects/' + data.projectId, { members: nextMembers, lastEditedAt: new Date() }, ['members', 'lastEditedAt']);
+    await writeAudit(context, {
+      adminAction: 'project.member.remove',
+      action: 'update',
+      collection: 'projects',
+      documentId: data.projectId,
+      changes: 'Removed member: ' + String((removedMember && removedMember.name) || data.volunteerId)
+    });
+    return json({ ok: true, action: 'project.member.remove', projectId: data.projectId, volunteerId: data.volunteerId, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (_writeError) {
+    return error(500, 'project_member_remove_failed', 'Unable to remove the project member');
+  }
+}
+
+async function handleTaskSave(request, data) {
+  const taskId = String(data.taskId || '').trim();
+  const isUpdate = Boolean(taskId);
+  let context;
+  try {
+    context = await requirePermission(request, 'tasks.assign');
+  } catch (authError) {
+    return errorFromException(authError, 'task_save_failed', 'Task save failed');
+  }
+
+  const assigneeId = String(data.assigneeId || '').trim();
+  let assigneeName = '';
+  let assigneeEmail = '';
+  let assigneeTeamId = '';
+  if (assigneeId) {
+    let assigneeDocument;
+    try {
+      assigneeDocument = await getDocument(context.idToken, 'volunteers/' + assigneeId);
+    } catch (_assigneeReadError) {
+      return error(500, 'task_assignee_read_failed', 'Unable to load the assignee');
+    }
+    if (!assigneeDocument.exists || !assigneeDocument.document) {
+      return error(404, 'assignee_not_found', 'Assignee volunteer not found', { assigneeId: assigneeId });
+    }
+    const assigneeData = assigneeDocument.document.data || {};
+    assigneeName = String(assigneeData.name || '').trim();
+    assigneeEmail = String(assigneeData.email || '').trim().toLowerCase();
+    assigneeTeamId = String(assigneeData.teamId || '').trim();
+  }
+
+  const taskData = {
+    title: data.title,
+    description: data.description,
+    status: data.status,
+    priority: data.priority,
+    projectId: String(data.projectId || '').trim(),
+    assigneeId: assigneeId,
+    assigneeName: assigneeName,
+    assigneeEmail: assigneeEmail,
+    teamId: assigneeTeamId,
+    dueDate: String(data.dueDate || '').trim(),
+    lastEditedAt: new Date()
+  };
+
+  if (!isUpdate) {
+    const createPayload = Object.assign({}, taskData, { createdBy: context.identity.email, createdAt: new Date() });
+    if (data.status === 'completed') {
+      createPayload.completedAt = new Date();
+    }
+    try {
+      const created = await createDocument(context.idToken, 'tasks', createPayload);
+      await writeAudit(context, {
+        adminAction: 'task.save',
+        action: 'create',
+        collection: 'tasks',
+        documentId: created.id,
+        changes: 'Created task: ' + data.title
+      });
+      return json({ ok: true, action: 'task.save', mode: 'create', taskId: created.id, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+    } catch (_writeError) {
+      return error(500, 'task_create_failed', 'Unable to create task');
+    }
+  }
+
+  let taskDocument;
+  try {
+    taskDocument = await getDocument(context.idToken, 'tasks/' + taskId);
+  } catch (_readError) {
+    return error(500, 'task_read_failed', 'Unable to load the task');
+  }
+  if (!taskDocument.exists || !taskDocument.document) {
+    return error(404, 'not_found', 'Task not found', { taskId: taskId });
+  }
+  const previousStatus = String((taskDocument.document.data || {}).status || '');
+  if (data.status === 'completed') {
+    if (previousStatus !== 'completed') {
+      taskData.completedAt = new Date();
+    }
+  } else {
+    taskData.completedAt = null;
+  }
+  const changedFields = diffFields(taskDocument.document.data || {}, taskData, ['lastEditedAt', 'completedAt']);
+  try {
+    await patchDocument(context.idToken, 'tasks/' + taskId, taskData, Object.keys(taskData));
+    await writeAudit(context, {
+      adminAction: 'task.save',
+      action: 'update',
+      collection: 'tasks',
+      documentId: taskId,
+      changes: changedFields.length ? 'Updated fields: ' + changedFields.join(', ') : 'No substantive field changes'
+    });
+    return json({ ok: true, action: 'task.save', mode: 'update', taskId: taskId, changedFields: changedFields, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (_writeError) {
+    return error(500, 'task_update_failed', 'Unable to update task');
+  }
+}
+
+async function handleTaskDelete(request, data) {
+  let context;
+  try {
+    context = await requirePermission(request, 'tasks.assign');
+  } catch (authError) {
+    return errorFromException(authError, 'task_delete_failed', 'Task delete failed');
+  }
+  let taskDocument;
+  try {
+    taskDocument = await getDocument(context.idToken, 'tasks/' + data.taskId);
+  } catch (_readError) {
+    return error(500, 'task_read_failed', 'Unable to load the task');
+  }
+  if (!taskDocument.exists || !taskDocument.document) {
+    return error(404, 'not_found', 'Task not found', { taskId: data.taskId });
+  }
+  try {
+    await deleteDocument(context.idToken, 'tasks/' + data.taskId);
+    await writeAudit(context, {
+      adminAction: 'task.delete',
+      action: 'delete',
+      collection: 'tasks',
+      documentId: data.taskId,
+      changes: 'Deleted task: ' + String((taskDocument.document.data || {}).title || data.title || data.taskId)
+    });
+    return json({ ok: true, action: 'task.delete', taskId: data.taskId, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (_writeError) {
+    return error(500, 'task_delete_failed', 'Unable to delete task');
+  }
+}
+
+async function handleEventLinkProject(request, data) {
+  let context;
+  try {
+    context = await requirePermission(request, 'events.edit');
+  } catch (authError) {
+    return errorFromException(authError, 'event_link_project_failed', 'Event link failed');
+  }
+  let eventDocument;
+  try {
+    eventDocument = await getDocument(context.idToken, 'events/' + data.eventId);
+  } catch (_readError) {
+    return error(500, 'event_read_failed', 'Unable to load the event');
+  }
+  if (!eventDocument.exists || !eventDocument.document) {
+    return error(404, 'not_found', 'Event not found', { eventId: data.eventId });
+  }
+  const projectId = String(data.projectId || '').trim();
+  let projectName = '';
+  if (projectId) {
+    let projectDocument;
+    try {
+      projectDocument = await getDocument(context.idToken, 'projects/' + projectId);
+    } catch (_projectReadError) {
+      return error(500, 'project_read_failed', 'Unable to load the project');
+    }
+    if (!projectDocument.exists || !projectDocument.document) {
+      return error(404, 'project_not_found', 'Project not found', { projectId: projectId });
+    }
+    projectName = String((projectDocument.document.data || {}).name || '').trim();
+  }
+  try {
+    await patchDocument(context.idToken, 'events/' + data.eventId, { projectId: projectId, projectName: projectName }, ['projectId', 'projectName']);
+    await writeAudit(context, {
+      adminAction: 'event.link_project',
+      action: 'update',
+      collection: 'events',
+      documentId: data.eventId,
+      changes: projectId ? 'Linked to project: ' + projectName : 'Unlinked from project'
+    });
+    return json({ ok: true, action: 'event.link_project', eventId: data.eventId, projectId: projectId, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (_writeError) {
+    return error(500, 'event_link_project_failed', 'Unable to link the event to the project');
+  }
+}
+
+async function handleLedgerTagProject(request, data) {
+  let context;
+  try {
+    context = await requirePermission(request, 'ledger.edit');
+  } catch (authError) {
+    return errorFromException(authError, 'ledger_tag_project_failed', 'Ledger tag failed');
+  }
+  let ledgerDocument;
+  try {
+    ledgerDocument = await getDocument(context.idToken, 'ledger/' + data.ledgerId);
+  } catch (_readError) {
+    return error(500, 'ledger_read_failed', 'Unable to load the ledger entry');
+  }
+  if (!ledgerDocument.exists || !ledgerDocument.document) {
+    return error(404, 'not_found', 'Ledger entry not found', { ledgerId: data.ledgerId });
+  }
+  const projectId = String(data.projectId || '').trim();
+  let projectName = '';
+  if (projectId) {
+    let projectDocument;
+    try {
+      projectDocument = await getDocument(context.idToken, 'projects/' + projectId);
+    } catch (_projectReadError) {
+      return error(500, 'project_read_failed', 'Unable to load the project');
+    }
+    if (!projectDocument.exists || !projectDocument.document) {
+      return error(404, 'project_not_found', 'Project not found', { projectId: projectId });
+    }
+    projectName = String((projectDocument.document.data || {}).name || '').trim();
+  }
+  try {
+    await patchDocument(context.idToken, 'ledger/' + data.ledgerId, { projectId: projectId, projectName: projectName }, ['projectId', 'projectName']);
+    await writeAudit(context, {
+      adminAction: 'ledger.tag_project',
+      action: 'update',
+      collection: 'ledger',
+      documentId: data.ledgerId,
+      changes: projectId ? 'Tagged to project: ' + projectName : 'Untagged from project'
+    });
+    return json({ ok: true, action: 'ledger.tag_project', ledgerId: data.ledgerId, projectId: projectId, reviewedBy: context.identity.email, automation: Boolean(context.isAutomation) });
+  } catch (_writeError) {
+    return error(500, 'ledger_tag_project_failed', 'Unable to tag the ledger entry');
+  }
+}
+
 const handlers = {
   'volunteer.save': handleVolunteerSave,
   'volunteer.delete': handleVolunteerDelete,
@@ -3301,6 +3826,14 @@ const handlers = {
   'team.delete': handleTeamDelete,
   'team.member.add': handleTeamMemberAdd,
   'team.member.remove': handleTeamMemberRemove,
+  'project.save': handleProjectSave,
+  'project.delete': handleProjectDelete,
+  'project.member.add': handleProjectMemberAdd,
+  'project.member.remove': handleProjectMemberRemove,
+  'task.save': handleTaskSave,
+  'task.delete': handleTaskDelete,
+  'event.link_project': handleEventLinkProject,
+  'ledger.tag_project': handleLedgerTagProject,
   'settings.save_all': handleSettingsSaveAll,
   'user.permissions.save': handleUserPermissionsSave,
   'user.delete': handleUserDelete,
