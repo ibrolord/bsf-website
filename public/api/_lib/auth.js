@@ -64,15 +64,24 @@ const DEFAULT_AUTOMATION_PERMISSIONS = new Set([
   'teams.delete',
   'teams.manage_members',
   'kids.create',
-  'kids.edit'
+  'kids.edit',
+  'social.create',
+  'social.edit',
+  'social.approve',
+  'social.delete',
+  'projects.create',
+  'projects.edit',
+  'projects.delete',
+  'projects.manage_members',
+  'tasks.assign'
 ]);
 const ROLE_PERMISSIONS = {
-  admin: new Set(['volunteer_requests.approve', 'volunteers.create', 'volunteers.edit', 'volunteers.delete', 'ideas.edit_any', 'ideas.delete_any', 'forums.create', 'forums.edit_any', 'forums.delete_any', 'forums.moderate', 'team_forums.create', 'team_forums.edit', 'team_forums.delete', 'team_forums.moderate', 'ledger.create', 'ledger.edit', 'ledger.delete', 'ledger.approve', 'blog.approve', 'blog.edit_any', 'blog.delete_any', 'sponsors.edit', 'scholars.create', 'scholars.edit', 'schools.create', 'schools.edit', 'schools.delete', 'announcements.create', 'announcements.edit', 'announcements.delete', 'settings.edit', 'users.assign_permissions', 'events.create', 'events.edit', 'events.delete', 'events.signup', 'goals.create', 'goals.edit', 'goals.delete', 'goals.update_progress', 'outreach.create', 'outreach.edit', 'outreach.delete', 'communities.create', 'communities.edit', 'communities.delete', 'teams.create', 'teams.edit', 'teams.delete', 'teams.manage_members', 'kids.create', 'kids.edit']),
-  program_lead: new Set(['volunteer_requests.approve', 'volunteers.create', 'volunteers.edit', 'volunteers.delete', 'team_forums.create', 'team_forums.edit', 'team_forums.delete', 'team_forums.moderate', 'blog.approve', 'blog.edit_any', 'blog.delete_any', 'scholars.create', 'scholars.edit', 'schools.create', 'schools.edit', 'schools.delete', 'events.create', 'events.edit', 'events.delete', 'events.signup', 'goals.create', 'goals.edit', 'goals.delete', 'goals.update_progress', 'outreach.create', 'outreach.edit', 'outreach.delete', 'communities.create', 'communities.edit', 'communities.delete', 'teams.create', 'teams.edit', 'teams.delete', 'teams.manage_members', 'kids.create', 'kids.edit']),
-  comms: new Set(['ideas.edit_any', 'ideas.delete_any', 'forums.create', 'forums.edit_any', 'forums.delete_any', 'forums.moderate', 'team_forums.create', 'team_forums.edit', 'team_forums.delete', 'team_forums.moderate', 'blog.approve', 'blog.edit_any', 'blog.delete_any', 'announcements.create', 'announcements.edit', 'announcements.delete']),
+  admin: new Set(['social.create', 'social.edit', 'social.approve', 'social.delete', 'volunteer_requests.approve', 'volunteers.create', 'volunteers.edit', 'volunteers.delete', 'ideas.edit_any', 'ideas.delete_any', 'forums.create', 'forums.edit_any', 'forums.delete_any', 'forums.moderate', 'team_forums.create', 'team_forums.edit', 'team_forums.delete', 'team_forums.moderate', 'ledger.create', 'ledger.edit', 'ledger.delete', 'ledger.approve', 'blog.approve', 'blog.edit_any', 'blog.delete_any', 'sponsors.edit', 'scholars.create', 'scholars.edit', 'schools.create', 'schools.edit', 'schools.delete', 'announcements.create', 'announcements.edit', 'announcements.delete', 'settings.edit', 'users.assign_permissions', 'events.create', 'events.edit', 'events.delete', 'events.signup', 'goals.create', 'goals.edit', 'goals.delete', 'goals.update_progress', 'outreach.create', 'outreach.edit', 'outreach.delete', 'communities.create', 'communities.edit', 'communities.delete', 'teams.create', 'teams.edit', 'teams.delete', 'teams.manage_members', 'kids.create', 'kids.edit', 'projects.create', 'projects.edit', 'projects.delete', 'projects.manage_members', 'tasks.assign']),
+  program_lead: new Set(['volunteer_requests.approve', 'volunteers.create', 'volunteers.edit', 'volunteers.delete', 'team_forums.create', 'team_forums.edit', 'team_forums.delete', 'team_forums.moderate', 'blog.approve', 'blog.edit_any', 'blog.delete_any', 'scholars.create', 'scholars.edit', 'schools.create', 'schools.edit', 'schools.delete', 'events.create', 'events.edit', 'events.delete', 'events.signup', 'goals.create', 'goals.edit', 'goals.delete', 'goals.update_progress', 'outreach.create', 'outreach.edit', 'outreach.delete', 'communities.create', 'communities.edit', 'communities.delete', 'teams.create', 'teams.edit', 'teams.delete', 'teams.manage_members', 'kids.create', 'kids.edit', 'projects.create', 'projects.edit', 'projects.delete', 'projects.manage_members', 'tasks.assign']),
+  comms: new Set(['ideas.edit_any', 'ideas.delete_any', 'forums.create', 'forums.edit_any', 'forums.delete_any', 'forums.moderate', 'team_forums.create', 'team_forums.edit', 'team_forums.delete', 'team_forums.moderate', 'blog.approve', 'blog.edit_any', 'blog.delete_any', 'announcements.create', 'announcements.edit', 'announcements.delete', 'social.create', 'social.edit', 'social.approve', 'social.delete']),
   moderator: new Set(['ideas.edit_any', 'ideas.delete_any', 'forums.create', 'forums.edit_any', 'forums.delete_any', 'forums.moderate', 'team_forums.create', 'team_forums.edit', 'team_forums.delete', 'team_forums.moderate']),
   finance: new Set(['ledger.create', 'ledger.edit', 'ledger.delete', 'ledger.approve', 'goals.create', 'goals.edit', 'goals.delete', 'goals.update_progress']),
-  team_lead: new Set(['volunteer_requests.approve', 'ledger.approve', 'ledger.view', 'forums.create', 'team_forums.create']),
+  team_lead: new Set(['volunteer_requests.approve', 'ledger.approve', 'ledger.view', 'forums.create', 'team_forums.create', 'projects.create', 'projects.edit', 'projects.manage_members', 'tasks.assign']),
   volunteer: new Set(['forums.create', 'team_forums.create', 'ideas.create', 'events.signup', 'blog.create', 'blog.edit_own', 'blog.delete_own', 'sponsors.view']),
   viewer: new Set(['users.view', 'sponsors.view', 'blog.view', 'reports.view'])
 };
@@ -401,6 +410,26 @@ async function resolveAutomationContext(request, requestedPermissions) {
   context.isAutomation = true;
   context.automationName = String(request.headers.get(AUTOMATION_NAME_HEADER) || 'internal-automation').trim() || 'internal-automation';
   return context;
+}
+
+// Returns a context-shaped actor for the configured automation identity,
+// for server-to-server jobs (e.g. the social auto-drafter cron) that need an
+// idToken to write to Firestore. The automation user must hold a Firestore
+// role/permission that allows the writes it performs.
+export async function getAutomationActor(automationName) {
+  const email = String(process.env.BSF_AUTOMATION_EMAIL || '').trim().toLowerCase();
+  const password = String(process.env.BSF_AUTOMATION_PASSWORD || '');
+  if (!email || !password) {
+    throw httpError(500, 'missing_automation_configuration', 'Automation identity (BSF_AUTOMATION_EMAIL/PASSWORD) is not configured');
+  }
+  const session = await getAutomationSession(email, password);
+  return {
+    idToken: session.idToken,
+    identity: session.identity,
+    permission: 'social.create',
+    isAutomation: true,
+    automationName: String(automationName || 'internal-automation')
+  };
 }
 
 export async function requireAnyPermission(request, permissions) {

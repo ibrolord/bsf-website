@@ -138,6 +138,24 @@ service cloud.firestore {
       allow update: if hasPermission('announcements.edit') || hasRole('comms') || isAdmin();
       allow delete: if hasPermission('announcements.delete') || hasRole('comms') || isAdmin();
     }
+    // Social Studio drafts — internal only (not publicly readable).
+    // New posts must start as drafts. Only approvers (social.approve / comms /
+    // admin) may set 'approved' or 'posted'. Editors may change content but can
+    // only leave the status at draft/rejected or unchanged — they can never
+    // self-approve or self-publish, even via the client SDK.
+    match /social_posts/{docId} {
+      allow read: if hasAnyRole();
+      allow create: if (hasPermission('social.create') || hasRole('comms') || isAdmin())
+        && request.resource.data.status == 'draft';
+      allow update: if
+        (hasPermission('social.approve') || hasRole('comms') || isAdmin())
+        || ((hasPermission('social.edit') || hasPermission('social.create')) && (
+              request.resource.data.status == resource.data.status ||
+              request.resource.data.status == 'draft' ||
+              request.resource.data.status == 'rejected'
+            ));
+      allow delete: if hasPermission('social.delete') || hasRole('comms') || isAdmin();
+    }
     match /outreach/{docId} {
       allow read: if true;
       allow write: if hasAnyRole();
@@ -245,6 +263,7 @@ service cloud.firestore {
         hasPermission('volunteers.view') ||
         hasPermission('volunteer_requests.view') ||
         hasRole('program_lead') ||
+        hasRole('team_lead') ||
         hasRole('volunteer') ||
         hasRole('viewer') ||
         isAdmin();
@@ -254,6 +273,15 @@ service cloud.firestore {
     }
     match /teams/{docId} {
       allow read, write: if hasAnyRole();
+    }
+    // ── Projects (collaborative planning) ──
+    // Any team member can read; leads/admins create & manage. Task/ledger/event
+    // tagging is enforced server-side via /api/admin/mutate permission checks.
+    match /projects/{docId} {
+      allow read: if hasAnyRole();
+      allow create: if hasPermission('projects.create') || hasRole('program_lead') || hasRole('team_lead') || isAdmin();
+      allow update: if hasPermission('projects.edit') || hasPermission('projects.manage_members') || hasRole('program_lead') || hasRole('team_lead') || isAdmin();
+      allow delete: if hasPermission('projects.delete') || hasRole('program_lead') || isAdmin();
     }
     match /team_forums/{docId} {
       allow read, write: if hasAnyRole();
