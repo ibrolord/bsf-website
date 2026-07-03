@@ -1751,6 +1751,8 @@ function grantAccess(roles,overrides){
   var badges=currentRoles.map(function(r){var p=ROLE_PRESETS[r];var l=p?p.label:r;return'<span class="badge badge-'+(r||'default')+'" style="margin-left:4px">'+escHtml(l)+'</span>';}).join('');
   document.getElementById('user-email-display').innerHTML=user.email+badges;
   applyRolePermissions();
+  // Deep-link: /admin/?page=<section>[&focus=<id>] jumps straight to a section (e.g. from a linked project).
+  try{var _sp=new URLSearchParams(window.location.search);var _dp=_sp.get('page');if(_dp&&_dp!=='dashboard'&&canAccessPage(_dp)){var _fo=_sp.get('focus');if(_dp==='outreach'&&_fo){window.pendingOutreachFocus=_fo;}navigateTo(_dp);}}catch(_e){}
   db.collection('communities').orderBy('name','asc').get().then(function(snap){allCommunities=[];snap.forEach(function(doc){var d=doc.data();d.id=doc.id;allCommunities.push(d);});}).catch(function(){allCommunities=[];}).then(function(){loadSchoolsCache().then(function(){seedGoalsIfEmpty().then(function(){loadDashboard();});});});
   updateNotifBell();
   if(SUPERADMINS.indexOf(ek)===-1){
@@ -3155,9 +3157,21 @@ function renderOutreach(){
     if(hasPermission('outreach.delete')){actBtns+='<button class="btn btn-danger btn-xs" onclick="deleteOutreach(\''+o._id+'\',\''+escHtml(o.title).replace(/'/g,"\\'")+'\')">Del</button>';}
     if(o.linkedEvent){actBtns+=' <button class="btn btn-info btn-xs" onclick="navigateTo(\'events\')">View Event</button>';}
     var tr=document.createElement('tr');
+    tr.setAttribute('data-oid',o._id);
     tr.innerHTML='<td class="cb-cell"><input type="checkbox" value="'+o._id+'" onchange="toggleSelectOne(\'outreach\',\''+o._id+'\')"></td><td><strong>'+escHtml(o.title)+'</strong></td><td>'+escHtml(dv)+'</td><td>'+escHtml(o.location)+'</td><td>'+statusBadge(typeLabel)+'</td><td>'+(o.attendees||'--')+'</td><td>'+statusBadge(o.status)+'</td><td>'+actBtns+'</td>';
     tb.appendChild(tr);
   });
+  // Deep-link: highlight a specific record when opened via /admin/?page=outreach&focus=<id>
+  if(window.pendingOutreachFocus){
+    var _oid=window.pendingOutreachFocus;window.pendingOutreachFocus=null;
+    setTimeout(function(){
+      try{
+        var _esc=(window.CSS&&CSS.escape)?CSS.escape(_oid):_oid.replace(/["\\]/g,'\\$&');
+        var _r=tb.querySelector('tr[data-oid="'+_esc+'"]');
+        if(_r){_r.scrollIntoView({behavior:'smooth',block:'center'});var _bg=_r.style.backgroundColor;_r.style.transition='background-color .3s';_r.style.backgroundColor='rgba(212,169,106,0.35)';setTimeout(function(){_r.style.backgroundColor=_bg||'';},2600);}
+      }catch(_e){}
+    },50);
+  }
 }
 function openOutreachModal(d){
   document.getElementById('outreach-modal-title').textContent=d?'Edit Outreach':'Add Outreach';

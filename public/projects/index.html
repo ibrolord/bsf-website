@@ -84,7 +84,10 @@
   .task{background:var(--cream);border:1px solid var(--line);border-radius:10px;padding:10px 11px;margin-bottom:9px;}
   .task .t-title{font-weight:600;font-size:14px;margin-bottom:6px;}
   .task .t-meta{font-size:11.5px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-  .task select{font-size:11.5px;padding:2px 4px;border-radius:6px;border:1px solid var(--line);background:#fff;margin-top:7px;}
+  .task.draggable{cursor:grab;}
+  .task.draggable:active{cursor:grabbing;}
+  .task.dragging{opacity:.45;}
+  .col.drop-over{background:rgba(45,94,64,0.06);outline:2px dashed var(--iroko);outline-offset:-4px;}
   .task .t-actions{margin-top:7px;display:flex;gap:6px;}
 
   .rowlist .row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px;}
@@ -115,6 +118,22 @@
   #toast.show{opacity:1;}
   #toast.error{background:var(--danger);}
 
+  .ext-badge{font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;background:#faf0e4;color:var(--warn);text-transform:uppercase;letter-spacing:.3px;margin-left:6px;}
+  .bplan{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:10px;}
+  .bplan td,.bplan th{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle;}
+  .bplan th{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:700;}
+  .bplan td.num,.bplan th.num{text-align:right;white-space:nowrap;}
+  .bplan tr.committed td{color:var(--muted);}
+  .chat{max-height:340px;overflow:auto;display:flex;flex-direction:column;gap:10px;}
+  .chat-msg{background:var(--cream);border:1px solid var(--line);border-radius:10px;padding:9px 12px;}
+  .chat-msg .meta{font-size:11px;color:var(--muted);margin-bottom:3px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+  .chat-msg .body{font-size:14px;white-space:pre-wrap;word-break:break-word;}
+  .composer{display:flex;gap:8px;margin-top:12px;}
+  .composer textarea{flex:1;min-height:44px;max-height:160px;padding:8px 11px;border:1px solid var(--line);border-radius:8px;font:inherit;background:var(--paper);resize:vertical;}
+  .checklist{max-height:200px;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:8px 11px;background:var(--paper);}
+  .checklist label{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:400;color:var(--brown);margin:0 0 4px;cursor:pointer;}
+  .checklist input{width:auto;}
+  .section > h2 .btn{margin-left:6px;}
   @media(max-width:820px){ .board{grid-template-columns:1fr 1fr;} }
   @media(max-width:520px){ .board{grid-template-columns:1fr;} }
 </style>
@@ -143,6 +162,7 @@
     <div class="page-head">
       <h1>Projects</h1>
       <div class="spacer"></div>
+      <label class="muted" style="font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="show-archived" onchange="toggleArchived(this.checked)" style="width:auto"> Show archived</label>
       <button class="btn lead-only hidden" id="btn-new-project" onclick="openProjectModal(null)">+ New Project</button>
     </div>
     <div id="projects-grid" class="grid"></div>
@@ -183,15 +203,16 @@ var STATUS_ORDER = ['open','in_progress','completed','blocked'];
 var STATUS_LABEL = { open:'Open', in_progress:'In progress', completed:'Completed', blocked:'Blocked' };
 var currentUser = null, currentEmail = '', userRoles = [], userPerms = [], userOverrides = {};
 var projectsCache = [];
+var showArchived = false;
 var volunteersCache = null, schoolsCache = null;
 var current = null; // { id, data, tasks, ledger, events }
 
 // Client mirror of auth.js ROLE_PERMISSIONS for the keys this page gates on.
 // The server (mutate.js) is the real enforcer; this only hides buttons that would 403.
 var ROLE_PERMS = {
-  admin:        ['projects.create','projects.edit','projects.delete','projects.manage_members','tasks.assign','events.edit','ledger.edit'],
-  superadmin:   ['projects.create','projects.edit','projects.delete','projects.manage_members','tasks.assign','events.edit','ledger.edit'],
-  program_lead: ['projects.create','projects.edit','projects.delete','projects.manage_members','tasks.assign','events.edit'],
+  admin:        ['projects.create','projects.edit','projects.delete','projects.manage_members','tasks.assign','events.edit','events.create','ledger.edit','outreach.edit','outreach.create'],
+  superadmin:   ['projects.create','projects.edit','projects.delete','projects.manage_members','tasks.assign','events.edit','events.create','ledger.edit','outreach.edit','outreach.create'],
+  program_lead: ['projects.create','projects.edit','projects.delete','projects.manage_members','tasks.assign','events.edit','events.create','outreach.edit','outreach.create'],
   team_lead:    ['projects.create','projects.edit','projects.manage_members','tasks.assign'],
   finance:      ['ledger.edit']
 };
@@ -257,18 +278,23 @@ function loadProjects(){
 
 function renderProjects(){
   var grid = el('projects-grid');
-  if(!projectsCache.length){
-    grid.innerHTML = '<div class="empty" style="grid-column:1/-1">No projects yet.'+(can('projects.create')?' Click “New Project” to create one.':'')+'</div>';
+  var visible = projectsCache.filter(function(p){ return showArchived ? true : !p.archived; });
+  if(!visible.length){
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1">'+
+      (projectsCache.length ? 'No '+(showArchived?'':'active ')+'projects.' : 'No projects yet.'+(can('projects.create')?' Click “New Project” to create one.':''))+'</div>';
     return;
   }
   grid.innerHTML = '';
-  projectsCache.forEach(function(p){
+  visible.forEach(function(p){
     var members = Array.isArray(p.members) ? p.members.length : 0;
+    var schoolList = (Array.isArray(p.schoolNames) && p.schoolNames.length) ? p.schoolNames : (p.schoolName ? [p.schoolName] : []);
     var card = document.createElement('div');
     card.className = 'card pcard';
+    if(p.archived) card.style.opacity = '0.62';
     card.onclick = function(){ openProject(p._id); };
     card.innerHTML =
       '<div style="display:flex;align-items:flex-start;gap:8px"><h3 style="flex:1">'+esc(p.name)+'</h3>'+
+      (p.archived?'<span class="chip" style="background:#e8e5df;color:#7a7267">archived</span> ':'')+
       '<span class="chip '+esc(p.status||'planning')+'">'+esc(p.status||'planning')+'</span></div>'+
       (p.brief ? '<p class="muted" style="font-size:13px;margin:6px 0 0">'+esc(String(p.brief).slice(0,120))+(String(p.brief).length>120?'…':'')+'</p>' : '')+
       '<div class="meta">'+
@@ -276,7 +302,7 @@ function renderProjects(){
         '<span>👥 '+members+' member'+(members===1?'':'s')+'</span>'+
         (p.dueDate ? '<span>📅 due '+esc(fmtDate(p.dueDate))+'</span>' : '')+
         (p.budgetTarget!=null ? '<span>💰 '+esc(money(p.budgetTarget))+'</span>' : '')+
-        (p.schoolName ? '<span>🏫 '+esc(p.schoolName)+'</span>' : '')+
+        (schoolList.length ? '<span>🏫 '+esc(schoolList.join(', '))+'</span>' : '')+
       '</div>';
     grid.appendChild(card);
   });
@@ -291,38 +317,47 @@ function openProject(id){
   el('detail-body').innerHTML = '<p class="muted">Loading…</p>';
   db.collection('projects').doc(id).get().then(function(doc){
     if(!doc.exists){ el('detail-body').innerHTML = '<div class="empty">Project not found.</div>'; return; }
-    current = { id:id, data:(doc.data()||{}), tasks:[], ledger:[], events:[] };
+    current = { id:id, data:(doc.data()||{}), tasks:[], ledger:[], events:[], outreach:[], files:[], comments:[], budgetItems:[] };
     renderDetail();
     loadTasks();
+    loadBudgetItems();
     loadBudget();
     loadLinkedEvents();
+    loadLinkedOutreach();
+    loadFiles();
+    loadComments();
   }).catch(function(e){ el('detail-body').innerHTML = '<div class="empty">'+esc(e.message)+'</div>'; });
 }
 
 function renderDetail(){
   var p = current.data;
-  var members = Array.isArray(p.members) ? p.members : [];
+  var schoolList = (Array.isArray(p.schoolNames) && p.schoolNames.length) ? p.schoolNames : (p.schoolName ? [p.schoolName] : []);
   var leadBtns = (can('projects.edit') ? '<button class="btn secondary xs" onclick="openProjectModal(current.id)">Edit</button> ' : '')
-    + (can('projects.delete') ? '<button class="btn danger xs" onclick="deleteProject()">Delete</button>' : '');
+    + (can('projects.edit') ? (p.archived
+        ? '<button class="btn secondary xs" onclick="archiveProject(false)">Unarchive</button>'
+        : '<button class="btn secondary xs" onclick="archiveProject(true)">Archive</button>') : '');
   var html =
     '<div class="detail-head">'+
       '<div style="display:flex;align-items:flex-start;gap:12px">'+
         '<h1 style="flex:1">'+esc(p.name)+'</h1>'+
+        (p.archived?'<span class="chip" style="background:#e8e5df;color:#7a7267">archived</span>':'')+
         '<span class="chip '+esc(p.status||'planning')+'">'+esc(p.status||'planning')+'</span>'+
       '</div>'+
       '<div class="sub">'+
         '<span>Lead: <strong>'+esc(p.leadName||'—')+'</strong></span>'+
         (p.startDate?'<span>Start: '+esc(fmtDate(p.startDate))+'</span>':'')+
         (p.dueDate?'<span>Due: '+esc(fmtDate(p.dueDate))+'</span>':'')+
-        (p.schoolName?'<span>🏫 School: <strong>'+esc(p.schoolName)+'</strong></span>':'')+
+        (schoolList.length?'<span>🏫 '+(schoolList.length>1?'Schools':'School')+': <strong>'+schoolList.map(function(n){return esc(n);}).join(', ')+'</strong></span>':'')+
       '</div>'+
       (p.brief?'<div class="brief">'+esc(p.brief)+'</div>':'')+
       (leadBtns?'<div style="margin-top:14px">'+leadBtns+'</div>':'')+
     '</div>'+
 
-    // MEMBERS
-    '<div class="section"><h2>Members <span class="spacer"></span>'+
-      (can('projects.manage_members')?'<button class="btn secondary xs" onclick="openMemberPicker()">+ Add member</button>':'')+'</h2>'+
+    // PEOPLE (volunteers + externals)
+    '<div class="section"><h2>People <span class="spacer"></span>'+
+      (can('projects.manage_members')?'<button class="btn secondary xs" onclick="openMemberPicker()">+ Volunteer</button>'+
+        '<button class="btn secondary xs" onclick="openExternalModal()">+ External</button>'+
+        '<button class="btn secondary xs" onclick="openInviteModal()">Invite by email</button>':'')+'</h2>'+
       '<div class="card"><div class="rowlist" id="members-list"></div></div></div>'+
 
     // TASKS
@@ -330,15 +365,30 @@ function renderDetail(){
       (can('tasks.assign')?'<button class="btn secondary xs" onclick="openTaskModal(null)">+ Assign task</button>':'')+'</h2>'+
       '<div class="board" id="task-board"><p class="muted">Loading tasks…</p></div></div>'+
 
-    // BUDGET
+    // BUDGET (draft plan + committed ledger)
     '<div class="section"><h2>Budget <span class="spacer"></span>'+
-      (can('ledger.edit')?'<button class="btn secondary xs" onclick="openLedgerPicker()">+ Tag ledger entry</button>':'')+'</h2>'+
+      (can('projects.edit')?'<button class="btn secondary xs" onclick="openBudgetItemModal(null)">+ Budget line</button>':'')+
+      (can('ledger.edit')?'<button class="btn secondary xs" onclick="openLedgerPicker()">Tag ledger entry</button>':'')+'</h2>'+
       '<div class="card" id="budget-card"><p class="muted">Loading budget…</p></div></div>'+
+
+    // OUTREACH
+    '<div class="section"><h2>Outreach <span class="spacer"></span>'+
+      (can('outreach.edit')?'<button class="btn secondary xs" onclick="openOutreachPicker()">+ Link outreach</button>':'')+'</h2>'+
+      '<div class="card"><div class="rowlist" id="outreach-list"><p class="muted">Loading outreach…</p></div></div></div>'+
 
     // EVENTS
     '<div class="section"><h2>Events <span class="spacer"></span>'+
       (can('events.edit')?'<button class="btn secondary xs" onclick="openEventPicker()">+ Link event</button>':'')+'</h2>'+
-      '<div class="card"><div class="rowlist" id="events-list"><p class="muted">Loading events…</p></div></div></div>';
+      '<div class="card"><div class="rowlist" id="events-list"><p class="muted">Loading events…</p></div></div></div>'+
+
+    // DOCUMENTS
+    '<div class="section"><h2>Documents <span class="spacer"></span>'+
+      '<button class="btn secondary xs" onclick="openFileModal()">+ Add document</button></h2>'+
+      '<div class="card"><div class="rowlist" id="files-list"><p class="muted">Loading documents…</p></div></div></div>'+
+
+    // DISCUSSION
+    '<div class="section"><h2>Discussion</h2>'+
+      '<div class="card" id="discussion-card"><p class="muted">Loading discussion…</p></div></div>';
 
   el('detail-body').innerHTML = html;
   renderMembers();
@@ -347,7 +397,8 @@ function renderDetail(){
 function renderMembers(){
   var list = el('members-list'); if(!list) return;
   var members = Array.isArray(current.data.members) ? current.data.members : [];
-  if(!members.length){ list.innerHTML = '<div class="empty">No members yet.</div>'; return; }
+  var externals = Array.isArray(current.data.externalMembers) ? current.data.externalMembers : [];
+  if(!members.length && !externals.length){ list.innerHTML = '<div class="empty">No people on this project yet.</div>'; return; }
   list.innerHTML = '';
   members.forEach(function(m){
     var row = document.createElement('div'); row.className='row';
@@ -355,6 +406,16 @@ function renderMembers(){
     if(can('projects.manage_members')){
       var b = document.createElement('button'); b.className='btn danger xs'; b.textContent='Remove';
       b.onclick = function(){ removeMember(m.id, m.name); };
+      row.appendChild(b);
+    }
+    list.appendChild(row);
+  });
+  externals.forEach(function(m){
+    var row = document.createElement('div'); row.className='row';
+    row.innerHTML = '<span><strong>'+esc(m.name||m.email||'—')+'</strong><span class="ext-badge">external</span></span><span class="muted">'+esc(m.email||'')+'</span><span class="spacer"></span>';
+    if(can('projects.manage_members')){
+      var b = document.createElement('button'); b.className='btn danger xs'; b.textContent='Remove';
+      b.onclick = function(){ removeExternal(m.email, m.name); };
       row.appendChild(b);
     }
     list.appendChild(row);
@@ -369,14 +430,25 @@ function loadTasks(){
   }).catch(function(e){ var b=el('task-board'); if(b) b.innerHTML='<p class="muted">Unable to load tasks: '+esc(e.message)+'</p>'; });
 }
 
+var draggingTaskId = null;
 function renderTasks(){
   var board = el('task-board'); if(!board) return;
   board.innerHTML = '';
   STATUS_ORDER.forEach(function(st){
-    var col = document.createElement('div'); col.className='col';
+    var col = document.createElement('div'); col.className='col'; col.dataset.status = st;
     var items = current.tasks.filter(function(t){ return (t.status||'open')===st; });
     col.innerHTML = '<h4>'+STATUS_LABEL[st]+' ('+items.length+')</h4>';
     items.forEach(function(t){ col.appendChild(taskCard(t)); });
+    col.addEventListener('dragover', function(ev){ if(!draggingTaskId) return; ev.preventDefault(); if(ev.dataTransfer) ev.dataTransfer.dropEffect='move'; col.classList.add('drop-over'); });
+    col.addEventListener('dragleave', function(ev){ if(ev.target===col) col.classList.remove('drop-over'); });
+    col.addEventListener('drop', function(ev){
+      ev.preventDefault(); col.classList.remove('drop-over');
+      var id = draggingTaskId || (ev.dataTransfer && ev.dataTransfer.getData('text/plain'));
+      if(!id) return;
+      var task = current.tasks.filter(function(x){ return x._id===id; })[0];
+      if(!task || (task.status||'open')===st) return;
+      updateTaskStatus(task, st);
+    });
     board.appendChild(col);
   });
 }
@@ -390,10 +462,11 @@ function taskCard(t){
     (t.dueDate?'<span>📅 '+esc(fmtDate(t.dueDate))+'</span>':'')+'</div>';
   d.innerHTML = html;
   if(canStatus){
-    var sel = document.createElement('select');
-    STATUS_ORDER.forEach(function(st){ var o=document.createElement('option'); o.value=st; o.textContent=STATUS_LABEL[st]; if((t.status||'open')===st)o.selected=true; sel.appendChild(o); });
-    sel.onchange = function(){ updateTaskStatus(t, sel.value); };
-    d.appendChild(sel);
+    d.setAttribute('draggable','true');
+    d.classList.add('draggable');
+    d.title = 'Drag to another column to change status';
+    d.addEventListener('dragstart', function(ev){ draggingTaskId = t._id; d.classList.add('dragging'); if(ev.dataTransfer){ ev.dataTransfer.effectAllowed='move'; ev.dataTransfer.setData('text/plain', t._id); } });
+    d.addEventListener('dragend', function(){ draggingTaskId = null; d.classList.remove('dragging'); document.querySelectorAll('.col.drop-over').forEach(function(c){ c.classList.remove('drop-over'); }); });
   }
   if(can('tasks.assign')){
     var actions = document.createElement('div'); actions.className='t-actions';
@@ -439,27 +512,58 @@ function loadBudget(){
 function renderBudget(){
   var card = el('budget-card'); if(!card) return;
   var target = current.data.budgetTarget != null ? Number(current.data.budgetTarget) : null;
+  var items = Array.isArray(current.budgetItems) ? current.budgetItems : [];
+  var planned = items.reduce(function(sum,it){ return sum + (String(it.status||'planned')==='planned' ? (Number(it.amount)||0) : 0); }, 0);
   var spent = current.ledger.reduce(function(sum,e){ return sum + (String(e.direction)==='out' ? (Number(e.amount)||0) : 0); }, 0);
   var income = current.ledger.reduce(function(sum,e){ return sum + (String(e.direction)==='in' ? (Number(e.amount)||0) : 0); }, 0);
   var pct = target && target>0 ? Math.min(100, Math.round(spent/target*100)) : 0;
   var over = target != null && spent > target;
+
   var html = '<div class="stat">'+
-    '<div class="s"><div class="v">'+money(spent)+'</div><div class="l">Spent</div></div>'+
+    '<div class="s"><div class="v">'+money(planned)+'</div><div class="l">Planned (draft)</div></div>'+
+    '<div class="s"><div class="v">'+money(spent)+'</div><div class="l">Committed</div></div>'+
     (target!=null?'<div class="s"><div class="v">'+money(target)+'</div><div class="l">Budget</div></div>':'')+
     (target!=null?'<div class="s"><div class="v" style="color:'+(over?'var(--danger)':'var(--iroko)')+'">'+money(target-spent)+'</div><div class="l">Remaining</div></div>':'')+
     (income>0?'<div class="s"><div class="v">'+money(income)+'</div><div class="l">Income tagged</div></div>':'')+
     '</div>';
   if(target!=null){ html += '<div class="budgetbar'+(over?' over':'')+'"><span style="width:'+pct+'%"></span></div>'; }
-  html += '<div class="rowlist" style="margin-top:14px">';
+
+  html += '<h4 style="margin:16px 0 0;font-size:13px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)">Budget plan</h4>';
+  if(!can('ledger.edit')){ html += '<p class="muted" style="font-size:12px;margin:4px 0 0">Plan draft lines here — finance or an admin commits them to the ledger.</p>'; }
+  if(!items.length){ html += '<div class="empty" style="margin-top:8px">No budget lines yet.'+(can('projects.edit')?' Add lines to plan spend before it hits the ledger.':'')+'</div>'; }
+  else {
+    var rows = items.slice().sort(function(a,b){ return String(a.description||'').localeCompare(String(b.description||'')); }).map(function(it){
+      var committed = String(it.status||'planned')==='committed';
+      var actions;
+      if(committed){ actions = '<span class="muted">✓ committed</span>'; }
+      else {
+        actions = (can('projects.edit')?'<button class="btn secondary xs" data-act="edit-bitem" data-bid="'+esc(it._id)+'">Edit</button> <button class="btn danger xs" data-act="del-bitem" data-bid="'+esc(it._id)+'">Delete</button> ':'')+
+          (can('ledger.edit')?'<button class="btn xs" data-act="submit-bitem" data-bid="'+esc(it._id)+'">Submit</button>':'');
+      }
+      return '<tr class="'+(committed?'committed':'')+'"><td>'+esc(it.description||'—')+'</td><td>'+esc(it.category||'')+'</td><td class="num">'+money(it.amount)+'</td><td class="num">'+actions+'</td></tr>';
+    }).join('');
+    html += '<table class="bplan"><thead><tr><th>Description</th><th>Category</th><th class="num">Amount</th><th class="num"></th></tr></thead><tbody>'+rows+'</tbody></table>';
+  }
+
+  html += '<h4 style="margin:18px 0 0;font-size:13px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)">Tagged ledger entries</h4>';
+  html += '<div class="rowlist" style="margin-top:8px">';
   if(!current.ledger.length){ html += '<div class="empty">No ledger entries tagged to this project yet.</div>'; }
   else {
-    current.ledger.sort(function(a,b){ return String(b.date||'').localeCompare(String(a.date||'')); }).forEach(function(e){
+    current.ledger.slice().sort(function(a,b){ return String(b.date||'').localeCompare(String(a.date||'')); }).forEach(function(e){
       html += '<div class="row"><span>'+(String(e.direction)==='out'?'🔴':'🟢')+' '+esc(e.description||'—')+'</span>'+
         '<span class="muted">'+esc(e.date||'')+'</span><span class="spacer"></span><strong>'+money(e.amount)+'</strong></div>';
     });
   }
   html += '</div>';
   card.innerHTML = html;
+  card.onclick = function(ev){
+    var t = ev.target; if(!t || !t.getAttribute) return;
+    var act = t.getAttribute('data-act'); if(!act) return;
+    var bid = t.getAttribute('data-bid');
+    if(act==='edit-bitem') openBudgetItemModal(bid);
+    else if(act==='del-bitem') deleteBudgetItem(bid);
+    else if(act==='submit-bitem') submitBudgetItem(bid);
+  };
 }
 
 // ========== EVENTS ==========
@@ -476,10 +580,13 @@ function renderLinkedEvents(){
   list.innerHTML = '';
   current.events.forEach(function(ev){
     var row = document.createElement('div'); row.className='row';
-    row.innerHTML = '<span><strong>'+esc(ev.title||'—')+'</strong></span>'+
+    row.innerHTML = '<span><strong><a href="/events/?event='+encodeURIComponent(ev._id)+'" target="_blank" rel="noopener" title="Open this event" style="color:inherit;text-decoration:underline">'+esc(ev.title||'—')+'</a></strong></span>'+
       '<span class="muted">'+esc(fmtDate(ev.date))+'</span>'+
       (ev.status?'<span class="chip planning">'+esc(ev.status)+'</span>':'')+'<span class="spacer"></span>';
     if(can('events.edit')){
+      var be=document.createElement('button'); be.className='btn secondary xs'; be.textContent='Edit';
+      be.onclick=function(){ openEventEditModal(ev); };
+      row.appendChild(be);
       var b=document.createElement('button'); b.className='btn danger xs'; b.textContent='Unlink';
       b.onclick=function(){ linkEvent(ev._id, ''); };
       row.appendChild(b);
@@ -510,7 +617,8 @@ function openProjectModal(id){
   var p = id ? (projectsCache.filter(function(x){return x._id===id;})[0] || (current&&current.id===id?current.data:{})) : {};
   Promise.all([ensureVolunteers(), ensureSchools()]).then(function(){
     var volOpts = volunteersCache.map(function(v){ return '<option value="'+esc(v._id)+'"'+(p.leadId===v._id?' selected':'')+'>'+esc(v.name||v.email||v._id)+'</option>'; }).join('');
-    var schoolOpts = '<option value="">— none —</option>' + schoolsCache.map(function(s){ return '<option value="'+esc(s._id)+'"'+(p.schoolId===s._id?' selected':'')+'>'+esc(s.name)+'</option>'; }).join('');
+    var curSchoolIds = (Array.isArray(p.schoolIds) && p.schoolIds.length) ? p.schoolIds : (p.schoolId ? [p.schoolId] : []);
+    var schoolChecks = schoolsCache.length ? schoolsCache.map(function(s){ return '<label><input type="checkbox" class="pf-school-cb" value="'+esc(s._id)+'"'+(curSchoolIds.indexOf(s._id)>-1?' checked':'')+'> '+esc(s.name)+'</label>'; }).join('') : '<span class="muted">No schools available.</span>';
     var statusOpts = ['planning','active','paused','done'].map(function(s){ return '<option value="'+s+'"'+((p.status||'planning')===s?' selected':'')+'>'+s+'</option>'; }).join('');
     openModal(
       '<h3>'+(id?'Edit project':'New project')+'</h3>'+
@@ -520,8 +628,8 @@ function openProjectModal(id){
         '<div><label>Lead *</label><select id="pf-lead">'+volOpts+'</select></div></div>'+
       '<div class="field two"><div><label>Start date</label><input id="pf-start" type="date" value="'+esc(p.startDate||'')+'"></div>'+
         '<div><label>Due date</label><input id="pf-due" type="date" value="'+esc(p.dueDate||'')+'"></div></div>'+
-      '<div class="field two"><div><label>Partner school</label><select id="pf-school">'+schoolOpts+'</select></div>'+
-        '<div><label>Budget target (₦)</label><input id="pf-budget" type="number" min="0" value="'+(p.budgetTarget!=null?esc(p.budgetTarget):'')+'"></div></div>'+
+      '<div class="field"><label>Partner schools</label><div class="checklist">'+schoolChecks+'</div></div>'+
+      '<div class="field"><label>Budget target (₦)</label><input id="pf-budget" type="number" min="0" value="'+(p.budgetTarget!=null?esc(p.budgetTarget):'')+'"></div>'+
       '<div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Cancel</button>'+
         '<button class="btn" id="pf-save">Save</button></div>'
     );
@@ -535,10 +643,11 @@ function saveProject(id){
   if(!name){ toast('Name is required.','error'); return; }
   if(!leadId){ toast('Select a lead.','error'); return; }
   var budgetRaw = el('pf-budget').value;
+  var schoolIds = Array.prototype.slice.call(document.querySelectorAll('.pf-school-cb:checked')).map(function(cb){ return cb.value; });
   var payload = {
     action:'project.save', projectId:id||'', name:name,
     brief: el('pf-brief').value.trim(), status: el('pf-status').value,
-    leadId: leadId, schoolId: el('pf-school').value,
+    leadId: leadId, schoolIds: schoolIds,
     startDate: el('pf-start').value, dueDate: el('pf-due').value,
     budgetTarget: budgetRaw==='' ? null : Number(budgetRaw)
   };
@@ -551,11 +660,14 @@ function saveProject(id){
   }).catch(function(e){ toast(e.message,'error'); var b=el('pf-save'); if(b) b.disabled=false; });
 }
 
-function deleteProject(){
+// Projects are archived, never deleted — they stay saved and can be restored anytime.
+function toggleArchived(show){ showArchived = !!show; renderProjects(); }
+function archiveProject(archived){
   if(!current) return;
-  if(!confirm('Delete project "'+(current.data.name||'')+'"? Tasks will be unlinked (not deleted).')) return;
-  callApi({ action:'project.delete', projectId:current.id, name:current.data.name||'' })
-    .then(function(){ toast('Project deleted.'); showList(); loadProjects(); }).catch(function(e){ toast(e.message,'error'); });
+  if(archived && !confirm('Archive "'+(current.data.name||'this project')+'"? It stays saved and can be unarchived anytime.')) return;
+  callApi({ action:'project.archive', projectId:current.id, archived:archived })
+    .then(function(){ toast(archived?'Project archived.':'Project unarchived.'); if(current&&current.id) openProject(current.id); loadProjects(); })
+    .catch(function(e){ toast(e.message,'error'); });
 }
 
 // ========== LEAD ACTIONS: MEMBERS ==========
@@ -625,11 +737,83 @@ function openEventPicker(){
   db.collection('events').get().then(function(snap){
     var opts = '';
     snap.forEach(function(doc){ var d=doc.data()||{}; if(d.projectId && d.projectId!==current.id) return; opts += '<option value="'+esc(doc.id)+'">'+esc(d.title||doc.id)+' — '+esc(fmtDate(d.date))+'</option>'; });
-    if(!opts){ toast('No available events to link.','error'); return; }
-    openModal('<h3>Link an event</h3><div class="field"><label>Event</label><select id="ev-sel">'+opts+'</select></div>'+
-      '<div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Cancel</button>'+
-      '<button class="btn" onclick="linkEventFromPicker()">Link</button></div>');
+    var canCreate = can('events.create');
+    if(!opts && !canCreate){ toast('No events available to link.','error'); return; }
+    var html = '<h3>Add event</h3>';
+    if(canCreate){ html += '<div class="field"><button class="btn" style="width:100%" onclick="openEventCreateModal()">+ Create a new event</button></div>'; }
+    if(opts){
+      html += (canCreate?'<div class="muted" style="font-size:12.5px;margin:12px 0 8px">…or link an existing one:</div>':'')+
+        '<div class="field"><label>Event</label><select id="ev-sel">'+opts+'</select></div>'+
+        '<div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Cancel</button><button class="btn" onclick="linkEventFromPicker()">Link</button></div>';
+    } else {
+      html += '<div class="muted" style="font-size:12.5px;margin:10px 0 0">No existing events to link yet.</div>'+
+        '<div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Close</button></div>';
+    }
+    openModal(html);
   }).catch(function(e){ toast(e.message,'error'); });
+}
+function openEventCreateModal(){
+  var typeOpts = ['outreach','workshop','webinar','community','fundraiser','meeting'].map(function(t){ return '<option value="'+t+'">'+t+'</option>'; }).join('');
+  openModal('<h3>New event for this project</h3>'+
+    '<div class="field"><label>Title *</label><input id="evc-title" maxlength="200"></div>'+
+    '<div class="field two"><div><label>Type</label><select id="evc-type">'+typeOpts+'</select></div>'+
+      '<div><label>Date *</label><input id="evc-date" type="date"></div></div>'+
+    '<div class="field"><label>Location</label><input id="evc-loc" maxlength="200" placeholder="Zoom, address…"></div>'+
+    '<div class="field"><label>Description</label><textarea id="evc-desc" maxlength="10000"></textarea></div>'+
+    '<div class="modal-actions"><button class="btn secondary" onclick="openEventPicker()">Back</button>'+
+    '<button class="btn" id="evc-save">Create &amp; link</button></div>');
+  el('evc-save').onclick = createEventForProject;
+}
+function createEventForProject(){
+  var title = el('evc-title').value.trim();
+  var date = el('evc-date').value;
+  if(!title){ toast('Title is required.','error'); return; }
+  if(!date){ toast('Date is required.','error'); return; }
+  el('evc-save').disabled = true;
+  callApi({ action:'event.save', title:title, type:el('evc-type').value, date:date, location:el('evc-loc').value.trim(), description:el('evc-desc').value.trim(), status:'upcoming', owner:currentEmail })
+    .then(function(res){
+      var newId = res && res.eventId;
+      if(!newId){ toast('Event created (could not auto-link).','error'); closeModal(); loadLinkedEvents(); return; }
+      return callApi({ action:'event.link_project', eventId:newId, projectId:current.id }).then(function(){ toast('Event created & linked.'); closeModal(); loadLinkedEvents(); });
+    }).catch(function(e){ toast(e.message,'error'); var b=el('evc-save'); if(b) b.disabled=false; });
+}
+function toDateInput(v){ if(!v) return ''; try{ var d = v && v.toDate ? v.toDate() : new Date(v); if(isNaN(d.getTime())) return ''; return d.toISOString().slice(0,10); }catch(e){ return ''; } }
+function openEventEditModal(ev){
+  var types = ['outreach','workshop','webinar','community','fundraiser','meeting'];
+  if(ev.type && types.indexOf(ev.type)===-1) types.unshift(ev.type);
+  var typeOpts = types.map(function(t){ return '<option value="'+esc(t)+'"'+(ev.type===t?' selected':'')+'>'+esc(t)+'</option>'; }).join('');
+  var statuses = ['upcoming','ongoing','completed','cancelled'];
+  var curSt = ev.status||'upcoming';
+  if(statuses.indexOf(curSt)===-1) statuses.unshift(curSt);
+  var statusOpts = statuses.map(function(s){ return '<option value="'+esc(s)+'"'+(curSt===s?' selected':'')+'>'+esc(s)+'</option>'; }).join('');
+  openModal('<h3>Edit event</h3>'+
+    '<div class="field"><label>Title *</label><input id="eve-title" maxlength="200" value="'+esc(ev.title||'')+'"></div>'+
+    '<div class="field two"><div><label>Type</label><select id="eve-type">'+typeOpts+'</select></div>'+
+      '<div><label>Date *</label><input id="eve-date" type="date" value="'+esc(toDateInput(ev.date))+'"></div></div>'+
+    '<div class="field two"><div><label>Status</label><select id="eve-status">'+statusOpts+'</select></div>'+
+      '<div><label>Location</label><input id="eve-loc" maxlength="200" value="'+esc(ev.location||'')+'"></div></div>'+
+    '<div class="field"><label>Description</label><textarea id="eve-desc" maxlength="10000">'+esc(ev.description||ev.desc||'')+'</textarea></div>'+
+    '<div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Cancel</button>'+
+    '<button class="btn" id="eve-save">Save</button></div>');
+  el('eve-save').onclick = function(){ saveEventEdit(ev); };
+}
+function saveEventEdit(ev){
+  var title = el('eve-title').value.trim();
+  var date = el('eve-date').value;
+  if(!title){ toast('Title is required.','error'); return; }
+  if(!date){ toast('Date is required.','error'); return; }
+  var btn = el('eve-save'); if(btn) btn.disabled = true;
+  callApi({
+    action:'event.save', eventId: ev._id,
+    title: title, type: el('eve-type').value, date: date, status: el('eve-status').value,
+    location: el('eve-loc').value.trim(), description: el('eve-desc').value.trim(),
+    // Preserve fields event.save rebuilds (and its update mask writes) so they are not wiped.
+    owner: (ev.owner||currentEmail),
+    collaborators: Array.isArray(ev.collaborators) ? ev.collaborators : [],
+    capacity: (typeof ev.capacity==='number' ? ev.capacity : (ev.capacity!=null && ev.capacity!=='' && !isNaN(Number(ev.capacity)) ? Number(ev.capacity) : null)),
+    endDate: toDateInput(ev.endDate)
+  }).then(function(){ toast('Event updated.'); closeModal(); loadLinkedEvents(); })
+    .catch(function(e){ toast(e.message,'error'); var b=el('eve-save'); if(b) b.disabled=false; });
 }
 function linkEventFromPicker(){ var id = el('ev-sel').value; closeModal(); linkEvent(id, current.id); }
 function linkEvent(eventId, projectId){
@@ -649,6 +833,314 @@ function openLedgerPicker(){
   }).catch(function(e){ toast(e.message,'error'); });
 }
 function tagLedgerFromPicker(){ var id = el('lg-sel').value; closeModal(); callApi({ action:'ledger.tag_project', ledgerId:id, projectId:current.id }).then(function(){ toast('Entry tagged.'); loadBudget(); }).catch(function(e){ toast(e.message,'error'); }); }
+
+// ========== SLICE 2 HELPERS ==========
+function safeHref(u){ var s = String(u||'').trim(); return /^https?:\/\//i.test(s) ? s : ''; }
+function tsMs(v){ if(!v) return 0; try{ if(v.toDate) return v.toDate().getTime(); var d=new Date(v); return isNaN(d.getTime())?0:d.getTime(); }catch(e){ return 0; } }
+function fmtWhen(v){ if(!v) return ''; try{ var d=v && v.toDate ? v.toDate() : new Date(v); if(isNaN(d.getTime())) return ''; return d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }catch(e){ return ''; } }
+
+// ========== OUTREACH ==========
+function loadLinkedOutreach(){
+  db.collection('outreach').where('projectId','==',current.id).get().then(function(snap){
+    current.outreach = []; snap.forEach(function(doc){ var d=doc.data()||{}; d._id=doc.id; current.outreach.push(d); });
+    renderOutreach();
+  }).catch(function(e){ var l=el('outreach-list'); if(l) l.innerHTML='<p class="muted">Unable to load outreach: '+esc(e.message)+'</p>'; });
+}
+function renderOutreach(){
+  var list = el('outreach-list'); if(!list) return;
+  if(!current.outreach.length){ list.innerHTML = '<div class="empty">No outreach linked to this project.</div>'; return; }
+  list.innerHTML = '';
+  current.outreach.forEach(function(o){
+    var row = document.createElement('div'); row.className='row';
+    row.innerHTML = '<span><strong><a href="/admin/?page=outreach&focus='+encodeURIComponent(o._id)+'" target="_blank" rel="noopener" title="Open in admin → Outreach" style="color:inherit;text-decoration:underline">'+esc(o.title||o.type||'—')+'</a></strong></span>'+
+      (o.date?'<span class="muted">'+esc(fmtDate(o.date))+'</span>':'')+
+      (o.location?'<span class="muted">'+esc(o.location)+'</span>':'')+'<span class="spacer"></span>';
+    if(can('outreach.edit')){
+      var b=document.createElement('button'); b.className='btn danger xs'; b.textContent='Unlink';
+      b.onclick=function(){ linkOutreach(o._id, ''); };
+      row.appendChild(b);
+    }
+    list.appendChild(row);
+  });
+}
+function openOutreachPicker(){
+  db.collection('outreach').get().then(function(snap){
+    var opts = '';
+    snap.forEach(function(doc){ var d=doc.data()||{}; if(d.projectId && d.projectId!==current.id) return; opts += '<option value="'+esc(doc.id)+'">'+esc(d.title||d.type||doc.id)+(d.date?' — '+esc(fmtDate(d.date)):'')+'</option>'; });
+    var canCreate = can('outreach.create');
+    if(!opts && !canCreate){ toast('No outreach available to link.','error'); return; }
+    var html = '<h3>Add outreach</h3>';
+    if(canCreate){ html += '<div class="field"><button class="btn" style="width:100%" onclick="openOutreachCreateModal()">+ Create a new outreach record</button></div>'; }
+    if(opts){
+      html += (canCreate?'<div class="muted" style="font-size:12.5px;margin:12px 0 8px">…or link an existing one:</div>':'')+
+        '<div class="field"><label>Outreach record</label><select id="or-sel">'+opts+'</select></div>'+
+        '<div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Cancel</button><button class="btn" onclick="linkOutreachFromPicker()">Link</button></div>';
+    } else {
+      html += '<div class="muted" style="font-size:12.5px;margin:10px 0 0">No existing outreach to link yet.</div>'+
+        '<div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Close</button></div>';
+    }
+    openModal(html);
+  }).catch(function(e){ toast(e.message,'error'); });
+}
+function openOutreachCreateModal(){
+  var typeOpts = ['school-visit','community','awareness','distribution','other'].map(function(t){ return '<option value="'+t+'">'+t+'</option>'; }).join('');
+  var statusOpts = ['planned','ongoing','completed'].map(function(s){ return '<option value="'+s+'">'+s+'</option>'; }).join('');
+  openModal('<h3>New outreach for this project</h3>'+
+    '<div class="field"><label>Title *</label><input id="orc-title" maxlength="200"></div>'+
+    '<div class="field two"><div><label>Type</label><select id="orc-type">'+typeOpts+'</select></div>'+
+      '<div><label>Status</label><select id="orc-status">'+statusOpts+'</select></div></div>'+
+    '<div class="field two"><div><label>Date</label><input id="orc-date" type="date"></div>'+
+      '<div><label>Location</label><input id="orc-loc" maxlength="200"></div></div>'+
+    '<div class="field"><label>Description</label><textarea id="orc-desc" maxlength="10000"></textarea></div>'+
+    '<div class="modal-actions"><button class="btn secondary" onclick="openOutreachPicker()">Back</button>'+
+    '<button class="btn" id="orc-save">Create &amp; link</button></div>');
+  el('orc-save').onclick = createOutreachForProject;
+}
+function createOutreachForProject(){
+  var title = el('orc-title').value.trim();
+  if(!title){ toast('Title is required.','error'); return; }
+  el('orc-save').disabled = true;
+  callApi({ action:'outreach.save', title:title, type:el('orc-type').value, status:el('orc-status').value, date:el('orc-date').value, location:el('orc-loc').value.trim(), description:el('orc-desc').value.trim() })
+    .then(function(res){
+      var newId = res && res.outreachId;
+      if(!newId){ toast('Outreach created (could not auto-link).','error'); closeModal(); loadLinkedOutreach(); return; }
+      return callApi({ action:'outreach.link_project', outreachId:newId, projectId:current.id }).then(function(){ toast('Outreach created & linked.'); closeModal(); loadLinkedOutreach(); });
+    }).catch(function(e){ toast(e.message,'error'); var b=el('orc-save'); if(b) b.disabled=false; });
+}
+function linkOutreachFromPicker(){ var id = el('or-sel').value; closeModal(); linkOutreach(id, current.id); }
+function linkOutreach(outreachId, projectId){
+  callApi({ action:'outreach.link_project', outreachId:outreachId, projectId:projectId })
+    .then(function(){ toast(projectId?'Outreach linked.':'Outreach unlinked.'); loadLinkedOutreach(); }).catch(function(e){ toast(e.message,'error'); });
+}
+
+// ========== DOCUMENTS (link-based) ==========
+function loadFiles(){
+  db.collection('project_files').where('projectId','==',current.id).get().then(function(snap){
+    current.files = []; snap.forEach(function(doc){ var d=doc.data()||{}; d._id=doc.id; current.files.push(d); });
+    renderFiles();
+  }).catch(function(e){ var l=el('files-list'); if(l) l.innerHTML='<p class="muted">Unable to load documents: '+esc(e.message)+'</p>'; });
+}
+function renderFiles(){
+  var list = el('files-list'); if(!list) return;
+  if(!current.files.length){ list.innerHTML = '<div class="empty">No documents linked yet. Paste a Drive/Dropbox/any link.</div>'; return; }
+  list.innerHTML = '';
+  current.files.slice().sort(function(a,b){ return tsMs(b.addedAt) - tsMs(a.addedAt); }).forEach(function(f){
+    var row = document.createElement('div'); row.className='row';
+    var safeUrl = safeHref(f.url);
+    var link = safeUrl ? '<a href="'+esc(safeUrl)+'" target="_blank" rel="noopener noreferrer"><strong>'+esc(f.label||f.url||'Document')+'</strong></a>' : '<strong>'+esc(f.label||'Document')+'</strong>';
+    row.innerHTML = link + '<span class="muted">'+esc(f.addedByName||f.addedBy||'')+'</span><span class="spacer"></span>';
+    if(can('projects.edit') || (f.addedBy && f.addedBy===currentEmail)){
+      var b=document.createElement('button'); b.className='btn danger xs'; b.textContent='Remove';
+      b.onclick=function(){ removeFile(f._id); };
+      row.appendChild(b);
+    }
+    list.appendChild(row);
+  });
+}
+function openFileModal(){
+  openModal('<h3>Add document</h3>'+
+    '<div class="field"><label>Label</label><input id="doc-label" maxlength="200" placeholder="e.g. Consent form (Drive)"></div>'+
+    '<div class="field"><label>Link (URL) *</label><input id="doc-url" maxlength="2000" placeholder="https://…"></div>'+
+    '<div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Cancel</button>'+
+    '<button class="btn" onclick="addFile()">Add</button></div>');
+}
+function addFile(){
+  var url = el('doc-url').value.trim();
+  var label = el('doc-label').value.trim();
+  if(!safeHref(url)){ toast('Enter a valid http(s) link.','error'); return; }
+  db.collection('project_files').add({
+    projectId: current.id, url: url, label: label || url,
+    addedBy: currentEmail, addedByName: currentEmail,
+    addedAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(function(){ toast('Document added.'); closeModal(); loadFiles(); })
+    .catch(function(e){ toast(e.message,'error'); });
+}
+function removeFile(fileId){
+  if(!confirm('Remove this document link?')) return;
+  db.collection('project_files').doc(fileId).delete()
+    .then(function(){ toast('Document removed.'); loadFiles(); }).catch(function(e){ toast(e.message,'error'); });
+}
+
+// ========== DISCUSSION ==========
+function loadComments(){
+  db.collection('project_comments').where('projectId','==',current.id).get().then(function(snap){
+    current.comments = []; snap.forEach(function(doc){ var d=doc.data()||{}; d._id=doc.id; current.comments.push(d); });
+    renderComments();
+  }).catch(function(e){ var c=el('discussion-card'); if(c) c.innerHTML='<p class="muted">Unable to load discussion: '+esc(e.message)+'</p>'; });
+}
+function renderComments(){
+  var card = el('discussion-card'); if(!card) return;
+  var msgs = current.comments.slice().sort(function(a,b){ return tsMs(a.createdAt) - tsMs(b.createdAt); });
+  var html = '<div class="chat" id="chat-scroll">';
+  if(!msgs.length){ html += '<div class="empty">No messages yet. Start the conversation.</div>'; }
+  else {
+    msgs.forEach(function(m){
+      var canEdit = can('projects.edit') || (m.authorEmail && m.authorEmail===currentEmail);
+      var histCount = Array.isArray(m.editHistory) ? m.editHistory.length : 0;
+      html += '<div class="chat-msg"><div class="meta"><strong>'+esc(m.authorName||m.authorEmail||'Someone')+'</strong>'+
+        '<span>'+esc(fmtWhen(m.createdAt))+'</span>'+
+        (m.edited?'<span class="muted">· edited</span>':'')+
+        '<span style="flex:1"></span>'+
+        (histCount?'<button class="btn secondary xs" data-act="hist-comment" data-cid="'+esc(m._id)+'">history ('+histCount+')</button>':'')+
+        (canEdit?'<button class="btn secondary xs" data-act="edit-comment" data-cid="'+esc(m._id)+'">Edit</button>':'')+
+        '</div><div class="body">'+esc(m.body||'')+'</div></div>';
+    });
+  }
+  html += '</div>';
+  html += '<div class="composer"><textarea id="chat-input" maxlength="5000" placeholder="Write a message…"></textarea>'+
+    '<button class="btn" onclick="postComment()">Send</button></div>';
+  card.innerHTML = html;
+  card.onclick = function(ev){
+    var t = ev.target; if(!t || !t.getAttribute) return;
+    var act = t.getAttribute('data-act'); if(!act) return;
+    var cid = t.getAttribute('data-cid');
+    if(act==='edit-comment') editComment(cid);
+    else if(act==='hist-comment') showCommentHistory(cid);
+  };
+  var sc = el('chat-scroll'); if(sc){ sc.scrollTop = sc.scrollHeight; }
+}
+function postComment(){
+  var input = el('chat-input'); if(!input) return;
+  var body = input.value.trim();
+  if(!body){ return; }
+  input.disabled = true;
+  db.collection('project_comments').add({
+    projectId: current.id, body: body,
+    authorEmail: currentEmail, authorName: currentEmail,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(function(){ loadComments(); })
+    .catch(function(e){ toast(e.message,'error'); var i=el('chat-input'); if(i) i.disabled=false; });
+}
+// Messages are never deleted — editing keeps the prior version in the message's history.
+function editComment(commentId){
+  var c = current.comments.filter(function(x){return x._id===commentId;})[0]; if(!c) return;
+  openModal('<h3>Edit message</h3>'+
+    '<div class="field"><textarea id="edit-body" maxlength="5000">'+esc(c.body||'')+'</textarea></div>'+
+    '<p class="muted" style="font-size:12px;margin:0 0 12px">The previous version is kept in this message’s history — nothing is deleted.</p>'+
+    '<div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Cancel</button><button class="btn" id="edit-save">Save</button></div>');
+  el('edit-save').onclick = function(){ saveCommentEdit(commentId); };
+}
+function saveCommentEdit(commentId){
+  var c = current.comments.filter(function(x){return x._id===commentId;})[0]; if(!c) return;
+  var newBody = el('edit-body').value.trim();
+  if(!newBody){ toast('Message cannot be empty.','error'); return; }
+  if(newBody === (c.body||'')){ closeModal(); return; }
+  var ref = db.collection('project_comments').doc(commentId);
+  var btn = el('edit-save'); if(btn) btn.disabled = true;
+  // Transaction so concurrent edits both append the true prior version — history is never lost.
+  db.runTransaction(function(tx){
+    return tx.get(ref).then(function(snap){
+      if(!snap.exists){ throw new Error('This message no longer exists.'); }
+      var d = snap.data() || {};
+      if(newBody === (d.body||'')){ return; }
+      var history = Array.isArray(d.editHistory) ? d.editHistory.slice() : [];
+      history.push({ body: d.body||'', replacedAt: new Date().toISOString(), replacedBy: currentEmail });
+      tx.update(ref, {
+        body: newBody, editHistory: history, edited: true,
+        lastEditedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    });
+  }).then(function(){ toast('Message updated.'); closeModal(); loadComments(); })
+    .catch(function(e){ toast(e.message,'error'); var b=el('edit-save'); if(b) b.disabled=false; });
+}
+function showCommentHistory(commentId){
+  var c = current.comments.filter(function(x){return x._id===commentId;})[0]; if(!c) return;
+  var hist = Array.isArray(c.editHistory) ? c.editHistory : [];
+  var html = '<h3>Message history</h3><p class="muted" style="font-size:12px;margin:0 0 12px">Prior versions, kept for the record.</p>';
+  if(!hist.length){ html += '<div class="empty">No prior versions.</div>'; }
+  else { html += '<div class="chat">'+hist.slice().reverse().map(function(h){ return '<div class="chat-msg"><div class="meta"><span>'+esc(fmtWhen(h.replacedAt))+'</span>'+(h.replacedBy?'<span>'+esc(h.replacedBy)+'</span>':'')+'</div><div class="body">'+esc(h.body||'')+'</div></div>'; }).join('')+'</div>'; }
+  html += '<div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Close</button></div>';
+  openModal(html);
+}
+
+// ========== BUDGET PLAN ITEMS ==========
+function loadBudgetItems(){
+  db.collection('project_budget_items').where('projectId','==',current.id).get().then(function(snap){
+    current.budgetItems = []; snap.forEach(function(doc){ var d=doc.data()||{}; d._id=doc.id; current.budgetItems.push(d); });
+    renderBudget();
+  }).catch(function(_e){ /* budget card still renders from ledger */ });
+}
+function openBudgetItemModal(itemId){
+  var it = itemId ? (current.budgetItems.filter(function(x){return x._id===itemId;})[0] || {}) : {};
+  if(itemId && String(it.status||'')==='committed'){ toast('Committed items are locked.','error'); return; }
+  openModal('<h3>'+(itemId?'Edit budget line':'Budget line')+'</h3>'+
+    '<div class="field"><label>Description *</label><input id="bi-desc" maxlength="500" value="'+esc(it.description||'')+'"></div>'+
+    '<div class="field two"><div><label>Category</label><input id="bi-cat" maxlength="120" value="'+esc(it.category||'')+'" placeholder="e.g. supplies"></div>'+
+      '<div><label>Amount (₦) *</label><input id="bi-amount" type="number" min="0" value="'+(it.amount!=null?esc(it.amount):'')+'"></div></div>'+
+    '<div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Cancel</button>'+
+    '<button class="btn" id="bi-save">Save</button></div>');
+  el('bi-save').onclick = function(){ saveBudgetItem(itemId||''); };
+}
+function saveBudgetItem(itemId){
+  var desc = el('bi-desc').value.trim();
+  var amountRaw = el('bi-amount').value;
+  if(!desc){ toast('Description is required.','error'); return; }
+  if(amountRaw==='' || isNaN(Number(amountRaw))){ toast('Enter an amount.','error'); return; }
+  var payload = {
+    description: desc, category: el('bi-cat').value.trim(),
+    amount: Number(amountRaw), lastEditedAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  el('bi-save').disabled = true;
+  var p;
+  if(itemId){ p = db.collection('project_budget_items').doc(itemId).update(payload); }
+  else {
+    payload.projectId = current.id; payload.status = 'planned'; payload.ledgerId = '';
+    payload.createdBy = currentEmail; payload.createdByName = currentEmail;
+    payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+    p = db.collection('project_budget_items').add(payload);
+  }
+  p.then(function(){ toast(itemId?'Budget line updated.':'Budget line added.'); closeModal(); loadBudgetItems(); })
+    .catch(function(e){ toast(e.message,'error'); var b=el('bi-save'); if(b) b.disabled=false; });
+}
+function deleteBudgetItem(itemId){
+  var it = current.budgetItems.filter(function(x){return x._id===itemId;})[0] || {};
+  if(String(it.status||'')==='committed'){ toast('Committed items are locked.','error'); return; }
+  if(!confirm('Delete this budget line?')) return;
+  db.collection('project_budget_items').doc(itemId).delete()
+    .then(function(){ toast('Budget line deleted.'); loadBudgetItems(); }).catch(function(e){ toast(e.message,'error'); });
+}
+function submitBudgetItem(itemId){
+  var it = current.budgetItems.filter(function(x){return x._id===itemId;})[0] || {};
+  if(!confirm('Submit "'+(it.description||'this item')+'" ('+money(it.amount)+') to the ledger? It becomes a committed expense.')) return;
+  callApi({ action:'budget.item.submit_to_ledger', itemId:itemId })
+    .then(function(){ toast('Committed to ledger.'); loadBudgetItems(); loadBudget(); }).catch(function(e){ toast(e.message,'error'); });
+}
+
+// ========== EXTERNAL PEOPLE + INVITE ==========
+function openExternalModal(){
+  openModal('<h3>Add external person</h3>'+
+    '<p class="muted" style="font-size:12.5px;margin:0 0 12px">Listed as a collaborator on this project. No login is created.</p>'+
+    '<div class="field"><label>Name *</label><input id="ex-name" maxlength="200"></div>'+
+    '<div class="field"><label>Email *</label><input id="ex-email" maxlength="320" placeholder="name@example.com"></div>'+
+    '<div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Cancel</button>'+
+    '<button class="btn" onclick="addExternal()">Add</button></div>');
+}
+function addExternal(){
+  var name = el('ex-name').value.trim();
+  var email = el('ex-email').value.trim();
+  if(!name){ toast('Name is required.','error'); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ toast('Enter a valid email.','error'); return; }
+  callApi({ action:'project.member.add_external', projectId:current.id, name:name, email:email })
+    .then(function(){ toast('External person added.'); closeModal(); openProject(current.id); }).catch(function(e){ toast(e.message,'error'); });
+}
+function removeExternal(email, name){
+  if(!confirm('Remove '+(name||email||'this person')+' from the project?')) return;
+  callApi({ action:'project.member.remove_external', projectId:current.id, email:email })
+    .then(function(){ toast('Removed.'); openProject(current.id); }).catch(function(e){ toast(e.message,'error'); });
+}
+function openInviteModal(){
+  openModal('<h3>Invite by email</h3>'+
+    '<p class="muted" style="font-size:12.5px;margin:0 0 12px">If the email is a known volunteer, they’re added as a member. Otherwise they’re listed as an external contact (no login).</p>'+
+    '<div class="field"><label>Email *</label><input id="inv-email" maxlength="320" placeholder="name@example.com"></div>'+
+    '<div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Cancel</button>'+
+    '<button class="btn" onclick="doInvite()">Invite</button></div>');
+}
+function doInvite(){
+  var email = el('inv-email').value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ toast('Enter a valid email.','error'); return; }
+  callApi({ action:'project.invite', projectId:current.id, email:email })
+    .then(function(res){ toast(res && res.mode==='volunteer' ? 'Volunteer added.' : 'External contact invited.'); closeModal(); openProject(current.id); }).catch(function(e){ toast(e.message,'error'); });
+}
 </script>
 </body>
 </html>

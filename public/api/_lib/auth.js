@@ -85,6 +85,7 @@ const ROLE_PERMISSIONS = {
   volunteer: new Set(['forums.create', 'team_forums.create', 'ideas.create', 'events.signup', 'blog.create', 'blog.edit_own', 'blog.delete_own', 'sponsors.view']),
   viewer: new Set(['users.view', 'sponsors.view', 'blog.view', 'reports.view'])
 };
+ROLE_PERMISSIONS.superadmin = ROLE_PERMISSIONS.admin;
 let automationSessionCache = {
   email: '',
   password: '',

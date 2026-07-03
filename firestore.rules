@@ -20,7 +20,7 @@ service cloud.firestore {
       );
     }
     function isAdmin() {
-      return hasRole('admin') || isSuperAdmin();
+      return hasRole('admin') || hasRole('superadmin') || isSuperAdmin();
     }
     function canParticipateInForum() {
       return hasRole('volunteer') ||
@@ -81,7 +81,13 @@ service cloud.firestore {
         request.auth.token.email == email;
     }
     function isSuperAdmin() {
-      return isAuth() && request.auth.token.email == 'admin@bigsisterfoundation.org';
+      return isAuth() &&
+        request.auth.token.email in [
+          'admin@bigsisterfoundation.org',
+          'bsfadmin@bigsisterfoundation.org',
+          'princebolajibreeze@gmail.com',
+          'bolajiagunbiade1@gmail.com'
+        ];
     }
 
     // ── Public pages: anyone can read, team members can write ──
@@ -282,6 +288,25 @@ service cloud.firestore {
       allow create: if hasPermission('projects.create') || hasRole('program_lead') || hasRole('team_lead') || isAdmin();
       allow update: if hasPermission('projects.edit') || hasPermission('projects.manage_members') || hasRole('program_lead') || hasRole('team_lead') || isAdmin();
       allow delete: if hasPermission('projects.delete') || hasRole('program_lead') || isAdmin();
+    }
+    // ── Projects Slice 2: project-internal collaborative sub-collections ──
+    // Any team member can read/write; the /api/admin/mutate layer enforces the finer,
+    // audited actions (budget submit-to-ledger, external member mgmt, invites).
+    match /project_files/{docId} {
+      allow read, write: if hasAnyRole();
+    }
+    match /project_comments/{docId} {
+      allow read, write: if hasAnyRole();
+    }
+    match /project_budget_items/{docId} {
+      allow read: if hasAnyRole();
+      allow create: if hasAnyRole();
+      // A committed line item cannot be UPDATED by non-admins (its amount/status/ledgerId must not
+      // desync from the ledger). Deletion is allowed for any member (it removes only the planning
+      // record; the ledger entry is the source of truth and is unaffected) — this also lets
+      // project.delete clean up committed items.
+      allow update: if hasAnyRole() && (resource.data.status != 'committed' || isAdmin());
+      allow delete: if hasAnyRole();
     }
     match /team_forums/{docId} {
       allow read, write: if hasAnyRole();
