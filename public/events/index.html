@@ -1304,6 +1304,26 @@
           });
           renderCalendar();
           renderEvents();
+          // Deep-link: if arriving via ?event=<id> (e.g. from a linked project), focus that card.
+          var _fid = new URLSearchParams(window.location.search).get('event');
+          if (_fid) {
+            setTimeout(function() {
+              try {
+                var esc = (window.CSS && CSS.escape) ? CSS.escape(_fid) : _fid.replace(/["\\]/g, '\\$&');
+                var card = document.querySelector('.event-card[data-id="' + esc + '"]');
+                if (card) {
+                  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  card.style.transition = 'box-shadow .3s';
+                  card.style.boxShadow = '0 0 0 3px var(--terra, #c2734c)';
+                  setTimeout(function() { card.style.boxShadow = ''; }, 2600);
+                } else if (typeof showToast === 'function') {
+                  // The public page only lists upcoming events, so a past/pending one won't appear here.
+                  var known = events.some(function(e) { return e.id === _fid; });
+                  showToast(known ? 'That event has already passed — see the calendar below.' : 'That event is not on the public calendar.');
+                }
+              } catch (_e) {}
+            }, 80);
+          }
         })
         .catch(function(err) {
           console.error('Events Firestore error:', err);

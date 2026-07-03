@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "echo 'static site — no build step needed'",
     "cf:whoami": "wrangler whoami",
     "cf:zone:report": "node ./scripts/cloudflare/zone-report.mjs",
     "cf:dns:export": "node ./scripts/cloudflare/export-dns.mjs",
