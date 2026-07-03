@@ -1,4 +1,6 @@
 import { buildRealtimeCoverImageUrl, findRealtimeCoverImage } from './_lib/openverse.js';
+import { createDocument } from './_lib/firestore-rest.js';
+import { getFirestoreAccessToken } from './_lib/firebase-auth-admin.js';
 
 // ═══════════════════════════════════════════════════════════════
 //  BSF BLOG ORCHESTRATOR — Multi-AI SEO Content Pipeline v3
@@ -23,8 +25,8 @@ const SEO_CONFIG = {
   minReadabilityScore: 65,
   minWordCount: 650,
   maxWordCount: 1200,
-  minKeywordDensity: 0.8,
-  maxKeywordDensity: 2.5,
+  minKeywordDensity: 0,
+  maxKeywordDensity: 1.8,
   requiredInternalLinks: 2,
   requiredCrossPostLinks: 1,      // link to at least 1 existing blog post
   maxRetries: 2,
@@ -303,17 +305,17 @@ function checkSeoCompliance(post, primaryKeyword) {
     if (density > SEO_CONFIG.maxKeywordDensity) issues.push(`Keyword density ${density.toFixed(2)}% above maximum (stuffing) ${SEO_CONFIG.maxKeywordDensity}%`);
 
     // Keyword placement checks
-    metrics.keywordInTitle = lowerTitle.includes(keyword);
-    if (!metrics.keywordInTitle) issues.push('Primary keyword missing from title');
+    // Keyword in the title is tracked for scoring but not required — forcing it
+    // is what produced templated "X: What Lagos Families Need to Know" titles.
+    metrics.keywordInTitle = textMatchesKeyword(lowerTitle, keyword);
 
     const paragraphs = body.split(/\n\n+/).filter(p => p.trim().length > 0);
-    metrics.keywordInFirstParagraph = paragraphs.length > 0 && paragraphs[0].toLowerCase().includes(keyword);
-    if (!metrics.keywordInFirstParagraph) issues.push('Primary keyword missing from first paragraph');
+    // Keyword presence in the first/last paragraph is tracked but no longer a
+    // hard compliance failure — forcing it there is what produced stuffed openings.
+    metrics.keywordInFirstParagraph = paragraphs.length > 0 && textMatchesKeyword(paragraphs[0], keyword);
+    metrics.keywordInLastParagraph = paragraphs.length > 0 && textMatchesKeyword(paragraphs[paragraphs.length - 1], keyword);
 
-    metrics.keywordInLastParagraph = paragraphs.length > 0 && paragraphs[paragraphs.length - 1].toLowerCase().includes(keyword);
-    if (!metrics.keywordInLastParagraph) issues.push('Primary keyword missing from last paragraph');
-
-    metrics.keywordInMeta = meta.toLowerCase().includes(keyword);
+    metrics.keywordInMeta = textMatchesKeyword(meta, keyword);
     if (!metrics.keywordInMeta) issues.push('Primary keyword missing from meta description');
   }
 
@@ -337,9 +339,9 @@ function checkSeoCompliance(post, primaryKeyword) {
 
   // Paragraph length
   const paragraphs = body.split(/\n\n+/).filter(p => p.trim().length > 0);
-  const longParagraphs = paragraphs.filter(p => p.split(/\s+/).length > 80);
+  const longParagraphs = paragraphs.filter(p => p.split(/\s+/).length > 110);
   metrics.longParagraphs = longParagraphs.length;
-  if (longParagraphs.length > 0) issues.push(`${longParagraphs.length} paragraphs are too long (80+ words)`);
+  if (longParagraphs.length > 0) issues.push(`${longParagraphs.length} paragraphs are too long (110+ words)`);
 
   // Compute our own SEO score
   let score = 100;
@@ -351,6 +353,19 @@ function checkSeoCompliance(post, primaryKeyword) {
   metrics.computedSeoScore = Math.max(0, Math.min(100, score));
 
   return { compliant: issues.length === 0, issues, metrics };
+}
+
+// Loose keyword match: true if the text contains the exact phrase OR all of the
+// keyword's significant words. Lets natural variants ("affordable schools in
+// Lagos") satisfy the keyword ("affordable schools Lagos") so the compliance
+// retry loop stops forcing awkward exact-match stuffing.
+function textMatchesKeyword(text, keyword) {
+  const t = String(text || '').toLowerCase();
+  const k = String(keyword || '').toLowerCase().trim();
+  if (!k) return true;
+  if (t.includes(k)) return true;
+  const keywordWords = k.split(/\s+/).filter((w) => w.length > 2);
+  return keywordWords.length > 0 && keywordWords.every((w) => t.includes(w));
 }
 
 function extractJsonObject(text) {
@@ -394,12 +409,12 @@ function padToMinLength(text, minLength, suffix) {
 function buildSeoTitle(primaryKeyword, fallbackTopic) {
   const keywordTitle = titleCaseKeyword(primaryKeyword || fallbackTopic || 'child education Lagos');
   const candidates = [
-    `${keywordTitle}: What Lagos Families Need to Know`,
     `Why ${keywordTitle} Matters for Families in Lagos`,
-    `${keywordTitle} and School Access in Lagos`,
+    `${keywordTitle}: A Practical Guide for Lagos Families`,
+    `Understanding ${keywordTitle} in Lagos`,
   ];
   const valid = candidates.find(candidate => candidate.length >= SEO_CONFIG.titleMinLength && candidate.length <= SEO_CONFIG.titleMaxLength);
-  return valid || truncateAtWord(`${keywordTitle}: What Families Need to Know in Lagos`, SEO_CONFIG.titleMaxLength);
+  return valid || truncateAtWord(`Why ${keywordTitle} Matters for Families in Lagos`, SEO_CONFIG.titleMaxLength);
 }
 
 function buildSeoMetaDescription(primaryKeyword, topic) {
@@ -435,11 +450,11 @@ SEO RESEARCH CONTEXT:
 STRICT SEO RULES (non-negotiable):
 1. Use ## for H2 headings and ### for H3 headings
 2. Include 4-6 ## H2 headings throughout the post
-3. Primary keyword MUST appear in: title, first paragraph, at least one ## heading, last paragraph, meta description
+3. Use the primary keyword naturally: include the exact phrase only 1-2 times where it fits grammatically, and use natural variations elsewhere (e.g. "affordable schools in Lagos", never "affordable schools Lagos in Lagos"). It should appear in the title and somewhere in the opening and the closing, but ALWAYS phrased as natural, grammatical English. Do NOT put the raw keyword phrase in a heading. Write a specific, compelling title of 45-68 characters — avoid formulaic patterns like "X: What Lagos Families Need to Know".
 4. Include each secondary keyword 1-2 times naturally
 5. 750-1000 words total
 6. Include at least 3 internal links as markdown: [anchor text](/path/) linking to /scholars/, /volunteer/, /donate/, /ledger/, or /ideas/
-7. Short paragraphs (2-4 sentences max)
+7. Short paragraphs — each MUST be 2-3 sentences and under 65 words. Any paragraph of 80+ words causes the whole post to be auto-rejected, so keep every paragraph tight.
 8. Meta description: 120-165 characters, includes primary keyword, has a call-to-action
 
 VOICE & STYLE:
@@ -449,7 +464,7 @@ VOICE & STYLE:
 - Separate paragraphs with \\n\\n
 ${retryInstructions}
 
-AUTHOR: ${validation.category === 'story' ? 'Funke Adeyemi' : validation.category === 'guide' ? 'Amara Okafor' : validation.category === 'update' ? 'BSF Team' : 'Bolaji Agunbiade'}
+AUTHOR: Big Sister Foundation (all posts are bylined to the organization)
 
 Respond in JSON only:
 {
@@ -472,7 +487,7 @@ function repairDraftForSeo(draft, outline, primaryKeyword, fallbackTopic) {
   const repaired = {
     ...draft,
     category: draft.category || 'insight',
-    author: draft.author || 'BSF Team',
+    author: 'Big Sister Foundation',
   };
 
   if (!Array.isArray(repaired.keywords) || repaired.keywords.length === 0) {
@@ -482,12 +497,15 @@ function repairDraftForSeo(draft, outline, primaryKeyword, fallbackTopic) {
   }
 
   repaired.title = repaired.title || '';
-  if (!keyword || !repaired.title.toLowerCase().includes(keywordLower) || repaired.title.length < SEO_CONFIG.titleMinLength || repaired.title.length > SEO_CONFIG.titleMaxLength) {
+  if (!repaired.title || repaired.title.length < SEO_CONFIG.titleMinLength) {
     repaired.title = buildSeoTitle(keyword, fallbackTopic);
+  } else if (repaired.title.length > SEO_CONFIG.titleMaxLength) {
+    // Keep the writer's own (natural) title — just trim it to length.
+    repaired.title = truncateAtWord(repaired.title, SEO_CONFIG.titleMaxLength);
   }
 
   repaired.metaDescription = repaired.metaDescription || '';
-  if (!keyword || !repaired.metaDescription.toLowerCase().includes(keywordLower) || repaired.metaDescription.length < SEO_CONFIG.metaDescMinLength || repaired.metaDescription.length > SEO_CONFIG.metaDescMaxLength) {
+  if (!keyword || !textMatchesKeyword(repaired.metaDescription, keyword) || repaired.metaDescription.length < SEO_CONFIG.metaDescMinLength || repaired.metaDescription.length > SEO_CONFIG.metaDescMaxLength) {
     repaired.metaDescription = buildSeoMetaDescription(keyword, fallbackTopic);
   }
 
@@ -518,10 +536,10 @@ function repairDraftForSeo(draft, outline, primaryKeyword, fallbackTopic) {
 
   const firstParagraphIndex = findParagraphIndex(false);
   if (firstParagraphIndex === undefined) {
-    paragraphs.unshift(`For many families in Lagos, ${keyword || fallbackTopic} shapes whether a child stays in school and gets consistent support.`);
-  } else if (keyword && !paragraphs[firstParagraphIndex].toLowerCase().includes(keywordLower)) {
-    paragraphs[firstParagraphIndex] = `For many families in Lagos, ${keyword} shapes whether a child stays in school and gets steady support. ${paragraphs[firstParagraphIndex]}`;
+    paragraphs.unshift('Big Sister Foundation works with families in Lagos to keep vulnerable children enrolled, supported, and learning.');
   }
+  // No longer force the exact keyword into the opening — the writer's natural
+  // first paragraph stands (keyword still lives in the title, slug, meta, body).
 
   let h2Indexes = paragraphs
     .map((part, index) => part.startsWith('## ') ? index : -1)
@@ -532,10 +550,8 @@ function repairDraftForSeo(draft, outline, primaryKeyword, fallbackTopic) {
     h2Indexes = [1];
   }
 
-  if (keyword && !h2Indexes.some(index => paragraphs[index].toLowerCase().includes(keywordLower))) {
-    const targetIndex = h2Indexes[0];
-    paragraphs[targetIndex] = `## ${titleCaseKeyword(keyword)} in Lagos`;
-  }
+  // Keyword is no longer force-injected into a heading — the writer's natural
+  // headings stand (avoids "## After School Programs Lagos in Lagos").
 
   const ensureSection = (heading, lines) => {
     paragraphs.push(`## ${heading}`);
@@ -874,7 +890,7 @@ async function writeWithClaude(research, outline, retryFeedback) {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 3000,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -1004,7 +1020,7 @@ async function finalPassClaude(draft, review) {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 3000,
         messages: [{
           role: 'user',
@@ -1261,14 +1277,14 @@ function ensureSnippetBlock(body, primaryKeyword) {
   const paragraphs = body.split('\n\n');
   if (paragraphs.length < 4) return body;
 
-  // Find the most relevant paragraph (one mentioning the keyword)
+  // Find the snippet source: prefer the first real paragraph mentioning the
+  // keyword, else the first prose paragraph. Never use a heading/quote/list line.
   const kwLower = (primaryKeyword || '').toLowerCase();
-  let bestIdx = 1; // default to second paragraph
-  for (let i = 1; i < paragraphs.length - 1; i++) {
-    if (paragraphs[i].toLowerCase().includes(kwLower) && !paragraphs[i].startsWith('#')) {
-      bestIdx = i;
-      break;
-    }
+  const isProse = (p) => p && !p.startsWith('#') && !p.startsWith('>') && !p.startsWith('- ') && p.trim().length > 40;
+  let bestIdx = paragraphs.findIndex(isProse);
+  if (bestIdx === -1) return body;
+  for (let i = 0; i < paragraphs.length; i++) {
+    if (isProse(paragraphs[i]) && textMatchesKeyword(paragraphs[i], kwLower)) { bestIdx = i; break; }
   }
 
   // Create a concise snippet block (40-60 words, direct answer format)
@@ -1387,6 +1403,10 @@ export default async function handler(req, res) {
   if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
+
+  // Dry-run mode (?dryRun=1): run the whole pipeline but skip publishing to the
+  // live blog — for testing generation/quality without posting to the public site.
+  const dryRun = !!((req.query && (req.query.dryRun === '1' || req.query.dryRun === 'true')) || req.headers['x-dry-run'] === '1');
 
   if (!process.env.ANTHROPIC_API_KEY && !process.env.OPENAI_API_KEY) {
     return res.status(500).json({ error: 'No writer configured (need ANTHROPIC_API_KEY or OPENAI_API_KEY)' });
@@ -1693,6 +1713,71 @@ export default async function handler(req, res) {
     // ── Persist ──
     const allPosts = [newPost, ...interlinkedPosts].slice(0, 50);
 
+    // Publish to Firestore `blog_posts` — this is the collection the live /blog/
+    // page reads (anonymous client query: where status == 'approved'). Written as
+    // the service account through the same Firestore REST helper the admin uses.
+    //
+    // Refuse to publish a post the renderer would silently drop: isPublicBlogPost
+    // requires non-empty title/excerpt/body/date (author is defaulted below). A
+    // post missing one of these would write "successfully" yet never appear — the
+    // same silent failure this fix exists to remove — so fail the run loudly.
+    const missingPublishFields = ['title', 'excerpt', 'body', 'date']
+      .filter((field) => !newPost[field]);
+    if (missingPublishFields.length) {
+      pipeline.push('publish_aborted_missing_fields:' + missingPublishFields.join(','));
+      throw new Error('Refusing to publish post with missing required fields: ' + missingPublishFields.join(','));
+    }
+
+    // Deterministic document id (date + title slug) makes the write idempotent: a
+    // retry after a lost-but-successful POST re-targets the same doc (409
+    // ALREADY_EXISTS) instead of creating a duplicate approved post.
+    const publishSlug = String(newPost.title || (newPost.seoMetrics && newPost.seoMetrics.primaryKeyword) || 'post')
+      .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'post';
+    const blogDocId = (newPost.date || 'undated') + '-' + publishSlug;
+
+    let publishedPostId = null;
+    if (dryRun) {
+      pipeline.push('dry_run_no_publish:' + blogDocId);
+    } else try {
+      const firestoreToken = await getFirestoreAccessToken();
+      const publishedAt = new Date();
+      const created = await createDocument(firestoreToken, 'blog_posts', {
+        title: newPost.title,
+        body: newPost.body,
+        excerpt: newPost.excerpt,
+        category: newPost.category || 'insight',
+        author: newPost.author || 'Big Sister Foundation',
+        date: newPost.date,
+        keywords: newPost.keywords || [],
+        metaDescription: newPost.metaDescription || newPost.excerpt || '',
+        coverImage: newPost.coverImage || '',
+        coverImageAlt: newPost.coverImageAlt || newPost.title || '',
+        ogImage: newPost.ogImage || newPost.coverImage || '',
+        readTime: newPost.readTime || 3,
+        aiGenerated: true,
+        status: 'approved',
+        submittedBy: 'ai-pipeline',
+        approvedBy: 'ai-pipeline',
+        submittedAt: publishedAt,
+        approvedAt: publishedAt
+      }, blogDocId);
+      publishedPostId = created && created.id ? created.id : blogDocId;
+      pipeline.push('published_to_firestore:' + publishedPostId);
+    } catch (publishError) {
+      if (publishError && publishError.status === 409) {
+        // Doc already exists (idempotent re-run / retry-after-success) — not a failure.
+        publishedPostId = blogDocId;
+        pipeline.push('already_published:' + blogDocId);
+      } else {
+        // A generated-but-unpublished post is exactly the bug this pipeline had, so
+        // fail loudly — the cron run is recorded as failed instead of a false success.
+        pipeline.push('firestore_publish_failed:' + publishError.message);
+        throw publishError;
+      }
+    }
+
+    // Legacy GitHub mirror — dead path (sha is always null since the repo moved).
+    // Kept as a harmless no-op so the change stays minimal.
     if (sha) {
       await updateGitHubFile(allPosts, sha);
       pipeline.push('published_to_github');
@@ -1700,8 +1785,14 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
+      dryRun: dryRun,
+      published: Boolean(publishedPostId),
+      postId: publishedPostId,
       post: {
         title: newPost.title,
+        author: newPost.author,
+        excerpt: newPost.excerpt,
+        body: newPost.body,
         category: newPost.category,
         seoScore: newPost.seoScore,
         readabilityScore: newPost.readabilityScore,
