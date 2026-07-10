@@ -25,8 +25,8 @@ import { randomUUID } from 'node:crypto';
 
 import { z } from 'zod';
 
-import { requireAnyPermission } from '../_lib/auth.js';
-import { createDocument, deleteDocument, getDocument, patchDocument, queryCollectionByField } from '../_lib/firestore-rest.js';
+import { requireAnyPermission } from '../../_lib/auth.js';
+import { createDocument, deleteDocument, getDocument, patchDocument, queryCollectionByField } from '../../_lib/firestore-rest.js';
 import {
   error,
   json,
@@ -35,8 +35,8 @@ import {
   nodeRequestBodyToString,
   nodeRequestUrl,
   sendNodeResponse
-} from '../_lib/response.js';
-import { CARD_FORMATS, CARD_TEMPLATES, defaultFormatFor, enforcePlatformLimits } from '../_lib/brand.js';
+} from '../../_lib/response.js';
+import { CARD_FORMATS, CARD_TEMPLATES, defaultFormatFor, enforcePlatformLimits } from '../../_lib/brand.js';
 
 const ALLOWED_METHODS = ['POST'];
 const ROUTE = 'api/social/posts';

@@ -16,7 +16,7 @@
 //    statLabel label under the number (stat template)
 // ═══════════════════════════════════════════════════════════════
 
-import { BRAND, COLORS, FONTS, CARD_FORMATS, escapeXml, wrapText } from '../_lib/brand.js';
+import { BRAND, COLORS, FONTS, CARD_FORMATS, escapeXml, wrapText } from '../../_lib/brand.js';
 
 const THEMES = {
   green: { bg: COLORS.greenDeep, fg: COLORS.cream, eyebrow: COLORS.gold, accent: COLORS.terracotta, sub: COLORS.sage, treeLeaf: COLORS.sage, treeTrunk: COLORS.brown, halo: COLORS.green },

@@ -12,7 +12,7 @@
 
 import { z } from 'zod';
 
-import { requireAnyPermission } from '../_lib/auth.js';
+import { requireAnyPermission } from '../../_lib/auth.js';
 import {
   error,
   json,
@@ -21,8 +21,8 @@ import {
   nodeRequestBodyToString,
   nodeRequestUrl,
   sendNodeResponse
-} from '../_lib/response.js';
-import { voiceSystemPrompt, PLATFORMS, PLATFORM_KEYS, CARD_TEMPLATES, defaultFormatFor, enforcePlatformLimits, BRAND } from '../_lib/brand.js';
+} from '../../_lib/response.js';
+import { voiceSystemPrompt, PLATFORMS, PLATFORM_KEYS, CARD_TEMPLATES, defaultFormatFor, enforcePlatformLimits, BRAND } from '../../_lib/brand.js';
 
 const ALLOWED_METHODS = ['POST'];
 const CLAUDE_MODEL = 'claude-sonnet-4-20250514';

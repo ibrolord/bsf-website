@@ -15,7 +15,7 @@
 //  which must hold a role/permission allowing social_posts creation.
 // ═══════════════════════════════════════════════════════════════
 
-import { getAutomationActor } from '../_lib/auth.js';
+import { getAutomationActor } from '../../_lib/auth.js';
 import { generateForPlatforms } from './generate.js';
 import { createSocialPost } from './posts.js';
 
