@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { requireAnyPermission, requirePermission } from '../_lib/auth.js';
-import { createDocument, deleteDocument, getDocument, patchDocument, queryCollectionByField } from '../_lib/firestore-rest.js';
+import { requireAnyPermission, requirePermission } from '../../_lib/auth.js';
+import { createDocument, deleteDocument, getDocument, patchDocument, queryCollectionByField } from '../../_lib/firestore-rest.js';
 import {
   error,
   json,
@@ -10,7 +10,7 @@ import {
   nodeRequestBodyToString,
   nodeRequestUrl,
   sendNodeResponse
-} from '../_lib/response.js';
+} from '../../_lib/response.js';
 
 // ── Enforcement model (read before trusting this endpoint as a security boundary) ──
 // Every handler writes with the CALLER'S OWN idToken (see firestore-rest.js), so

@@ -1,4 +1,4 @@
-import { findRealtimeCoverImage } from './_lib/openverse.js';
+import { findRealtimeCoverImage } from '../../_lib/openverse.js';
 
 async function isUsableImageUrl(url) {
   if (!url) return false;

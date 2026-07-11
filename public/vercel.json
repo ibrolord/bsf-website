@@ -70,11 +70,19 @@
     },
     {
       "source": "/sitemap.xml",
-      "destination": "/api/sitemap"
+      "destination": "/api/xml/sitemap"
     },
     {
       "source": "/feed.xml",
-      "destination": "/api/feed"
+      "destination": "/api/xml/feed"
+    },
+    {
+      "source": "/api/og-image",
+      "destination": "/api/media/og"
+    },
+    {
+      "source": "/api/post-cover",
+      "destination": "/api/media/cover"
     }
   ]
 }

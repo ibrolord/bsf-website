@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-import { requirePermission } from '../_lib/auth.js';
-import { createAuthUser, sendPasswordReset } from '../_lib/firebase-auth-admin.js';
-import { createDocument } from '../_lib/firestore-rest.js';
+import { requirePermission } from '../../_lib/auth.js';
+import { createAuthUser, sendPasswordReset } from '../../_lib/firebase-auth-admin.js';
+import { createDocument } from '../../_lib/firestore-rest.js';
 import {
   error,
   json,
@@ -11,7 +11,7 @@ import {
   nodeRequestBodyToString,
   nodeRequestUrl,
   sendNodeResponse
-} from '../_lib/response.js';
+} from '../../_lib/response.js';
 
 const ALLOWED_METHODS = ['POST'];
 const PERMISSION = 'users.assign_permissions';
