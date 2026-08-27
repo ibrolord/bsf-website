@@ -353,8 +353,17 @@
       left: 50%;
       transform: translateX(-50%);
       z-index: 3;
-      animation: bounce 2s ease-in-out infinite;
       color: rgba(255,248,240,0.5);
+      cursor: pointer;
+      pointer-events: auto;
+    }
+    @keyframes seedPop {
+      0%   { transform: translateX(-50%) scale(1); }
+      40%  { transform: translateX(-50%) scale(1.25); }
+      100% { transform: translateX(-50%) scale(1); }
+    }
+    .scroll-indicator.is-seed-active {
+      animation: seedPop 0.6s ease-out;
     }
 
     @media (max-width: 640px) {
@@ -1647,16 +1656,30 @@
 
       window.addEventListener('scroll', function () {
         var scrollY = window.scrollY || window.pageYOffset;
-        if (scrollY > 100) { nav.classList.add('is-visible'); }
-        else { nav.classList.remove('is-visible'); }
+        if (nav) {
+          if (scrollY > 100) { nav.classList.add('is-visible'); }
+          else { nav.classList.remove('is-visible'); }
+        }
         var docH = document.documentElement.scrollHeight - window.innerHeight;
         var scrollPct = docH > 0 ? scrollY / docH : 0;
-        if (docH > 0) { progressBar.style.width = (scrollPct * 100) + '%'; }
+        if (docH > 0 && progressBar) { progressBar.style.width = (scrollPct * 100) + '%'; }
         updateTree(scrollPct);
       }, { passive: true });
 
       // Initial tree state
       updateTree(0);
+
+      // Scroll indicator click — play seed pop animation
+      var scrollIndicatorEl = document.querySelector('.scroll-indicator');
+      if (scrollIndicatorEl) {
+        scrollIndicatorEl.removeAttribute('aria-hidden');
+        scrollIndicatorEl.addEventListener('click', function () {
+          scrollIndicatorEl.classList.remove('is-seed-active');
+          // Force reflow so the animation restarts on subsequent clicks
+          void scrollIndicatorEl.offsetWidth;
+          scrollIndicatorEl.classList.add('is-seed-active');
+        });
+      }
 
       // -- Stat counter animation --
       var stats = document.querySelectorAll('.stat__number');
